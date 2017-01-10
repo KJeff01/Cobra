@@ -69,6 +69,29 @@ function droidBusy(droid)
 	return droid.order == DORDER_ATTACK || droid.order == DORDER_SCOUT;
 }
 
+//Ally is false for checking for enemy players
+//Ally is true for allies.
+function playerAlliance(ally)
+{
+	if(!isDefined(ally))
+		ally = false;
+	var players = [];
+	
+	for(var i = 0; i < maxPlayers; ++i) {
+		if(!ally) {
+			if(!allianceExistsBetween(i, me) && i != me) {
+				players.push(i);
+			}
+		}
+		else {
+			if(allianceExistsBetween(i, me) && i != me) {
+				players.push(i);
+			}
+		}
+	}
+	return players;
+}
+
 /*Unused
 function findNearest(list, x, y, flag) {
 	var minDist = Infinity, minIdx;
@@ -435,7 +458,7 @@ function buildOrder()
 			return true;
 	}
 	
-	if (playerPower(me) > 100 && isStructureAvailable(structures.templateFactories))
+	if (playerPower(me) > 110 && isStructureAvailable(structures.templateFactories))
 	{
 		if (countAndBuild(structures.templateFactories, 3))
 			return true
@@ -653,19 +676,13 @@ function attackStuff(attacker)
 	var attackers = enumGroup(attackGroup);
 	var cyborgs = enumGroup(cyborgGroup);
 	var vtols = enumGroup(vtolGroup);
-	var numEnemies = [];
+	var enemy = playerAlliance(false);
+	var str = lastMsg.slice(0, -1);
 	
 	if(attackers.length > 5)
 	{
-		for (var i = 0; i < maxPlayers; i++)
-		{
-			if (!allianceExistsBetween(me, i) && (i !== me))
-			{
-				numEnemies.push(i);
-			}
-		}
-		var selectedEnemy = random(numEnemies.length);
-		if(isDefined(attacker) && !allianceExistsBetween(me, attacker) && (attacker !== me))
+		var selectedEnemy = enemy[random(enemy.length)];
+		if(isDefined(attacker) && !allianceExistsBetween(attacker, me) && (attacker !== me))
 		{
 			selectedEnemy = attacker;
 			grudgeCount[attacker] = 100;
@@ -678,7 +695,7 @@ function attackStuff(attacker)
 		var targetFac = fac[random(fac.length)];
 		var targetCyb = cybFac[random(cybFac.length)];
 		
-		if(lastMsg != "attack" + selectedEnemy) {
+		if(str != "attack") {
 			lastMsg = "attack" + selectedEnemy;
 			chat(ALLIES, lastMsg);
 		}
@@ -796,13 +813,9 @@ function repairAll()
 
 function spyRoutine()
 {
-	var enemies = [];
-	for(var i = 0; i < maxPlayers; ++i) {
-		if(!allianceExistsBetween(i, me) && i != me) {
-			enemies.push(i);
-		}
-	}
-	const sensors = enumGroup(sensorGroup);
+	var sensors = enumGroup(sensorGroup);
+	if (sensors.length === 0)
+		return false;
 	
 	for(var x = 0; x < sensors.length; ++x) {
 		if(sensors[x].health < 60) 
@@ -817,9 +830,11 @@ function spyRoutine()
 		{
 			orderDroidObj(sensors[x], DORDER_OBSERVE, object[0]);
 
-			if(!random(40) || grudgeCount[object[0].player] > 0)
+			if(grudgeCount[object[0].player] > 5)
 			{
-				attackStuff(object[0].player);
+				var tanks = enumGroup(attackGroup);
+				if(!random(30) && tanks.length > 10 && !droidBusy(tanks[0]))
+					orderDroidLoc(tanks[0], DORDER_SCOUT, object[0].x, object[0].y);
 			}
 		}
 	}
@@ -834,13 +849,9 @@ function checkOilCount()
 		if(tanks.length < 6)
 			return false;
 		
-		var enemy = [];
-		for(var i = 0; i < maxPlayers; ++i)
-		{
-			if(!allianceExistsBetween(i, me))
-				enemy.push(i);
-		}
-		var derr = enumStruct(ENEMIES, structures.derricks);
+		var enemy = playerAlliance(false);
+		
+		var derr = enumStruct(enemy[random(enemy.length)], structures.derricks);
 		if(derr.length === 0)
 			return false;
 		
@@ -1062,7 +1073,7 @@ function eventAttacked(victim, attacker)
 				}
 			}
 		}
-		if(grudgeCount[attacker.player] > 10)
+		if(grudgeCount[attacker.player] > 5)
 			attackStuff(attacker.player);
 	}
 }
@@ -1114,7 +1125,7 @@ function eventGroupLoss(droid, group, size)
 		lastMsg = "need cyborg";
 		chat(ALLIES, lastMsg);
 	}
-	if (lastMsg != "need vtol" && isStructureAvailable(structures.vtolFactories) &&enumGroup(vtolGroup).length < 2) {
+	if (lastMsg != "need vtol" && isStructureAvailable(structures.vtolFactories) && enumGroup(vtolGroup).length < 2) {
 		lastMsg = "need vtol";
 		chat(ALLIES, lastMsg);
 	}
