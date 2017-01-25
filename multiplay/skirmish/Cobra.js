@@ -37,7 +37,7 @@ function mapLimits(x, y, num1, num2, xOffset, yOffset) {
 }
 
 function rangeStep(obj, visibility) {
-	const step = 4000;
+	const step = 10000;
 	var target;
 	
 	for(var i = 0; i < 99999; i += step) {	
@@ -622,6 +622,7 @@ function buildPhase5() {
 function buildOrder() {
 	if(checkUnfinishedStructures()) { return false; }
 	if(buildPhase1()) { return false; }
+	if(!random(8)) { lookForOil(); }
 	if(gameTime > 80000 && maintenance()) { return false; }
 	lookForOil();
 	if(buildDefenses()) { return false; }
@@ -632,6 +633,7 @@ function buildOrder() {
 }
 
 function checkIdleStructures() {
+	/*
 	var faclist = enumStruct(me, structures.factories);
 	var cybList = enumStruct(me, structures.templateFactories);
 	var vtolList = enumStruct(me, structures.vtolFactories);
@@ -651,6 +653,7 @@ function checkIdleStructures() {
 			eventStructureBuilt(vtolList[j], null);
 		}
 	}
+	*/
 	eventResearched();
 }
 
@@ -806,11 +809,10 @@ function attackStuff(attacker) {
 	}
 }
 
-function produce()
-{
-	const fac = enumStruct(me, structures.factories);
-	const cybFac = enumStruct(me, structures.templateFactories);
-	const vtolFac = enumStruct(me, structures.vtolFactories);
+function produce() {
+	var fac = enumStruct(me, structures.factories);
+	var cybFac = enumStruct(me, structures.templateFactories);
+	var vtolFac = enumStruct(me, structures.vtolFactories);
 	var extra = false;
 	
 	for(var x = 0; x < fac.length; ++x) {
@@ -878,29 +880,27 @@ function repairAll() {
 	}
 }
 
+//only use one sensor and keep the extras as backup in case it dies
 function spyRoutine() {
 	var sensors = enumGroup(sensorGroup);
-	if (!sensors.length)
+	if(!sensors.length)
 		return false;
-	
-	for(var i = 0; i < sensors.length; ++i) {
-		if(sensors[i].health < 60) {
-			repairDroid(sensors[i], true);
-			continue;
-		}
 
-		//Observe closest enemy object
-		var object = rangeStep(sensors[i], false);
-		if(isDefined(object)) {
-			orderDroidObj(sensors[i], DORDER_OBSERVE, object);
+	if(sensors[0].health < 60)
+		repairDroid(sensors[0], true);
 
-			if(!random(30) || grudgeCount[object.player] > 5) {
-				var tanks = enumGroup(attackGroup);
-				if(tanks.length > 10) {
-					var xPos = (sensors[i].x + object.x) / 2;
-					var yPos = (sensors[i].y + object.y) / 2;
-					orderDroidLoc(tanks[0], DORDER_SCOUT, xPos, yPos);
-				}
+
+	//Observe closest enemy object
+	var object = rangeStep(sensors[0], false);
+	if(isDefined(object)) {
+		orderDroidObj(sensors[0], DORDER_OBSERVE, object);
+
+		if(!random(30) || grudgeCount[object.player] > 5) {
+			var tanks = enumGroup(attackGroup);
+			if(tanks.length > 10) {
+				var xPos = (sensors[0].x + object.x) / 2;
+				var yPos = (sensors[0].y + object.y) / 2;
+				orderDroidLoc(tanks[0], DORDER_SCOUT, xPos, yPos);
 			}
 		}
 	}
@@ -1060,8 +1060,8 @@ function eventGameInit() {
 	// --END Group initialization
 	
 	// --START Research lists
-	for(var x = 0; x < weaponStats.bombs.weapons.length; ++x)
-		vtolWeapons.push(weaponStats.bombs.weapons[x].res);
+	for(var x = 0; x < weaponStats.bombs.vtols.length; ++x)
+		vtolWeapons.push(weaponStats.bombs.vtols[x].res);
 	for(var x = 0; x < weaponStats.bombs.extras.length; ++x)
 		vtolExtras.push(weaponStats.bombs.extras[x]);
 	for(var x = 0; x < weaponStats.AA.defenses.length; ++x)
@@ -1099,7 +1099,6 @@ function eventGameInit() {
 
 function eventAttacked(victim, attacker) {
 	if (attacker && victim && attacker.player != me && !allianceExistsBetween(attacker.player, victim.player)) {
-		addBeacon(victim.x, victim.y, ALLIES);
 		grudgeCount[attacker.player] += 1;
 		
 		var tanks = enumGroup(attackGroup);
@@ -1108,18 +1107,20 @@ function eventAttacked(victim, attacker) {
 				orderDroidObj(tanks[i], DORDER_ATTACK, attacker);
 		}
 		
-		const derr = enumStruct(attacker, structures.derricks);
-		const fac = enumStruct(attacker, structures.factories);
-		var target = derr[random(derr.length)];
-		var targetFac = fac[random(fac.length)];
 		var vtols = enumGroup(vtolGroup);
-		for (var i = 0; i < vtols.length; i++) {
-			if(vtolReady(vtols[i])) {
-				if(isDefined(target))
-					orderDroidLoc(vtols[i], DORDER_SCOUT, target.x, target.y);
-				else {
-					if(isDefined(targetFac))
-						orderDroidLoc(vtols[i], DORDER_SCOUT, targetFac.x, targetFac.y);
+		if(vtols.length > 5) {
+			var derr = enumStruct(attacker, structures.derricks);
+			var fac = enumStruct(attacker, structures.factories);
+			var target = derr[random(derr.length)];
+			var targetFac = fac[random(fac.length)];
+			for (var i = 0; i < vtols.length; i++) {
+				if(vtolReady(vtols[i])) {
+					if(isDefined(target))
+						orderDroidLoc(vtols[i], DORDER_SCOUT, target.x, target.y);
+					else {
+						if(isDefined(targetFac))
+							orderDroidLoc(vtols[i], DORDER_SCOUT, targetFac.x, targetFac.y);
+					}
 				}
 			}
 		}
@@ -1160,24 +1161,24 @@ function eventDroidIdle(droid)
 //Increase grudge counter
 function eventGroupLoss(droid, group, size) {
 	var who = enumRange(droid.x, droid.y, 15, ENEMIES, true);
-	for(var x = 0; x < who.length; ++x) {
-		for(var y = 0; y < maxPlayers; ++y) {
-			if(who[x].player == y) {
-				grudgeCount[y] += 1;
-			}
+	addBeacon(droid.x, droid.y, ALLIES);
+	
+	if(who.length > 0)
+		grudgeCount[who[0].player] += 1;
+	
+	if(lastMsg != "need tank" && lastMsg != "need cyborg" && lastMsg != "need vtol") {
+		if (enumGroup(attackGroup).length < 2) {
+			lastMsg = "need tank";
+			chat(ALLIES, lastMsg);
 		}
-	}
-	if (lastMsg != "need tank" && enumGroup(attackGroup).length < 2) {
-		lastMsg = "need tank";
-		chat(ALLIES, lastMsg);
-	}
-	if (lastMsg != "need cyborg" && isStructureAvailable(structures.templateFactories) && enumGroup(cyborgGroup).length < 2) {
-		lastMsg = "need cyborg";
-		chat(ALLIES, lastMsg);
-	}
-	if (lastMsg != "need vtol" && isStructureAvailable(structures.vtolFactories) && enumGroup(vtolGroup).length < 2) {
-		lastMsg = "need vtol";
-		chat(ALLIES, lastMsg);
+		if (countStruct(structures.templateFactories) && enumGroup(cyborgGroup).length < 2) {
+			lastMsg = "need cyborg";
+			chat(ALLIES, lastMsg);
+		}
+		if (countStruct(structures.vtolFactories) && enumGroup(vtolGroup).length < 2) {
+			lastMsg = "need vtol";
+			chat(ALLIES, lastMsg);
+		}
 	}
 }
 
@@ -1226,7 +1227,7 @@ function eventChat(from, to, message)
 			chat(from, lastMsg);
 		}
 	}
-	else if(message == "friend" && !allianceExistsBetween(from, to)) {
+	else if(message == "friend" && !allianceExistsBetween(from, to) && gameTime > 210000) {
 		if(grudgeCount[from] < 5) {
 			lastMsg = "I accept";
 			chat(from, lastMsg);
