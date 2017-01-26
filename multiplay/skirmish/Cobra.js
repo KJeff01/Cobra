@@ -1044,19 +1044,24 @@ function eventGameInit() {
 	}
 	
 	//-- START Group initialization
-	var weapons = enumDroid(me, DROID_WEAPON);
+	var tanks = enumDroid(me, DROID_WEAPON);
 	var cyborgs = enumDroid(me, DROID_CYBORG);
 	var vtols = enumDroid(me).filter(function(obj){ return isVTOL(obj) });
 	var sensors = enumDroid(me, DROID_SENSOR);
 	
-	if(weapons.length > 0)
-		groupAdd(attackGroup, weapons);
-	if(cyborgs.length > 0)
-		groupAdd(cyborgGroupGroup, cyborgs);
-	if(vtols.length > 0)
-		groupAdd(vtolGroup, vtols);
-	if(sensors.length > 0)
-		groupAdd(sensorGroup, sensors);
+	for(var i = 0; i < tanks.length; ++i) {
+		groupAdd(attackGroup, tanks[i]);
+	}
+	for(var i = 0; i < cyborgs.length; ++i) {
+		groupAdd(cyborgGroup, cyborgs[i]);
+	}
+	for(var i = 0; i < vtols.length; ++i) {
+		groupAdd(vtolGroup, vtols[i]);
+	}
+	for(var i = 0; i < sensors.length; ++i) {
+		groupAdd(attackGroup, sensors[i]);
+	}
+	
 	// --END Group initialization
 	
 	// --START Research lists
