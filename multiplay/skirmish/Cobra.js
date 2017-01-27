@@ -297,7 +297,7 @@ function buildAttacker(struct) {
 		"wheeled01", // wheels
 	];
 	
-	if(countStruct(structures.templateFactories)) {
+	if(isStructureAvailable("Sys-SensoTower01") || isStructureAvailable("Sys-SensoTower02")) {
 		for(var x = weaps.weapons.length - 1; x >= 0; --x) {
 			weap.push(weaps.weapons[x].stat);
 		}
@@ -622,7 +622,6 @@ function buildPhase5() {
 function buildOrder() {
 	if(checkUnfinishedStructures()) { return false; }
 	if(buildPhase1()) { return false; }
-	if(!random(8)) { lookForOil(); }
 	if(gameTime > 80000 && maintenance()) { return false; }
 	lookForOil();
 	if(buildDefenses()) { return false; }
@@ -958,17 +957,19 @@ function eventResearched(tech, labparam) {
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
 			if(!found)
+				found = pursueResearch(lab, "R-Sys-Sensor-Turret01");
+			if(!found)
 				found = pursueResearch(lab, weaponTech);
+			if(!found)
+				found = pursueResearch(lab, "R-Struc-RprFac-Upgrade01");
 			if(!found)
 				found = pursueResearch(lab, fastestResearch);
 			if(!found)
-				found = pursueResearch(lab, defenseTech);
-			if(!found)
 				found = pursueResearch(lab, bodyResearch);
 			if(!found)
-				found = pursueResearch(lab, extraTech);
+				found = pursueResearch(lab, defenseTech);
 			if(!found)
-				found = pursueResearch(lab, "R-Struc-RprFac-Upgrade01");
+				found = pursueResearch(lab, extraTech);
 			if(!found)
 				found = pursueResearch(lab, artilleryTech);
 			if(!found)
