@@ -184,50 +184,105 @@ const bodyResearch = [
 	"R-Vehicle-Body14",
 ]
 
+const tankBody = [
+	"Body14SUP", // Dragon
+	"Body13SUP", // Wyvern
+	"Body10MBT", // Vengeance
+	"Body9REC",  // Tiger
+	"Body12SUP", // Mantis
+	"Body11ABT", // Python
+	"Body5REC",  // Cobra
+	"Body1REC",  // Viper
+];
+
+var tankProp = [
+	"tracked01", // tracked01
+	"HalfTrack", // half-track
+	"wheeled01", // wheels
+];
+
+const sysBody = [
+	"Body3MBT",  // Retaliation
+	"Body2SUP",  // Leopard
+	"Body4ABT",  // Bug
+	"Body1REC",  // Viper
+];
+
+const sysProp = [
+	"hover01", // hover
+	"wheeled01", // wheels
+];
+
+const vtolBody = [
+	"Body13SUP", // Wyvern
+	"Body7ABT",  // Retribution
+	"Body6SUPP", // Panther
+	"Body8MBT",  // Scorpion
+	"Body5REC",  // Cobra
+];
+
+
 const subpersonalities = {
 	AC: {
 		"chatalias": "ac",
 		"primaryWeapon": weaponStats.cannons,
+		"secondaryWeapon": weaponStats.machineguns,
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"extra": weaponStats.nexusTech,
 		"res": [
-			"R-Wpn-MG-Damage01",
 			"R-Wpn-Cannon-Damage01",
-			"R-Struc-PowerModuleMk1",
 			"R-Wpn-Cannon-Damage02",
-			"R-Struc-Research-Module",
-			"R-Vehicle-Body05",
+			"R-Wpn-MG2Mk1",
+			"R-Wpn-MG-Damage03",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
+			"R-Wpn-Cannon-ROF01",
 			"R-Wpn-Cannon-Damage05",
 			"R-Wpn-Cannon-ROF03",
-			"R-Struc-Power-Upgrade01c",
 			"R-Struc-VTOLPad-Upgrade01",
 			"R-Wpn-Bomb02",
+			"R-Wpn-MG-Damage05",
 		]
 	},
 	AR: {
 		"chatalias": "ar",
 		"primaryWeapon": weaponStats.flamers,
+		"secondaryWeapon": weaponStats.machineguns,
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"extra": weaponStats.nexusTech,
 		"res": [
-			"R-Wpn-MG-Damage01",
-			"R-Wpn-Flamer-Damage01",
-			"R-Struc-PowerModuleMk1",
-			"R-Struc-Research-Module",
-			"R-Vehicle-Body05",
+			"R-Wpn-MG2Mk1",
+			"R-Wpn-MG-Damage03",
 			"R-Wpn-Flamer-Damage02",
 			"R-Wpn-Flamer-ROF01",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
 			"R-Wpn-Flame2",
 			"R-Wpn-Flamer-ROF03",
-			"R-Struc-Power-Upgrade01c",
 			"R-Struc-VTOLPad-Upgrade01",
 			"R-Wpn-Bomb02",
+			"R-Wpn-MG-Damage05",
+		],
+	},
+	AB: {
+		"chatalias": "ab",
+		"primaryWeapon": weaponStats.machineguns,
+		"secondaryWeapon": weaponStats.rockets_AT,
+		"artillery": weaponStats.rockets_Arty,
+		"antiAir": weaponStats.AA,
+		"extra": weaponStats.nexusTech,
+		"res": [
+			"R-Wpn-MG2Mk1",
+			"R-Wpn-MG-Damage03",
+			"R-Vehicle-Prop-Tracks",
+			"R-Vehicle-Prop-Hover",
+			"R-Wpn-Rocket05-MiniPod",
+			"R-Wpn-Rocket01-LtAT",
+			"R-Struc-VTOLPad-Upgrade01",
+			"R-Wpn-Bomb02",
+			"R-Wpn-MG-Damage05",
 		],
 	},
 }
@@ -249,6 +304,7 @@ var buildStop = 0;
 // -- Weapon research (eventGameInit)
 var techlist = [];
 var weaponTech = [];
+var mgWeaponTech = [];
 var artilleryTech = [];
 var artillExtra = [];
 var extraTech = [];
@@ -265,54 +321,54 @@ function buildAttacker(struct) {
 	const fallBack = weaponStats.machineguns.weapons;
 	var useHover = 0;
 	var weaps;
+	var weap = [];
 	
-	if(personality <= 1) {
-		if(random(3))
+	if(personality === 1) {
+		if(!random(2))
 			weaps = subpersonalities["AC"]["primaryWeapon"];
+		else if(!random(2))
+			weaps = subpersonalities["AC"]["secondaryWeapon"];
 		else
 			weaps = subpersonalities["AC"]["artillery"];
 	}
-	else {
-		if(random(3)) {
+	else if(personality === 2) {
+		if(!random(2)) {
 			weaps = subpersonalities["AR"]["primaryWeapon"];
 			useHover = 1;
 		}
+		else if (!random(2))
+			weaps = subpersonalities["AR"]["secondaryWeapon"];
 		else
 			weaps = subpersonalities["AR"]["artillery"];
 	}
-	var weap = [];
-	const body = [
-		"Body14SUP", // Dragon
-		"Body13SUP", // Wyvern
-		"Body10MBT", // Vengeance
-		"Body9REC",  // Tiger
-		"Body12SUP", // Mantis
-		"Body11ABT", // Python
-		"Body5REC",  // Cobra
-		"Body1REC",  // Viper
-	];
-	var prop = [
-		"tracked01", // tracked01
-		"HalfTrack", // half-track
-		"wheeled01", // wheels
-	];
-	
-	if(isStructureAvailable("Sys-SensoTower01") || isStructureAvailable("Sys-SensoTower02")) {
-		for(var x = weaps.weapons.length - 1; x >= 0; --x) {
-			weap.push(weaps.weapons[x].stat);
+	else{
+		if(!random(2)) {
+			weaps = subpersonalities["AB"]["primaryWeapon"];
+			useHover = 1;
 		}
+		else if (!random(2))
+			weaps = subpersonalities["AB"]["secondaryWeapon"];
+		else
+			weaps = subpersonalities["AB"]["artillery"];
 	}
-	else {
+	
+	for(var x = weaps.weapons.length - 1; x >= 0; --x) {
+		weap.push(weaps.weapons[x].stat);
+	}
+	
+	var virDroid = makeTemplate(me, "Virtual Droid", tankBody, tankProp, null, null, weap, weap);
+	if(virDroid == null) {
+		weap = [];
 		for(var x = fallBack.length - 1; x >= 0; --x) {
 			weap.push(fallBack[x].stat);
 		}
 	}
 	
-	if(useHover === 1 && componentAvailable("hover01")) {
-		prop = "hover01";
+	if((useHover === 1 || !random(12)) && componentAvailable("hover01")) {
+		tankProp = "hover01";
 	}
 	
-	if (buildDroid(struct, "Droid", body, prop, null, null, weap, weap)) {
+	if (buildDroid(struct, "Droid", tankBody, tankProp, null, null, weap, weap)) {
 		return true;
 	}
 	
@@ -324,17 +380,7 @@ function buildSys(struct, weap) {
 		weap = "Spade1Mk1";
 	}
 	
-	const bodylist = [
-		"Body3MBT",  // Retaliation
-		"Body2SUP",  // Leopard
-		"Body4ABT",  // Bug
-		"Body1REC",  // Viper
-	];
-	const proplist = [
-		"hover01", // hover
-		"wheeled01", // wheels
-	];
-	if (buildDroid(struct, "System unit", bodylist, proplist, null, null, weap)) {
+	if (buildDroid(struct, "System unit", sysBody, sysProp, null, null, weap)) {
 		return true;
 	}
 	return false;
@@ -347,10 +393,27 @@ function buildCyborg(fac) {
 	var weap = [];
 	var weapon;
 	
-	if(personality <= 1)
-		weapon = subpersonalities["AC"]["primaryWeapon"];
-	else
-		weapon = subpersonalities["AR"]["primaryWeapon"];
+	if(personality === 1) {
+		var rand = random(4);
+		if(rand <= 2)
+			weapon = subpersonalities["AC"]["primaryWeapon"];
+		else
+			weapon = subpersonalities["AC"]["secondaryWeapon"];
+	}
+	else if(personality === 2) {
+		var rand = random(4);
+		if(rand <= 2)
+			weapon = subpersonalities["AR"]["primaryWeapon"];
+		else
+			weapon = subpersonalities["AR"]["secondaryWeapon"];
+	}
+	else {
+		var rand = random(4);
+		if(rand <= 2)
+			weapon = subpersonalities["AB"]["primaryWeapon"];
+		else
+			weapon = subpersonalities["AB"]["secondaryWeapon"];
+	}
 	
 	//weapons
 	for(var x = weapon.templates.length - 1; x >= 0; --x) {
@@ -368,19 +431,12 @@ function buildCyborg(fac) {
 function buildVTOL(struct) {
 	var weap = [];
 	const weapons = weaponStats.bombs.vtols;
-	const bodyList = [
-		"Body13SUP", // Wyvern
-		"Body7ABT",  // Retribution
-		"Body6SUPP", // Panther
-		"Body8MBT",  // Scorpion
-		"Body5REC",  // Cobra
-	];
 	
 	for(var x = weapons.length - 1; x >= 0; --x) {
 		weap.push(weapons[x].stat);
 	}
 	
-	if (buildDroid(struct, "Bomber", bodyList, "V-Tol", null, null, weap)) {
+	if (buildDroid(struct, "Bomber", vtolBody, "V-Tol", null, null, weap)) {
 		return true;
 	}
 
@@ -409,8 +465,10 @@ function buildStructure(droid, stat) {
 	if (!isDefined(loc))
 		return false;	
 	
+	var derricks = countStruct(structures.derricks);
+	var dist = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, droid.x, droid.y);
 	//Try not to build stuff in dangerous locations
-	if (!safeDest(me, loc.x, loc.y)) {
+	if (!safeDest(me, loc.x, loc.y) || dist > (15 + (2 * derricks))) {
 		orderDroid(droid, DORDER_RTB);
 		return false;
 	}
@@ -422,9 +480,6 @@ function buildStructure(droid, stat) {
 
 function buildStuff(struc, module) {
 	var construct = enumDroid(me, DROID_CONSTRUCT);
-	
-	if(struc == structures.gens)
-		buildStop = 1;
 	
 	if (construct.length > 0) {
 		var freeTrucks = [];
@@ -510,13 +565,13 @@ function buildDefenses() {
 		enemyVtolCount += temp;
 	}
 	
-	if(enemyVtolCount > 0) {
+	if(enemyVtolCount > 0 && playerPower(me) > 130) {
 		if(isStructureAvailable("AASite-QuadMg1")) {
 			if(isStructureAvailable("AASite-QuadRotMg")) {
-				if(countAndBuild("AASite-QuadRotMg", enemyVtolCount / 2)) { return true; }
+				if(buildStuff("AASite-QuadRotMg")) { return true; }
 			}
 			else { 
-				if(countAndBuild("AASite-QuadMg1", enemyVtolCount / 2)) { return true; }
+				if(buildStuff("AASite-QuadMg1")) { return true; }
 			}
 		}
 	}
@@ -533,7 +588,9 @@ function buildPhase1() {
 		&& isStructureAvailable(structures.gens) || countStruct(structures.gens) < 1
 		&& buildStop === 0) 
 	{
-		if(countAndBuild(structures.gens, enumStruct(me, structures.gens).length + 1)) {
+		buildStop = 1;
+		if(buildStuff(structures.gens)) {
+			buildStop = 0;
 			return true;
 		}
 	}
@@ -542,15 +599,19 @@ function buildPhase1() {
 		if (countAndBuild(structures.templateFactories, 1)) { return true; }
 	}
 	
+	if(isStructureAvailable(structures.extras[0])) {
+		if(countAndBuild(structures.extras[0], 1)) { return true; }
+	}
+	
 	return false;
 }
 
 function buildPhase2() {
-	if (playerPower(me) > 90 && isStructureAvailable(structures.templateFactories)) {
+	if (playerPower(me) > 80 && isStructureAvailable(structures.templateFactories)) {
 		if (countAndBuild(structures.templateFactories, 3)) { return true; }
 	}
 	
-	if(gameTime > 210000 && playerPower(me) > 130 ) {
+	if(gameTime > 210000 && playerPower(me) > 85 ) {
 		if(isStructureAvailable(structures.extras[0])) {
 			if(countAndBuild(structures.extras[0], 2)) { return true; }
 		}
@@ -562,10 +623,6 @@ function buildPhase2() {
 }
 
 function buildPhase3() {
-	if (playerPower(me) > 160 && isStructureAvailable(structures.templateFactories)) {
-		if (countAndBuild(structures.templateFactories, 5))
-			return true;
-	}
 	
 	if(gameTime > 680000 && playerPower(me) > 200 ) {
 		if (componentAvailable("Bomb1-VTOL-LtHE") && isStructureAvailable(structures.vtolFactories)) {
@@ -580,6 +637,11 @@ function buildPhase3() {
 		
 		if(countAndBuild(structures.labs, 5)) { return true; }
 		if(countAndBuild(structures.factories, 5)) { return true; }
+		
+		if (playerPower(me) > 160 && isStructureAvailable(structures.templateFactories)) {
+			if (countAndBuild(structures.templateFactories, 5))
+				return true;
+		}
 		
 		if(isStructureAvailable(structures.extras[0])) {
 			if(countAndBuild(structures.extras[0], 5)) { return true; }
@@ -622,38 +684,15 @@ function buildPhase5() {
 function buildOrder() {
 	if(checkUnfinishedStructures()) { return false; }
 	if(buildPhase1()) { return false; }
-	if(gameTime > 80000 && maintenance()) { return false; }
 	lookForOil();
+	if(gameTime > 80000 && maintenance()) { return false; }
 	if(buildDefenses()) { return false; }
-	if(buildPhase2()) { return false; }
-	if(buildPhase3()) { return false; }
-	if(buildPhase4()) { return false; }
-	if(buildPhase5()) { return false; }
-}
-
-function checkIdleStructures() {
-	/*
-	var faclist = enumStruct(me, structures.factories);
-	var cybList = enumStruct(me, structures.templateFactories);
-	var vtolList = enumStruct(me, structures.vtolFactories);
-	
-	for (var j = 0; j < faclist.length; j++) {
-		if (structureIdle(faclist[j])) {
-			eventStructureBuilt(faclist[j], null);
-		}
+	if(playerPower(me) > 110) {
+		if(buildPhase2()) { return false; }
+		if(buildPhase3()) { return false; }
+		if(buildPhase4()) { return false; }
+		if(buildPhase5()) { return false; }
 	}
-	for (var j = 0; j < cybList.length; j++) {
-		if (structureIdle(cybList[j])) {
-			eventStructureBuilt(cybList[j], null);
-		}
-	}
-	for (var j = 0; j < vtolList.length; j++) {
-		if (structureIdle(vtolList[j])) {
-			eventStructureBuilt(vtolList[j], null);
-		}
-	}
-	*/
-	eventResearched();
 }
 
 function maintenance() {
@@ -688,7 +727,7 @@ function maintenance() {
 		}
 	}
 	
-	if (struct || (struct && module === list[0]) ) {
+	if (playerPower(me) > 50 && struct || (struct && module === list[0])) {
 		if(buildStuff(struct, module))
 			return true;
 	}
@@ -763,7 +802,7 @@ function attackStuff(attacker) {
 	var enemy = playerAlliance(false);
 	var str = lastMsg.slice(0, -1);
 	
-	if(attackers.length > 5) {
+	if(attackers.length > 7) {
 		var selectedEnemy = enemy[random(enemy.length)];
 		if(isDefined(attacker) && !allianceExistsBetween(attacker, me) && (attacker !== me)) {
 			selectedEnemy = attacker;
@@ -789,7 +828,7 @@ function attackStuff(attacker) {
 				break;
 		}
 
-		if(cyborgs.length > 5) {
+		if(cyborgs.length > 7) {
 			for (var j = 0; j < cyborgs.length; j++) {
 				if(isDefined(target) && !repairDroid(cyborgs[j]))
 					orderDroidLoc(cyborgs[j], DORDER_SCOUT, target.x, target.y);
@@ -850,6 +889,8 @@ function produce() {
 			buildVTOL(vtolFac[x]);
 		}
 	}
+	
+	eventResearched();
 }
 
 function repairDroid(droid, force) {
@@ -891,41 +932,42 @@ function spyRoutine() {
 
 	//Observe closest enemy object
 	var object = rangeStep(sensors[0], false);
-	if(isDefined(object)) {
+	if(isDefined(object) && droidCanReach(sensors[0], object.x, object.y)) {
 		orderDroidObj(sensors[0], DORDER_OBSERVE, object);
 
-		if(!random(30) || grudgeCount[object.player] > 5) {
-			var tanks = enumGroup(attackGroup);
-			if(tanks.length > 10) {
-				var xPos = (sensors[0].x + object.x) / 2;
-				var yPos = (sensors[0].y + object.y) / 2;
-				orderDroidLoc(tanks[0], DORDER_SCOUT, xPos, yPos);
-			}
+		var tanks = enumGroup(attackGroup);
+		tanks.sort(distanceToBase);
+		if(tanks.length > 10) {
+			var xPos = (sensors[0].x + object.x) / 2;
+			var yPos = (sensors[0].y + object.y) / 2;
+			orderDroidLoc(tanks[0], DORDER_SCOUT, xPos, yPos);
 		}
 	}
 }
 
-//Prevent greedy players from taking too much oil early game
-function checkOilCount() {
-	if(countStruct(structures.derricks) < 5) {
-		var tanks = enumGroup(attackGroup);
-		if(tanks.length < 6)
-			return false;
+//Attack enemy oil when tank group is large enough
+function attackEnemyOil() {
+	var tanks = enumGroup(attackGroup);
+	if(tanks.length < 7)
+		return false;
 		
-		var enemy = playerAlliance(false);
+	var enemy = playerAlliance(false);
+	var derr = [];
+	
+	for(var i = 0; i < enemy.length; ++i) {
+		derr.concat(enumStruct(enemy[i], structures.derricks));
+	}
+	
+	if(derr.length === 0)
+		return false;
 		
-		var derr = enumStruct(enemy[random(enemy.length)], structures.derricks);
-		if(derr.length === 0)
-			return false;
-		
-		derr.sort(distanceToBase);
-		
-		for(var i = 0; i < tanks.length; ++i) {
-			if(i < derr.length)
-				orderDroidObj(tanks[i], DORDER_ATTACK, derr[0]);
-			else
-				break;
+	for(var i = 0; i < tanks.length; ++i) {
+		if(i < derr.length) {
+			derr.sort(distanceToBase);
+			orderDroidObj(tanks[i], DORDER_ATTACK, derr[0]);
 		}
+		else
+			break;
 	}
 }
 
@@ -933,12 +975,12 @@ function checkOilCount() {
 
 //Needs to be better here
 function eventResearched(tech, labparam) {
-	if(playerPower(me) < 10) {
+	if(playerPower(me) < 30) {
 		if(lastMsg != "need power") {
 			lastMsg = "need power";
 			chat(ALLIES, lastMsg);
 		}
-		queue("eventResearched");
+		queue("eventResearched", 1000);
 		return;
 	}
 	
@@ -955,51 +997,54 @@ function eventResearched(tech, labparam) {
 			var found = pursueResearch(lab, techlist);
 			
 			if(!found)
-				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
+				found = pursueResearch(lab, "R-Struc-PowerModuleMk1");
 			if(!found)
-				found = pursueResearch(lab, "R-Sys-Sensor-Turret01");
+				found = pursueResearch(lab, "R-Vehicle-Prop-Halftracks");
 			if(!found)
-				found = pursueResearch(lab, weaponTech);
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-RprFac-Upgrade01");
+				found = pursueResearch(lab, "R-Vehicle-Body05");
 			if(!found)
 				found = pursueResearch(lab, fastestResearch);
 			if(!found)
-				found = pursueResearch(lab, bodyResearch);
+				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
 			if(!found)
 				found = pursueResearch(lab, defenseTech);
 			if(!found)
-				found = pursueResearch(lab, extraTech);
+				found = pursueResearch(lab, "R-Struc-RprFac-Upgrade01");
+			if(!found)
+				found = pursueResearch(lab, mgWeaponTech);
+			
+			if(!found)
+				found = pursueResearch(lab, weaponTech);
 			if(!found)
 				found = pursueResearch(lab, artilleryTech);
+
 			if(!found)
-				found = pursueResearch(lab, artillExtra);
+				found = pursueResearch(lab, bodyResearch);
 			if(!found)
 				found = pursueResearch(lab, "R-Sys-Autorepair-General");
+
+			if(!found)
+				found = pursueResearch(lab, "R-Wpn-MG-Damage08");
+			if(!found)
+				found = pursueResearch(lab, extraTech);
+			if(!found)
+				found = pursueResearch(lab, artillExtra);
+			
 			if(!found)
 				found = pursueResearch(lab, vtolWeapons);
-			if(!found)
-				found = pursueResearch(lab, vtolExtras);
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-RprFac-Upgrade06");
-			if(!found && cyborgWeaps.length > 0)
-				found = pursueResearch(lab, cyborgWeaps);
 			if(!found && playerPower(me) > 80)
 				found = pursueResearch(lab, antiAirTech);
 			if(!found && playerPower(me) > 80)
 				found = pursueResearch(lab, antiAirExtras);
+			if(!found)
+				found = pursueResearch(lab, vtolExtras);
 			
-			/*
-			if (!found) {
-				// Find a random research item
-				var reslist = enumResearch();
-				if (reslist.length > 0) {
-					var idx = Math.floor(Math.random() * reslist.length);
-					if(playerPower(me) - queuedPower(me) > 120)
-						pursueResearch(lab, reslist[idx].name);
-				}	
-			}
-			*/
+			if(!found)
+				found = pursueResearch(lab, "R-Struc-RprFac-Upgrade06");
+			if(!found && cyborgWeaps.length > 0)
+				found = pursueResearch(lab, cyborgWeaps);
+			if(!found)
+				found = pursueResearch(lab, fundamentalResearch);
 		}
 	}
 }
@@ -1037,8 +1082,14 @@ function eventGameInit() {
 	cyborgGroup = newGroup();
 	sensorGroup = newGroup();
 	lastMsg = "eventGameInit";
-	personality = random(4);
+	personality = random(3) + 1;
 	buildStop = 0;
+	
+	tankProp = [
+		"tracked01", // tracked01
+		"HalfTrack", // half-track
+		"wheeled01", // wheels
+	];
 	
 	for(var i = 0; i < maxPlayers; ++i) {
 		grudgeCount.push(0);
@@ -1075,7 +1126,10 @@ function eventGameInit() {
 	for(var x = 0; x < weaponStats.AA.extras.length; ++x)
 		antiAirExtras.push(weaponStats.AA.extras[x]);
 	
-	if(personality <= 1) {
+	for(var x = 0; x < weaponStats.machineguns.weapons.length; ++x)
+		mgWeaponTech.push(weaponStats.machineguns.weapons[x].res);
+	
+	if(personality === 1) {
 		techlist = subpersonalities["AC"]["res"];
 		for(var x = 0; x < weaponStats.cannons.weapons.length;  ++x)
 			weaponTech.push(weaponStats.cannons.weapons[x].res);
@@ -1088,7 +1142,7 @@ function eventGameInit() {
 		for(var x = 0; x < weaponStats.cannons.templates.length; ++x)
 			cyborgWeaps.push(weaponStats.cannons.templates[x].res);
 	}
-	else {
+	else if(personality === 2) {
 		techlist = subpersonalities["AR"]["res"];
 		for(var y = 0; y < weaponStats.flamers.weapons.length; ++y)
 			weaponTech.push(weaponStats.flamers.weapons[y].res);
@@ -1098,6 +1152,17 @@ function eventGameInit() {
 			extraTech.push(weaponStats.flamers.extras[y]);
 		for(var y = 0; y < weaponStats.mortars.extras.length; ++y)
 			artillExtra.push(weaponStats.mortars.extras[y]);
+	}
+	else {
+		techlist = subpersonalities["AB"]["res"];
+		for(var y = 0; y < weaponStats.rockets_AT.weapons.length; ++y)
+			weaponTech.push(weaponStats.rockets_AT.weapons[y].res);
+		for(var y = 0; y < weaponStats.rockets_Arty.weapons.length; ++y)
+			artilleryTech.push(weaponStats.rockets_Arty.weapons[y].res);
+		for(var y = 0; y < weaponStats.rockets_AT.extras.length; ++y)
+			extraTech.push(weaponStats.rockets_AT.extras[y]);
+		for(var y = 0; y < weaponStats.rockets_Arty.extras.length; ++y)
+			artillExtra.push(weaponStats.rockets_Arty.extras[y]);
 	}
 	// --END Research lists
 	
@@ -1147,10 +1212,9 @@ function eventStartLevel() {
 	buildOrder();
 	setTimer("buildOrder", 300);
 	setTimer("produce", 700);
-	setTimer("spyRoutine", 1000);
 	setTimer("repairAll", 1500);
-	setTimer("checkOilCount", 4000);
-	setTimer("checkIdleStructures", 5000);
+	setTimer("attackEnemyOil", 4000);
+	setTimer("spyRoutine", 8000);
 	setTimer("checkMood", 20000);
 }
 
