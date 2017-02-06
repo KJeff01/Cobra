@@ -563,8 +563,8 @@ const weaponStats = {
 		weapons: [],
 		vtols: [
 			{ res: "R-Wpn-Bomb01", stat: "Bomb1-VTOL-LtHE", weight: WEIGHT.LIGHT }, // cluster bomb
-			{ res: "R-Wpn-Bomb03", stat: "Bomb3-VTOL-LtINC", weight: WEIGHT.LIGHT }, // Phosphor bomb
 			{ res: "R-Wpn-Bomb02", stat: "Bomb2-VTOL-HvHE", weight: WEIGHT.HEAVY }, // HEAP bomb
+			{ res: "R-Wpn-Bomb03", stat: "Bomb3-VTOL-LtINC", weight: WEIGHT.LIGHT }, // Phosphor bomb
 			{ res: "R-Wpn-Bomb04", stat: "Bomb4-VTOL-HvyINC", weight: WEIGHT.HEAVY }, // Thermite bomb
 			{ res: "R-Wpn-Bomb05", stat: "Bomb5-VTOL-Plasmite", weight: WEIGHT.HEAVY }, // Plasmite bomb
 			//{ res: "R-Wpn-Bomb06", stat: "Bomb6-VTOL-EMP", weight: WEIGHT.HEAVY }, // EMP Missile Launcher
