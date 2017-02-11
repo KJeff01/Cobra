@@ -353,6 +353,9 @@ const weaponStats = {
 			{ res: "R-Wpn-Mortar01Lt", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "Cyb-Wpn-Grenade", ] },
 		],
 		extras: [
+			"R-Wpn-Mortar-Damage06",
+			"R-Wpn-Mortar-ROF04",
+			"R-Wpn-Mortar-Acc03",
 			"R-Wpn-Bomb-Accuracy03",
 			"R-Wpn-Howitzer-Damage06",
 			"R-Wpn-Howitzer-ROF04",
@@ -379,6 +382,9 @@ const weaponStats = {
 		],
 		templates: [],
 		extras: [
+			"R-Wpn-Mortar-Damage06",
+			"R-Wpn-Mortar-ROF04",
+			"R-Wpn-Mortar-Acc03",
 			"R-Wpn-Bomb-Accuracy03",
 			"R-Wpn-Howitzer-Damage06",
 			"R-Wpn-Howitzer-ROF04",
@@ -422,6 +428,7 @@ const weaponStats = {
 		],
 		extras: [
 			"R-Wpn-Rocket-ROF03",
+			"R-Wpn-Rocket-Damage09",
 			"R-Wpn-Missile-Damage03",
 			"R-Wpn-Missile-ROF03",
 			"R-Wpn-Missile-Accuracy02",
@@ -448,7 +455,13 @@ const weaponStats = {
 			{ res: "R-Defense-HvyArtMissile", stat: "Emplacement-HvART-pit", defrole: DEFROLE.ARTY }, // archie
 		],
 		templates: [],
-		extras: [],
+		extras: [
+			"R-Wpn-Rocket-ROF03",
+			"R-Wpn-Rocket-Damage09",
+			"R-Wpn-Missile-Damage03",
+			"R-Wpn-Missile-ROF03",
+			"R-Wpn-Missile-Accuracy02",
+		],
 	},
 	rockets_AS: {
 		roles: [ 0.0, 0.0, 1.0, 0.0 ],
@@ -510,7 +523,11 @@ const weaponStats = {
 			{ res: "R-Wpn-Laser01", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "Cyb-Wpn-Laser", ] }, // flash borg
 			{ res: "R-Cyborg-Hvywpn-PulseLsr", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-PulseLsr", ] }, // pulse super
 		],
-		extras: [],
+		extras: [
+			"R-Wpn-Energy-Damage03",
+			"R-Wpn-Energy-ROF03",
+			"R-Wpn-Energy-Accuracy01",
+		],
 	},
 	fort_AT: {
 		roles: [ 1.0, 0.0, 0.0, 0.0 ],
@@ -574,7 +591,6 @@ const weaponStats = {
 		extras: [
 			"R-Wpn-Bomb-Accuracy03",
 			"R-Struc-VTOLPad-Upgrade06",
-			"R-Vehicle-Engine09",
 		],
 	},
 	AA: {
