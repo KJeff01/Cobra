@@ -1,8 +1,3 @@
-
-//Remove hard coded stuff(subpersonalities) and improve research.
-
-//checkMood, eventAttacked, spyroutine are the most costly.
-
 //Use a custom NullBot standard for weapon definitions
 include("/multiplay/skirmish/nb_includes/_head.js");
 include("/multiplay/skirmish/nb_rulesets/standard.js");
@@ -221,34 +216,34 @@ const subpersonalities = {
 		"chatalias": "ac",
 		"primaryWeapon": weaponStats.cannons,
 		"secondaryWeapon": weaponStats.machineguns,
+		"tertiaryWeapon": weaponStats.lasers,
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
-		"extra": weaponStats.nexusTech,
 		"res": [
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-Cannon-Damage02",
-			"R-Vehicle-Body05",
+			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
 			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-Cannon-ROF01",
 			"R-Wpn-Cannon-Damage03",
 			"R-Struc-VTOLPad-Upgrade01",
-		]
+		],
 	},
 	AR: {
 		"chatalias": "ar",
 		"primaryWeapon": weaponStats.flamers,
 		"secondaryWeapon": weaponStats.machineguns,
+		"tertiaryWeapon": weaponStats.lasers,
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
-		"extra": weaponStats.nexusTech,
 		"res": [
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-MG-Damage02",
 			"R-Wpn-Flamer-Damage02",
 			"R-Wpn-Flamer-ROF01",
-			"R-Vehicle-Body05",
+			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
 			"R-Struc-RprFac-Upgrade01",
@@ -260,17 +255,17 @@ const subpersonalities = {
 		"chatalias": "ab",
 		"primaryWeapon": weaponStats.machineguns,
 		"secondaryWeapon": weaponStats.rockets_AT,
+		"tertiaryWeapon": weaponStats.lasers,
 		"artillery": weaponStats.rockets_Arty,
 		"antiAir": weaponStats.AA,
-		"extra": weaponStats.nexusTech,
 		"res": [
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-MG-Damage02",
-			"R-Vehicle-Body05",
+			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
 			"R-Struc-RprFac-Upgrade01",
-			"R-Wpn-Rocket02-MRL",
+			"R-Wpn-Rocket06-IDF",
 			"R-Struc-VTOLPad-Upgrade01",
 		],
 	},
@@ -290,24 +285,25 @@ var personality; //Initialization in eventStartLevel()
 var lastMsg = "";
 var buildStop = 0;
 
-// -- Weapon research (eventGameInit)
-var techlist = [];
-var weaponTech = [];
-var mgWeaponTech = [];
-var artilleryTech = [];
-var artillExtra = [];
-var extraTech = [];
-var vtolWeapons = [];
-var vtolExtras = [];
-var cyborgWeaps = [];
-var antiAirTech = [];
-var antiAirExtras = [];
+// -- Weapon research (initializeResearchLists)
+var techlist;
+var weaponTech;
+var mgWeaponTech;
+var laserTech;
+var artilleryTech;
+var artillExtra;
+var laserExtra;
+var extraTech;
+var vtolWeapons;
+var vtolExtras;
+var cyborgWeaps;
+var antiAirTech;
+var antiAirExtras;
 
 
 // -- MAIN CODE --
 
 function buildAttacker(struct) {
-	const fallBack = weaponStats.machineguns.weapons;
 	var useHover = 0;
 	var weaps;
 	var weap = [];
@@ -317,28 +313,33 @@ function buildAttacker(struct) {
 			weaps = subpersonalities["AC"]["primaryWeapon"];
 		else if(!random(2))
 			weaps = subpersonalities["AC"]["secondaryWeapon"];
-		else
+		else if(!random(2))
 			weaps = subpersonalities["AC"]["artillery"];
+		else
+			weaps = subpersonalities["AC"]["tertiaryWeapon"];
 	}
 	else if(personality === 2) {
 		if(!random(2)) {
 			weaps = subpersonalities["AR"]["primaryWeapon"];
 			useHover = 1;
 		}
-		else if (!random(2))
+		else if(!random(2))
 			weaps = subpersonalities["AR"]["secondaryWeapon"];
-		else
+		else if(!random(2))
 			weaps = subpersonalities["AR"]["artillery"];
+		else
+			weaps = subpersonalities["AR"]["tertiaryWeapon"];
 	}
 	else{
 		if(!random(2)) {
 			weaps = subpersonalities["AB"]["primaryWeapon"];
-			useHover = 1;
 		}
-		else if (!random(2))
+		else if(!random(2))
 			weaps = subpersonalities["AB"]["secondaryWeapon"];
-		else
+		else if(!random(2))
 			weaps = subpersonalities["AB"]["artillery"];
+		else
+			weaps = subpersonalities["AB"]["tertiaryWeapon"];
 	}
 	
 	for(var x = weaps.weapons.length - 1; x >= 0; --x) {
@@ -348,13 +349,13 @@ function buildAttacker(struct) {
 	var virDroid = makeTemplate(me, "Virtual Droid", tankBody, tankProp, null, null, weap, weap);
 	if(virDroid == null) {
 		weap = [];
-		for(var x = fallBack.length - 1; x >= 0; --x) {
-			weap.push(fallBack[x].stat);
+		for(var x = weaponStats.machineguns.weapons.length - 1; x >= 0; --x) {
+			weap.push(weaponStats.machineguns.weapons[x].stat);
 		}
 	}
 	
 	if((useHover === 1 || !random(12)) && componentAvailable("hover01")) {
-		if (buildDroid(struct, "Droid", tankBody, "hover01", null, null, weap, weap)) {
+		if (buildDroid(struct, "Hover Droid", tankBody, "hover01", null, null, weap, weap)) {
 			return true;
 		}
 	}
@@ -385,25 +386,28 @@ function buildCyborg(fac) {
 	var weapon;
 	
 	if(personality === 1) {
-		var rand = random(4);
-		if(rand <= 2)
+		if(!random(2))
 			weapon = subpersonalities["AC"]["primaryWeapon"];
-		else
+		else if(!random(2))
 			weapon = subpersonalities["AC"]["secondaryWeapon"];
+		else
+			weapon = subpersonalities["AC"]["tertiaryWeapon"];
 	}
 	else if(personality === 2) {
-		var rand = random(4);
-		if(rand <= 2)
+		if(!random(2))
 			weapon = subpersonalities["AR"]["primaryWeapon"];
-		else
+		else if(!random(2))
 			weapon = subpersonalities["AR"]["secondaryWeapon"];
+		else
+			weapon = subpersonalities["AR"]["tertiaryWeapon"];
 	}
 	else {
-		var rand = random(4);
-		if(rand <= 2)
+		if(!random(2))
 			weapon = subpersonalities["AB"]["primaryWeapon"];
-		else
+		else if(!random(2))
 			weapon = subpersonalities["AB"]["secondaryWeapon"];
+		else
+			weapon = subpersonalities["AB"]["tertiaryWeapon"];
 	}
 	
 	//weapons
@@ -459,7 +463,7 @@ function buildStructure(droid, stat) {
 	var derricks = countStruct(structures.derricks);
 	var dist = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, droid.x, droid.y);
 	//Try not to build stuff in dangerous locations
-	if (!safeDest(me, loc.x, loc.y) || dist > (10 + (2 * derricks))) {
+	if (!safeDest(me, loc.x, loc.y) || dist > (8 + Math.floor(1.5 * derricks))) {
 		orderDroid(droid, DORDER_RTB);
 		return false;
 	}
@@ -675,13 +679,16 @@ function buildOrder() {
 	if(buildPhase1()) { return false; }
 	if(gameTime > 80000 && maintenance()) { return false; }
 	lookForOil();
-	if(buildDefenses()) { return false; }
-	if(buildPhase2()) { return false; }
-	if(playerPower(me) > 110) {
-		if(buildPhase3()) { return false; }
-		if(buildPhase4()) { return false; }
-		if(buildPhase5()) { return false; }
+	if(!buildDefenses()) { 
+		if(buildPhase2()) { return false; }
+		if(playerPower(me) > 110) {
+			if(buildPhase3()) { return false; }
+			if(buildPhase4()) { return false; }
+			if(buildPhase5()) { return false; }
+		}
 	}
+	else
+		return false;
 }
 
 function maintenance() {
@@ -933,14 +940,14 @@ function spyRoutine() {
 		repairDroid(sensors[0], true);
 
 
-	//Observe closest enemy object
+	//Observe closest enemy object with a hover unit
 	var object = rangeStep(sensors[0], false);
 	if(isDefined(object) && droidCanReach(sensors[0], object.x, object.y)) {
 		orderDroidObj(sensors[0], DORDER_OBSERVE, object);
 
-		var tanks = enumGroup(attackGroup);
-		tanks.sort(distanceToBase);
-		if(tanks.length > 10) {
+		var tanks = enumGroup(attackGroup).filter(function(obj) { return obj.propulsion === "hover01" });
+		tanks.sort(sensors[0]);
+		if(tanks.length > 0) {
 			var xPos = (sensors[0].x + object.x) / 2;
 			var yPos = (sensors[0].y + object.y) / 2;
 			orderDroidLoc(tanks[0], DORDER_SCOUT, xPos, yPos);
@@ -965,11 +972,8 @@ function attackEnemyOil() {
 	if(!derr.length)
 		return false;
 	
-	if(borgs.length)
-		who = borgs;
-	else
-		who = tanks;
-		
+	who = (borgs.length) ? borgs : tanks;
+
 	for(var i = 0; i < who.length; ++i) {
 		if(i < derr.length) {
 			derr.sort(distanceToBase);
@@ -980,10 +984,90 @@ function attackEnemyOil() {
 	}
 }
 
+function initializeResearchLists() {
+	techlist = [];
+	weaponTech = [];
+	mgWeaponTech = [];
+	laserTech = [];
+	artilleryTech = [];
+	artillExtra = [];
+	laserExtra = [];
+	extraTech = [];
+	vtolWeapons = [];
+	vtolExtras = [];
+	cyborgWeaps = [];
+	antiAirTech = [];
+	antiAirExtras = [];
+	
+	// --START Research lists
+	for(var x = 0; x < weaponStats.bombs.vtols.length; ++x)
+		vtolWeapons.push(weaponStats.bombs.vtols[x].res);
+	for(var x = 0; x < weaponStats.bombs.extras.length; ++x)
+		vtolExtras.push(weaponStats.bombs.extras[x]);
+	for(var x = 0; x < weaponStats.AA.defenses.length; ++x)
+		antiAirTech.push(weaponStats.AA.defenses[x].res);
+	for(var x = 0; x < weaponStats.AA.extras.length; ++x)
+		antiAirExtras.push(weaponStats.AA.extras[x]);
+	
+	for(var x = 0; x < weaponStats.machineguns.weapons.length; ++x)
+		mgWeaponTech.push(weaponStats.machineguns.weapons[x].res);
+	
+	for(var x = 0; x < weaponStats.lasers.weapons.length; ++x)
+		laserTech.push(weaponStats.lasers.weapons[x].res);
+	for(var x = 0; x < weaponStats.lasers.weapons.length; ++x)
+		laserExtra.push(weaponStats.lasers.extras[x]);
+	
+	if(personality === 1) {
+		techlist = subpersonalities["AC"]["res"];
+		for(var x = 0; x < weaponStats.cannons.weapons.length;  ++x)
+			weaponTech.push(weaponStats.cannons.weapons[x].res);
+		for(var x = 0; x < weaponStats.mortars.weapons.length; ++x)
+			artilleryTech.push(weaponStats.mortars.weapons[x].res);
+		for(var x = 0; x < weaponStats.cannons.extras.length; ++x)
+			extraTech.push(weaponStats.cannons.extras[x]);
+		for(var x = 0; x < weaponStats.mortars.extras.length; ++x)
+			artillExtra.push(weaponStats.mortars.extras[x]);
+		for(var x = 0; x < weaponStats.cannons.templates.length; ++x)
+			cyborgWeaps.push(weaponStats.cannons.templates[x].res);
+	}
+	else if(personality === 2) {
+		techlist = subpersonalities["AR"]["res"];
+		for(var y = 0; y < weaponStats.flamers.weapons.length; ++y)
+			weaponTech.push(weaponStats.flamers.weapons[y].res);
+		for(var y = 0; y < weaponStats.mortars.weapons.length; ++y)
+			artilleryTech.push(weaponStats.mortars.weapons[y].res);
+		for(var y = 0; y < weaponStats.flamers.extras.length; ++y)
+			extraTech.push(weaponStats.flamers.extras[y]);
+		for(var y = 0; y < weaponStats.mortars.extras.length; ++y)
+			artillExtra.push(weaponStats.mortars.extras[y]);
+	}
+	else {
+		techlist = subpersonalities["AB"]["res"];
+		for(var y = 0; y < weaponStats.rockets_AT.weapons.length; ++y)
+			weaponTech.push(weaponStats.rockets_AT.weapons[y].res);
+		for(var y = 0; y < weaponStats.rockets_Arty.weapons.length; ++y)
+			artilleryTech.push(weaponStats.rockets_Arty.weapons[y].res);
+		for(var y = 0; y < weaponStats.rockets_AT.extras.length; ++y)
+			extraTech.push(weaponStats.rockets_AT.extras[y]);
+		for(var y = 0; y < weaponStats.rockets_Arty.extras.length; ++y)
+			artillExtra.push(weaponStats.rockets_Arty.extras[y]);
+		for(var x = 0; x < weaponStats.rockets_AT.templates.length; ++x)
+			cyborgWeaps.push(weaponStats.rockets_AT.templates[x].res);
+	}
+	
+	for(var x = 0; x < weaponStats.lasers.templates.length; ++x)
+		cyborgWeaps.push(weaponStats.lasers.templates[x].res);
+	// --END Research lists
+}
+
 // --- game events
 
 //Needs to be better here
 function eventResearched(tech, labparam) {
+	
+	if(!isDefined(techlist) || !isDefined(artillExtra))
+		return;
+	
 	if(playerPower(me) < 20) {
 		if(lastMsg != "need power") {
 			lastMsg = "need power";
@@ -993,7 +1077,7 @@ function eventResearched(tech, labparam) {
 	}
 
 	var lablist = enumStruct(me, structures.labs);
-	for (i = 0; i < lablist.length; i++) {
+	for (var i = 0; i < lablist.length; ++i) {
 		var lab = lablist[i];
 		if (lab.status == BUILT && structureIdle(lab)) {
 			var found = pursueResearch(lab, techlist);
@@ -1003,38 +1087,42 @@ function eventResearched(tech, labparam) {
 			if(!found)
 				found = pursueResearch(lab, "R-Vehicle-Prop-Halftracks");
 			if(!found)
+				found = pursueResearch(lab, mgWeaponTech);
+			if(!found)
 				found = pursueResearch(lab, fastestResearch);
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
 			if(!found)
 				found = pursueResearch(lab, kineticResearch);
 			if(!found)
-				found = pursueResearch(lab, mgWeaponTech);
-			if(!found)
 				found = pursueResearch(lab, "R-Wpn-MG-Damage08");
 			
 			if(!found)
-				found = pursueResearch(lab, bodyResearch);
-			if(!found)
-				found = pursueResearch(lab, weaponTech);
-			if(!found)
-				found = pursueResearch(lab, extraTech);
-			if(!found)
-				found = pursueResearch(lab, artilleryTech);
-			if(!found)
-				found = pursueResearch(lab, artillExtra);
-
+				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 			
-			if(!found)
-				found = pursueResearch(lab, antiAirTech);
-			if(!found)
-				found = pursueResearch(lab, vtolWeapons);
-			if(!found)
-				found = pursueResearch(lab, thermalResearch);
-			if(!found)
-				found = pursueResearch(lab, vtolExtras);
-			if(!found)
-				found = pursueResearch(lab, antiAirExtras);
+			if(componentAvailable("Body11ABT")) {
+				if(!found)
+					found = pursueResearch(lab, weaponTech);
+				if(!found)
+					found = pursueResearch(lab, extraTech);
+				if(!found)
+					found = pursueResearch(lab, artilleryTech);
+				if(!found)
+					found = pursueResearch(lab, artillExtra);
+				if(!found)
+					found = pursueResearch(lab, antiAirTech);
+				if(!found)
+					found = pursueResearch(lab, vtolWeapons);
+			
+				if(!found)
+					found = pursueResearch(lab, laserTech);
+				if(!found)
+					found = pursueResearch(lab, laserExtra);
+				if(!found)
+					found = pursueResearch(lab, thermalResearch);
+				if(!found)
+					found = pursueResearch(lab, bodyResearch);
+			}
 			
 			if(!found)
 				found = pursueResearch(lab, "R-Sys-Autorepair-General");
@@ -1043,7 +1131,11 @@ function eventResearched(tech, labparam) {
 			if(!found && cyborgWeaps.length > 0)
 				found = pursueResearch(lab, cyborgWeaps);
 			if(!found)
+				found = pursueResearch(lab, vtolExtras);
+			if(!found)
 				found = pursueResearch(lab, fundamentalResearch);
+			if(!found)
+				found = pursueResearch(lab, antiAirExtras);
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Materials09");
 		}
@@ -1108,59 +1200,27 @@ function eventGameInit() {
 	for(var i = 0; i < sensors.length; ++i) {
 		groupAdd(attackGroup, sensors[i]);
 	}
-	
 	// --END Group initialization
-	
-	// --START Research lists
-	for(var x = 0; x < weaponStats.bombs.vtols.length; ++x)
-		vtolWeapons.push(weaponStats.bombs.vtols[x].res);
-	for(var x = 0; x < weaponStats.bombs.extras.length; ++x)
-		vtolExtras.push(weaponStats.bombs.extras[x]);
-	for(var x = 0; x < weaponStats.AA.defenses.length; ++x)
-		antiAirTech.push(weaponStats.AA.defenses[x].res);
-	for(var x = 0; x < weaponStats.AA.extras.length; ++x)
-		antiAirExtras.push(weaponStats.AA.extras[x]);
-	
-	for(var x = 0; x < weaponStats.machineguns.weapons.length; ++x)
-		mgWeaponTech.push(weaponStats.machineguns.weapons[x].res);
-	
-	if(personality === 1) {
-		techlist = subpersonalities["AC"]["res"];
-		for(var x = 0; x < weaponStats.cannons.weapons.length;  ++x)
-			weaponTech.push(weaponStats.cannons.weapons[x].res);
-		for(var x = 0; x < weaponStats.mortars.weapons.length; ++x)
-			artilleryTech.push(weaponStats.mortars.weapons[x].res);
-		for(var x = 0; x < weaponStats.cannons.extras.length; ++x)
-			extraTech.push(weaponStats.cannons.extras[x]);
-		for(var x = 0; x < weaponStats.mortars.extras.length; ++x)
-			artillExtra.push(weaponStats.mortars.extras[x]);
-		for(var x = 0; x < weaponStats.cannons.templates.length; ++x)
-			cyborgWeaps.push(weaponStats.cannons.templates[x].res);
+}
+
+function eventStartLevel() {
+	// Pretend like all buildings were just produced, to initiate productions
+	var structlist = enumStruct(me);
+	for (var i = 0; i < structlist.length; i++) {
+		eventStructureBuilt(structlist[i]);
 	}
-	else if(personality === 2) {
-		techlist = subpersonalities["AR"]["res"];
-		for(var y = 0; y < weaponStats.flamers.weapons.length; ++y)
-			weaponTech.push(weaponStats.flamers.weapons[y].res);
-		for(var y = 0; y < weaponStats.mortars.weapons.length; ++y)
-			artilleryTech.push(weaponStats.mortars.weapons[y].res);
-		for(var y = 0; y < weaponStats.flamers.extras.length; ++y)
-			extraTech.push(weaponStats.flamers.extras[y]);
-		for(var y = 0; y < weaponStats.mortars.extras.length; ++y)
-			artillExtra.push(weaponStats.mortars.extras[y]);
-	}
-	else {
-		techlist = subpersonalities["AB"]["res"];
-		for(var y = 0; y < weaponStats.rockets_AT.weapons.length; ++y)
-			weaponTech.push(weaponStats.rockets_AT.weapons[y].res);
-		for(var y = 0; y < weaponStats.rockets_Arty.weapons.length; ++y)
-			artilleryTech.push(weaponStats.rockets_Arty.weapons[y].res);
-		for(var y = 0; y < weaponStats.rockets_AT.extras.length; ++y)
-			extraTech.push(weaponStats.rockets_AT.extras[y]);
-		for(var y = 0; y < weaponStats.rockets_Arty.extras.length; ++y)
-			artillExtra.push(weaponStats.rockets_Arty.extras[y]);
-	}
-	// --END Research lists
 	
+	diffPerks();
+	personality = random(3) + 1;
+	initializeResearchLists();
+	
+	buildOrder();
+	setTimer("buildOrder", 300);
+	setTimer("produce", 700);
+	setTimer("repairAll", 1500);
+	setTimer("attackEnemyOil", 4000);
+	setTimer("spyRoutine", 8000);
+	setTimer("checkMood", 20000);
 }
 
 function eventAttacked(victim, attacker) {
@@ -1193,25 +1253,6 @@ function eventAttacked(victim, attacker) {
 		if(grudgeCount[attacker.player] > 5)
 			attackStuff(attacker.player);
 	}
-}
-
-function eventStartLevel() {
-	// Pretend like all buildings were just produced, to initiate productions
-	var structlist = enumStruct(me);
-	for (var i = 0; i < structlist.length; i++) {
-		eventStructureBuilt(structlist[i]);
-	}
-	
-	diffPerks();
-	personality = random(3) + 1;
-	
-	buildOrder();
-	setTimer("buildOrder", 300);
-	setTimer("produce", 700);
-	setTimer("repairAll", 1500);
-	setTimer("attackEnemyOil", 4000);
-	setTimer("spyRoutine", 8000);
-	setTimer("checkMood", 20000);
 }
 
 function eventDroidIdle(droid)
