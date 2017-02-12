@@ -253,6 +253,7 @@ const weaponStats = {
 		],
 		extras: [
 			"R-Wpn-Flamer-ROF03",
+			"R-Wpn-Flamer-Damage06", //Damage06 is otherwise never researched
 			"R-Wpn-Flamer-Damage09",
 		],
 	},
@@ -304,7 +305,9 @@ const weaponStats = {
 			{ res: "R-Cyborg-Hvywpn-RailGunner", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-RailGunner", ] }, // rail super
 		],
 		extras: [
+			"R-Wpn-Cannon-Accuracy02",
 			"R-Wpn-Cannon-ROF06",
+			"R-Wpn-Cannon-Damage09",
 			"R-Vehicle-Engine09", // cannons are heeeeavy
 			"R-Wpn-Rail-Damage03", // sure it's required by gauss, but what if our AI uses only cyborgs and vtols?
 			"R-Wpn-Rail-ROF03",
