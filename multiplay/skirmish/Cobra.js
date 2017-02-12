@@ -220,9 +220,8 @@ const subpersonalities = {
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"res": [
-			"R-Wpn-MG-Damage01",
-			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
+			"R-Struc-PowerModuleMk1",
 			"R-Vehicle-Prop-Halftracks",
 			"R-Wpn-Cannon-Damage02",
 			"R-Vehicle-Body11",
@@ -232,7 +231,6 @@ const subpersonalities = {
 			"R-Wpn-MG-Damage04",
 			"R-Wpn-Cannon-ROF01",
 			"R-Wpn-Cannon-Damage03",
-			"R-Struc-VTOLPad-Upgrade01",
 		],
 	},
 	AR: {
@@ -243,9 +241,8 @@ const subpersonalities = {
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"res": [
-			"R-Wpn-MG-Damage01",
-			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
+			"R-Struc-PowerModuleMk1",
 			"R-Vehicle-Prop-Halftracks",
 			"R-Wpn-Flamer-Damage02",
 			"R-Wpn-Flamer-ROF01",
@@ -255,7 +252,6 @@ const subpersonalities = {
 			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-MG-Damage04",
 			"R-Wpn-Flamer-ROF03",
-			"R-Struc-VTOLPad-Upgrade01",
 		],
 	},
 	AB: {
@@ -266,9 +262,8 @@ const subpersonalities = {
 		"artillery": weaponStats.rockets_Arty,
 		"antiAir": weaponStats.AA,
 		"res": [
-			"R-Wpn-MG-Damage01",
-			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
+			"R-Struc-PowerModuleMk1",
 			"R-Vehicle-Prop-Halftracks",
 			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
@@ -276,7 +271,6 @@ const subpersonalities = {
 			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-MG-Damage04",
 			"R-Wpn-Rocket06-IDF",
-			"R-Struc-VTOLPad-Upgrade01",
 		],
 	},
 }
@@ -616,11 +610,11 @@ function buildPhase1() {
 }
 
 function buildPhase2() {
-	if(gameTime > 210000 && playerPower(me) > 70 ) {
+	if(gameTime > 210000 && playerPower(me) > 70 && countStruct(structures.derricks) > 3) {
 		if(isStructureAvailable(structures.extras[0])) {
-			if(countAndBuild(structures.extras[0], 2)) { return true; }
+			if(countAndBuild(structures.extras[0], 1)) { return true; }
 		}
-		if(countAndBuild(structures.labs, 4)) { return true; }
+		if(countAndBuild(structures.labs, 5)) { return true; }
 		if (isStructureAvailable(structures.templateFactories)) {
 			if (countAndBuild(structures.templateFactories, 3)) { return true; }
 		}
@@ -637,12 +631,11 @@ function buildPhase3() {
 			var vtols = enumGroup(vtolGroup).length
 			var pads = 2 * countStruct(structures.vtolPads);
 		
-			if (countAndBuild(structures.vtolFactories, 1))
+			if (countAndBuild(structures.vtolFactories, 2))
 				return true;
 		}
 		
 		if (playerPower(me) > 160 && isStructureAvailable(structures.templateFactories)) {
-			if(countAndBuild(structures.labs, 5)) { return true; }
 			if (countAndBuild(structures.templateFactories, 5)) { return true; }
 			if(countAndBuild(structures.factories, 5)) { return true; }
 		}
@@ -658,10 +651,7 @@ function buildPhase3() {
 function buildPhase4() {
 	if (componentAvailable("Bomb1-VTOL-LtHE") && playerPower(me) > 230 && isStructureAvailable(structures.vtolFactories))
 	{
-		var vtols = enumGroup(vtolGroup).length
-		var vtFac = countStruct(structures.vtolFactories);
-		if (vtFac < 5 && countAndBuild(structures.vtolFactories, vtFac + 1))
-			return true;
+		if (countAndBuild(structures.vtolFactories, 5)) { return true; }
 	}
 	
 	return false;
@@ -686,8 +676,8 @@ function buildOrder() {
 	if(buildPhase1()) { return false; }
 	if(gameTime > 80000 && maintenance()) { return false; }
 	lookForOil();
+	if(buildPhase2()) { return false; }
 	if(!buildDefenses()) { 
-		if(buildPhase2()) { return false; }
 		if(buildPhase3()) { return false; }
 		if(buildPhase4()) { return false; }
 		if(buildPhase5()) { return false; }
@@ -1089,11 +1079,13 @@ function eventResearched() {
 		var lab = lablist[i];
 		if (lab.status == BUILT && structureIdle(lab)) {
 			var found = pursueResearch(lab, techlist);
-
+			
 			if(!found)
-				found = pursueResearch(lab, "R-Struc-PowerModuleMk1");
+				found = pursueResearch(lab, mgWeaponTech);
 			if(!found)
 				found = pursueResearch(lab, "R-Vehicle-Prop-Halftracks");
+			if(!found)
+				found = pursueResearch(lab, "R-Struc-PowerModuleMk1");
 			if(!found)
 				found = pursueResearch(lab, fastestResearch);
 			if(!found)
@@ -1101,12 +1093,7 @@ function eventResearched() {
 			if(!found)
 				found = pursueResearch(lab, kineticResearch);
 			if(!found)
-				found = pursueResearch(lab, mgWeaponTech);
-			if(!found)
 				found = pursueResearch(lab, "R-Wpn-MG-Damage08");
-			
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 			
 			if(!random(2) && componentAvailable("Body11ABT")) {
 				if(!found)
@@ -1119,18 +1106,26 @@ function eventResearched() {
 					found = pursueResearch(lab, artillExtra);
 				if(!found)
 					found = pursueResearch(lab, antiAirTech);
+			}
+			else if(!random(2) && componentAvailable("Body11ABT")) {
+				if(!found)
+					pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
 				if(!found)
 					found = pursueResearch(lab, vtolWeapons);
+				if(!found)
+					found = pursueResearch(lab, vtolExtras);
 			}
-			
-			if(!found)
-				found = pursueResearch(lab, laserTech);
-			if(!found)
-				found = pursueResearch(lab, laserExtra);
+			else {
+				if(!found)
+					found = pursueResearch(lab, laserTech);
+				if(!found)
+					found = pursueResearch(lab, laserExtra);
+			}
 			if(!found)
 				found = pursueResearch(lab, cyborgWeaps);
+			
 			if(!found)
-				found = pursueResearch(lab, vtolExtras);
+				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 			if(!found)
 				found = pursueResearch(lab, thermalResearch);
 			if(!found)
