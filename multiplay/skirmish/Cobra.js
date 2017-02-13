@@ -88,12 +88,12 @@ function playerAlliance(ally) {
 	
 	for(var i = 0; i < maxPlayers; ++i) {
 		if(!ally) {
-			if(!allianceExistsBetween(i, me) && i != me) {
+			if(!allianceExistsBetween(i, me) && (i != me)) {
 				players.push(i);
 			}
 		}
 		else {
-			if(allianceExistsBetween(i, me) && i != me) {
+			if(allianceExistsBetween(i, me) && (i != me)) {
 				players.push(i);
 			}
 		}
@@ -1145,7 +1145,7 @@ function checkIfSeaMap() {
 	if(turnOffCyborgs === true) {
 		for(var i = 0; i < maxPlayers; ++i) {
 			if(propulsionCanReach("wheeled01", startPositions[me].x, startPositions[me].y, startPositions[i].x, startPositions[i].y)
-			&& i !== me) {
+			&& (i !== me) && !allianceExistsBetween(i, me)) {
 				//Check to see if it is a closed player slot
 				if(enumDroid(i).length > 0) {
 					seaMapWithLandEnemy = true;
@@ -1457,7 +1457,7 @@ function eventStartLevel() {
 }
 
 function eventAttacked(victim, attacker) {
-	if (attacker && victim && attacker.player != me && !allianceExistsBetween(attacker.player, victim.player)) {
+	if (attacker && victim && (attacker.player != me) && !allianceExistsBetween(attacker.player, victim.player)) {
 		grudgeCount[attacker.player] += 1;
 		
 		var tanks = enumGroup(attackGroup);
@@ -1525,7 +1525,7 @@ function eventGroupLoss(droid, group, size) {
 
 function eventChat(from, to, message)
 {
-	if (to != me || to == from) {
+	if ( (to != me) || (to == from) ) {
 		return; // not for me
 	}
 	if (message == "need truck" && allianceExistsBetween(from, to)) {
@@ -1630,14 +1630,14 @@ function eventBeacon(x, y, from, to, message) {
 
 function eventObjectTransfer(obj, from)
 {
-	if(from !== me && allianceExistsBetween(from, me)) {
+	if((from !== me) && allianceExistsBetween(from, me)) {
 		if(obj.type == DROID)
 			eventDroidBuilt(obj, null);
 		lastMsg = "Thank you!";
 		chat(from, lastMsg);
 	}
 	
-	if(from !== me && from === obj.player && !allianceExistsBetween(obj.player, me)) {
+	if((from !== me) && (from === obj.player) && !allianceExistsBetween(obj.player, me)) {
 		if(obj.type == DROID)
 			eventDroidBuilt(obj, null);
 		if(lastMsg != "My unit now") {
