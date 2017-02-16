@@ -12,30 +12,11 @@ function isDefined(data) {
 	return typeof(data) !== "undefined";
 }
 
-function mapLimits(x, y, num1, num2, xOffset, yOffset) {
-	var coordinates = [];
-	var xPos = x + xOffset + random(num1) - num2;
-	var yPos = y + yOffset + random(num1) - num2;
-
-	if(xPos < 2)
-		xPos = 2;
-	if(yPos < 2)
-		yPos = 2;
-	if(xPos >= mapWidth - 2)
-		xPos = mapWidth - 3;
-	if(yPos >= mapHeight - 2)
-		yPos = mapHeight - 3;
-	
-	coordinates[coordinates.length] = xPos;
-	coordinates[coordinates.length] = yPos;
-	return coordinates;
-}
-
 function rangeStep(obj, visibility) {
-	const step = 2000;
+	const step = 10000;
 	var target;
 	
-	for(var i = 0; i < 99999; i += step) {	
+	for(var i = 0; i < 30000; i += step) {	
 		var temp = enumRange(obj.x, obj.y, i, ENEMIES, visibility);
 		if(temp.length > 0) {
 			return temp[0];
@@ -88,12 +69,12 @@ function playerAlliance(ally) {
 	
 	for(var i = 0; i < maxPlayers; ++i) {
 		if(!ally) {
-			if(!allianceExistsBetween(i, me) && i != me) {
+			if(!allianceExistsBetween(i, me) && (i != me)) {
 				players.push(i);
 			}
 		}
 		else {
-			if(allianceExistsBetween(i, me) && i != me) {
+			if(allianceExistsBetween(i, me) && (i != me)) {
 				players.push(i);
 			}
 		}
@@ -101,48 +82,37 @@ function playerAlliance(ally) {
 	return players;
 }
 
-
-//Difficulty cheats
-function researchCheat(tech) {
-	if(isDefined(tech)) {
-		for(var i = 0; i < tech.length; ++i)
-			enableResearch(tech[i], me);
-	}
-}
-
 //Change stuff depending on difficulty.
 function diffPerks() {	
-	
 	switch(difficulty) {
 		case EASY:
 			break;
 		case MEDIUM:
 			break;
-		case HARD: 
-			researchCheat(["R-Struc-Research-Module"]);
+		case HARD:
+			if(!isStructureAvailable("A0PowMod1"))
+				completeRequiredResearch("R-Struc-PowerModuleMk1");
 			break;
 		case INSANE:
-			researchCheat(["R-Struc-Research-Module", "R-Struc-Research-Upgrade01"]);
+			if(!isStructureAvailable("A0PowMod1"))
+				completeRequiredResearch("R-Struc-PowerModuleMk1");
+			nexusWaveOn = true;
+			if(isDefined(scavengerNumber))
+				setAlliance(scavengerNumber, me, true); //Scavs are friendly
 			break;
 	}
 }
 
-
-/*Unused
-function findNearest(list, x, y, flag) {
-	var minDist = Infinity, minIdx;
-	for (var i = 0; i < list.length; ++i) {
-		var d = distBetweenTwoPoints(list[i].x, list[i].y, x, y);
-		if (d < minDist) {
-			minDist = d;
-			minIdx = i;
-		}
-	}
-	return (flag === true) ? list[minIdx] : minIdx;
+// log function
+function log(message) {
+	dump(gameTime + " : " + message);
 }
-*/
-// -- useful lists
 
+function logObj(obj, message) {
+	dump(gameTime + " [" + obj.name + " id=" + obj.id + "] > " + message);
+}
+
+// -- useful lists
 const kineticResearch = [
 	"R-Vehicle-Metals02",
 	"R-Cyborg-Metals02",
@@ -220,15 +190,19 @@ const subpersonalities = {
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"res": [
+			"R-Wpn-MG-Damage01",
+			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-Cannon-Damage02",
 			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
 			"R-Struc-RprFac-Upgrade01",
+			"R-Wpn-MG-Damage04",
 			"R-Wpn-Cannon-ROF01",
 			"R-Wpn-Cannon-Damage03",
 			"R-Struc-VTOLPad-Upgrade01",
+			"R-Wpn-Bomb02",
 		],
 	},
 	AR: {
@@ -239,16 +213,19 @@ const subpersonalities = {
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"res": [
+			"R-Wpn-MG-Damage01",
+			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
-			"R-Wpn-MG-Damage02",
 			"R-Wpn-Flamer-Damage02",
 			"R-Wpn-Flamer-ROF01",
 			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
 			"R-Struc-RprFac-Upgrade01",
+			"R-Wpn-MG-Damage04",
 			"R-Wpn-Flamer-ROF03",
 			"R-Struc-VTOLPad-Upgrade01",
+			"R-Wpn-Bomb02",
 		],
 	},
 	AB: {
@@ -259,14 +236,17 @@ const subpersonalities = {
 		"artillery": weaponStats.rockets_Arty,
 		"antiAir": weaponStats.AA,
 		"res": [
+			"R-Wpn-MG-Damage01",
+			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
-			"R-Wpn-MG-Damage02",
 			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
 			"R-Struc-RprFac-Upgrade01",
+			"R-Wpn-MG-Damage04",
 			"R-Wpn-Rocket06-IDF",
 			"R-Struc-VTOLPad-Upgrade01",
+			"R-Wpn-Bomb02",
 		],
 	},
 }
@@ -284,6 +264,11 @@ var grudgeCount = []; //See who bullies this bot the most and act on it
 var personality; //Initialization in eventStartLevel()
 var lastMsg = "";
 var buildStop = 0;
+var forceHover; //Initialization in eventStartLevel()
+var seaMapWithLandEnemy; //Initialization in eventStartLevel()
+var turnOffCyborgs;
+var nexusWaveOn;
+var scavengerNumber;
 
 // -- Weapon research (initializeResearchLists)
 var techlist;
@@ -304,9 +289,17 @@ var antiAirExtras;
 // -- MAIN CODE --
 
 function buildAttacker(struct) {
-	var useHover = 0;
+	
+	//May not be defined yet
+	if(!isDefined(forceHover) || !isDefined(seaMapWithLandEnemy))
+		return false;
+	if(forceHover === true && seaMapWithLandEnemy === false && !componentAvailable("hover01"))
+		return false;
+	
+	var useHover = false;
 	var weaps;
 	var weap = [];
+	
 	
 	if(personality === 1) {
 		if(!random(2))
@@ -321,7 +314,7 @@ function buildAttacker(struct) {
 	else if(personality === 2) {
 		if(!random(2)) {
 			weaps = subpersonalities["AR"]["primaryWeapon"];
-			useHover = 1;
+			useHover = true;
 		}
 		else if(!random(2))
 			weaps = subpersonalities["AR"]["secondaryWeapon"];
@@ -354,15 +347,12 @@ function buildAttacker(struct) {
 		}
 	}
 	
-	if((useHover === 1 || !random(12)) && componentAvailable("hover01")) {
-		if (buildDroid(struct, "Hover Droid", tankBody, "hover01", null, null, weap, weap)) {
-			return true;
-		}
+	if((useHover === true || forceHover === true || !random(12)) && componentAvailable("hover01")) {
+		buildDroid(struct, "Hover Droid", tankBody, "hover01", null, null, weap, weap);
+		return true; //Forced success
 	}
 	
-	if (buildDroid(struct, "Droid", tankBody, tankProp, null, null, weap, weap)) {
-		return true;
-	}
+	if (buildDroid(struct, "Droid", tankBody, tankProp, null, null, weap, weap)) { return true; }
 	
 	return false;
 }
@@ -510,41 +500,53 @@ function countAndBuild(stat, count) {
 function checkUnfinishedStructures() {
 	var struct = enumStruct(me).filter(function(struct){ return struct.status != BUILT});
 	
-	if(struct.length === 0)
-		return false;
+	//Prevent trucks from moving to finished structures that were previously unfinished
+	var allTrucks = enumDroid(me, DROID_CONSTRUCT);
+	if(struct.length === 0) {
+		for(var i = 0; i < allTrucks.length; ++i) {
+			allTrucks[i].busy = false;
+		}
+	}
 	
-	var trucks = enumDroid(me, DROID_CONSTRUCT).filter(function(obj){ 
-		return conCanHelp(obj, struct[0].x, struct[0].y)
-	});
+	if(struct.length > 0) {
+		var trucks = enumDroid(me, DROID_CONSTRUCT).filter(function(obj){ 
+			return conCanHelp(obj, struct[0].x, struct[0].y)
+		});
 	
-	if(trucks.length === 0)
-		return false;
-	
-	if (orderDroidObj(trucks[0], DORDER_HELPBUILD, struct[0]))
-		return true;
+		if(trucks.length > 0) {
+			if (orderDroidObj(trucks[0], DORDER_HELPBUILD, struct[0]))
+				return true;
+		}
+	}
 	return false;
 }
 
 function lookForOil() {
 	var droids = enumDroid(me, DROID_CONSTRUCT);
-	var oils = enumFeature(-1, oilResources);
-	var s = 0;
 	
-	if (oils.length > 0) {
-		oils.sort(distanceToBase); // grab closer oils first
-		for (var i = 0; i < oils.length; i++) {
-			for (var j = 0; j < droids.length; j++) {
-				if(i + s >= oils.length)
-					break;
+	if(droids.length > 1) {
+		var oils = enumFeature(-1, oilResources);
+		var s = 0;
+	
+		if(oils.length < 2 && !random(2))
+			return false;
+	
+		if (oils.length > 0) {
+			oils.sort(distanceToBase); // grab closer oils first
+			for (var i = 0; i < oils.length; i++) {
+				for (var j = 0; j < droids.length; j++) {
+					if(i + s >= oils.length)
+						break;
 				
-				if (droidCanReach(droids[j], oils[i + s].x, oils[i + s].y)
-				    && safeDest(me, oils[i + s].x, oils[i + s].y)
-				    && conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)
-					&& !droids[j].busy)
-				{
-					droids[j].busy = true;
-					orderDroidBuild(droids[j], DORDER_BUILD, structures.derricks, oils[i + s].x, oils[i + s].y);
-					s += 1;
+					if (droidCanReach(droids[j], oils[i + s].x, oils[i + s].y)
+						&& safeDest(me, oils[i + s].x, oils[i + s].y)
+						&& conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)
+						&& !droids[j].busy)
+					{
+						droids[j].busy = true;
+						orderDroidBuild(droids[j], DORDER_BUILD, structures.derricks, oils[i + s].x, oils[i + s].y);
+						s += 1;
+					}
 				}
 			}
 		}
@@ -590,7 +592,7 @@ function buildPhase1() {
 		}
 	}
 	
-	if (isStructureAvailable(structures.templateFactories)) {
+	if (isDefined(turnOffCyborgs) && turnOffCyborgs === false && isStructureAvailable(structures.templateFactories)) {
 		if (countAndBuild(structures.templateFactories, 1)) { return true; }
 	}
 	
@@ -606,15 +608,14 @@ function buildPhase1() {
 }
 
 function buildPhase2() {
-	if (playerPower(me) > 80 && isStructureAvailable(structures.templateFactories)) {
-		if (countAndBuild(structures.templateFactories, 3)) { return true; }
-	}
-	
-	if(gameTime > 210000 && playerPower(me) > 85 ) {
+	if(gameTime > 210000 && playerPower(me) > 80) {
+		if(countAndBuild(structures.labs, 3)) { return true; }
 		if(isStructureAvailable(structures.extras[0])) {
-			if(countAndBuild(structures.extras[0], 2)) { return true; }
+			if(countAndBuild(structures.extras[0], 1)) { return true; }
 		}
-		if(countAndBuild(structures.labs, 4)) { return true; }
+		if (isDefined(turnOffCyborgs) && turnOffCyborgs === false && isStructureAvailable(structures.templateFactories)) {
+			if (countAndBuild(structures.templateFactories, 3)) { return true; }
+		}
 		if(countAndBuild(structures.factories, 3)) { return true; }
 	}
 	
@@ -622,23 +623,22 @@ function buildPhase2() {
 }
 
 function buildPhase3() {
+	if(countAndBuild(structures.labs, 5)) { return true; }
 	
-	if(gameTime > 680000 && playerPower(me) > 100 ) {
+	if(gameTime > 680000 && playerPower(me) > 110 ) {
 		if (componentAvailable("Bomb1-VTOL-LtHE") && isStructureAvailable(structures.vtolFactories)) {
 			var vtols = enumGroup(vtolGroup).length
 			var pads = 2 * countStruct(structures.vtolPads);
 		
-			if (countAndBuild(structures.vtolFactories, 1))
+			if (countAndBuild(structures.vtolFactories, 2))
 				return true;
 		}
 		
-		if(countAndBuild(structures.labs, 5)) { return true; }
+		if (isDefined(turnOffCyborgs) && turnOffCyborgs === false && isStructureAvailable(structures.templateFactories)) {
+			if (countAndBuild(structures.templateFactories, 5)) { return true; }
+		}
+		
 		if(countAndBuild(structures.factories, 5)) { return true; }
-		
-		if (playerPower(me) > 160 && isStructureAvailable(structures.templateFactories)) {
-			if (countAndBuild(structures.templateFactories, 5))
-				return true;
-		}
 		
 		if(isStructureAvailable(structures.extras[0])) {
 			if(countAndBuild(structures.extras[0], 5)) { return true; }
@@ -651,10 +651,7 @@ function buildPhase3() {
 function buildPhase4() {
 	if (componentAvailable("Bomb1-VTOL-LtHE") && playerPower(me) > 230 && isStructureAvailable(structures.vtolFactories))
 	{
-		var vtols = enumGroup(vtolGroup).length
-		var vtFac = countStruct(structures.vtolFactories);
-		if (vtFac < 5 && countAndBuild(structures.vtolFactories, vtFac + 1))
-			return true;
+		if (countAndBuild(structures.vtolFactories, 5)) { return true; }
 	}
 	
 	return false;
@@ -677,15 +674,13 @@ function buildPhase5() {
 function buildOrder() {
 	if(checkUnfinishedStructures()) { return false; }
 	if(buildPhase1()) { return false; }
-	if(gameTime > 80000 && maintenance()) { return false; }
 	lookForOil();
+	if(gameTime > 80000 && maintenance()) { return false; }
+	if(buildPhase2()) { return false; }
 	if(!buildDefenses()) { 
-		if(buildPhase2()) { return false; }
-		if(playerPower(me) > 110) {
-			if(buildPhase3()) { return false; }
-			if(buildPhase4()) { return false; }
-			if(buildPhase5()) { return false; }
-		}
+		if(buildPhase3()) { return false; }
+		if(buildPhase4()) { return false; }
+		if(buildPhase5()) { return false; }
 	}
 	else
 		return false;
@@ -723,7 +718,7 @@ function maintenance() {
 		}
 	}
 	
-	if (playerPower(me) > 50 && struct || (struct && module === list[0])) {
+	if (playerPower(me) > 85 && struct || (struct && module === list[0])) {
 		if(buildStuff(struct, module))
 			return true;
 	}
@@ -740,7 +735,7 @@ function checkMood() {
 		if(temp > 0 && temp > grudgeCount[next])
 			next = x;
 	}
-	if(grudgeCount[next] > 5 && "Most harmful player: " + next) {
+	if((grudgeCount[next] > 5) && (lastMsg != ("Most harmful player: " + next))) {
 		lastMsg = "Most harmful player: " + next;
 		chat(ALLIES, lastMsg);
 	}
@@ -769,7 +764,7 @@ function checkMood() {
 			}
 			
 			for (var i = 0; i < cyborgs.length; i++) {
-				if(!repairDroid(cyborgs[i]) && isDefined(target))
+				if(!repairDroid(cyborgs[i]) && isDefined(target) && droidCanReach(cyborgs[i], target.x, target.y))
 					orderDroidLoc(cyborgs[i], DORDER_SCOUT, target.x, target.y)
 			}
 		
@@ -808,7 +803,8 @@ function attackStuff(attacker) {
 		
 	var derr = enumStruct(selectedEnemy, structures.derricks);
 	var fac = enumStruct(selectedEnemy, structures.factories);
-	var cybFac = enumStruct(selectedEnemy, structures.templateFactories);
+	fac.concat(enumStruct(selectedEnemy, structures.templateFactories));
+	
 	var target = derr[random(derr.length)];
 	var targetFac = fac[random(fac.length)];
 		
@@ -819,27 +815,29 @@ function attackStuff(attacker) {
 	
 	if(tanks.length > 4) {
 		for (var j = 0; j < tanks.length; j++) {
-			if(isDefined(targetFac) && !repairDroid(tanks[j]))
+			if(isDefined(targetFac) && !repairDroid(tanks[j]) && droidCanReach(tanks[j], targetFac.x, targetFac.y))
 				orderDroidLoc(tanks[j], DORDER_SCOUT, targetFac.x, targetFac.y);
 			else {
 				var s = enumStruct(selectedEnemy);
 				if(s.length > 0) {
 					s.sort(distanceToBase);
-					orderDroidLoc(tanks[j], DORDER_SCOUT, s[0].x, s[0].y);
+					if(droidCanReach(tanks[j], s[0].x, s[0].y))
+						orderDroidLoc(tanks[j], DORDER_SCOUT, s[0].x, s[0].y);
 				}
 			}
 		}
 	}
 
-	if(cyborgs.length > 4) {
+	if(isDefined(turnOffCyborgs) && turnOffCyborgs === false && cyborgs.length > 4) {
 		for (var j = 0; j < cyborgs.length; j++) {
-			if(isDefined(target) && !repairDroid(cyborgs[j]))
+			if(isDefined(target) && !repairDroid(cyborgs[j]) && droidCanReach(cyborgs[j], target.x, target.y))
 				orderDroidLoc(cyborgs[j], DORDER_SCOUT, target.x, target.y);
 			else {
 				var s = enumStruct(selectedEnemy);
 				if(s.length > 0) {
 					s.sort(distanceToBase);
-					orderDroidLoc(cyborgs[j], DORDER_SCOUT, s[0].x, s[0].y);
+					if(droidCanReach(cyborgs[j], s[0].x, s[0].y))
+						orderDroidLoc(cyborgs[j], DORDER_SCOUT, s[0].x, s[0].y);
 				}
 			}
 		}
@@ -858,6 +856,13 @@ function attackStuff(attacker) {
 }
 
 function produce() {
+	recycleObsoleteDroids();
+	eventResearched(); //check for idle research centers.
+	
+	//Try not to produce more units. Not that anymore will be made, but it is a performance hack.
+	if((enumDroid(me).length - 1) === 150)
+		return false;
+	
 	var fac = enumStruct(me, structures.factories);
 	var cybFac = enumStruct(me, structures.templateFactories);
 	var vtolFac = enumStruct(me, structures.vtolFactories);
@@ -866,7 +871,7 @@ function produce() {
 	for(var x = 0; x < fac.length; ++x) {
 		if(isDefined(fac[x]) && structureIdle(fac[x])) {
 			if (extra === false && countDroid(DROID_CONSTRUCT, me) < 4) {
-				if(countDroid(DROID_CONSTRUCT, me) < 2 && gameTime > 10000) {
+				if((playerAlliance(true).length > 0) && (countDroid(DROID_CONSTRUCT, me) < 2) && (gameTime > 10000)) {
 					lastMsg = "need truck";
 					chat(ALLIES, lastMsg);
 				}
@@ -888,9 +893,11 @@ function produce() {
 		}
 	}
 	
-	for(var x = 0; x < cybFac.length; ++x) {
-		if(isDefined(cybFac[x]) && structureIdle(cybFac[x])) {
-			buildCyborg(cybFac[x]);
+	if(isDefined(turnOffCyborgs) && turnOffCyborgs === false) {
+		for(var x = 0; x < cybFac.length; ++x) {
+			if(isDefined(cybFac[x]) && structureIdle(cybFac[x])) {
+				buildCyborg(cybFac[x]);
+			}
 		}
 	}
 	
@@ -899,8 +906,6 @@ function produce() {
 			buildVTOL(vtolFac[x]);
 		}
 	}
-	
-	eventResearched();
 }
 
 function repairDroid(droid, force) {
@@ -946,6 +951,8 @@ function spyRoutine() {
 		orderDroidObj(sensors[0], DORDER_OBSERVE, object);
 
 		var tanks = enumGroup(attackGroup).filter(function(obj) { return obj.propulsion === "hover01" });
+		if(tanks.length === 0)
+			tanks = enumGroup(attackGroup);
 		tanks.sort(sensors[0]);
 		if(tanks.length > 0) {
 			var xPos = (sensors[0].x + object.x) / 2;
@@ -969,15 +976,27 @@ function attackEnemyOil() {
 		derr.concat(enumStruct(enemy[i], structures.derricks));
 	}
 	
+	//Check for scavs
+	if(isDefined(nexusWave) && isDefined(scavengerNumber) && nexusWave === false) {
+		derr.concat(enumStruct(scavengerNumber, structures.derricks));
+	}
+	
 	if(!derr.length)
 		return false;
 	
-	who = (borgs.length) ? borgs : tanks;
+	derr.sort(distanceToBase);
+	if(isDefined(turnOffCyborgs) && turnOffCyborgs === false && borgs.length > 2 && gameTime > 210000)
+		who = borgs;
+	else
+		who = tanks;
+	
+	if(who.length < 3)
+		return false;
 
 	for(var i = 0; i < who.length; ++i) {
 		if(i < derr.length) {
-			derr.sort(distanceToBase);
-			orderDroidObj(who[i], DORDER_ATTACK, derr[0]);
+			if(isDefined(derr[0]) && !repairDroid(who[i], false) && droidCanReach(who[i], derr[0].x, derr[0].y))
+				orderDroidLoc(who[i], DORDER_SCOUT, derr[i].x, derr[i].y);
 		}
 		else
 			break;
@@ -1004,7 +1023,7 @@ function initializeResearchLists() {
 		vtolWeapons.push(weaponStats.bombs.vtols[x].res);
 	for(var x = 0; x < weaponStats.bombs.extras.length; ++x)
 		vtolExtras.push(weaponStats.bombs.extras[x]);
-	for(var x = 0; x < weaponStats.AA.defenses.length; ++x)
+	for(var x = 0; x < weaponStats.AA.defenses.length - 1; ++x) //Do not research whirlwind hardpoint
 		antiAirTech.push(weaponStats.AA.defenses[x].res);
 	for(var x = 0; x < weaponStats.AA.extras.length; ++x)
 		antiAirExtras.push(weaponStats.AA.extras[x]);
@@ -1060,16 +1079,333 @@ function initializeResearchLists() {
 	// --END Research lists
 }
 
+//Cobra's behavior will change dramatically if it is on a hover map. It will be more aggressive
+//than usual and have stronger units and research times.
+function checkIfSeaMap() {
+	turnOffCyborgs = false;
+	seaMapWithLandEnemy = false;
+	
+	for(var i = 0; i < maxPlayers; ++i) {
+		if(!propulsionCanReach("wheeled01", startPositions[me].x, startPositions[me].y, startPositions[i].x, startPositions[i].y)) {
+				
+			//Check if it is a map 'spotter' pit
+			//Cyborgs will turn off in divided maps with a physical barrier still
+			var temp = 0;		
+			for(var t = 0; t < maxPlayers; ++t) {
+				if(!propulsionCanReach("hover01", startPositions[i].x, startPositions[i].y, startPositions[t].x, startPositions[t].y))
+					temp = temp + 1;
+			}
+
+			if(temp !== maxPlayers - 1) {
+				turnOffCyborgs = true; //And thus forceHover = true
+				break;
+			}
+		}
+	}
+
+	//Determine if we are sharing land on a hover map with an enemy that can reach us via non-hover propulsion.
+	if(turnOffCyborgs === true) {
+		for(var i = 0; i < maxPlayers; ++i) {
+			if(propulsionCanReach("wheeled01", startPositions[me].x, startPositions[me].y, startPositions[i].x, startPositions[i].y)
+			&& (i !== me) && !allianceExistsBetween(i, me)) {
+				//Check to see if it is a closed player slot
+				if(enumDroid(i).length > 0) {
+					seaMapWithLandEnemy = true;
+					break;
+				}
+			}
+			if(seaMapWithLandEnemy === true)
+				break;
+		}
+	}
+	
+	return turnOffCyborgs;
+}
+
+
+function recycleObsoleteDroids() {
+	var tanks = enumGroup(attackGroup);
+	//var vtols = enumGroup(vtolGroup);
+	var systems = enumGroup(sensorGroup).concat(enumDroid(me, DROID_CONSTRUCT));
+ 
+	for(var i = 0; i < systems.length; ++i) {
+		if((systems[i].propulsion != "hover01") && componentAvailable("hover01"))
+			orderDroid(systems[i], DORDER_RECYCLE);
+	}
+	
+	if(forceHover === true) {
+		for(var i = 0; i < tanks.length; ++i) {
+			if((tanks[i].propulsion != "hover01") && componentAvailable("hover01"))
+				orderDroid(tanks[i], DORDER_RECYCLE);
+		}
+	}
+}
+
+//for stealing technology
+function completeRequiredResearch(item) {
+	var reqRes = findResearch(item);
+	for(var s = 0; s < reqRes.length; ++s) {
+		enableResearch(reqRes[s].name, me);
+		completeResearch(reqRes[s].name, me);
+	}
+}
+
+//Check the units technology and enable it for Cobra if it is new
+//Called from nexusWave. (insane difficulty only). Needs to complete the research path to a weapon
+function stealEnemyTechnology(droid) {
+	var body = droid.body;
+	var propulsion = droid.propulsion;
+	var weapon = droid.weapons[0].name;
+	
+	//steal body technology
+	if(!componentAvailable(body)) {
+		for(var x = 0; x < bodyStats.length; ++x) {
+			if(bodyStats[x].stat === body) {
+				completeRequiredResearch(bodyStats[x].res);
+				enableResearch(bodyStats[x].res, me);
+				completeResearch(bodyStats[x].res, me);
+				logObj(droid, "Assimilated player " + droid.player +"'s body -> " + body + ".");
+				break;
+			}
+		}
+	}
+	
+	//steal propulsion technology
+	if(!componentAvailable(propulsion)) {
+		for(var x = 0; x < propulsionStats.length; ++x) {
+			if(propulsionStats[x].stat === propulsion) {
+				completeRequiredResearch(propulsionStats[x].res);
+				enableResearch(propulsionStats[x].res, me);
+				completeResearch(propulsionStats[x].res, me);
+				logObj(droid, "Assimilated player " + droid.player +"'s propulsion -> " + propulsion + ".");
+				break;
+			}
+		}
+	}
+	
+	//steal weapon technology
+	if(!componentAvailable(weapon)) {
+		
+		if(droid.droidType == DROID_SENSOR) {
+			/*
+			const sensorRes = [
+				"R-Sys-Sensor-Turret01",
+				"R-Sys-CBSensor-Turret01",
+				"R-Sys-VTOLCBS-Turret01",
+				"R-Sys-VTOLStrike-Turret01",
+				"R-Sys-RadarDetector01",
+				"R-Sys-ECM-Upgrade01",
+				"R-Sys-Sensor-WS",
+			];
+			
+			for(var y = 0; y < sensorTurrets.length; ++y) {
+				if(sensorTurrets[y] === weapon) {
+					completeRequiredResearch(findResearch(sensorRes[y]));
+					enableResearch(sensorRes[y], me);
+					completeResearch(sensorRes[y], me);
+					logObj(droid, "Assimilated player " + droid.player + "'s sensor -> " + weapon + ".");
+					break;
+				}
+			}
+			*/
+		}
+		else {
+			var breakOut = false;
+			for(var weaponList in weaponStats) {
+				if(isVTOL(droid)) {
+					for(var y = 0; y < weaponStats[weaponList].vtols.length; ++y) {
+						if(weaponStats[weaponList].vtols[y].stat === weapon) {
+							completeRequiredResearch(weaponStats[weaponList].vtols[y].res);
+							enableResearch(weaponStats[weaponList].vtols[y].res, me);
+							completeResearch(weaponStats[weaponList].vtols[y].res, me);
+							logObj(droid, "Assimilated player " + droid.player + "'s vtol weapon -> " + weapon + ".");
+							breakOut = true;
+							break;
+						}
+					}
+				}
+				else if(droid.droidType == DROID_WEAPON) {
+					for(var y = 0; y < weaponStats[weaponList].weapons.length; ++y) {
+						if(weaponStats[weaponList].weapons[y].stat === weapon) {
+							completeRequiredResearch(weaponStats[weaponList].weapons[y].res);
+							enableResearch(weaponStats[weaponList].weapons[y].res, me);
+							completeResearch(weaponStats[weaponList].weapons[y].res, me);
+							logObj(droid, "Assimilated player " + droid.player +"'s tank weapon -> " + weapon + ".");
+							breakOut = true;
+							break;
+						}
+					}
+				}
+				else if(droid.droidType == DROID_CYBORG) {
+					for(var y = 0; y < weaponStats[weaponList].templates.length; ++y) {
+						if(weaponStats[weaponList].templates[y].weapons[0] === weapon) {
+							completeRequiredResearch(weaponStats[weaponList].templates[y].res);
+							enableResearch(weaponStats[weaponList].templates[y].res, me);
+							completeResearch(weaponStats[weaponList].templates[y].res, me);
+							logObj(droid, "Assimilated player " + droid.player + "'s template weapon -> " + weapon + ".");
+							breakOut = true;
+							break;
+						}
+					}
+				}
+				
+				if(breakOut === true)
+					break;
+			}
+		}
+	}
+	
+	
+	makeComponentAvailable(body, me);
+	makeComponentAvailable(propulsion, me);
+	makeComponentAvailable(weapon, me);
+	//Do some other kinds of droid analysis here
+}
+
+//On insane difficulty Cobra can mess with other player's units
+//in ways of stopping what they are doing or ordering them to attack
+//another player or even stealing technology.
+//This effect only occurs while the Cobra command center is not destroyed
+
+/*
+    Disruption of communications
+    Spying on your plans and technologies --Partial
+    Causing your technologies to fail --done
+    Assimilating your technologies and using them to fight against you --done
+*/
+	
+function nexusWave() {
+	if(isDefined(nexusWaveOn) && (nexusWaveOn === true) && countStruct(structures.hqs) > 0) {
+		var enemies = playerAlliance(false);
+		var firstEnemy = enemies[random(enemies.length)];
+		var firstDroids = enumDroid(firstEnemy).filter(function(d) { 
+			return isVTOL(d) || d.droidType == DROID_WEAPON || d.droidType == DROID_CYBORG || d.droidType == DROID_SENSOR
+		});
+		var secondEnemy = enemies[random(enemies.length)];
+		var secondDroids = enumDroid(secondEnemy).filter(function(d) { 
+			return isVTOL(d) || d.droidType == DROID_WEAPON || d.droidType == DROID_CYBORG || d.droidType == DROID_SENSOR
+		});
+		
+		//Steal a random player's technology
+		if(isDefined(secondEnemy) && isDefined(secondDroids) && (secondDroids.length > 0)) {
+			
+			if(isDefined(firstEnemy) && isDefined(firstDroids) && (firstDroids.length > 0)) {
+				var dr = secondDroids[random(secondDroids.length)];
+				stealEnemyTechnology(dr);
+			}
+			
+			var dr = secondDroids[random(secondDroids.length)];
+			stealEnemyTechnology(dr);
+			var enemyStruct = enumStruct(firstEnemy);
+			
+			if(enemyStruct.length > 0) {
+				if(secondDroids.length > 0) {
+					if(!random(12)) {
+						//log("NXwave -> player " + secondDroids[0].player + " told to attack player " + enemyStruct[0].player);
+						for(var j = 0; j < enemyStruct.length; ++j) {
+							if(isDefined(secondDroids[j]) && isDefined(enemyStruct[j]) && secondDroids[j] && enemyStruct[j])
+								orderDroidObj(secondDroids[j], DORDER_ATTACK, enemyStruct[j]);
+							else
+								break;
+						}
+					}
+					else if(!random(6)) {
+						//log("NXwave -> player " + secondDroids[0].player + "'s droids malfunctioned.");
+						for(var j = 0; j < secondDroids.length; ++j) {
+							//Basically does not do anything until order to do something again
+							if(!random(2))
+								orderDroidObj(secondDroids[j], DORDER_ATTACK, secondDroids[j]);
+							else {
+								//Or attack own units
+								var dr = secondDroids[j];
+								var rg = enumRange(dr.x, dr.y, 8, me, false).filter(function(obj) {
+									return obj.type == DROID
+								});
+								if((rg.length > 0) && isDefined(rg[0]) && rg[0])
+									orderDroidObj(secondDroids[j], DORDER_ATTACK, rg[random(rg.length)]);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+//Only on Insane difficulty
+function betrayScavengers() {
+	if(isDefined(scavengerNumber) && isDefined(nexusWave) 
+		&& (nexusWave === true) && allianceExistsBetween(scavengerNumber, me)) {
+			
+		if(countStruct(structures.derricks) < 6 && gameTime > 80000) {
+			var tanks = enumGroup(attackGroup);
+			var derr = enumStruct(scavengerNumber, structures.derricks);
+			derr.sort(distanceToBase);
+			
+			setAlliance(scavengerNumber, me, false);
+			
+			for(var i = 0; i < tanks.length; ++i) {
+				if(isDefined(tanks[i]) && isDefined(derr[0]) && tanks[i] && derr[0])
+					orderDroidObj(tanks[i], DORDER_ATTACK, derr[0]);
+			}
+			
+			return; //break out of queue
+		}
+	}
+	else if(isDefined(nexusWave) && nexusWave === false)
+		return;
+	
+	queue("betrayScavengers", 30000);
+}
+
+//If playing teams, then break alliance with everybody and try to conquer them.
+//Completely pointless feature, but makes everything a bit more fun.
+function freeForAll() {
+	var won = true;
+	
+	for (var p = 0; p < maxPlayers; ++p) {
+		if (p != me && !allianceExistsBetween(p, me)) {
+			var factories = countStruct("A0LightFactory", p) + countStruct("A0CyborgFactory", p);
+			var droids = countDroid(DROID_ANY, p);
+			if (droids > 0 || factories > 0) {
+				won = false;
+				break;
+			}
+		}
+	}
+	
+	if(won === true) {
+		var friends = playerAlliance(true);
+		if(friends.length > 0) {
+			if(isDefined(scavengerNumber))
+				setAlliance(scavengerNumber, me, false);
+			
+			lastMsg = "FREE FOR ALL!";
+			for(var i = 0; i < friends.length; ++i) {
+				chat(friends[i], lastMsg);
+				setAlliance(friends[i], me, false);
+			}
+		}
+	}
+	else 
+		queue("freeForAll", 120000);
+}
+
+/*
+function getDrumsAndArtifacts() {
+	var objs = enumFeature(-1, OilDrum).concat(enumFeature(-1, Crate));
+}
+*/
+
 // --- game events
 
 //Needs to be better here
-function eventResearched(tech, labparam) {
-	
+function eventResearched() {
 	if(!isDefined(techlist) || !isDefined(artillExtra))
 		return;
 	
 	if(playerPower(me) < 20) {
-		if(lastMsg != "need power") {
+		if((playerAlliance(true).length > 0) && (lastMsg != "need power")) {
 			lastMsg = "need power";
 			chat(ALLIES, lastMsg);
 		}
@@ -1083,60 +1419,87 @@ function eventResearched(tech, labparam) {
 			var found = pursueResearch(lab, techlist);
 			
 			if(!found)
-				found = pursueResearch(lab, "R-Struc-PowerModuleMk1");
-			if(!found)
 				found = pursueResearch(lab, "R-Vehicle-Prop-Halftracks");
+			if(!found)
+				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
+			if(isDefined(forceHover) && forceHover === true) {
+				if(!found)
+					found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
+			}
+			if(!found)
+				found = pursueResearch(lab, fastestResearch);
+			
+			
+			if(isDefined(turnOffCyborgs)) {
+				if(turnOffCyborgs === false) {
+					if(!found)
+						found = pursueResearch(lab, kineticResearch);
+				}
+				else {
+					if(!found)
+						found = pursueResearch(lab, "R-Vehicle-Metals09");
+				}
+			}
+		
 			if(!found)
 				found = pursueResearch(lab, mgWeaponTech);
 			if(!found)
-				found = pursueResearch(lab, fastestResearch);
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
-			if(!found)
-				found = pursueResearch(lab, kineticResearch);
-			if(!found)
 				found = pursueResearch(lab, "R-Wpn-MG-Damage08");
 			
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
-			
-			if(componentAvailable("Body11ABT")) {
+			if(!random(2) && componentAvailable("Body11ABT")) {
 				if(!found)
 					found = pursueResearch(lab, weaponTech);
 				if(!found)
 					found = pursueResearch(lab, extraTech);
 				if(!found)
-					found = pursueResearch(lab, artilleryTech);
-				if(!found)
 					found = pursueResearch(lab, artillExtra);
+				if(!found)
+					found = pursueResearch(lab, artilleryTech);
+			}
+			else if(!random(2) && componentAvailable("Body11ABT")) {
+				if(!found)
+					found = pursueResearch(lab, vtolExtras);
+				if(!found)
+					found = pursueResearch(lab, vtolWeapons);
 				if(!found)
 					found = pursueResearch(lab, antiAirTech);
 				if(!found)
-					found = pursueResearch(lab, vtolWeapons);
-			
-				if(!found)
-					found = pursueResearch(lab, laserTech);
+					found = pursueResearch(lab, antiAirExtras);
+			}
+			else {
 				if(!found)
 					found = pursueResearch(lab, laserExtra);
 				if(!found)
-					found = pursueResearch(lab, thermalResearch);
-				if(!found)
-					found = pursueResearch(lab, bodyResearch);
+					found = pursueResearch(lab, laserTech);
 			}
+			if(isDefined(turnOffCyborgs) && turnOffCyborgs === false && !found)
+				found = pursueResearch(lab, cyborgWeaps);
 			
+			if(!found)
+				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
+			if(!found)
+				found = pursueResearch(lab, bodyResearch);
+			
+			
+			if(isDefined(turnOffCyborgs)) {
+				if(turnOffCyborgs === false) {
+					if(!found)
+						found = pursueResearch(lab, thermalResearch);
+				}
+				else {
+					if(!found)
+						found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
+				}
+			}
+	
+	
 			if(!found)
 				found = pursueResearch(lab, "R-Sys-Autorepair-General");
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-RprFac-Upgrade06");
-			if(!found && cyborgWeaps.length > 0)
-				found = pursueResearch(lab, cyborgWeaps);
-			if(!found)
-				found = pursueResearch(lab, vtolExtras);
 			if(!found)
 				found = pursueResearch(lab, fundamentalResearch);
-			if(!found)
-				found = pursueResearch(lab, antiAirExtras);
-			if(!found)
+			if(!found && componentAvailable("Body11ABT"))
 				found = pursueResearch(lab, "R-Struc-Materials09");
 		}
 	}
@@ -1198,7 +1561,7 @@ function eventGameInit() {
 		groupAdd(vtolGroup, vtols[i]);
 	}
 	for(var i = 0; i < sensors.length; ++i) {
-		groupAdd(attackGroup, sensors[i]);
+		groupAdd(sensorGroup, sensors[i]);
 	}
 	// --END Group initialization
 }
@@ -1210,43 +1573,63 @@ function eventStartLevel() {
 		eventStructureBuilt(structlist[i]);
 	}
 	
+	nexusWaveOn = false;
+	
+	//Need to search for scavenger player number
+	//Keep undefined if there are no scavenger
+	for(var x = maxPlayers; x < 11; ++x) {
+		if(enumStruct(x).length > 0) {
+			scavengerNumber = x;
+			break;
+		}
+	}
+	
 	diffPerks();
 	personality = random(3) + 1;
 	initializeResearchLists();
 	
+	forceHover = checkIfSeaMap();
+	
 	buildOrder();
-	setTimer("buildOrder", 300);
-	setTimer("produce", 700);
-	setTimer("repairAll", 1500);
-	setTimer("attackEnemyOil", 4000);
-	setTimer("spyRoutine", 8000);
-	setTimer("checkMood", 20000);
+	setTimer("buildOrder", 300 + 3 * random(60));
+	setTimer("produce", 700 + 3 * random(60));
+	setTimer("repairAll", 1500 + 3 * random(60));
+	setTimer("attackEnemyOil", 4000 + 3 * random(60));
+	setTimer("spyRoutine", 8000 + 3 * random(60));
+	setTimer("nexusWave", 10000 + 3 * random(70));
+	setTimer("checkMood", 20000 + 3 * random(60));
+	queue("betrayScavengers", 30000 + 3 * random(60));
+	queue("freeForAll", 120000 + 3 * random(60));
 }
 
 function eventAttacked(victim, attacker) {
-	if (attacker && victim && attacker.player != me && !allianceExistsBetween(attacker.player, victim.player)) {
+	if (attacker && victim && (attacker.player != me) && !allianceExistsBetween(attacker.player, victim.player)) {
 		grudgeCount[attacker.player] += 1;
 		
-		var tanks = enumGroup(attackGroup);
-		for (var i = 0; i < tanks.length; i++) {
-			if(isDefined(tanks[i]) && tanks[i] && isDefined(attacker) && attacker && !repairDroid(tanks[i]))
-				orderDroidObj(tanks[i], DORDER_ATTACK, attacker);
+		//find nearby units
+		var units = enumRange(victim, victim.x, victim.y, 6, false).filter(function(obj) {
+			return obj.player === me
+		});
+		
+		for (var i = 0; i < units.length; i++) {
+			if(isDefined(units[i]) && units[i] && isDefined(attacker) && attacker && !repairDroid(units[i])
+				&& droidCanReach(units[i], attacker.x, attacker.y))
+				orderDroidObj(units[i], DORDER_ATTACK, attacker);
 		}
 		
+		//swarm behavior exhibited here. Might be better to do multiple attack points.
 		var vtols = enumGroup(vtolGroup);
 		if(vtols.length > 5) {
-			var derr = enumStruct(attacker, structures.derricks);
-			var fac = enumStruct(attacker, structures.factories);
-			var target = derr[random(derr.length)];
-			var targetFac = fac[random(fac.length)];
+			var targets = enumStruct(attacker, structures.derricks);
+			targets.concat(enumStruct(attacker, structures.factories));
+			targets.concat(enumStruct(attacker, structures.templateFactories));
+			
+			var target = targets[random(targets.length)];
+
 			for (var i = 0; i < vtols.length; i++) {
 				if(vtolReady(vtols[i])) {
-					if(isDefined(target))
+					if(isDefined(target) && target)
 						orderDroidLoc(vtols[i], DORDER_SCOUT, target.x, target.y);
-					else {
-						if(isDefined(targetFac))
-							orderDroidLoc(vtols[i], DORDER_SCOUT, targetFac.x, targetFac.y);
-					}
 				}
 			}
 		}
@@ -1267,13 +1650,16 @@ function eventDroidIdle(droid)
 
 //Increase grudge counter
 function eventGroupLoss(droid, group, size) {
+	if(droid.order == DORDER_RECYCLE)
+		return;
+	
 	var who = enumRange(droid.x, droid.y, 15, ENEMIES, true);
 	addBeacon(droid.x, droid.y, ALLIES);
 	
 	if(who.length > 0)
 		grudgeCount[who[0].player] += 1;
 	
-	if(lastMsg != "need tank" && lastMsg != "need cyborg" && lastMsg != "need vtol") {
+	if((playerAlliance(true).lrngth > 0) && (lastMsg != "need tank") && (lastMsg != "need cyborg") && (lastMsg != "need vtol")) {
 		if (enumGroup(attackGroup).length < 2) {
 			lastMsg = "need tank";
 			chat(ALLIES, lastMsg);
@@ -1291,38 +1677,43 @@ function eventGroupLoss(droid, group, size) {
 
 function eventChat(from, to, message)
 {
-	if (to != me || to == from) {
+	if ((to != me) || (to == from)) {
+		//When on insane difficulty, distrupt communications
+		if(isDefined(nexusWave) && nexusWave === true && (to != me) && !allianceExistsBetween(from, me)) {
+			//do something
+		}
 		return; // not for me
 	}
-	if (message == "need truck" && allianceExistsBetween(from, to)) {
+	
+	if ((message == "need truck") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_CONSTRUCT);
 		if(droids.length <= 3)
 			return;
 		donateObject(droids[random(droids.length)], from);
 	}
-	else if (message == "need power" && allianceExistsBetween(from, to)) {
+	else if ((message == "need power") && allianceExistsBetween(from, to)) {
 		if(playerPower(me) - queuedPower(me) > 0)
 			donatePower(playerPower(me) / 2, from);
 	}
-	else if (message == "need tank" && allianceExistsBetween(from, to)) {
+	else if ((message == "need tank") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_WEAPON);
 		if(droids.length < 6)
 			return;
 		donateObject(droids[random(droids.length)], from);
 	}
-	else if (message == "need cyborg" && allianceExistsBetween(from, to)) {
+	else if ((message == "need cyborg") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_CYBORG);
 		if(droids.length < 6)
 			return;
 		donateObject(droids[random(droids.length)], from);
 	}
-	else if (message == "need vtol" && allianceExistsBetween(from, to)) {
+	else if ((message == "need vtol") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me).filter(function(obj){ return isVTOL(obj); });
 		if(droids.length < 6)
 			return;
 		donateObject(droids[random(droids.length)], from);
 	}
-	else if (message == "help me!" || message == "help me!!" && allianceExistsBetween(from, to)) {
+	else if (((message == "help me!") || (message == "help me!!")) && allianceExistsBetween(from, to)) {
 		var hq = enumStruct(from, structures.hqs);
 		if( hq.length === 1 ) {
 			lastMsg = "Sending units to your command center!";
@@ -1334,7 +1725,7 @@ function eventChat(from, to, message)
 			chat(from, lastMsg);
 		}
 	}
-	else if(message == "friend" && !allianceExistsBetween(from, to) && gameTime > 210000) {
+	else if((message == "friend") && !allianceExistsBetween(from, to) && (gameTime > 210000)) {
 		if(grudgeCount[from] < 5) {
 			lastMsg = "I accept";
 			chat(from, lastMsg);
@@ -1350,28 +1741,27 @@ function eventChat(from, to, message)
 	//Attacks a certain player should they be an enemy. If allied with the target player then
 	//break alliance with the sender and attack them.
 	for(var x = 0; x < maxPlayers; ++x) {
-		if (message == "attack" + x && !allianceExistsBetween(x, me) && x != me) {
+		if ((message == ("attack" + x)) && !allianceExistsBetween(x, me) && (x != me)) {
 			attackStuff(x);
 		}
-		if (message == "attack" + x && allianceExistsBetween(x, me) ) {
+		if ((message == ("attack" + x)) && allianceExistsBetween(x, me) ) {
 			if(x !== me)
 				chat(from, "I'm no traitor");
-			else
-				chat(from, "You are no friend");
 			
 			setAlliance(from, me, false);
-
-			chat(ALLIES, "Player " + from + " is a traitor");
+			if(from != me)
+				chat(ALLIES, "Player " + from + " is a traitor");
+			
 			attackStuff(from);
 			break;
 		}
-	}
+}
 }
 
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message) {
-	if(allianceExistsBetween(from, to) || to == from) {
-		if(lastMsg != "Help is on the way!") {
+	if(allianceExistsBetween(from, to) || (to == from)) {
+		if((playerAlliance(true).length > 0) && (lastMsg != "Help is on the way!")) {
 			lastMsg = "Help is on the way!";
 			chat(from, lastMsg);
 		}
@@ -1380,11 +1770,11 @@ function eventBeacon(x, y, from, to, message) {
 		var tanks = enumGroup(attackGroup);
 		var vtols = enumGroup(vtolGroup);
 		for (var i = 0; i < cyborgs.length; i++) {
-			if(!repairDroid(cyborgs[i]))
+			if(!repairDroid(cyborgs[i]) && droidCanReach(cyborgs[i], x, y))
 				orderDroidLoc(cyborgs[i], DORDER_SCOUT, x, y);
 		}
 		for (var i = 0; i < tanks.length; i++) {
-			if(!repairDroid(tanks[i]))
+			if(!repairDroid(tanks[i]) && droidCanReach(tanks[i], x, y))
 				orderDroidLoc(tanks[i], DORDER_SCOUT, x, y);
 		}
 		for (var i = 0; i < vtols.length; i++) {
@@ -1394,22 +1784,35 @@ function eventBeacon(x, y, from, to, message) {
 	}
 }
 
-function eventObjectTransfer(obj, from)
-{
-	if(from !== me && allianceExistsBetween(from, me)) {
+/*
+function eventSyncRequest(id, x, y, obj1, obj2) {
+	if(id == "") {
+		setHealth(obj1, 100);
+	}
+}
+*/
+
+function eventObjectTransfer(obj, from) {
+	logObj(obj, "eventObjectTransfer event. from: " + from + ". health: " + obj.health);
+	
+	if((obj.health > 100) && !allianceExistsBetween(from, me)) {
+		log("eventObjectTranfer: Destroying droid with health over 100%");
+		removeObject(obj, true);
+		//syncRequest("", obj.x, obj.y, obj);
+	}
+	
+	if((from !== me) && allianceExistsBetween(from, me)) {
 		if(obj.type == DROID)
 			eventDroidBuilt(obj, null);
 		lastMsg = "Thank you!";
 		chat(from, lastMsg);
 	}
-	/*
-	if(from == me && !allianceExistsBetween(obj.player, me)) {
-		if(lastMsg != "") {
-			lastMsg = "";
-			chat(from, lastMsg);
-		}
+	
+	//NexusWave transer
+	if((from !== me) && (from === obj.player) && !allianceExistsBetween(obj.player, me)) {
+		if(obj.type == DROID)
+			eventDroidBuilt(obj, null);
 	}
-	*/
 }
 
 //Mostly meant to reduce stress about enemies.
