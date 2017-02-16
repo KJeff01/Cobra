@@ -75,6 +75,8 @@ const sensorTurrets = [
 	"Sys-CBTurret01", //counter-battery
 	"Sys-VTOLCBTurret01", //VTOL counter-battery
 	"Sys-VstrikeTurret01", //VTOL Strike turret
+	"RadarDetector", //Radar detector
+	"ECM1TurretMk1", //ECM turret
 	"Sensor-WideSpec", // wide spectrum sensor
 ];
 
@@ -306,11 +308,11 @@ const weaponStats = {
 		],
 		extras: [
 			"R-Wpn-Cannon-Accuracy02",
-			"R-Wpn-Cannon-ROF06",
 			"R-Wpn-Cannon-Damage09",
-			"R-Vehicle-Engine09", // cannons are heeeeavy
+			"R-Wpn-Cannon-ROF06",
 			"R-Wpn-Rail-Damage03", // sure it's required by gauss, but what if our AI uses only cyborgs and vtols?
 			"R-Wpn-Rail-ROF03",
+			"R-Vehicle-Engine09", // cannons are heeeeavy
 		],
 	},
 	cannons_AA: {
