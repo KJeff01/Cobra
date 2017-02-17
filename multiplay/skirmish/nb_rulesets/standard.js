@@ -653,6 +653,10 @@ const weaponStats = {
 			{ res: "R-Defense-AA-Laser", stat: "P0-AASite-Laser", defrole: DEFROLE.ANTIAIR }, // stormbringer
 		],
 		templates: [],
-		extras: [],
+		extras: [
+			"R-Wpn-Energy-Damage03",
+			"R-Wpn-Energy-ROF03",
+			"R-Wpn-Energy-Accuracy01",
+		],
 	},
 };
