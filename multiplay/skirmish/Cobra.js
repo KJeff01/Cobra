@@ -191,18 +191,19 @@ const subpersonalities = {
 		"antiAir": weaponStats.lasers_AA,
 		"res": [
 			"R-Wpn-MG-Damage01",
-			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
+			"R-Struc-PowerModuleMk1",
+			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-Cannon-Damage02",
 			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
-			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-MG-Damage04",
 			"R-Wpn-Cannon-ROF01",
 			"R-Wpn-Cannon-Damage03",
 			"R-Struc-VTOLPad-Upgrade01",
 			"R-Wpn-Bomb02",
+			"R-Struc-RprFac-Upgrade06",
 		],
 	},
 	AR: {
@@ -214,18 +215,19 @@ const subpersonalities = {
 		"antiAir": weaponStats.lasers_AA,
 		"res": [
 			"R-Wpn-MG-Damage01",
-			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
+			"R-Struc-PowerModuleMk1",
+			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-Flamer-Damage02",
 			"R-Wpn-Flamer-ROF01",
 			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
-			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-MG-Damage04",
 			"R-Wpn-Flamer-ROF03",
 			"R-Struc-VTOLPad-Upgrade01",
 			"R-Wpn-Bomb02",
+			"R-Struc-RprFac-Upgrade06",
 		],
 	},
 	AB: {
@@ -237,16 +239,17 @@ const subpersonalities = {
 		"antiAir": weaponStats.lasers_AA,
 		"res": [
 			"R-Wpn-MG-Damage01",
-			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
+			"R-Struc-PowerModuleMk1",
+			"R-Struc-RprFac-Upgrade01",
 			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
-			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-MG-Damage04",
 			"R-Wpn-Rocket06-IDF",
 			"R-Struc-VTOLPad-Upgrade01",
 			"R-Wpn-Bomb02",
+			"R-Struc-RprFac-Upgrade06",
 		],
 	},
 }
@@ -574,9 +577,9 @@ function buildPhase1() {
 	if(countAndBuild(structures.labs, 1)) { return true; }
 	if(countAndBuild(structures.hqs, 1)) { return true; }
 	
-	if ((countStruct(structures.derricks) - countStruct(structures.gens) * 4) > 0 
-		&& isStructureAvailable(structures.gens) || countStruct(structures.gens) < 1
-		&& buildStop === 0) 
+	if (((countStruct(structures.derricks) - (countStruct(structures.gens) * 4)) > 0) 
+		&& isStructureAvailable(structures.gens) || (countStruct(structures.gens) < 1)
+		&& (buildStop === 0)) 
 	{
 		buildStop = 1;
 		if(buildStuff(structures.gens)) {
@@ -665,7 +668,7 @@ function buildPhase5() {
 }
 
 function buildOrder() {
-	recycleObsoleteDroids();
+	if(recycleObsoleteDroids()) { return false; }
 	if(checkUnfinishedStructures()) { return false; }
 	if(buildPhase1()) { return false; }
 	lookForOil();
@@ -1129,10 +1132,13 @@ function recycleObsoleteDroids() {
 	var tanks = enumGroup(attackGroup);
 	//var vtols = enumGroup(vtolGroup);
 	var systems = enumGroup(sensorGroup).concat(enumDroid(me, DROID_CONSTRUCT));
+	var temp = false;
  
 	for(var i = 0; i < systems.length; ++i) {
-		if((systems[i].propulsion != "hover01") && componentAvailable("hover01"))
+		if((systems[i].propulsion != "hover01") && componentAvailable("hover01")) {
+			temp = true;
 			orderDroid(systems[i], DORDER_RECYCLE);
+		}
 	}
 	
 	if(forceHover === true) {
@@ -1141,6 +1147,8 @@ function recycleObsoleteDroids() {
 				orderDroid(tanks[i], DORDER_RECYCLE);
 		}
 	}
+	
+	return temp;
 }
 
 //for stealing technology
@@ -1309,8 +1317,7 @@ function nexusWave() {
 					if(!random(12)) {
 						//log("NXwave -> player " + secondDroids[0].player + " told to attack player " + enemyStruct[0].player);
 						for(var j = 0; j < enemyStruct.length; ++j) {
-							if(isDefined(secondDroids[j]) && isDefined(enemyStruct[j])
-								&& secondDroids[j] && enemyStruct[j])
+							if(isDefined(secondDroids[j]) && isDefined(enemyStruct[j]))
 								orderDroidObj(secondDroids[j], DORDER_ATTACK, enemyStruct[j]);
 							else
 								break;
@@ -1328,7 +1335,7 @@ function nexusWave() {
 								var rg = enumRange(dr.x, dr.y, 8, me, false).filter(function(obj) {
 									return obj.type == DROID
 								});
-								if((rg.length > 0) && isDefined(rg[0]) && rg[0])
+								if((rg.length > 0) && isDefined(rg[0]))
 									orderDroidObj(secondDroids[j], DORDER_ATTACK, rg[random(rg.length)]);
 							}
 						}
@@ -1486,6 +1493,8 @@ function eventResearched() {
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 			if(!found)
+				found = pursueResearch(lab, "R-Sys-Autorepair-General");
+			if(!found)
 				found = pursueResearch(lab, bodyResearch);
 			
 			
@@ -1501,10 +1510,6 @@ function eventResearched() {
 			}
 	
 	
-			if(!found)
-				found = pursueResearch(lab, "R-Sys-Autorepair-General");
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-RprFac-Upgrade06");
 			if(!found)
 				found = pursueResearch(lab, fundamentalResearch);
 			if(!found && componentAvailable("Body11ABT"))
@@ -1611,9 +1616,11 @@ function eventStartLevel() {
 }
 
 function eventAttacked(victim, attacker) {
+	if(isDefined(scavengerNumber) && (attacker.player === scavengerNumber))
+		return;
+	
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player)) {
-		if(!isDefined(scavengerNumber) || (attacker.player !== scavengerNumber))
-			grudgeCount[attacker.player] += 1;
+		grudgeCount[attacker.player] += 1;
 		
 		//find nearby units
 		var units = enumRange(victim.x, victim.y, 8, me, false).filter(function(d) {
@@ -1641,23 +1648,13 @@ function eventAttacked(victim, attacker) {
 
 			for (var i = 0; i < vtols.length; i++) {
 				if(vtolReady(vtols[i])) {
-					if(isDefined(target) && target)
+					if(isDefined(target))
 						orderDroidLoc(vtols[i], DORDER_SCOUT, target.x, target.y);
 				}
 			}
 		}
-		if((!isDefined(scavengerNumber) || (attacker.player !== scavengerNumber)) && (grudgeCount[attacker.player] > 5))
+		if(grudgeCount[attacker.player] > 5)
 			attackStuff(attacker.player);
-	}
-}
-
-function eventDroidIdle(droid)
-{
-	if(droid.droidType == DROID_CONSTRUCT || droid.droidType == DROID_SENSOR)
-		return false;
-	
-	if(droid.droidType == DROID_WEAPON || droid.droidType == DROID_CYBORG) {
-		orderDroid(droid, DORDER_RTB);
 	}
 }
 
