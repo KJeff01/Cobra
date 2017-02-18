@@ -92,11 +92,13 @@ function diffPerks() {
 		case HARD:
 			if(!isStructureAvailable("A0PowMod1"))
 				completeRequiredResearch("R-Struc-PowerModuleMk1");
+			makeComponentAvailable("PlasmaHeavy", me);
 			break;
 		case INSANE:
 			if(!isStructureAvailable("A0PowMod1"))
 				completeRequiredResearch("R-Struc-PowerModuleMk1");
 			nexusWaveOn = true;
+			makeComponentAvailable("PlasmaHeavy", me);
 			if(isDefined(scavengerNumber))
 				setAlliance(scavengerNumber, me, true); //Scavs are friendly
 			break;
@@ -350,6 +352,10 @@ function buildAttacker(struct) {
 		}
 	}
 	
+	//on hard difficulty and above
+	if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(40))
+		weap = "PlasmaHeavy";
+	
 	if((useHover === true || forceHover === true || !random(12)) && componentAvailable("hover01")) {
 		buildDroid(struct, "Hover Droid", tankBody, "hover01", null, null, weap, weap);
 		return true; //Forced success
@@ -573,9 +579,18 @@ function buildDefenses() {
 }
 
 function buildPhase1() {
-	if(countAndBuild(structures.factories, 1)) { return true; }
-	if(countAndBuild(structures.labs, 1)) { return true; }
-	if(countAndBuild(structures.hqs, 1)) { return true; }
+	
+	//if a hover map without land enemies, then build research labs first to get to hover propulsion even faster
+	if((forceHover === false) || (seaMapWithLandEnemy === true)) {
+		if(countAndBuild(structures.factories, 1)) { return true; }
+		if(countAndBuild(structures.labs, 1)) { return true; }
+		if(countAndBuild(structures.hqs, 1)) { return true; }
+	}
+	else {
+		if(countAndBuild(structures.labs, 2)) { return true; }
+		if(countAndBuild(structures.factories, 1)) { return true; }
+		if(countAndBuild(structures.hqs, 1)) { return true; }
+	}
 	
 	if (((countStruct(structures.derricks) - (countStruct(structures.gens) * 4)) > 0) 
 		&& isStructureAvailable(structures.gens) || (countStruct(structures.gens) < 1)
@@ -904,15 +919,19 @@ function produce() {
 	}
 }
 
+//Repair a droid with the option of forcing it to.
+//This repair function will check droid experience and make them repair when 
 function repairDroid(droid, force) {
 	if(!isDefined(force))
 		force = false;
+	
+	var percent = 30;
 	
 	if((droid.order === DORDER_RTR) && ((droid.health < 100) || force))
 		return true;
 	
 	var repairs = countStruct(structures.extras[0]);
-	if((repairs > 0) && ((droid.health < 30) || force)) {
+	if((repairs > 0) && (force || (droid.health < percent))) {
 		orderDroid(droid, DORDER_RTR);
 		return true;
 	}
@@ -1163,10 +1182,16 @@ function completeRequiredResearch(item) {
 	completeResearch(item, me);
 }
 
-//Try to determine if the droid has superior defenses.
+/*Try to determine if the droid has superior defenses.
 function analyzeDroidAlloys(droid) {
+	var body = droid.body;
+	var propulsion = droid.propulsion;
+	var weapon;
+	if(isDefined(droid.weapons[0]))
+		weapon = droid.weapons[0].name;
 	
-}
+	var bodyPoint = 
+}*/
 
 //Check the units technology and enable it for Cobra if it is new
 //Called from nexusWave. (insane difficulty only). Needs to complete the research path to a weapon
@@ -1204,7 +1229,7 @@ function stealEnemyTechnology(droid) {
 	}
 	
 	//steal weapon technology
-	if(!componentAvailable(weapon)) {
+	if(isDefined(weapon) && !componentAvailable(weapon)) {
 		
 		if(droid.droidType == DROID_SENSOR) {
 			/*
@@ -1273,7 +1298,7 @@ function stealEnemyTechnology(droid) {
 	makeComponentAvailable(propulsion, me);
 	makeComponentAvailable(weapon, me);
 	
-	analyzeDroidAlloys(droid);
+	//analyzeDroidAlloys(droid);
 }
 
 //On insane difficulty Cobra can mess with other player's units
@@ -1300,44 +1325,50 @@ function nexusWave() {
 			return isVTOL(d) || d.droidType == DROID_WEAPON || d.droidType == DROID_CYBORG || d.droidType == DROID_SENSOR
 		});
 		
-		//Steal a random player's technology
+		//Steal a randomly selected player technology
+		if(isDefined(firstEnemy) && isDefined(firstDroids) && (firstDroids.length > 0)) {
+			var dr = firstDroids[random(firstDroids.length)];
+			stealEnemyTechnology(dr);
+		}
+		
 		if(isDefined(secondEnemy) && isDefined(secondDroids) && (secondDroids.length > 0)) {
-			
-			if(isDefined(firstEnemy) && isDefined(firstDroids) && (firstDroids.length > 0)) {
-				var dr = secondDroids[random(secondDroids.length)];
-				stealEnemyTechnology(dr);
-			}
-			
 			var dr = secondDroids[random(secondDroids.length)];
 			stealEnemyTechnology(dr);
-			var enemyStruct = enumStruct(firstEnemy);
+		}
 			
-			if(enemyStruct.length > 0) {
-				if(secondDroids.length > 0) {
-					if(!random(12)) {
-						//log("NXwave -> player " + secondDroids[0].player + " told to attack player " + enemyStruct[0].player);
-						for(var j = 0; j < enemyStruct.length; ++j) {
-							if(isDefined(secondDroids[j]) && isDefined(enemyStruct[j]))
-								orderDroidObj(secondDroids[j], DORDER_ATTACK, enemyStruct[j]);
-							else
+		var enemyStruct = enumStruct(firstEnemy);
+			
+		if(enemyStruct.length > 0) {
+			enemyStruct = enemyStruct[random(enemyStruct.length)];
+			
+			if(!random(12)) {
+				//log("NXwave -> player " + secondDroids[0].player + " told to attack player " + enemyStruct[0].player);
+				for(var j = 0; j < enemyStruct.length; ++j) {
+					if(isDefined(secondDroids[j]) && isDefined(enemyStruct))
+						orderDroidObj(secondDroids[j], DORDER_ATTACK, enemyStruct);
+					else
+						break;
+				}
+			}
+			else if(!random(6)) {
+				//log("NXwave -> player " + secondDroids[0].player + "'s droids malfunctioned.");
+				for(var j = 0; j < secondDroids.length; ++j) {
+					//Basically does not do anything until order to do something again
+					if(!random(2) && isDefined(secondDroids[j]))
+						orderDroidObj(secondDroids[j], DORDER_ATTACK, secondDroids[j]);
+					else {
+						//Or attack own units
+						var dr = secondDroids[j];
+						var rg = enumRange(dr.x, dr.y, 8, me, false).filter(function(obj) {
+							return obj.type == DROID
+						});
+						if((rg.length > 0)) {
+							rg = rg[random(rg.length)];
+						
+							if(isDefined(rg))
+								orderDroidObj(secondDroids[j], DORDER_ATTACK, rg);
+							else 
 								break;
-						}
-					}
-					else if(!random(6)) {
-						//log("NXwave -> player " + secondDroids[0].player + "'s droids malfunctioned.");
-						for(var j = 0; j < secondDroids.length; ++j) {
-							//Basically does not do anything until order to do something again
-							if(!random(2))
-								orderDroidObj(secondDroids[j], DORDER_ATTACK, secondDroids[j]);
-							else {
-								//Or attack own units
-								var dr = secondDroids[j];
-								var rg = enumRange(dr.x, dr.y, 8, me, false).filter(function(obj) {
-									return obj.type == DROID
-								});
-								if((rg.length > 0) && isDefined(rg[0]))
-									orderDroidObj(secondDroids[j], DORDER_ATTACK, rg[random(rg.length)]);
-							}
 						}
 					}
 				}
@@ -1434,12 +1465,12 @@ function eventResearched() {
 			
 			if(!found)
 				found = pursueResearch(lab, "R-Vehicle-Prop-Halftracks");
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
-			if(isDefined(forceHover) && forceHover === true) {
+			if(isDefined(forceHover) && (forceHover === true)) {
 				if(!found)
 					found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
 			}
+			if(!found)
+				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
 			if(!found)
 				found = pursueResearch(lab, fastestResearch);
 			
@@ -1627,7 +1658,9 @@ function eventAttacked(victim, attacker) {
 			return (d.type == DROID) && ((d.droidType == DROID_WEAPON) || (d.droidType == DROID_CYBORG))
 		});
 		if(units.length < 4)
-			units = enumGroup(attackGroup);
+			units = enumRange(victim.x, victim.y, 30, me, false).filter(function(d) {
+						return (d.type == DROID) && ((d.droidType == DROID_WEAPON) || (d.droidType == DROID_CYBORG))
+					});
 		
 		for (var i = 0; i < units.length; i++) {
 			if(isDefined(units[i]) && isDefined(attacker) && droidCanReach(units[i], attacker.x, attacker.y) && !repairDroid(units[i]))
@@ -1771,7 +1804,7 @@ function eventChat(from, to, message)
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message) {
 	if(allianceExistsBetween(from, to) || (to == from)) {
-		if((playerAlliance(true).length > 0) && (lastMsg != "Help is on the way!")) {
+		if((playerAlliance(true).length > 0) && (lastMsg != "Help is on the way!") && (to !== from)) {
 			lastMsg = "Help is on the way!";
 			chat(from, lastMsg);
 		}
@@ -1825,11 +1858,14 @@ function eventObjectTransfer(obj, from) {
 	}
 }
 
-//Mostly meant to reduce stress about enemies.
+//Mostly meant to reduce stress about enemies or tell if a structures are being destroyed.
 function eventDestroyed(object) {
 	if(!allianceExistsBetween(object.player, me)) {
 		if(grudgeCount[object.player] > 0)
 			grudgeCount[object.player] -= 1;
+	}
+	else if((allianceExistsBetween(object.player, me) || (object.player === me)) && (object.type == STRUCTURE)) {
+		addBeacon(object.x, object.y, ALLIES);
 	}
 }
 
