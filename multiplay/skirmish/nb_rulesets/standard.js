@@ -75,8 +75,6 @@ const sensorTurrets = [
 	"Sys-CBTurret01", //counter-battery
 	"Sys-VTOLCBTurret01", //VTOL counter-battery
 	"Sys-VstrikeTurret01", //VTOL Strike turret
-	"RadarDetector", //Radar detector
-	"ECM1TurretMk1", //ECM turret
 	"Sensor-WideSpec", // wide spectrum sensor
 ];
 
