@@ -92,12 +92,14 @@ function diffPerks() {
 			if(!isStructureAvailable("A0PowMod1"))
 				completeRequiredResearch("R-Struc-PowerModuleMk1");
 			makeComponentAvailable("PlasmaHeavy", me);
+			makeComponentAvailable("MortarEMP", me);
 			break;
 		case INSANE:
 			if(!isStructureAvailable("A0PowMod1"))
 				completeRequiredResearch("R-Struc-PowerModuleMk1");
 			nexusWaveOn = true;
 			makeComponentAvailable("PlasmaHeavy", me);
+			makeComponentAvailable("MortarEMP", me);
 			break;
 	}
 }
@@ -386,7 +388,9 @@ function buildAttacker(struct) {
 	}
 	
 	//on hard difficulty and above
-	if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(40))
+	if(componentAvailable("MortarEMP") && componentAvailable("tracked01") && !random(35))
+		weap = "MortarEMP";
+	else if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(40))
 		weap = "PlasmaHeavy";
 	
 	if(((useHover === true) || (forceHover === true) || !random(12)) && componentAvailable("hover01")) {
