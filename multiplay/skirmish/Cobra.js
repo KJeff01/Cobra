@@ -336,7 +336,7 @@ function buildAttacker(struct) {
 	
 	
 	if(personality === 1) {
-		if((turnOffMG === false) && !random(2))
+		if(!random(2))
 			weaps = subpersonalities["AC"]["primaryWeapon"];
 		else if((turnOffMG === false) && !random(2))
 			weaps = subpersonalities["AC"]["secondaryWeapon"];
@@ -348,7 +348,7 @@ function buildAttacker(struct) {
 			weaps = weaponStats.AS;
 	}
 	else if(personality === 2) {
-		if((turnOffMG === false) && !random(2)) {
+		if(!random(2)) {
 			weaps = subpersonalities["AR"]["primaryWeapon"];
 			useHover = true;
 		}
@@ -362,7 +362,7 @@ function buildAttacker(struct) {
 			weaps = weaponStats.AS;
 	}
 	else{
-		if((turnOffMG === false) && !random(2)) {
+		if(!random(2)) {
 			weaps = subpersonalities["AB"]["primaryWeapon"];
 		}
 		else if((turnOffMG === false) && !random(2))
@@ -423,7 +423,7 @@ function buildCyborg(fac) {
 	var weapon;
 	
 	if(personality === 1) {
-		if((turnOffMG === false) && !random(2))
+		if(!random(2))
 			weapon = subpersonalities["AC"]["primaryWeapon"];
 		else if((turnOffMG === false) && !random(2))
 			weapon = subpersonalities["AC"]["secondaryWeapon"];
@@ -431,7 +431,7 @@ function buildCyborg(fac) {
 			weapon = subpersonalities["AC"]["tertiaryWeapon"];
 	}
 	else if(personality === 2) {
-		if((turnOffMG === false) && !random(2))
+		if(!random(2))
 			weapon = subpersonalities["AR"]["primaryWeapon"];
 		else if((turnOffMG === false) && !random(2))
 			weapon = subpersonalities["AR"]["secondaryWeapon"];
@@ -439,7 +439,7 @@ function buildCyborg(fac) {
 			weapon = subpersonalities["AR"]["tertiaryWeapon"];
 	}
 	else {
-		if((turnOffMG === false) && !random(2))
+		if(!random(2))
 			weapon = subpersonalities["AB"]["primaryWeapon"];
 		else if((turnOffMG === false) && !random(2))
 			weapon = subpersonalities["AB"]["secondaryWeapon"];
@@ -541,6 +541,10 @@ function checkUnfinishedStructures() {
 		var trucks = enumDroid(me, DROID_CONSTRUCT).filter(function(obj){ 
 			return conCanHelp(obj, struct[0].x, struct[0].y)
 		});
+		var breakOut = enumFeature(-1, oilResources).length;
+		
+		if((gameTime > 280000) && (breakOut > 0))
+			return false;
 	
 		if(trucks.length > 0) {
 			if (orderDroidObj(trucks[0], DORDER_HELPBUILD, struct[0]))
@@ -565,11 +569,9 @@ function lookForOil() {
 					if(i + s >= oils.length)
 						break;
 					
-					var safe = enumRange(oils[i + s].x, oils[i + s].y, 6, ENEMIES, false);
+					var safe = enumRange(oils[i + s].x, oils[i + s].y, 4, ENEMIES, false);
 				
-					if (droidCanReach(droids[j], oils[i + s].x, oils[i + s].y)
-						&& conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)
-						&& !droids[j].busy && (!safe.length))
+					if (!safe.length && conCanHelp(droids[j], oils[i + s].x, oils[i + s].y))
 					{
 						droids[j].busy = true;
 						orderDroidBuild(droids[j], DORDER_BUILD, structures.derricks, oils[i + s].x, oils[i + s].y);
@@ -666,7 +668,7 @@ function buildPhase2() {
 
 //Build five research labs and the minimum vtol factories and maximum ground/cyborg factories and repair centers
 function buildPhase3() {
-	if((gameTime > 210000) && countAndBuild(structures.labs, 4)) { return true; }
+	if((gameTime > 210000) && isDefined(turnOffMG) && (turnOffMG === true) && countAndBuild(structures.labs, 4)) { return true; }
 	
 	if((gameTime > 680000) && (playerPower(me) > 110) ) {
 		if(countAndBuild(structures.labs, 5)) { return true; }
@@ -725,11 +727,10 @@ function buildOrder() {
 	if((turnOffMG === false) && (gameTime > 80000) && maintenance()) { return false; } //T1
 	lookForOil();
 	if(buildPhase2()) { return false; }
-	if(!buildDefenses()) { 
-		if(buildPhase3()) { return false; }
-		if(buildPhase4()) { return false; }
-		if(buildPhase5()) { return false; }
-	}
+	if(buildPhase3()) { return false; }
+	if(!buildDefenses()) { return false; }
+	if(buildPhase4()) { return false; }
+	if(buildPhase5()) { return false; }
 	else
 		return false;
 }
@@ -1008,6 +1009,7 @@ function spyRoutine() {
 		tanks.sort(distanceToBase);
 		
 		if(tanks.length > 0 && isDefined(tanks[0]) && tanks[0] && !repairDroid(tanks[0])) {
+			//grudgeCount[object.player] += 2;
 			var xPos = (sensors[0].x + object.x) / 2;
 			var yPos = (sensors[0].y + object.y) / 2;
 			if(droidCanReach(tanks[0], xPos, yPos))
@@ -1044,7 +1046,7 @@ function attackEnemyOil() {
 	else
 		who = tanks;
 	
-	if(who.length < 4)
+	if(who.length < 3)
 		return false;
 
 	for(var i = 0; i < who.length; ++i) {
@@ -1513,10 +1515,13 @@ function eventResearched() {
 	var lablist = enumStruct(me, structures.labs);
 	for (var i = 0; i < lablist.length; ++i) {
 		var lab = lablist[i];
+		var found;
 		if (lab.status == BUILT && structureIdle(lab)) {
 			//This list is only for T1
 			if(turnOffMG === false)
-				var found = pursueResearch(lab, techlist);
+				found = pursueResearch(lab, techlist);
+			else
+				found = pursueResearch(lab, "R-Vehicle-Prop-Tracks");
 			
 			if(!found)
 				found = pursueResearch(lab, "R-Vehicle-Prop-Halftracks");
@@ -1541,7 +1546,7 @@ function eventResearched() {
 				}
 			}
 		
-			//If T1 - Go for machine-guns. else focus on lasers.
+			//If T1 - Go for machine-guns. else focus on lasers and the primary weapon.
 			if(isDefined(turnOffMG) && (turnOffMG === false)) {
 				if(!found)
 					found = pursueResearch(lab, mgWeaponTech);
@@ -1550,22 +1555,19 @@ function eventResearched() {
 			}
 			else {
 				if(!found)
-					found = pursueResearch(lab, laserExtra);
+					found = pursueResearch(lab, extraTech);
 				if(!found)
-					found = pursueResearch(lab, laserTech);
+					found = pursueResearch(lab, laserExtra);
 			}
 			
 			if((gameTime < 280000) && isDefined(turnOffMG) && (turnOffMG === false))
 				continue;
 			
 			if(!random(2) && componentAvailable("Body11ABT")) {
-				//Artillery and lasers on T2/T3 only
-				if(isDefined(turnOffMG) && (turnOffMG === false)) {
-					if(!found)
-						found = pursueResearch(lab, weaponTech);
-					if(!found)
-						found = pursueResearch(lab, extraTech);
-				}
+				if(!found)
+					found = pursueResearch(lab, weaponTech);
+				if(!found)
+					found = pursueResearch(lab, extraTech);
 				if(!found)
 					found = pursueResearch(lab, artillExtra);
 				if(!found)
@@ -1738,6 +1740,10 @@ function eventAttacked(victim, attacker) {
 						return (d.type == DROID) && ((d.droidType == DROID_WEAPON) || (d.droidType == DROID_CYBORG))
 					});
 		
+		//Be a bit aggressive when a structure(namely oil derricks) are attacked.
+		if(victim.type == STRUCTURE)
+			grudgeCount[attacker.player] = 50;
+		
 		for (var i = 0; i < units.length; i++) {
 			if(isDefined(units[i]) && isDefined(attacker) && droidCanReach(units[i], attacker.x, attacker.y) && !repairDroid(units[i]))
 				orderDroidObj(units[i], DORDER_ATTACK, attacker);
@@ -1872,9 +1878,6 @@ function eventChat(from, to, message)
 			attackStuff(x);
 		}
 		if ((message == ("attack" + x)) && allianceExistsBetween(x, me) ) {
-			if(x !== me)
-				chat(from, "I'm no traitor");
-			
 			setAlliance(from, me, false);
 			if(from != me)
 				chat(ALLIES, "Player " + from + " is a traitor");
@@ -1888,11 +1891,6 @@ function eventChat(from, to, message)
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message) {
 	if(allianceExistsBetween(from, to) || (to == from)) {
-		if((playerAlliance(true).length > 0) && (lastMsg != "Help is on the way!") && (to !== from)) {
-			lastMsg = "Help is on the way!";
-			chat(from, lastMsg);
-		}
-		
 		var cyborgs = enumGroup(cyborgGroup);
 		var tanks = enumGroup(attackGroup);
 		var vtols = enumGroup(vtolGroup);
@@ -1931,8 +1929,6 @@ function eventObjectTransfer(obj, from) {
 	if((from !== me) && allianceExistsBetween(from, me)) {
 		if(obj.type == DROID)
 			eventDroidBuilt(obj, null);
-		lastMsg = "Thank you!";
-		chat(from, lastMsg);
 	}
 	
 	//NexusWave transer
