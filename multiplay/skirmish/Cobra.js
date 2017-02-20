@@ -1,5 +1,5 @@
 //Use a custom NullBot standard for weapon definitions
-include("/multiplay/skirmish/nb_rulesets/CobraStandard.js");
+include("/multiplay/skirmish/cobra_rulesets/CobraStandard.js");
 
 // -- Important functions
 function random(max) {

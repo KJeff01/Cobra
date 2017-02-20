@@ -3,9 +3,6 @@
 // a factor for figuring out how large things are in this ruleset,
 // or simply a typical radius of a player's base
 const baseScale = 20; 
-
-// diameter of laser satellite splash/incendiary damage 
-// for use in lassat.js
 const lassatSplash = 4; 
 
 const structures = {
