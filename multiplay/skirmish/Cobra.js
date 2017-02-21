@@ -134,6 +134,19 @@ function countAndBuild(stat, count) {
 	return false;
 }
 
+//This is a very basic test done here.
+function isDesignable(item, body, prop) {
+	if(!isDefined(item))
+		return;
+	if(!isDefined(body))
+		body = "Body1REC";
+	if(!isDefined(prop))
+		prop = "wheeled01";
+	
+	var virDroid = makeTemplate(me, "Virtual Droid", body, prop, null, null, item, item);
+	return (virDroid != null) ? true : false;
+}
+
 
 // -- useful lists
 const kineticResearch = [
@@ -379,8 +392,8 @@ function buildAttacker(struct) {
 		weap.push(weaps.weapons[x].stat);
 	}
 	
-	var virDroid = makeTemplate(me, "Virtual Droid", tankBody, tankProp, null, null, weap, weap);
-	if((virDroid == null) && (turnOffMG === false)) {
+	var designableDroid = isDesignable(weap, tankBody, tankProp);
+	if((designableDroid === false) && (turnOffMG === false)) {
 		weap = [];
 		for(var x = weaponStats.machineguns.weapons.length - 1; x >= 0; --x) {
 			weap.push(weaponStats.machineguns.weapons[x].stat);
@@ -1251,37 +1264,44 @@ function analyzeDroidAlloys(droid) {
 //Check the units technology and enable it for Cobra if it is new.
 //Called from nexusWave. (insane difficulty only). Does not steal sensors yet.
 function stealEnemyTechnology(droid) {
-	var body = droid.body;
-	var propulsion = droid.propulsion;
+	var body;
+	var propulsion;
 	var weapon;
+	
+	if(isDefined(droid.body))
+		body = droid.body;
+	if(isDefined(droid.propulsion))
+		propulsion = droid.propulsion;
+	
 	if(isDefined(droid.weapons[0]))
 		weapon = droid.weapons[0].name;
-	
 	//check for Dragon body
-	if(isDefined(weapon) && componentAvailable(weapon) && isDefined(droid.weapons[1]))
+	if(isDefined(weapon) && componentAvailable(weapon) && (droid.weapons.length > 0) && isDefined(droid.weapons[1]))
 		weapon = droid.weapons[1].name;
 	
 	//steal body technology
-	if(!componentAvailable(body)) {
+	if(isDefined(body) && !componentAvailable(body)) {
 		for(var x = 0; x < bodyStats.length; ++x) {
 			if(bodyStats[x].stat === body) {
 				completeRequiredResearch(bodyStats[x].res);
 				enableResearch(bodyStats[x].res, me);
 				completeResearch(bodyStats[x].res, me);
 				logObj(droid, "Assimilated player " + droid.player +"'s body -> " + body + ".");
+				makeComponentAvailable(body, me);
 				break;
 			}
 		}
 	}
 	
 	//steal propulsion technology
-	if(!componentAvailable(propulsion)) {
+	if(isDefined(propulsion) && !componentAvailable(propulsion)) {
 		for(var x = 0; x < propulsionStats.length; ++x) {
 			if(propulsionStats[x].stat === propulsion) {
 				completeRequiredResearch(propulsionStats[x].res);
 				enableResearch(propulsionStats[x].res, me);
 				completeResearch(propulsionStats[x].res, me);
 				logObj(droid, "Assimilated player " + droid.player +"'s propulsion -> " + propulsion + ".");
+				makeComponentAvailable(propulsion, me);
 				break;
 			}
 		}
@@ -1290,8 +1310,7 @@ function stealEnemyTechnology(droid) {
 	
 	
 	//steal weapon technology
-	if(isDefined(weapon) && !componentAvailable(weapon)) {
-		
+	if(isDefined(weapon) && !isDesignable(weapon, body, propulsion)) {
 		if(droid.droidType == DROID_SENSOR) {
 			/*
 			const sensorRes = [
@@ -1352,12 +1371,10 @@ function stealEnemyTechnology(droid) {
 				if(breakOut === true)
 					break;
 			}
+			
+			makeComponentAvailable(weapon, me);
 		}
 	}
-	
-	makeComponentAvailable(body, me);
-	makeComponentAvailable(propulsion, me);
-	makeComponentAvailable(weapon, me);
 	
 	//analyzeDroidAlloys(droid);
 }
@@ -1368,7 +1385,7 @@ function stealEnemyTechnology(droid) {
 //This effect only occurs while the Cobra command center is not destroyed
 	
 function nexusWave() {
-	if(isDefined(nexusWaveOn) && (nexusWaveOn === true) && countStruct(structures.hqs) > 0) {
+	if(isDefined(nexusWaveOn) && (nexusWaveOn === true) && (countStruct(structures.hqs) > 0)) {
 		var enemies = playerAlliance(false);
 		var firstEnemy = enemies[random(enemies.length)];
 		var firstDroids = enumDroid(firstEnemy).filter(function(d) { 
@@ -1393,16 +1410,13 @@ function nexusWave() {
 		var enemyStruct = enumStruct(firstEnemy);
 			
 		if(enemyStruct.length > 0) {
-			enemyStruct = enemyStruct[random(enemyStruct.length)];
+			var newStruct = enemyStruct[random(enemyStruct.length)];
 			
 			if(!random(12)) {
-				//log("NXwave -> player " + secondDroids[0].player + " told to attack player " + enemyStruct[0].player);
-				for(var j = 0; j < enemyStruct.length; ++j) {
-					if(isDefined(secondDroids[j]) && isDefined(enemyStruct))
-						orderDroidObj(secondDroids[j], DORDER_ATTACK, enemyStruct);
-					else
-						break;
-				}
+				var aDroid = secondDroids[random(secondDroids.length)];
+				//log("NXwave -> player " + aDroid.player + " told to attack player " + newStruct.player);
+				if(isDefined(aDroid) && isDefined(newStruct))
+					orderDroidObj(aDroid, DORDER_ATTACK, newStruct);
 			}
 			else if(!random(6)) {
 				//log("NXwave -> player " + secondDroids[0].player + "'s droids malfunctioned.");
@@ -1413,7 +1427,7 @@ function nexusWave() {
 					else {
 						//Or attack own units
 						var dr = secondDroids[j];
-						var rg = enumRange(dr.x, dr.y, 8, me, false).filter(function(obj) {
+						var rg = enumRange(dr.x, dr.y, 8, dr.player, false).filter(function(obj) {
 							return obj.type == DROID
 						});
 						if((rg.length > 0)) {
@@ -1725,7 +1739,7 @@ function eventStartLevel() {
 
 function eventAttacked(victim, attacker) {
 	if(isDefined(scavengerNumber) && (attacker.player === scavengerNumber)) {
-		return
+		return;
 	}
 		
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player)) {
@@ -1736,7 +1750,7 @@ function eventAttacked(victim, attacker) {
 			return (d.type == DROID) && ((d.droidType == DROID_WEAPON) || (d.droidType == DROID_CYBORG))
 		});
 		if(units.length < 3)
-			units = enumRange(victim.x, victim.y, 8, me, false).filter(function(d) {
+			units = enumRange(victim.x, victim.y, 6, me, false).filter(function(d) {
 						return (d.type == DROID) && ((d.droidType == DROID_WEAPON) || (d.droidType == DROID_CYBORG))
 					});
 		
@@ -1807,8 +1821,10 @@ function eventGroupLoss(droid, group, size) {
 }
 
 function eventDroidIdle(droid) {
-	if((droid.droidType == DROID_WEAPON) || (droid.droidType == DROID_CYBORG) || isVTOL(droid)) {
-		orderDroid(droid, DORDER_RTB);
+	if(droid.player === me) {
+		if(isDefined(droid) && ((droid.droidType == DROID_WEAPON) || (droid.droidType == DROID_CYBORG) || isVTOL(droid))) {
+			orderDroid(droid, DORDER_RTB);
+		}
 	}
 }
 
