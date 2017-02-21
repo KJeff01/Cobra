@@ -312,6 +312,7 @@ var turnOffCyborgs; //Turn of cyborgs (hover maps)
 var nexusWaveOn; //Determine if the 'NEXUS Intruder Program' feature is on.
 var scavengerNumber; //What player number are the scavengers
 var turnOffMG;
+var throttleTime;
 
 // -- Weapon research list (initializeResearchLists)
 var techlist;
@@ -1704,6 +1705,7 @@ function eventStartLevel() {
 	nexusWaveOn = false;
 	grudgeCount = [];
 	turnOffCyborgs = false;
+	throttleTime = 0;
 	
 	//Need to search for scavenger player number
 	//Keep undefined if there are no scavenger
@@ -1744,6 +1746,12 @@ function eventAttacked(victim, attacker) {
 		
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player)) {
 		grudgeCount[attacker.player] += 1;
+		
+		//Skip code when being attacked at a phenominal rate
+		if(gameTime < (throttleTime + 2500)) {
+			throttleTime = gameTime;
+			return;
+		}
 		
 		//find nearby units
 		var units = enumRange(victim.x, victim.y, 4, me, false).filter(function(d) {
