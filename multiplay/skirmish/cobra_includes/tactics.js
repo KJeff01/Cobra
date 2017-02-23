@@ -162,8 +162,7 @@ function repairAll() {
 function spyRoutine() {
 	var sensors = enumGroup(sensorGroup);
 	if(!sensors.length) { return false; }
-	sensors.sort(distanceToBase);
-	sensors.reverse();
+	sensors = sortAndReverse(sensors);
 
 	if(sensors[0].health < 60)
 		repairDroid(sensors[0], true);
@@ -178,8 +177,7 @@ function spyRoutine() {
 		if(tanks.length === 0) { tanks = enumGroup(attackGroup); }
 		if(tanks.length === 0) { return false; }
 		
-		tanks.sort(distanceToBase);
-		tanks.reverse();
+		tanks = sortAndReverse(tanks);
 		
 		if(isDefined(tanks[0]) && tanks[0] && !repairDroid(tanks[0])) {
 			//grudgeCount[object.player] += 2;

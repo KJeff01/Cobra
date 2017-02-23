@@ -284,7 +284,7 @@ function eventGroupLoss(droid, group, size) {
 	
 	var who = enumRange(droid.x, droid.y, 15, ENEMIES, true).filter(function(dr) { return dr.type == DROID });
 	if(isDefined(scavengerNumber)) { who.filter(function(obj) { obj.player !== scavengerNumber }); }
-	if(who.length > 0) { grudgeCount[who[0].player] += 1; }
+	if(who.length > 0) { grudgeCount[who[0].player] += 10; }
 	
 	if((playerAlliance(true).lrngth > 0) && (lastMsg != "need tank") && (lastMsg != "need cyborg") && (lastMsg != "need vtol")) {
 		if (enumGroup(attackGroup).length < 2) {
@@ -311,38 +311,38 @@ function eventDroidIdle(droid) {
 }
 
 function eventChat(from, to, message) {
-	if ((to != me) || (to == from)) { return; }
+	if((to != me) || (to == from)) { return; }
 	
-	if ((message == "need truck") && allianceExistsBetween(from, to)) {
+	if((message === "need truck") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_CONSTRUCT);
 		if(droids.length <= 3) { return; }
 		
 		donateObject(droids[random(droids.length)], from);
 	}
-	else if ((message == "need power") && allianceExistsBetween(from, to)) {
+	else if((message === "need power") && allianceExistsBetween(from, to)) {
 		if(playerPower(me) - queuedPower(me) > 0) { donatePower(playerPower(me) / 2, from); }
 	}
-	else if ((message == "need tank") && allianceExistsBetween(from, to)) {
+	else if((message === "need tank") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_WEAPON);
 		if(droids.length < 6) { return; }
 		
 		donateObject(droids[random(droids.length)], from);
 	}
-	else if ((message == "need cyborg") && allianceExistsBetween(from, to)) {
+	else if((message === "need cyborg") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_CYBORG);
 		if(droids.length < 6) { return; }
 		
 		donateObject(droids[random(droids.length)], from);
 	}
-	else if ((message == "need vtol") && allianceExistsBetween(from, to)) {
+	else if((message === "need vtol") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me).filter(function(obj){ return isVTOL(obj); });
 		if(droids.length < 6) { return; }
 		
 		donateObject(droids[random(droids.length)], from);
 	}
-	else if (((message == "help me!") || (message == "help me!!")) && allianceExistsBetween(from, to)) {
+	else if(((message === "help me!") || (message == "help me!!")) && allianceExistsBetween(from, to)) {
 		var hq = enumStruct(from, structures.hqs);
-		if( hq.length === 1 ) {
+		if(hq.length === 1) {
 			lastMsg = "Sending units to your command center!";
 			chat(from, lastMsg);
 			eventBeacon(hq.x, hq.y, from, me, "");
@@ -352,33 +352,15 @@ function eventChat(from, to, message) {
 			chat(from, lastMsg);
 		}
 	}
-	else if((message == "friend") && !allianceExistsBetween(from, to) && (gameTime > 210000)) {
-		if(grudgeCount[from] < 5) {
-			lastMsg = "I accept";
-			chat(from, lastMsg);
-			setAlliance(from, me, true);
-			grudgeCount[from] = 0;
-		}
-		else {
-			lastMsg = "I refuse";
-			chat(from, lastMsg);
+	
+	var tmp = message.slice(0, -1);
+	if(tmp === "attack") {
+		var num = message.slice(-1);
+		if(!allianceExistsBetween(num, me) && (num != me)) {
+			attackStuff(num);
 		}
 	}
-	
-	//Attacks a certain player should they be an enemy. If allied with the target player then
-	//break alliance with the sender and attack them.
-	for(var x = 0; x < maxPlayers; ++x) {
-		if ((message == ("attack" + x)) && !allianceExistsBetween(x, me) && (x != me)) {
-			attackStuff(x);
-		}
-		if ((message == ("attack" + x)) && allianceExistsBetween(x, me) ) {
-			setAlliance(from, me, false);
-			if(from != me) { chat(ALLIES, "Player " + from + " is a traitor"); }
-			
-			attackStuff(from);
-			break;
-		}
-}
+
 }
 
 //Better check what is going on over there.

@@ -147,7 +147,7 @@ const subpersonalities = {
 var attackGroup; //All tanks units
 var vtolGroup; //All vtol units
 var cyborgGroup; //All cyborg units
-var sensorGroup; //All senosr units
+var sensorGroup; //All sensor units
 //var nexusLinkGroup
 //var artilleryGroup
 

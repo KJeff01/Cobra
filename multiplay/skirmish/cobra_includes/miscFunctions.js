@@ -203,9 +203,9 @@ function choosePersonalityWeapon(type) {
 			}
 		
 			//on hard difficulty and above.
-			if(componentAvailable("MortarEMP") && componentAvailable("tracked01") && !random(45))
+			if(componentAvailable("MortarEMP") && componentAvailable("tracked01") && !random(56))
 				weaponList = ["MortarEMP"];
-			else if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(45))
+			else if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(56))
 				weaponList = ["PlasmaHeavy"];
 		
 			//Try defaulting to machine-guns then.
@@ -237,5 +237,10 @@ function choosePersonalityWeapon(type) {
 
 function useHover() {
 	return (personality === "AR") ? true : false;
+}
+
+//Sort by distnce to base and reverse.
+function sortAndReverse(arr) {
+	return (arr.sort(distanceToBase)).reverse();
 }
 
