@@ -43,6 +43,9 @@ function eventResearched() {
 						found = pursueResearch(lab, "R-Vehicle-Metals09");
 				}
 			}
+			
+			if(!found)
+				pursueResearch(lab, "R-Vehicle-Body05"); // Cobra body
 		
 			//If T1 - Go for machine-guns. else focus on lasers and the primary weapon.
 			if(isDefined(turnOffMG) && (turnOffMG === false)) {
@@ -184,13 +187,13 @@ function eventStartLevel() {
 	grudgeCount = [];
 	turnOffCyborgs = false;
 	throttleTime = 0;
+	personality = choosePersonality();
 	
 	for(var i = 0; i < structlist.length; i++) { eventStructureBuilt(structlist[i]); }
 	for(var i = 0; i < maxPlayers; ++i)        { grudgeCount.push(0); }
 	
 	checkForScavs();
 	diffPerks();
-	personality = random(3) + 1;
 	initializeResearchLists();
 	
 	forceHover = checkIfSeaMap(); //TurnOffCyborgs can be assigned true here

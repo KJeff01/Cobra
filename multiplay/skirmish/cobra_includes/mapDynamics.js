@@ -37,43 +37,19 @@ function initializeResearchLists() {
 	for(var x = 0; x < weaponStats.lasers.weapons.length; ++x)
 		laserExtra.push(weaponStats.lasers.extras[x]);
 	
-	if(personality === 1) {
-		techlist = subpersonalities["AC"]["res"];
-		for(var x = 0; x < weaponStats.cannons.weapons.length;  ++x)
-			weaponTech.push(weaponStats.cannons.weapons[x].res);
-		for(var x = 0; x < weaponStats.mortars.weapons.length; ++x)
-			artilleryTech.push(weaponStats.mortars.weapons[x].res);
-		for(var x = 0; x < weaponStats.cannons.extras.length; ++x)
-			extraTech.push(weaponStats.cannons.extras[x]);
-		for(var x = 0; x < weaponStats.mortars.extras.length; ++x)
-			artillExtra.push(weaponStats.mortars.extras[x]);
-		for(var x = 0; x < weaponStats.cannons.templates.length; ++x)
-			cyborgWeaps.push(weaponStats.cannons.templates[x].res);
-	}
-	else if(personality === 2) {
-		techlist = subpersonalities["AR"]["res"];
-		for(var y = 0; y < weaponStats.flamers.weapons.length; ++y)
-			weaponTech.push(weaponStats.flamers.weapons[y].res);
-		for(var y = 0; y < weaponStats.mortars.weapons.length; ++y)
-			artilleryTech.push(weaponStats.mortars.weapons[y].res);
-		for(var y = 0; y < weaponStats.flamers.extras.length; ++y)
-			extraTech.push(weaponStats.flamers.extras[y]);
-		for(var y = 0; y < weaponStats.mortars.extras.length; ++y)
-			artillExtra.push(weaponStats.mortars.extras[y]);
-	}
-	else {
-		techlist = subpersonalities["AB"]["res"];
-		for(var y = 0; y < weaponStats.rockets_AT.weapons.length; ++y)
-			weaponTech.push(weaponStats.rockets_AT.weapons[y].res);
-		for(var y = 0; y < weaponStats.rockets_Arty.weapons.length; ++y)
-			artilleryTech.push(weaponStats.rockets_Arty.weapons[y].res);
-		for(var y = 0; y < weaponStats.rockets_AT.extras.length; ++y)
-			extraTech.push(weaponStats.rockets_AT.extras[y]);
-		for(var y = 0; y < weaponStats.rockets_Arty.extras.length; ++y)
-			artillExtra.push(weaponStats.rockets_Arty.extras[y]);
-		for(var x = 0; x < weaponStats.rockets_AT.templates.length; ++x)
-			cyborgWeaps.push(weaponStats.rockets_AT.templates[x].res);
-	}
+
+	techlist = subpersonalities[personality]["res"];
+	for(var x = 0; x < subpersonalities[personality]["primaryWeapon"].weapons.length;  ++x)
+		weaponTech.push(subpersonalities[personality]["primaryWeapon"].weapons[x].res);
+	for(var x = 0; x < subpersonalities[personality]["artillery"].weapons.length; ++x)
+		artilleryTech.push(subpersonalities[personality]["artillery"].weapons[x].res);
+	for(var x = 0; x < subpersonalities[personality]["primaryWeapon"].extras.length; ++x)
+		extraTech.push(subpersonalities[personality]["primaryWeapon"].extras[x]);
+	for(var x = 0; x < subpersonalities[personality]["artillery"].extras.length; ++x)
+		artillExtra.push(subpersonalities[personality]["artillery"].extras[x]);
+	for(var x = 0; x < subpersonalities[personality]["primaryWeapon"].templates.length; ++x)
+		cyborgWeaps.push(subpersonalities[personality]["primaryWeapon"].templates[x].res);
+
 	
 	for(var x = 0; x < weaponStats.lasers.templates.length; ++x)
 		cyborgWeaps.push(weaponStats.lasers.templates[x].res);
@@ -158,22 +134,10 @@ function freeForAll() {
 //Turn off Machine-guns on T2 and T3
 //Very cheap analysis done here.
 function CheckStartingBases() {
-	if(personality === 1) {
-		for(var y = 0; y < weaponStats.cannons.weapons.length; ++y) {
-			if(componentAvailable(weaponStats.cannons.weapons[y].stat)) { return true; }
-		}
+	for(var i = 0; i < subpersonalities[personality]["primaryWeapon"].weapons.length; ++i) {
+		if(componentAvailable(subpersonalities[personality]["primaryWeapon"].weapons[i].stat)) { return true; }
 	}
-	else if(personality === 2) {
-		for(var y = 0; y < weaponStats.flamers.weapons.length; ++y) {
-			if(componentAvailable(weaponStats.flamers.weapons[y].stat)) { return true; }
-		}
-	}
-	else if(personality === 3) {
-		for(var y = 0; y < weaponStats.rockets_AT.weapons.length; ++y) {
-			if(componentAvailable(weaponStats.rockets_AT.weapons[y].stat)) { return true; }
-		}
-	}
-	
+
 	return false;
 }
 
@@ -182,4 +146,25 @@ function getDrumsAndArtifacts() {
 	var objs = enumFeature(-1, OilDrum).concat(enumFeature(-1, Crate));
 }
 */
+
+//All derricks and all oil resources to find the map total. --unused.
+function countAllResources() {
+	var resorces = enumFeature(-1, oilResources);
+	for(var i = 0; i < maxPlayers; ++i) { resources.concat(enumStruct(i, structures.derricks)); }
+	if(isDefined(scavengerNumber)) { resources.concat(enumStruct(scavengerNumber, structures.derricks)); }
+	
+	return resources.length;
+}
+
+//Is the map a low/medium/high power level. Returns a string of LOW/MEDIUM/HIGH. --unused.
+function mapOilLevel() {
+	var perPlayer = countAllResources() / (maxPlayers - 1);
+	var str = "";
+	
+	if(perPlayer <= 8) { str = "LOW"; }
+	else if((perPlayer > 8) && (perPlayer <= 16)) { str = "MEDIUM"; }
+	else { str = "HIGH"; }
+	
+	return str;
+}
 

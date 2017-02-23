@@ -1,138 +1,44 @@
 
 //Create a ground attacker tank with a heavy body when possible.
-//Creates a variety of tank variants. Flamers use hover when posssible.
-//A plasma laucher has a very small chance of being built when Inferno is avaliable.
-
-//Needs bloat reduction here
+//Flamers use hover when posssible and Special weapons may be built on Hard/Insane.
 function buildAttacker(struct) {
-	//May not be defined yet
 	if(!isDefined(forceHover) || !isDefined(seaMapWithLandEnemy) || !isDefined(turnOffMG))
 		return false;
 	if((forceHover === true) && (seaMapWithLandEnemy === false) && !componentAvailable("hover01"))
 		return false;
 	
 	var useHover = false;
-	var weaps;
-	var weap = [];
-	
-	
-	if(personality === 1) {
-		if(!random(2))
-			weaps = subpersonalities["AC"]["primaryWeapon"];
-		else if((turnOffMG === false) && !random(2))
-			weaps = subpersonalities["AC"]["secondaryWeapon"];
-		else if(!random(2))
-			weaps = subpersonalities["AC"]["artillery"];
-		else if(!random(2))
-			weaps = subpersonalities["AC"]["tertiaryWeapon"];
-		else
-			weaps = weaponStats.AS;
-	}
-	else if(personality === 2) {
-		if(!random(2)) {
-			weaps = subpersonalities["AR"]["primaryWeapon"];
-			useHover = true;
-		}
-		else if((turnOffMG === false) && !random(2))
-			weaps = subpersonalities["AR"]["secondaryWeapon"];
-		else if(!random(2))
-			weaps = subpersonalities["AR"]["artillery"];
-		else if(!random(2))
-			weaps = subpersonalities["AR"]["tertiaryWeapon"];
-		else
-			weaps = weaponStats.AS;
-	}
-	else{
-		if(!random(2)) {
-			weaps = subpersonalities["AB"]["primaryWeapon"];
-		}
-		else if((turnOffMG === false) && !random(2))
-			weaps = subpersonalities["AB"]["secondaryWeapon"];
-		else if(!random(2))
-			weaps = subpersonalities["AB"]["artillery"];
-		else if(!random(2))
-			weaps = subpersonalities["AB"]["tertiaryWeapon"];
-		else
-			weaps = weaponStats.AS;
-	}
-	
-	for(var x = weaps.weapons.length - 1; x >= 0; --x) {
-		weap.push(weaps.weapons[x].stat);
-	}
-	
-	var designableDroid = isDesignable(weap, tankBody, tankProp);
-	if((designableDroid === false) && (turnOffMG === false)) {
-		weap = [];
-		for(var x = weaponStats.machineguns.weapons.length - 1; x >= 0; --x) {
-			weap.push(weaponStats.machineguns.weapons[x].stat);
-		}
-	}
-	
-	//on hard difficulty and above
-	if(componentAvailable("MortarEMP") && componentAvailable("tracked01") && !random(35))
-		weap = "MortarEMP";
-	else if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(40))
-		weap = "PlasmaHeavy";
+	var weap = choosePersonalityWeapon("TANK");
 	
 	if(((useHover === true) || (forceHover === true) || !random(12)) && componentAvailable("hover01")) {
 		buildDroid(struct, "Hover Droid", tankBody, "hover01", null, null, weap, weap);
 		return true; //Forced success
 	}
-	
 	if (buildDroid(struct, "Droid", tankBody, tankProp, null, null, weap, weap)) { return true; }
 	
 	return false;
 }
 
-//Create trucks or sensors with a light body.
+//Create trucks or sensors with a light body. Default to a sensor.
 function buildSys(struct, weap) {
-	if(!isDefined(weap)) { weap = "Spade1Mk1"; }
-	
-	if (buildDroid(struct, "System unit", sysBody, sysProp, null, null, weap)) {
-		return true;
-	}
+	if(!isDefined(weap)) { weap = ["Sensor-WideSpec", "SensorTurret1Mk1"]; }
+	if (buildDroid(struct, "System unit", sysBody, sysProp, null, null, weap)) { return true; }
 	return false;
 }
 
 //Create a cyborg with avaliable research.
-//Needs bloat reduction here.
 function buildCyborg(fac) {
 	var weap;
 	var body;
 	var prop;
-	var weapon;
-	
-	if(personality === 1) {
-		if(!random(2))
-			weapon = subpersonalities["AC"]["primaryWeapon"];
-		else if((turnOffMG === false) && !random(2))
-			weapon = subpersonalities["AC"]["secondaryWeapon"];
-		else
-			weapon = subpersonalities["AC"]["tertiaryWeapon"];
-	}
-	else if(personality === 2) {
-		if(!random(2))
-			weapon = subpersonalities["AR"]["primaryWeapon"];
-		else if((turnOffMG === false) && !random(2))
-			weapon = subpersonalities["AR"]["secondaryWeapon"];
-		else
-			weapon = subpersonalities["AR"]["tertiaryWeapon"];
-	}
-	else {
-		if(!random(2))
-			weapon = subpersonalities["AB"]["primaryWeapon"];
-		else if((turnOffMG === false) && !random(2))
-			weapon = subpersonalities["AB"]["secondaryWeapon"];
-		else
-			weapon = subpersonalities["AB"]["tertiaryWeapon"];
-	}
+	var weapon = choosePersonalityWeapon("CYBORG");
 	
 	//weapons
 	for(var x = weapon.templates.length - 1; x >= 0; --x) {
 		body = weapon.templates[x].body;
 		prop = weapon.templates[x].prop;
 		weap = weapon.templates[x].weapons[0];
-		if(buildDroid(fac, "Cyborg", body, prop, null, null, weap)) {
+		if(buildDroid(fac, "Cyborg", body, prop, null, null, weap, weap)) {
 			return true;
 		}
 	}
@@ -142,16 +48,9 @@ function buildCyborg(fac) {
 
 //Create a vtol fighter with a medium body.
 function buildVTOL(struct) {
-	var weap;
-	const weapons = weaponStats.bombs.vtols;
+	var weap = choosePersonalityWeapon("VTOL");
+	if (buildDroid(struct, "Bomber", vtolBody, "V-Tol", null, null, weap, weap)) { return true; }
 	
-	for(var x = weapons.length - 1; x >= 0; --x) {
-		weap = weapons[x].stat;
-		if (buildDroid(struct, "Bomber", vtolBody, "V-Tol", null, null, weap)) {
-			return true;
-		}
-	}
-
 	return false;
 }
 
@@ -178,13 +77,8 @@ function produce() {
 				buildSys(fac[x], "Spade1Mk1");
 				extra = true;
 			}
-			else if((enumGroup(attackGroup).length > 10) && (extra === false) && (enumGroup(sensorGroup).length < 2) ) {
-				if(componentAvailable("Sensor-WideSpec")) {
-					buildSys(fac[x], "Sensor-WideSpec");
-				}
-				else {
-					buildSys(fac[x], "SensorTurret1Mk1");
-				}
+			else if((enumGroup(attackGroup).length > 10) && (extra === false) && (enumGroup(sensorGroup).length < 2)) {
+				buildSys(fac[x]);
 				extra = true;
 			}
 			else {
@@ -193,7 +87,7 @@ function produce() {
 		}
 	}
 	
-	if(isDefined(turnOffCyborgs) && turnOffCyborgs === false) {
+	if(isDefined(turnOffCyborgs) && (turnOffCyborgs === false)) {
 		for(var x = 0; x < cybFac.length; ++x) {
 			if(isDefined(cybFac[x]) && structureIdle(cybFac[x])) {
 				buildCyborg(cybFac[x]);

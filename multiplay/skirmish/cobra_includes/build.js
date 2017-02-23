@@ -68,7 +68,7 @@ function buildStuff(struc, module) {
 
 //Check for unfinshed structures and help complete them.
 function checkUnfinishedStructures() {
-	var struct = enumStruct(me).filter(function(struct){ return struct.status != BUILT});
+	var struct = unfinishedStructures();
 	var breakOut = enumFeature(-1, oilResources).length;
 	
 	//Prevent trucks from moving to finished structures that were previously unfinished
@@ -277,7 +277,7 @@ function maintenance() {
 	var struct = null, module = "", structList = [];
 	
 	for (var i = 0; i < list.length; ++i) {
-		if (isStructureAvailable(list[i]) && struct == null ) {
+		if (isStructureAvailable(list[i]) && (struct == null)) {
 			switch(i) {
 				case 0: { structList = enumStruct(me, structures.gens);  break; }
 				case 1: { structList = enumStruct(me, structures.labs);  break; }

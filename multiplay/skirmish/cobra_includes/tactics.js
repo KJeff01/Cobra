@@ -235,7 +235,8 @@ function recycleObsoleteDroids() {
 	var temp = false;
  
 	for(var i = 0; i < systems.length; ++i) {
-		if((systems[i].order != DORDER_BUILD) && (systems[i].propulsion != "hover01") && componentAvailable("hover01")) {
+		if((unfinishedStructures().length === 0) && (systems[i].propulsion != "hover01") && componentAvailable("hover01")) {
+				
 			temp = true;
 			orderDroid(systems[i], DORDER_RECYCLE);
 		}
