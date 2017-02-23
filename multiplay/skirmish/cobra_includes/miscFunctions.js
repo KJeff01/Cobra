@@ -89,7 +89,7 @@ function diffPerks() {
 			break;
 		case HARD:
 			if(!isStructureAvailable("A0PowMod1"))
-				completeRequiredResearch("R-Struc-PowerModuleMk1");
+				completeRequiredResearch("R-Vehicle-Engine01");
 			makeComponentAvailable("PlasmaHeavy", me);
 			makeComponentAvailable("MortarEMP", me);
 			break;
@@ -169,10 +169,10 @@ function unfinishedStructures() {
 function choosePersonality() {
 	var person = "";
 	
-	switch(random(subpersonalities.length) + 1) {
-		case 1: person = "AC"; break;
-		case 2: person = "AR"; break;
-		case 3: person = "AB"; break;
+	switch(random(3)) {
+		case 0: person = "AC"; break;
+		case 1: person = "AR"; break;
+		case 2: person = "AB"; break;
 		default: person = "AC"; break;
 	}
 	
@@ -181,7 +181,7 @@ function choosePersonality() {
 
 //Randomly choose the best weapon with current technology.
 //Defaults to machine-guns when other choices are unavailable (if allowed). May return undefined.
-//Also cyborgs will not return the actual stat list with this function. (requires more stuff).
+//Also cyborgs will not return the actual stat list with this function due to how they are built.
 function choosePersonalityWeapon(type) {
 	var weaps;
 	var weaponList = [];
@@ -197,21 +197,23 @@ function choosePersonalityWeapon(type) {
 			default: weaps = subpersonalities[personality]["primaryWeapon"]; break;
 		}
 		
-		for(var i = weaps.weapons.length - 1; i >= 0; --i) {
-			weaponList.push(weaps.weapons[i].stat);
-		}
+		if(isDefined(weaps)) {
+			for(var i = weaps.weapons.length - 1; i >= 0; --i) {
+				weaponList.push(weaps.weapons[i].stat);
+			}
 		
-		//on hard difficulty and above.
-		if(componentAvailable("MortarEMP") && componentAvailable("tracked01") && !random(40))
-			weaponList = ["MortarEMP"];
-		else if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(40))
-			weaponList = ["PlasmaHeavy"];
+			//on hard difficulty and above.
+			if(componentAvailable("MortarEMP") && componentAvailable("tracked01") && !random(45))
+				weaponList = ["MortarEMP"];
+			else if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(45))
+				weaponList = ["PlasmaHeavy"];
 		
-		//Try defaulting to machine-guns then.
-		if((isDesignable(weaponList, tankBody, tankProp) === false) && (turnOffMG === false)) {
-			weaponList = [];
-			for(var i = weaponStats.machineguns.weapons.length - 1; i >= 0; --i) {
-				weaponList.push(weaponStats.machineguns.weapons[i].stat);
+			//Try defaulting to machine-guns then.
+			if((isDesignable(weaponList, tankBody, tankProp) === false) && (turnOffMG === false)) {
+				weaponList = [];
+				for(var i = weaponStats.machineguns.weapons.length - 1; i >= 0; --i) {
+					weaponList.push(weaponStats.machineguns.weapons[i].stat);
+				}
 			}
 		}
 	}
@@ -230,6 +232,10 @@ function choosePersonalityWeapon(type) {
 		}
 	}
 	
-	return (type === "CYBORG") ? weaps : weaponList;
+	return ((type === "CYBORG") || !isDefined(weaps)) ? weaps : weaponList;
+}
+
+function useHover() {
+	return (personality === "AR") ? true : false;
 }
 

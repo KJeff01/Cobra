@@ -18,22 +18,26 @@ function countAndBuild(stat, count) {
 
 //Find a location to build something within a safe area.
 function buildStructure(droid, stat) {
-	if (!isStructureAvailable(stat, me))
+	var derricks = countStruct(structures.derricks);
+	var loc;
+	var dist;
+	
+	if (!isStructureAvailable(stat, me)) { return false; }
+	if(isDefined(droid)) { loc = pickStructLocation(droid, stat, droid.x, droid.y, 0); }
+	if (!isDefined(loc)) { return false; }	
+	
+	//Try not to build stuff in dangerous locations
+	if(isDefined(droid))
+		dist = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, droid.x, droid.y);
+	else
 		return false;
 	
-	var loc = pickStructLocation(droid, stat, droid.x, droid.y, 0);
-	if (!isDefined(loc))
-		return false;	
-	
-	var derricks = countStruct(structures.derricks);
-	var dist = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, droid.x, droid.y);
-	//Try not to build stuff in dangerous locations
-	if (!safeDest(me, loc.x, loc.y) || (dist > (8 + Math.floor(1.5 * derricks)))) {
+	if (isDefined(droid) && (!safeDest(me, loc.x, loc.y) || (dist > (8 + Math.floor(1.5 * derricks))))) {
 		orderDroid(droid, DORDER_RTB);
 		return false;
 	}
 	
-	if(orderDroidBuild(droid, DORDER_BUILD, stat, loc.x, loc.y))
+	if(isDefined(droid) && orderDroidBuild(droid, DORDER_BUILD, stat, loc.x, loc.y))
 		return true;
 	return false;
 }
@@ -53,11 +57,11 @@ function buildStuff(struc, module) {
 		if(freeTrucks.length > 0) {
 			var truck = freeTrucks[random(freeTrucks.length)];
 			
-			if(isDefined(module)) {
+			if(isDefined(struc) && isDefined(module) && isDefined(truck)) {
 				if(orderDroidBuild(truck, DORDER_BUILD, module, struc.x, struc.y))
 					return true;
 			}
-			if(struc != structures.derricks) {
+			if(isDefined(truck) && isDefined(struc)) {
 				if(buildStructure(truck, struc))
 					return true;
 			}

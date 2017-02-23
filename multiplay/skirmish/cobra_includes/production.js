@@ -1,16 +1,16 @@
 
 //Create a ground attacker tank with a heavy body when possible.
-//Flamers use hover when posssible and Special weapons may be built on Hard/Insane.
+//Personality AR uses hover when posssible. All personalities may use special weapons on Hard/Insane.
 function buildAttacker(struct) {
 	if(!isDefined(forceHover) || !isDefined(seaMapWithLandEnemy) || !isDefined(turnOffMG))
 		return false;
 	if((forceHover === true) && (seaMapWithLandEnemy === false) && !componentAvailable("hover01"))
 		return false;
 	
-	var useHover = false;
 	var weap = choosePersonalityWeapon("TANK");
 	
-	if(((useHover === true) || (forceHover === true) || !random(12)) && componentAvailable("hover01")) {
+	if(!isDefined(weap)) { return false; }
+	if(((useHover() === true) || (forceHover === true) || !random(12)) && componentAvailable("hover01")) {
 		buildDroid(struct, "Hover Droid", tankBody, "hover01", null, null, weap, weap);
 		return true; //Forced success
 	}
@@ -32,6 +32,8 @@ function buildCyborg(fac) {
 	var body;
 	var prop;
 	var weapon = choosePersonalityWeapon("CYBORG");
+	
+	if(!isDefined(weapon)) { return false; }
 	
 	//weapons
 	for(var x = weapon.templates.length - 1; x >= 0; --x) {

@@ -166,6 +166,11 @@ function stealEnemyTechnology(droid) {
 //This effect only occurs while the Cobra command center is not destroyed
 	
 function nexusWave() {
+	if(isDefined(nexusWaveOn) && (nexusWaveOn === false)) {
+		removeTimer("nexusWave");
+		return;
+	}
+	
 	if(isDefined(nexusWaveOn) && (nexusWaveOn === true) && (countStruct(structures.hqs) > 0)) {
 		var enemies = playerAlliance(false);
 		var firstEnemy = enemies[random(enemies.length)];
@@ -202,20 +207,17 @@ function nexusWave() {
 			else if(!random(10)) {
 				//log("NXwave -> player " + secondDroids[0].player + "'s droids malfunctioned.");
 				for(var j = 0; j < secondDroids.length; ++j) {
-					//Basically does not do anything until order to do something again
-					if(!random(2) && isDefined(secondDroids[j]))
-						orderDroidObj(secondDroids[j], DORDER_ATTACK, secondDroids[j]);
-					else {
-						//Or attack own units
+					//Attack own units
+					if(!random(5) && isDefined(secondDroids[j])) {
 						var dr = secondDroids[j];
 						var rg = enumRange(dr.x, dr.y, 8, dr.player, false).filter(function(obj) {
 							return obj.type == DROID
 						});
 						if((rg.length > 0)) {
-							rg = rg[random(rg.length)];
+							var newDroid = rg[random(rg.length)];
 						
-							if(isDefined(rg))
-								orderDroidObj(secondDroids[j], DORDER_ATTACK, rg);
+							if(isDefined(dr) && isDefined(newDroid))
+								orderDroidObj(dr, DORDER_ATTACK, newDroid);
 							else 
 								break;
 						}
