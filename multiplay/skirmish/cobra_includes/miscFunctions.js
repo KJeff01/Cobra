@@ -10,7 +10,7 @@ function isDefined(data) {
 }
 
 //Control the amount of objects being put in memory so we do not create a large array of objects.
-//Returns enemy objects only.
+//Returns the closest enemy object from Cobra base.
 function rangeStep(obj, visibility) {
 	const step = 3000;
 	var target;
@@ -18,6 +18,7 @@ function rangeStep(obj, visibility) {
 	for(var i = 0; i <= 30000; i += step) {	
 		var temp = enumRange(obj.x, obj.y, i, ENEMIES, visibility);
 		if(temp.length > 0) {
+			temp.sort(distanceToBase);
 			return temp[0];
 		}
 	}
@@ -166,13 +167,16 @@ function unfinishedStructures() {
 }
 
 //Choose the personality as described in the global subpersonalities.
+//Will be called again if a T2/T3 match is detected.
 function choosePersonality() {
 	var person = "";
+	var len = 4;
 	
-	switch(random(3)) {
+	switch(random(len)) {
 		case 0: person = "AC"; break;
 		case 1: person = "AR"; break;
 		case 2: person = "AB"; break;
+		case 3: person = "AM"; break;
 		default: person = "AC"; break;
 	}
 	
@@ -190,7 +194,7 @@ function choosePersonalityWeapon(type) {
 	if(type === "TANK") {
 		switch(random(5)) {
 			case 0: weaps = subpersonalities[personality]["primaryWeapon"]; break;
-			case 1: if(turnOffMG === false) { weaps = subpersonalities[personality]["secondaryWeapon"]; } break;
+			case 1: if((turnOffMG === false) || (personality === "AM")) { weaps = subpersonalities[personality]["secondaryWeapon"]; } break;
 			case 2: weaps = subpersonalities[personality]["artillery"]; break;
 			case 3: weaps = subpersonalities[personality]["tertiaryWeapon"]; break;
 			case 4: weaps = weaponStats.AS; break;
@@ -220,7 +224,7 @@ function choosePersonalityWeapon(type) {
 	else if(type === "CYBORG") {
 		switch(random(3)) {
 			case 0: weaps = subpersonalities[personality]["primaryWeapon"]; break;
-			case 1: if(turnOffMG === false) { weaps = subpersonalities[personality]["secondaryWeapon"]; } break;
+			case 1: if((turnOffMG === false) || (personality === "AM")) { weaps = subpersonalities[personality]["secondaryWeapon"]; } break;
 			case 2: weaps = subpersonalities[personality]["tertiaryWeapon"]; break;
 			default: weaps = subpersonalities[personality]["primaryWeapon"]; break;
 		}
@@ -243,4 +247,42 @@ function useHover() {
 function sortAndReverse(arr) {
 	return (arr.sort(distanceToBase)).reverse();
 }
+
+//Find the derricks of all enemy players, or just a specific one.
+function findEnemyDerricks(playerNumber) {
+	var derr = [];
+	
+	if(!isDefined(playerNumber)) {
+		var enemy = playerAlliance(false);
+		for(var i = 0; i < enemy.length; ++i) {
+			derr.concat(enumStruct(enemy[i], structures.derricks));
+		}
+		
+		//Check for scavs
+		if(isDefined(scavengerNumber) && !allianceExistsBetween(scavengerNumber, me)) {
+			derr.concat(enumStruct(scavengerNumber, structures.derricks));
+		}
+	}
+	else {
+		derr = enumStruct(playerNumber, structures.derricks);
+	}
+	
+	return derr;
+}
+
+//choose either cyborgs or tanks. prefer cyborgs if any.
+function chooseGroup() {
+	if(enumGroup(cyborgGroup).length > 3) { return enumGroup(cyborgGroup); }
+	else { return enumGroup(attackGroup); }
+}
+
+//Determine if a function should be skipped until enough time has passed. Especially eventAttacked().
+function stopExecution() {
+	if(gameTime > (throttleTime + 300)) {
+		throttleTime = gameTime;
+		return false;
+	}
+	else { return true; }
+}
+
 

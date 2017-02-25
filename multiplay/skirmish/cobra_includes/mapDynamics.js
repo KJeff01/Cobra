@@ -1,6 +1,6 @@
 
-//One time initialization of the research lists when eventStartLevel is triggered.
-//Need to cut down the bloat here
+//Initialization of research lists when eventStartLevel is triggered.
+//Call this again when manually changing a personality.
 function initializeResearchLists() {
 	techlist = [];
 	weaponTech = [];
@@ -135,7 +135,7 @@ function freeForAll() {
 //Very cheap analysis done here.
 function CheckStartingBases() {
 	for(var i = 0; i < subpersonalities[personality]["primaryWeapon"].weapons.length; ++i) {
-		if(componentAvailable(subpersonalities[personality]["primaryWeapon"].weapons[i].stat)) { return true; }
+		if(isDesignable(subpersonalities[personality]["primaryWeapon"].weapons[i].stat)) { return true; }
 	}
 
 	return false;

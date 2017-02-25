@@ -173,13 +173,9 @@ function buildPhase1() {
 		}
 	}
 	
-	if ((gameTime > 160000) && isDefined(turnOffCyborgs) && (turnOffCyborgs === false)
+	if ((gameTime > 240000) && isDefined(turnOffCyborgs) && (turnOffCyborgs === false)
 		&& isStructureAvailable(structures.templateFactories)) {
 		if (countAndBuild(structures.templateFactories, 1)) { return true; }
-	}
-	
-	if(isStructureAvailable(structures.extras[0])) {
-		if(countAndBuild(structures.extras[0], 1)) { return true; }
 	}
 	
 	if(isStructureAvailable(structures.vtolPads)
@@ -191,7 +187,9 @@ function buildPhase1() {
 
 //Build three research labs and three ground/cyborg factories and 1 repair center
 function buildPhase2() {
-	if(countAndBuild(structures.labs, 3)) { return true; }
+	if(gameTime > 180000) {
+		if(countAndBuild(structures.labs, 3)) { return true; }
+	}
 	
 	if(gameTime > 210000 && playerPower(me) > 80) {
 		if(isStructureAvailable(structures.extras[0])) {
@@ -280,6 +278,8 @@ function maintenance() {
 	const mods = [1, 1, 2, 2]; //Number of modules paired with list above
 	var struct = null, module = "", structList = [];
 	
+	if(countStruct(structures.derricks) <= 4) { return false; }
+	
 	for (var i = 0; i < list.length; ++i) {
 		if (isStructureAvailable(list[i]) && (struct == null)) {
 			switch(i) {
@@ -296,7 +296,8 @@ function maintenance() {
 					if((i === 2) && (structList[c].modules === 1) && !componentAvailable("Body11ABT")) {
 						continue;
 					}
-					if((i === 3) && (structList[c].modules === 1) && !componentAvailable("Body13SUP")) {
+					//Build last vtol factory module once Cobra gets retribution
+					if((i === 3) && (structList[c].modules === 1) && !componentAvailable("Body7ABT")) {
 						continue;
 					}
 					struct = structList[c];
@@ -310,7 +311,7 @@ function maintenance() {
 		}
 	}
 	
-	if ((playerPower(me) > 35) && (struct || (struct && (module === list[0])))) {
+	if ((!checkLowPower(35)) && (struct || (struct && (module === list[0])))) {
 		if(buildStuff(struct, module)) { return true; }
 	}
 	

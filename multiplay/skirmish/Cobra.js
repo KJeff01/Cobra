@@ -1,6 +1,8 @@
 
 //This is the main file that brings everything all together. Order can be changed except the first two includes.
 
+//FIXME: T2/T3 checking.
+
 include("/multiplay/skirmish/cobra_rulesets/CobraStandard.js");
 include("/multiplay/skirmish/cobra_includes/globalVariables.js");
 include("/multiplay/skirmish/cobra_includes/miscFunctions.js");

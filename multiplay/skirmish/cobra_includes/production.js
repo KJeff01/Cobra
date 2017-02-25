@@ -1,6 +1,7 @@
 
 //Create a ground attacker tank with a heavy body when possible.
 //Personality AR uses hover when posssible. All personalities may use special weapons on Hard/Insane.
+//Also when Cobra has Dragon body, the EMP Cannon may be selected as the second weapon if it is researched.
 function buildAttacker(struct) {
 	if(!isDefined(forceHover) || !isDefined(seaMapWithLandEnemy) || !isDefined(turnOffMG))
 		return false;
@@ -11,8 +12,21 @@ function buildAttacker(struct) {
 	
 	if(!isDefined(weap)) { return false; }
 	if(((useHover() === true) || (forceHover === true) || !random(12)) && componentAvailable("hover01")) {
+		if(!random(5) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
+			if(weap != "MortarEMP") {
+				buildDroid(struct, "Hover Droid", tankBody, "hover01", null, null, weap, "EMP-Cannon");
+				return true; //Forced success
+			}
+		}
 		buildDroid(struct, "Hover Droid", tankBody, "hover01", null, null, weap, weap);
 		return true; //Forced success
+	}
+	
+	if(!random(5) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
+		if((weap != "MortarEMP")) {
+			if(buildDroid(struct, "Droid", tankBody, tankProp, null, null, weap, "EMP-Cannon"))
+				return true;
+		}
 	}
 	if (buildDroid(struct, "Droid", tankBody, tankProp, null, null, weap, weap)) { return true; }
 	
@@ -35,7 +49,6 @@ function buildCyborg(fac) {
 	
 	if(!isDefined(weapon)) { return false; }
 	
-	//weapons
 	for(var x = weapon.templates.length - 1; x >= 0; --x) {
 		body = weapon.templates[x].body;
 		prop = weapon.templates[x].prop;
@@ -59,9 +72,9 @@ function buildVTOL(struct) {
 
 //Produce a unit when factories allow it.
 function produce() {
-	eventResearched(); //check for idle research centers.
+	eventResearched(); //check for idle research centers. TODO: Find a better place for this.
 	
-	//Try not to produce more units. Not that anymore will be made, but it is a performance hack.
+	//Try not to produce more units.
 	if((enumDroid(me).length - 1) === 150) { return false; }
 	
 	var fac = enumStruct(me, structures.factories);

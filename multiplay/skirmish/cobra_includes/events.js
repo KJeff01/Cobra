@@ -12,7 +12,7 @@ function eventResearched() {
 		var found = false;
 		if (lab.status == BUILT && structureIdle(lab)) {
 			//This list is only for T1
-			if(turnOffMG === false)
+			if(isDefined(turnOffMG) && (turnOffMG === false) || (personality === "AM"))
 				found = pursueResearch(lab, techlist);
 			else {
 				if(!found)
@@ -48,7 +48,7 @@ function eventResearched() {
 				pursueResearch(lab, "R-Vehicle-Body05"); // Cobra body
 		
 			//If T1 - Go for machine-guns. else focus on lasers and the primary weapon.
-			if(isDefined(turnOffMG) && (turnOffMG === false)) {
+			if(isDefined(turnOffMG) && (turnOffMG === false) || (personality === "AM")) {
 				if(!found)
 					found = pursueResearch(lab, mgWeaponTech);
 				if(!found)
@@ -58,6 +58,8 @@ function eventResearched() {
 				if(!found)
 					found = pursueResearch(lab, extraTech);
 				if(!found)
+					found = pursueResearch(lab, "R-Wpn-Bomb02");
+				if(!found)
 					found = pursueResearch(lab, laserExtra);
 			}
 			
@@ -66,9 +68,9 @@ function eventResearched() {
 			
 			if(!random(2) && componentAvailable("Body11ABT")) {
 				if(!found)
-					found = pursueResearch(lab, weaponTech);
-				if(!found)
 					found = pursueResearch(lab, extraTech);
+				if(!found)
+					found = pursueResearch(lab, weaponTech);
 				if(!found)
 					found = pursueResearch(lab, artillExtra);
 				if(!found)
@@ -119,6 +121,8 @@ function eventResearched() {
 	
 			if(!found)
 				found = pursueResearch(lab, fundamentalResearch);
+			if(!found)
+				found = pursueResearch(lab, "R-Wpn-EMPCannon");
 			if(!found && componentAvailable("Body11ABT"))
 				found = pursueResearch(lab, "R-Struc-Materials09");
 		}
@@ -200,6 +204,7 @@ function eventStartLevel() {
 	turnOffMG = CheckStartingBases();
 	if(turnOffMG === true)
 		turnOffCyborgs = true;
+
 	
 	buildOrder();
 	setTimer("buildOrder", 300 + 3 * random(60));
@@ -216,36 +221,26 @@ function eventAttacked(victim, attacker) {
 	if(isDefined(scavengerNumber) && (attacker.player === scavengerNumber)) {
 		if(isDefined(victim) && isDefined(attacker) && (victim.type == DROID) && !repairDroid(victim, false)) {
 			if((victim.droidType == DROID_WEAPON) || (victim.droidType == DROID_CYBORG))
-			orderDroidObj(victim, DORDER_ATTACK, attacker);
+				orderDroidObj(victim, DORDER_ATTACK, attacker);
 		}
-		if(gameTime < (throttleTime + 3000)) {
-			throttleTime = gameTime;
+		if(stopExecution() === false) {
 			attackStuff(scavengerNumber);
 		}
 		return;
 	}
 		
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player)) {
-		grudgeCount[attacker.player] += 1;
-		
-		//Skip code when being attacked at a phenominal rate
-		if(gameTime < (throttleTime + 2500)) {
-			throttleTime = gameTime;
-			return;
-		}
+		grudgeCount[attacker.player] += 2;
+		if(stopExecution() === true) { return; }
 		
 		//find nearby units
-		var units = enumRange(victim.x, victim.y, 4, me, false).filter(function(d) {
+		var units = enumRange(victim.x, victim.y, 8, me, false).filter(function(d) {
 			return (d.type == DROID) && ((d.droidType == DROID_WEAPON) || (d.droidType == DROID_CYBORG))
 		});
-		if(units.length < 3)
-			units = enumRange(victim.x, victim.y, 6, me, false).filter(function(d) {
-						return (d.type == DROID) && ((d.droidType == DROID_WEAPON) || (d.droidType == DROID_CYBORG))
-					});
 		
-		//Be a bit aggressive when a structure(namely oil derricks) are attacked.
+		//Be a bit aggressive when a structure is attacked.
 		if(victim.type == STRUCTURE)
-			grudgeCount[attacker.player] = 50;
+			grudgeCount[attacker.player] += 30;
 		
 		for (var i = 0; i < units.length; i++) {
 			if(isDefined(units[i]) && isDefined(attacker) && droidCanReach(units[i], attacker.x, attacker.y) && !repairDroid(units[i]))
@@ -271,6 +266,7 @@ function eventAttacked(victim, attacker) {
 				}
 			}
 		}
+		
 		if(grudgeCount[attacker.player] > 10)
 			attackStuff(attacker.player);
 	}
@@ -348,8 +344,15 @@ function eventChat(from, to, message) {
 			eventBeacon(hq.x, hq.y, from, me, "");
 		}
 		else {
-			lastMsg = "Sorry, no can do";
+			lastMsg = "Sorry, no can do.";
 			chat(from, lastMsg);
+		}
+	}
+	else if((message === "AC") || (message === "AR") || (message === "AB") || (message === "AM")) {
+		if(allianceExistsBetween(from, to) && (personality !== message)) {
+			personality = message;
+			initializeResearchLists();
+			chat(ALLIES, "Using personality: " + message);
 		}
 	}
 	
@@ -358,6 +361,12 @@ function eventChat(from, to, message) {
 		var num = message.slice(-1);
 		if(!allianceExistsBetween(num, me) && (num != me)) {
 			attackStuff(num);
+		}
+	}
+	else if(tmp === "oil") {
+		var num = message.slice(-1);
+		if(!allianceExistsBetween(num, me) && (num != me)) {
+			chatAttackOil(num);
 		}
 	}
 

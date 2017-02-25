@@ -59,14 +59,29 @@ const sysProp = [
 ];
 
 const vtolBody = [
-	"Body13SUP", // Wyvern
 	"Body7ABT",  // Retribution
 	"Body6SUPP", // Panther
 	"Body8MBT",  // Scorpion
 	"Body5REC",  // Cobra
 ];
 
+/*
+//These are for ground unit production only (non-system).
+const kineticBody = [
+	"Body14SUP", // Dragon
+	"Body13SUP", // Wyvern
+	"Body9REC",  // Tiger
+	"Body11ABT", // Python
+];
 
+//For ground unit production only (non-system).
+const thermalBody = [
+	"Body10MBT", // Vengeance
+	"Body12SUP", // Mantis
+];
+*/
+
+//Do note that personality AM will always use machine-guns regardless if it is Above T1 or not.
 const subpersonalities = {
 	AC: {
 		"chatalias": "ac",
@@ -136,6 +151,28 @@ const subpersonalities = {
 			"R-Vehicle-Prop-Hover",
 			"R-Wpn-MG-Damage03",
 			"R-Wpn-Rocket06-IDF",
+			"R-Struc-VTOLPad-Upgrade01",
+			"R-Wpn-Bomb02",
+			"R-Struc-RprFac-Upgrade06",
+		],
+	},
+	AM: {
+		"chatalias": "am",
+		"primaryWeapon": weaponStats.fireMortars,
+		"secondaryWeapon": weaponStats.machineguns,
+		"tertiaryWeapon": weaponStats.lasers,
+		"artillery": weaponStats.mortars,
+		"antiAir": weaponStats.AA,
+		"res": [
+			"R-Wpn-MG-Damage01",
+			"R-Wpn-MG1Mk1",
+			"R-Struc-PowerModuleMk1",
+			"R-Wpn-MG2Mk1",
+			"R-Struc-RprFac-Upgrade01",
+			"R-Vehicle-Body11",
+			"R-Vehicle-Prop-Tracks",
+			"R-Vehicle-Prop-Hover",
+			"R-Wpn-MG-Damage03",
 			"R-Struc-VTOLPad-Upgrade01",
 			"R-Wpn-Bomb02",
 			"R-Struc-RprFac-Upgrade06",
