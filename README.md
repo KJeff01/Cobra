@@ -6,7 +6,7 @@ Originally based off of the semperfi-js AI that comes with the game (https://git
 
 There are three personalities so far:
 
-AC: Focus on Cannon/Mortar technology. AR: Focus on Flamer/Mortar technology. AB: Focus on Machine-gun/Rocket technology.
+AC: Focus on Cannon/Mortar technology. AR: Focus on Flamer/Mortar technology. AB: Focus on Rocket technology. AM: Mortars/lasers/machine-guns.
 
 All personalities may use machine-guns/lasers (changes depending on starting technology). Hard/insane difficulty enables some hidden weapons (Heavy Plasma Laucher/EMP Mortar) for Cobra (very small chance of being built at any given time after it obtains tracked propulsion).
 
@@ -15,7 +15,7 @@ This AI will try to emulate the the core functionality of the NEXUS Intruder Pro
 
 
 chat commands include: 
-need power/truck/tank/cyborg/vtol, attackX (X being a player number). Unstable commands included are friend(forced ally) and help me!/help me!! for calling for Cobra units to go to your hq (for compatibility with Nexus AI). It does respond mostly through beacon calls dropped with alt+h.
+need power/truck/tank/cyborg/vtol, attackX (X being a player number). oilX to specifically attack nearby enemy oil. help me!/help me!! for calling for Cobra units to go to your hq (for compatibility with Nexus AI). It does respond mostly through beacon calls dropped with alt+h.
 
 warzone2100 links:
 
