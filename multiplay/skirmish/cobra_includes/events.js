@@ -190,11 +190,12 @@ function eventStartLevel() {
 	nexusWaveOn = false;
 	grudgeCount = [];
 	turnOffCyborgs = false;
-	throttleTime = 0;
+	throttleTime = [];
 	personality = choosePersonality();
 	
 	for(var i = 0; i < structlist.length; i++) { eventStructureBuilt(structlist[i]); }
-	for(var i = 0; i < maxPlayers; ++i)        { grudgeCount.push(0); }
+	for(var i = 0; i < maxPlayers; ++i) { grudgeCount.push(0); }
+	for(var i = 0; i < 4; ++i) { throttleTime.push(0); }
 	
 	checkForScavs();
 	diffPerks();
@@ -223,7 +224,7 @@ function eventAttacked(victim, attacker) {
 			if((victim.droidType == DROID_WEAPON) || (victim.droidType == DROID_CYBORG))
 				orderDroidObj(victim, DORDER_ATTACK, attacker);
 		}
-		if(stopExecution() === false) {
+		if(stopExecution(0, 5000) === false) {
 			attackStuff(scavengerNumber);
 		}
 		return;
@@ -231,7 +232,7 @@ function eventAttacked(victim, attacker) {
 		
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player)) {
 		grudgeCount[attacker.player] += 2;
-		if(stopExecution() === true) { return; }
+		if(stopExecution(0, 20000) === true) { return; }
 		
 		//find nearby units
 		var units = enumRange(victim.x, victim.y, 8, me, false).filter(function(d) {
@@ -267,7 +268,7 @@ function eventAttacked(victim, attacker) {
 			}
 		}
 		
-		if(grudgeCount[attacker.player] > 10)
+		if(grudgeCount[attacker.player] > 20)
 			attackStuff(attacker.player);
 	}
 }
@@ -276,24 +277,23 @@ function eventAttacked(victim, attacker) {
 function eventGroupLoss(droid, group, size) {
 	if(droid.order == DORDER_RECYCLE) { return; }
 	
-	addBeacon(droid.x, droid.y, ALLIES);
+	if(stopExecution(3, 15000) === false){
+		addBeacon(droid.x, droid.y, ALLIES);
+	}
 	
 	var who = enumRange(droid.x, droid.y, 15, ENEMIES, true).filter(function(dr) { return dr.type == DROID });
 	if(isDefined(scavengerNumber)) { who.filter(function(obj) { obj.player !== scavengerNumber }); }
 	if(who.length > 0) { grudgeCount[who[0].player] += 10; }
 	
-	if((playerAlliance(true).lrngth > 0) && (lastMsg != "need tank") && (lastMsg != "need cyborg") && (lastMsg != "need vtol")) {
+	if(playerAlliance(true).length > 0) {
 		if (enumGroup(attackGroup).length < 2) {
-			lastMsg = "need tank";
-			chat(ALLIES, lastMsg);
+			sendChatMessage("need tank", ALLIES);
 		}
 		if (countStruct(structures.templateFactories) && enumGroup(cyborgGroup).length < 2) {
-			lastMsg = "need cyborg";
-			chat(ALLIES, lastMsg);
+			sendChatMessage("need cyborg", ALLIES);
 		}
 		if (countStruct(structures.vtolFactories) && enumGroup(vtolGroup).length < 2) {
-			lastMsg = "need vtol";
-			chat(ALLIES, lastMsg);
+			sendChatMessage("need vtol", ALLIES);
 		}
 	}
 }
@@ -308,6 +308,7 @@ function eventDroidIdle(droid) {
 
 function eventChat(from, to, message) {
 	if((to != me) || (to == from)) { return; }
+	if(stopExecution(1, 2000) === true) { return; }
 	
 	if((message === "need truck") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_CONSTRUCT);
@@ -339,21 +340,20 @@ function eventChat(from, to, message) {
 	else if(((message === "help me!") || (message == "help me!!")) && allianceExistsBetween(from, to)) {
 		var hq = enumStruct(from, structures.hqs);
 		if(hq.length === 1) {
-			lastMsg = "Sending units to your command center!";
-			chat(from, lastMsg);
+			sendChatMessage("Sending units to your command center!", from);
 			eventBeacon(hq.x, hq.y, from, me, "");
 		}
 		else {
-			lastMsg = "Sorry, no can do.";
-			chat(from, lastMsg);
+			sendChatMessage("Sorry, no can do.", from);
 		}
 	}
 	else if((message === "AC") || (message === "AR") || (message === "AB") || (message === "AM")) {
 		if(allianceExistsBetween(from, to) && (personality !== message)) {
-			personality = message;
-			initializeResearchLists();
-			chat(ALLIES, "Using personality: " + message);
+			choosePersonality(message);
 		}
+	}
+	else if((message === "stats") && allianceExistsBetween(from, to)) {
+		getMostHarmfulPlayer("chatEvent");
 	}
 	
 	var tmp = message.slice(0, -1);
@@ -374,6 +374,8 @@ function eventChat(from, to, message) {
 
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message) {
+	if(stopExecution(2, 40000) === true) { return; }
+	
 	if(allianceExistsBetween(from, to) || (to == from)) {
 		var cyborgs = enumGroup(cyborgGroup);
 		var tanks = enumGroup(attackGroup);

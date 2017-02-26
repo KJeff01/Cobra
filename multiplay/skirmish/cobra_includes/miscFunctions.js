@@ -9,6 +9,27 @@ function isDefined(data) {
 	return typeof(data) !== "undefined";
 }
 
+//Sort an array from smallest to largest in value.
+function sortArrayNumeric(a, b) {
+	return a - b;
+}
+
+//Sort by distance to base and reverse.
+function sortAndReverseDistance(arr) {
+	return (arr.sort(distanceToBase)).reverse();
+}
+
+//A controlled way to send chat messages between Cobra AI.
+function sendChatMessage(msg, receiver) {
+	if(!isDefined(msg)) { return; }
+	if(!isDefined(receiver)) { receiver = ALLIES; }
+	
+	if(lastMsg != msg) {
+		lastMsg = msg;
+		chat(receiver, msg);
+	}
+}
+
 //Control the amount of objects being put in memory so we do not create a large array of objects.
 //Returns the closest enemy object from Cobra base.
 function rangeStep(obj, visibility) {
@@ -135,20 +156,23 @@ function isDesignable(item, body, prop) {
 	return (virDroid != null) ? true : false;
 }
 
-//See if power levels are low. This is not the total power levels which would be
-//playerPower(me) - queuedPower(me)
+//See if power levels are low. This takes account of only the power obtained from the generators.
 function checkLowPower(pow) {
 	if(!isDefined(pow)) { pow = 25; }
 	
 	if(playerPower(me) < pow) {
-		if((playerAlliance(true).length > 0) && (lastMsg != "need power")) {
-			lastMsg = "need power";
-			chat(ALLIES, lastMsg);
+		if(playerAlliance(true).length > 0) {
+			sendChatMessage("need Power", ALLIES);
 		}
 		return true;
 	}
 	
 	return false;
+}
+
+//return real power levels.
+function getRealPower() {
+	return playerPower(me) - queuedPower(me);
 }
 
 //Need to search for scavenger player number. Keep undefined if there are no scavengers.
@@ -167,20 +191,27 @@ function unfinishedStructures() {
 }
 
 //Choose the personality as described in the global subpersonalities.
-//Will be called again if a T2/T3 match is detected.
-function choosePersonality() {
+//When called from chat it will switch to that one directly.
+function choosePersonality(chatEvent) {
 	var person = "";
 	var len = 4;
 	
-	switch(random(len)) {
-		case 0: person = "AC"; break;
-		case 1: person = "AR"; break;
-		case 2: person = "AB"; break;
-		case 3: person = "AM"; break;
-		default: person = "AC"; break;
+	if(!isDefined(chatEvent)) {
+		switch(random(len)) {
+			case 0: person = "AC"; break;
+			case 1: person = "AR"; break;
+			case 2: person = "AB"; break;
+			case 3: person = "AM"; break;
+			default: person = "AC"; break;
+		}
+		
+		return person;
 	}
-	
-	return person;
+	else {
+		personality = chatEvent;
+		initializeResearchLists();
+		sendChatMessage("Using personality: " + personality, ALLIES);
+	}
 }
 
 //Randomly choose the best weapon with current technology.
@@ -243,11 +274,6 @@ function useHover() {
 	return (personality === "AR") ? true : false;
 }
 
-//Sort by distnce to base and reverse.
-function sortAndReverse(arr) {
-	return (arr.sort(distanceToBase)).reverse();
-}
-
 //Find the derricks of all enemy players, or just a specific one.
 function findEnemyDerricks(playerNumber) {
 	var derr = [];
@@ -276,13 +302,37 @@ function chooseGroup() {
 	else { return enumGroup(attackGroup); }
 }
 
-//Determine if a function should be skipped until enough time has passed. Especially eventAttacked().
-function stopExecution() {
-	if(gameTime > (throttleTime + 300)) {
-		throttleTime = gameTime;
+//Determine if something (namely events) should be skipped until enough time has passed. Each event gets its own timer value:
+//0 - eventAttacked().
+//1 - eventChat().
+//2 - eventBeacon().
+//3 - eventGroupLoss(). (the addBeacon call).
+//ms is a delay value.
+//Defaults to checking eventAttacked timer.
+function stopExecution(throttleNumber, ms) {
+	if(!isDefined(throttleNumber))
+		throttleNumber = 0;
+	if(!isDefined(ms))
+		ms = 1000;
+	
+	if(gameTime > (throttleTime[throttleNumber] + ms)) {
+		throttleTime[throttleNumber] = gameTime + (4 * random(500));
 		return false;
 	}
 	else { return true; }
+}
+
+//Tell allies (ideally non-bots) who is attacking Cobra the most.
+//When called from chat using "stats" it will also tell you who is the most aggressive towards Cobra.
+function getMostHarmfulPlayer(chatEvent) {
+	var mostHarmful = grudgeCount;
+	mostHarmful = (mostHarmful.sort(sortArrayNumeric)).reverse();
+	
+	if(isDefined(chatEvent)) {
+		sendChatMessage("Most harmful player: " + mostHarmful[0], ALLIES);
+	}
+	
+	return mostHarmful[0];
 }
 
 

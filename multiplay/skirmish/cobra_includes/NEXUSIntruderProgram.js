@@ -57,7 +57,7 @@ function stealEnemyTechnology(droid) {
 	if(isDefined(droid.weapons[0]))
 		weapon = droid.weapons[0].name;
 	//check for Dragon body
-	if(isDefined(weapon) && componentAvailable(weapon) && (droid.weapons.length > 0) && isDefined(droid.weapons[1]))
+	if(isDefined(weapon) && (droid.weapons.length > 0) && isDefined(droid.weapons[1]) && isDesignable(weapon))
 		weapon = droid.weapons[1].name;
 	
 	//steal body technology

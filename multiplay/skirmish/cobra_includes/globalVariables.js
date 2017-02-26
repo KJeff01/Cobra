@@ -198,7 +198,7 @@ var turnOffCyborgs; //Turn of cyborgs (hover maps)
 var nexusWaveOn; //Determine if the 'NEXUS Intruder Program' feature is on.
 var scavengerNumber; //What player number are the scavengers.
 var turnOffMG; //Turn off machine-gun related stuff.
-var throttleTime; //For events so that some(eventAttacked) do not trigger their code too fast.
+var throttleTime; //For events so that some do not trigger their code too fast. More details in stopExecution() in miscFunctions.
 
 // -- Weapon research list (initializeResearchLists)
 var techlist;

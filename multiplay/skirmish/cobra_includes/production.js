@@ -86,8 +86,7 @@ function produce() {
 		if(isDefined(fac[x]) && structureIdle(fac[x])) {
 			if ((extra === false) && (countDroid(DROID_CONSTRUCT, me) < 4)) {
 				if((playerAlliance(true).length > 0) && (countDroid(DROID_CONSTRUCT, me) < 2) && (gameTime > 10000)) {
-					lastMsg = "need truck";
-					chat(ALLIES, lastMsg);
+					sendChatMessage("need truck", ALLIES);
 				}
 				buildSys(fac[x], "Spade1Mk1");
 				extra = true;

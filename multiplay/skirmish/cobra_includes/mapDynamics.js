@@ -120,14 +120,13 @@ function freeForAll() {
 			if(isDefined(scavengerNumber) && allianceExistsBetween(scavengerNumber, me))
 				setAlliance(scavengerNumber, me, false);
 			
-			lastMsg = "FREE FOR ALL!";
 			for(var i = 0; i < friends.length; ++i) {
-				chat(friends[i], lastMsg);
+				chat(friends[i], "FREE FOR ALL!");
 				setAlliance(friends[i], me, false);
 			}
 		}
 		
-		removeTimer("freeForAll");
+		//removeTimer("freeForAll");
 	}
 }
 

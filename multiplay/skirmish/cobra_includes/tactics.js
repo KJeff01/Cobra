@@ -7,20 +7,11 @@ function droidReady(droid) {
 
 //See who has been attacking Cobra the most and attack them.
 function checkMood() {
-	//Tell allies (ideally non-bots) who is attacking Cobra the most
-	var mostHarmful = 0;
-	for(var x = 0; x < maxPlayers; ++x) {
-		if((grudgeCount[x] > 0) && (grudgeCount[x] > grudgeCount[mostHarmful]))
-			mostHarmful = x;
-	}
-	if((grudgeCount[mostHarmful] > 5) && (lastMsg != ("Most harmful player: " + mostHarmful))) {
-		lastMsg = "Most harmful player: " + mostHarmful;
-		chat(ALLIES, lastMsg);
-	}
+	var mostHarmful = getMostHarmfulPlayer();
 	
 	if(grudgeCount[mostHarmful] >= 60) {
 		attackStuff(mostHarmful);
-		grudgeCount[mostHarmful] /= 4;
+		grudgeCount[mostHarmful] = 10;
 	}
 	else if((grudgeCount[mostHarmful] > 10) && (grudgeCount[mostHarmful] < 60)) {
 		var derr = enumStruct(mostHarmful, structures.derricks);
@@ -86,12 +77,10 @@ function attackStuff(attacker) {
 		
 	if((str != "attack") && (str != "oil")) {
 		if(random(4)) {
-			lastMsg = "attack" + selectedEnemy;
-			chat(ALLIES, lastMsg);
+			sendChatMessage("attack" + selectedEnemy, ALLIES);
 		}
 		else  {
-			lastMsg = "oil" + selectedEnemy;
-			chat(ALLIES, lastMsg);
+			sendChatMessage("oil" + selectedEnemy, ALLIES);
 		}
 	}
 	
@@ -181,7 +170,7 @@ function spyRoutine() {
 	var sensor;
 	var sensors = enumGroup(sensorGroup);
 	if(!sensors.length) { return false; }
-	sensors = sortAndReverse(sensors);
+	sensors = sortAndReverseDistance(sensors);
 	
 	for(var i = 0; i < sensors.length; ++i) {
 		if(!repairDroid(sensors[i], false)) {
@@ -201,7 +190,7 @@ function spyRoutine() {
 		if(tanks.length === 0) { tanks = enumGroup(attackGroup); }
 		if(tanks.length === 0) { return false; }
 		
-		tanks = sortAndReverse(tanks);
+		tanks = sortAndReverseDistance(tanks);
 		
 		if(isDefined(tanks[0]) && !repairDroid(tanks[0])) {
 			//grudgeCount[object.player] += 2;
