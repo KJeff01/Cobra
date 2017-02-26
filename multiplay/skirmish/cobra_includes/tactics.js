@@ -146,6 +146,7 @@ function repairDroid(droid, force) {
 		orderDroid(droid, DORDER_RTR);
 		return true;
 	}
+	
 	return false;
 }
 

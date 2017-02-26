@@ -23,8 +23,14 @@ function buildStructure(droid, stat) {
 	var dist;
 	
 	if (!isStructureAvailable(stat, me)) { return false; }
-	if(isDefined(droid)) { loc = pickStructLocation(droid, stat, droid.x, droid.y, 0); }
-	if (!isDefined(loc)) { return false; }	
+	if(isDefined(droid)) {
+		var tries = 30;
+		while(!isDefined(loc) && tries) {
+			loc = pickStructLocation(droid, stat, droid.x, droid.y, 0);
+			tries -= 1;
+		}
+	}
+	if(!isDefined(loc)) { return false; }
 	
 	//Try not to build stuff in dangerous locations
 	if(isDefined(droid))
@@ -104,8 +110,7 @@ function lookForOil() {
 	var oils = enumFeature(-1, oilResources);
 	var s = 0;
 	
-	if(droids.length <= 1) { return; }
-	if (oils.length === 0) { return; }
+	if ((droids.length <= 1) || (oils.length === 0)) { return; }
 	
 	oils.sort(distanceToBase); // grab closer oils first
 	for (var i = 0; i < oils.length; i++) {
@@ -114,7 +119,8 @@ function lookForOil() {
 				break;
 					
 			var safe = enumRange(oils[i + s].x, oils[i + s].y, 4, ENEMIES, false);
-			if (!safe.length && conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)) {
+			if (!safe.length && conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)
+				&& droidCanReach(droids[j], oils[i + s].x, oils[i + s].y)) {
 				droids[j].busy = true;
 				orderDroidBuild(droids[j], DORDER_BUILD, structures.derricks, oils[i + s].x, oils[i + s].y);
 				s += 1;
@@ -173,6 +179,10 @@ function buildPhase1() {
 		}
 	}
 	
+	if((gameTime > 210000) && isStructureAvailable(structures.extras[0])) {
+		if(countAndBuild(structures.extras[0], 1)) { return true; }
+	}
+	
 	if ((gameTime > 240000) && isDefined(turnOffCyborgs) && (turnOffCyborgs === false)
 		&& isStructureAvailable(structures.templateFactories)) {
 		if (countAndBuild(structures.templateFactories, 1)) { return true; }
@@ -192,9 +202,6 @@ function buildPhase2() {
 	}
 	
 	if(gameTime > 210000 && playerPower(me) > 80) {
-		if(isStructureAvailable(structures.extras[0])) {
-			if(countAndBuild(structures.extras[0], 1)) { return true; }
-		}
 		if(countAndBuild(structures.factories, 3)) { return true; }
 		if (isDefined(turnOffCyborgs) && turnOffCyborgs === false && isStructureAvailable(structures.templateFactories)) {
 			if (countAndBuild(structures.templateFactories, 2)) { return true; }
@@ -278,7 +285,7 @@ function maintenance() {
 	const mods = [1, 1, 2, 2]; //Number of modules paired with list above
 	var struct = null, module = "", structList = [];
 	
-	if(countStruct(structures.derricks) <= 4) { return false; }
+	if(countStruct(structures.derricks) < 4) { return false; }
 	
 	for (var i = 0; i < list.length; ++i) {
 		if (isStructureAvailable(list[i]) && (struct == null)) {

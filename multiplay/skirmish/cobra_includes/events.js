@@ -27,6 +27,10 @@ function eventResearched() {
 				if(!found)
 					found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
 			}
+			
+			if(!found)
+				pursueResearch(lab, "R-Vehicle-Body05"); // Cobra body
+			
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
 			if(!found)
@@ -43,9 +47,6 @@ function eventResearched() {
 						found = pursueResearch(lab, "R-Vehicle-Metals09");
 				}
 			}
-			
-			if(!found)
-				pursueResearch(lab, "R-Vehicle-Body05"); // Cobra body
 		
 			//If T1 - Go for machine-guns. else focus on lasers and the primary weapon.
 			if(isDefined(turnOffMG) && (turnOffMG === false) || (personality === "AM")) {
@@ -63,7 +64,7 @@ function eventResearched() {
 					found = pursueResearch(lab, laserExtra);
 			}
 			
-			if((gameTime < 280000) && isDefined(turnOffMG) && (turnOffMG === false))
+			if((gameTime < 280000) && isDefined(turnOffMG) && (turnOffMG === true))
 				continue;
 			
 			if(!random(2) && componentAvailable("Body11ABT")) {
@@ -118,13 +119,15 @@ function eventResearched() {
 						found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
 				}
 			}
-	
-			if(!found)
-				found = pursueResearch(lab, fundamentalResearch);
-			if(!found)
-				found = pursueResearch(lab, "R-Wpn-EMPCannon");
-			if(!found && componentAvailable("Body11ABT"))
-				found = pursueResearch(lab, "R-Struc-Materials09");
+			
+			if(componentAvailable("Body11ABT")) {
+				if(!found)
+					found = pursueResearch(lab, fundamentalResearch);
+				if(!found)
+					found = pursueResearch(lab, "R-Wpn-EMPCannon");
+				if(!found)
+					found = pursueResearch(lab, "R-Struc-Materials09");
+			}
 		}
 	}
 }
@@ -208,14 +211,14 @@ function eventStartLevel() {
 
 	
 	buildOrder();
-	setTimer("buildOrder", 300 + 3 * random(60));
+	setTimer("buildOrder", 350 + 3 * random(60));
 	setTimer("produce", 700 + 3 * random(60));
 	setTimer("repairAll", 1000 + 3 * random(60));
 	setTimer("attackEnemyOil", 4000 + 3 * random(60));
 	setTimer("spyRoutine", 8000 + 3 * random(60));
 	setTimer("nexusWave", 10000 + 3 * random(70));
 	setTimer("checkMood", 20000 + 3 * random(60));
-	setTimer("freeForAll", 40000 + 3 * random(60));
+	//setTimer("freeForAll", 40000 + 3 * random(60));
 }
 
 function eventAttacked(victim, attacker) {
@@ -240,8 +243,10 @@ function eventAttacked(victim, attacker) {
 		});
 		
 		//Be a bit aggressive when a structure is attacked.
-		if(victim.type == STRUCTURE)
-			grudgeCount[attacker.player] += 30;
+		if(victim.type == STRUCTURE) {
+			grudgeCount[attacker.player] += 10;
+			units = chooseGroup();
+		}
 		
 		for (var i = 0; i < units.length; i++) {
 			if(isDefined(units[i]) && isDefined(attacker) && droidCanReach(units[i], attacker.x, attacker.y) && !repairDroid(units[i]))
@@ -308,7 +313,7 @@ function eventDroidIdle(droid) {
 
 function eventChat(from, to, message) {
 	if((to != me) || (to == from)) { return; }
-	if(stopExecution(1, 2000) === true) { return; }
+	//if(stopExecution(1, 2000) === true) { return; }
 	
 	if((message === "need truck") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_CONSTRUCT);

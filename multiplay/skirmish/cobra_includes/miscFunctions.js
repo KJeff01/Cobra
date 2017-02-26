@@ -143,7 +143,7 @@ function distanceToBase(obj1, obj2) {
 	return (dist1 - dist2);
 }
 
-//See if we can design this droid. Mostly used for checking for new weapons wit the NIP.
+//See if we can design this droid. Mostly used for checking for new weapons with the NIP.
 function isDesignable(item, body, prop) {
 	if(!isDefined(item))
 		return false;
@@ -238,9 +238,9 @@ function choosePersonalityWeapon(type) {
 			}
 		
 			//on hard difficulty and above.
-			if(componentAvailable("MortarEMP") && componentAvailable("tracked01") && !random(56))
+			if(componentAvailable("MortarEMP") && componentAvailable("tracked01") && !random(66))
 				weaponList = ["MortarEMP"];
-			else if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(56))
+			else if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(66))
 				weaponList = ["PlasmaHeavy"];
 		
 			//Try defaulting to machine-guns then.

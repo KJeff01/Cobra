@@ -98,8 +98,9 @@ function checkIfSeaMap() {
 	return turnOffCyborgs;
 }
 
-//If playing teams, then break alliance with everybody and try to conquer them.
+//If played on the team that won, then break alliance with everybody and try to conquer them.
 //Completely pointless feature, but makes everything a bit more fun.
+/*
 function freeForAll() {
 	var won = true;
 	
@@ -129,6 +130,7 @@ function freeForAll() {
 		//removeTimer("freeForAll");
 	}
 }
+*/
 
 //Turn off Machine-guns on T2 and T3
 //Very cheap analysis done here.
