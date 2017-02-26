@@ -64,7 +64,7 @@ function eventResearched() {
 					found = pursueResearch(lab, laserExtra);
 			}
 			
-			if((gameTime < 280000) && isDefined(turnOffMG) && (turnOffMG === true))
+			if((gameTime < 280000) && isDefined(turnOffMG) && (turnOffMG === false))
 				continue;
 			
 			if(!random(2) && componentAvailable("Body11ABT")) {
