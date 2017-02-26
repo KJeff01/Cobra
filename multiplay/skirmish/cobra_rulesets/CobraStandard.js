@@ -245,7 +245,6 @@ const weaponStats = {
 			"R-Wpn-Mortar-Damage06",
 			"R-Wpn-Mortar-ROF04",
 			"R-Wpn-Mortar-Acc03",
-			"R-Wpn-Bomb-Accuracy03",
 			"R-Wpn-Howitzer-Damage06",
 			"R-Wpn-Howitzer-ROF04",
 			"R-Wpn-Howitzer-Accuracy03",
@@ -271,9 +270,10 @@ const weaponStats = {
 			"R-Wpn-Mortar-Damage06",
 			"R-Wpn-Mortar-ROF04",
 			"R-Wpn-Mortar-Acc03",
-			"R-Wpn-Bomb-Accuracy03",
 			"R-Wpn-Howitzer-Damage06",
 			"R-Wpn-Howitzer-ROF04",
+			"R-Wpn-Flamer-Damage06", //Damage06 is otherwise never researched
+			"R-Wpn-Flamer-Damage09",
 			"R-Wpn-Howitzer-Accuracy03",
 		],
 	},
@@ -438,6 +438,9 @@ const weaponStats = {
 		extras: [
 			"R-Wpn-Flamer-Damage06", //Damage06 is otherwise never researched
 			"R-Wpn-Flamer-Damage09",
+			"R-Wpn-Cannon-Accuracy02",
+			"R-Wpn-Cannon-Damage09",
+			"R-Wpn-Cannon-ROF06",
 		],
 	},
 	bombs: {
