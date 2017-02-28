@@ -49,7 +49,7 @@ function checkMood() {
 			}
 		}
 			
-		grudgeCount[mostHarmful] /= 2;
+		grudgeCount[mostHarmful] = Math.floor(grudgeCount[mostHarmful] / 2);
 	}
 }
 
@@ -76,7 +76,7 @@ function attackStuff(attacker) {
 	var targetFac = fac[random(fac.length)];
 		
 	if((str != "attack") && (str != "oil")) {
-		if(random(4)) {
+		if(random(20)) {
 			sendChatMessage("attack" + selectedEnemy, ALLIES);
 		}
 		else  {

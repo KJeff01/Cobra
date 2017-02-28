@@ -31,7 +31,7 @@ function analyzeDroidAlloys(droid) {
 	var dTemp = (droid.droidType == DROID_CYBORG) ? "R-Cyborg-Metals0" : "R-Vehicle-Metals0";
 	
 	for(var i = 1; i < 10; ++i) {
-		if(   ) {
+		if(Math.Floor((baseHP + (dType * i)) / dType) < 5) {
 			var kineticUpgrade = dTemp.concat(i);
 			log("Assimilated Kinetic " + dStr + " research " + kineticUpgrade + "from player " + droid.player);
 			completeRequiredResearch(kineticUpgrade);
@@ -40,8 +40,8 @@ function analyzeDroidAlloys(droid) {
 	}
 	
 	//Do thermal Research
-}*/
-
+}
+*/
 //Check the units technology and enable it for Cobra if it is new.
 //Called from nexusWave. (insane difficulty only). Does not steal sensors yet.
 function stealEnemyTechnology(droid) {

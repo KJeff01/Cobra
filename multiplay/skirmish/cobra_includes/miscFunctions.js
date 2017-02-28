@@ -298,8 +298,18 @@ function findEnemyDerricks(playerNumber) {
 
 //choose either cyborgs or tanks. prefer cyborgs if any.
 function chooseGroup() {
-	if(enumGroup(cyborgGroup).length > 3) { return enumGroup(cyborgGroup); }
-	else { return enumGroup(attackGroup); }
+	var tanks  = enumGroup(attackGroup);
+	var borgs = enumGroup(cyborgGroup);
+	
+	if((borgs.length > 3) && (borgs.length > tanks.length) && !random(2)) {
+		return enumGroup(cyborgGroup);
+	}
+	else {
+		if(tanks.length > 3)
+			return enumGroup(attackGroup);
+	}
+	
+	return enumGroup(attackGroup);
 }
 
 //Determine if something (namely events) should be skipped until enough time has passed. Each event gets its own timer value:
@@ -325,14 +335,16 @@ function stopExecution(throttleNumber, ms) {
 //Tell allies (ideally non-bots) who is attacking Cobra the most.
 //When called from chat using "stats" it will also tell you who is the most aggressive towards Cobra.
 function getMostHarmfulPlayer(chatEvent) {
-	var mostHarmful = grudgeCount;
-	mostHarmful = (mostHarmful.sort(sortArrayNumeric)).reverse();
-	
-	if(isDefined(chatEvent)) {
-		sendChatMessage("Most harmful player: " + mostHarmful[0], ALLIES);
+	var mostHarmful = 0;
+ 	for(var x = 0; x < maxPlayers; ++x) {
+ 		if((grudgeCount[x] > 0) && (grudgeCount[x] > grudgeCount[mostHarmful]))
+ 			mostHarmful = x;
+ 	}
+ 	if(isDefined(chatEvent)) {
+		sendChatMessage("Most harmful player: " + mostHarmful, ALLIES);
 	}
 	
-	return mostHarmful[0];
+	return mostHarmful;
 }
 
 

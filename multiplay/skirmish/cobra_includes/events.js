@@ -234,7 +234,9 @@ function eventAttacked(victim, attacker) {
 	}
 		
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player)) {
-		grudgeCount[attacker.player] += 2;
+		if(grudgeCount[attacker.player] < 500)
+			grudgeCount[attacker.player] += (victim.type == STRUCTURE) ? 10 : 2;
+		
 		if(stopExecution(0, 20000) === true) { return; }
 		
 		//find nearby units
@@ -244,7 +246,6 @@ function eventAttacked(victim, attacker) {
 		
 		//Be a bit aggressive when a structure is attacked.
 		if(victim.type == STRUCTURE) {
-			grudgeCount[attacker.player] += 10;
 			units = chooseGroup();
 		}
 		
@@ -286,10 +287,6 @@ function eventGroupLoss(droid, group, size) {
 		addBeacon(droid.x, droid.y, ALLIES);
 	}
 	
-	var who = enumRange(droid.x, droid.y, 15, ENEMIES, true).filter(function(dr) { return dr.type == DROID });
-	if(isDefined(scavengerNumber)) { who.filter(function(obj) { obj.player !== scavengerNumber }); }
-	if(who.length > 0) { grudgeCount[who[0].player] += 10; }
-	
 	if(playerAlliance(true).length > 0) {
 		if (enumGroup(attackGroup).length < 2) {
 			sendChatMessage("need tank", ALLIES);
@@ -303,10 +300,16 @@ function eventGroupLoss(droid, group, size) {
 	}
 }
 
+//Keep them close to base, but try not to block the buildings.
 function eventDroidIdle(droid) {
 	if(droid.player === me) {
 		if(isDefined(droid) && ((droid.droidType == DROID_WEAPON) || (droid.droidType == DROID_CYBORG) || isVTOL(droid))) {
-			orderDroid(droid, DORDER_RTB);
+			dist = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, droid.x, droid.y);
+			if(dist > 10) {
+				var pos1 = (startPositions[me].x + droid.x) / 2;
+				var pos2 = (startPositions[me].y + droid.y) / 2;
+				orderDroidLoc(droid, DORDER_SCOUT, pos1, pos2);
+			}
 		}
 	}
 }
