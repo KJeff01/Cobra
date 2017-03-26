@@ -14,7 +14,7 @@ const thermalResearch = [
 	"R-Vehicle-Armor-Heat02",
 	"R-Cyborg-Armor-Heat02",
 	"R-Vehicle-Armor-Heat04",
-	"R-Cyborg-Armor-Heat04",
+	"R-Cyborg-Armor-Heat05",
 	"R-Vehicle-Armor-Heat06",
 	"R-Cyborg-Armor-Heat06",
 	"R-Vehicle-Armor-Heat09",
@@ -65,6 +65,8 @@ const vtolBody = [
 	"Body5REC",  // Cobra
 ];
 
+const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC"];
+
 /*
 //These are for ground unit production only (non-system).
 const kineticBody = [
@@ -80,6 +82,12 @@ const thermalBody = [
 	"Body12SUP", // Mantis
 ];
 */
+/*
+const repairTurrets = [
+	"HeavyRepair",
+	"LightRepair1",
+]
+*/
 
 //Do note that personality AM will always use machine-guns regardless if it is Above T1 or not.
 const subpersonalities = {
@@ -88,23 +96,23 @@ const subpersonalities = {
 		"primaryWeapon": weaponStats.cannons,
 		"secondaryWeapon": weaponStats.machineguns,
 		"tertiaryWeapon": weaponStats.lasers,
-		"artillery": weaponStats.mortars,
+		"artillery": weaponStats.fireMortars,
 		"antiAir": weaponStats.AA,
 		"res": [
 			"R-Wpn-MG-Damage01",
 			"R-Wpn-MG1Mk1",
 			"R-Struc-PowerModuleMk1",
+			"R-Vehicle-Body05",
 			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-Cannon-Damage02",
 			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
-			"R-Wpn-MG-Damage03",
-			"R-Wpn-Cannon-ROF01",
 			"R-Wpn-Cannon-Damage03",
-			"R-Struc-VTOLPad-Upgrade01",
-			"R-Wpn-Bomb02",
+			"R-Wpn-Cannon2Mk1",
+			"R-Wpn-Cannon-ROF03",
+			"R-Wpn-Mortar-Incenediary",
 			"R-Struc-RprFac-Upgrade06",
 		],
 	},
@@ -119,6 +127,7 @@ const subpersonalities = {
 			"R-Wpn-MG-Damage01",
 			"R-Wpn-MG1Mk1",
 			"R-Struc-PowerModuleMk1",
+			"R-Vehicle-Body05",
 			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-Flamer-Damage02",
@@ -126,10 +135,8 @@ const subpersonalities = {
 			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
-			"R-Wpn-MG-Damage03",
 			"R-Wpn-Flamer-ROF03",
-			"R-Struc-VTOLPad-Upgrade01",
-			"R-Wpn-Bomb02",
+			"R-Wpn-Mortar3",
 			"R-Struc-RprFac-Upgrade06",
 		],
 	},
@@ -144,15 +151,15 @@ const subpersonalities = {
 			"R-Wpn-MG-Damage01",
 			"R-Wpn-MG1Mk1",
 			"R-Struc-PowerModuleMk1",
+			"R-Vehicle-Body05",
 			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-MG2Mk1",
 			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
-			"R-Wpn-MG-Damage03",
+			"R-Wpn-Rocket02-MRL",
+			"R-Wpn-Rocket07-Tank-Killer",
 			"R-Wpn-Rocket06-IDF",
-			"R-Struc-VTOLPad-Upgrade01",
-			"R-Wpn-Bomb02",
 			"R-Struc-RprFac-Upgrade06",
 		],
 	},
@@ -167,14 +174,14 @@ const subpersonalities = {
 			"R-Wpn-MG-Damage01",
 			"R-Wpn-MG1Mk1",
 			"R-Struc-PowerModuleMk1",
+			"R-Vehicle-Body05",
 			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-MG2Mk1",
 			"R-Vehicle-Body11",
 			"R-Vehicle-Prop-Tracks",
 			"R-Vehicle-Prop-Hover",
-			"R-Wpn-MG-Damage03",
-			"R-Struc-VTOLPad-Upgrade01",
-			"R-Wpn-Bomb02",
+			"R-Wpn-Mortar3",
+			"R-Wpn-Mortar-Incenediary",
 			"R-Struc-RprFac-Upgrade06",
 		],
 	},
@@ -185,8 +192,8 @@ var attackGroup; //All tanks units
 var vtolGroup; //All vtol units
 var cyborgGroup; //All cyborg units
 var sensorGroup; //All sensor units
-//var nexusLinkGroup
-//var artilleryGroup
+//var commanderGroup; //All commander units
+
 
 var grudgeCount; //See who bullies this bot the most and act on it. DO NOT let this use the scavenger player number.
 var personality; //Initialization in eventStartLevel()
@@ -215,4 +222,3 @@ var cyborgWeaps;
 var antiAirTech;
 var antiAirExtras;
 var extremeLaserTech;
-

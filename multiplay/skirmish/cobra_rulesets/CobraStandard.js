@@ -2,8 +2,8 @@
 
 // a factor for figuring out how large things are in this ruleset,
 // or simply a typical radius of a player's base
-const baseScale = 20; 
-const lassatSplash = 4; 
+const baseScale = 20;
+const lassatSplash = 4;
 
 const structures = {
 	factories: [ "A0LightFactory", ],
@@ -27,43 +27,12 @@ const modules = [
 	{ base: VTOL_FACTORY, module: "A0FacMod1", count: 2 },
 ];
 
-const targets = []
-	.concat(structures.factories)
-	.concat(structures.templateFactories)
-	.concat(structures.vtolFactories)
-	.concat(structures.extras)
-;
-
-const miscTargets = []
-	.concat(structures.derricks)
-;
-
 const sensorTurrets = [
 	"SensorTurret1Mk1", // sensor
 	"Sys-CBTurret01", //counter-battery
 	"Sys-VTOLCBTurret01", //VTOL counter-battery
 	"Sys-VstrikeTurret01", //VTOL Strike turret
 	"Sensor-WideSpec", // wide spectrum sensor
-];
-
-const fundamentalResearch = [
-	"R-Struc-PowerModuleMk1",
-	"R-Struc-RprFac-Upgrade01",
-	"R-Sys-Sensor-Tower02",
-	"R-Vehicle-Prop-Halftracks",
-	"R-Struc-Power-Upgrade01c",
-	"R-Vehicle-Prop-Tracks",
-	"R-Sys-Sensor-Upgrade02",
-	"R-Struc-VTOLPad-Upgrade01",
-	"R-Struc-Power-Upgrade03a",
-	"R-Struc-VTOLPad-Upgrade03",
-	"R-Sys-Sensor-Upgrade03",
-	"R-Sys-Sensor-WSTower",
-	"R-Sys-Autorepair-General",
-	"R-Wpn-LasSat",
-	"R-Struc-RprFac-Upgrade04",
-	"R-Struc-VTOLPad-Upgrade06",
-	"R-Struc-RprFac-Upgrade06",
 ];
 
 const fastestResearch = [
@@ -272,8 +241,6 @@ const weaponStats = {
 			"R-Wpn-Mortar-Acc03",
 			"R-Wpn-Howitzer-Damage06",
 			"R-Wpn-Howitzer-ROF04",
-			"R-Wpn-Flamer-Damage06", //Damage06 is otherwise never researched
-			"R-Wpn-Flamer-Damage09",
 			"R-Wpn-Howitzer-Accuracy03",
 		],
 	},
@@ -411,7 +378,7 @@ const weaponStats = {
 		],
 		templates: [],
 		extras: [],
-	}, 
+	},
 	useless_AP: {
 		weapons: [
 			{ stat: "MG1-Pillbox" }, // imaginary invisible single mg, may be found on some maps
@@ -436,11 +403,11 @@ const weaponStats = {
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-Flamer-Damage06", //Damage06 is otherwise never researched
-			"R-Wpn-Flamer-Damage09",
 			"R-Wpn-Cannon-Accuracy02",
 			"R-Wpn-Cannon-Damage09",
 			"R-Wpn-Cannon-ROF06",
+			"R-Wpn-Flamer-Damage06", //Damage06 is otherwise never researched
+			"R-Wpn-Flamer-Damage09",
 		],
 	},
 	bombs: {
@@ -457,21 +424,19 @@ const weaponStats = {
 		templates: [],
 		extras: [
 			"R-Wpn-Bomb-Accuracy03",
-			"R-Wpn-Flamer-Damage06", //Damage06 is otherwise never researched
-			"R-Wpn-Flamer-Damage09",
 			"R-Struc-VTOLPad-Upgrade06",
 		],
 	},
 	AA: {
 		weapons: [
-			{ res: "R-Wpn-AAGun03", stat: "QuadMg1AAGun" }, // hurricane 
-			{ res: "R-Wpn-AAGun04", stat: "QuadRotAAGun" }, // whirlwind 
+			{ res: "R-Wpn-AAGun03", stat: "QuadMg1AAGun" }, // hurricane
+			{ res: "R-Wpn-AAGun04", stat: "QuadRotAAGun" }, // whirlwind
 		],
 		vtols: [
 			{ res: "R-Wpn-Sunburst", stat: "Rocket-VTOL-Sunburst" },
 		],
 		defenses: [
-			{ res: "R-Defense-AASite-QuadMg1", stat: "AASite-QuadMg1" }, // hurricane 
+			{ res: "R-Defense-AASite-QuadMg1", stat: "AASite-QuadMg1" }, // hurricane
 			{ res: "R-Defense-AASite-QuadRotMg", stat: "AASite-QuadRotMg" }, // whirlwind
 			{ res: "R-Defense-WallTower-QuadRotAA", stat: "WallTower-QuadRotAAGun" },
 		],
@@ -492,7 +457,7 @@ const weaponStats = {
 		defenses: [
 		    { res: "R-Sys-SpyTurret", stat: "Sys-SpyTower" },
 		    { res: "R-Wpn-EMPCannon", stat: "WallTower-EMP" },
-		    { res: "R-Defense-EMPMortar", stat: "Emplacement-MortarEMP" }, 
+		    { res: "R-Defense-EMPMortar", stat: "Emplacement-MortarEMP" },
 		],
 		templates: [],
 		extras: [

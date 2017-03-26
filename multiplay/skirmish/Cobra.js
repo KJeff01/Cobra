@@ -1,7 +1,7 @@
 
-//This is the main file that brings everything all together. Order can be changed except the first two includes.
+//This is the main file that brings everything all together.
+//Order can be changed except the first two includes.
 
-//FIXME: T2/T3 checking.
 
 include("/multiplay/skirmish/cobra_rulesets/CobraStandard.js");
 include("/multiplay/skirmish/cobra_includes/globalVariables.js");
@@ -11,4 +11,7 @@ include("/multiplay/skirmish/cobra_includes/production.js");
 include("/multiplay/skirmish/cobra_includes/tactics.js");
 include("/multiplay/skirmish/cobra_includes/NEXUSIntruderProgram.js");
 include("/multiplay/skirmish/cobra_includes/mapDynamics.js");
+include("/multiplay/skirmish/cobra_includes/research.js");
 include("/multiplay/skirmish/cobra_includes/events.js");
+include("/multiplay/skirmish/cobra_includes/chat.js");
+include("/multiplay/skirmish/cobra_includes/adaption.js");

@@ -1,5 +1,5 @@
 
-//Droids that are attacking should not be pulled away until 
+//Droids that are attacking should not be pulled away until
 //they destroy whatever thay are attacking or need repair.
 function droidReady(droid) {
 	return droid.order != DORDER_ATTACK;
@@ -8,7 +8,7 @@ function droidReady(droid) {
 //See who has been attacking Cobra the most and attack them.
 function checkMood() {
 	var mostHarmful = getMostHarmfulPlayer();
-	
+
 	if(grudgeCount[mostHarmful] >= 60) {
 		attackStuff(mostHarmful);
 		grudgeCount[mostHarmful] = 10;
@@ -16,7 +16,7 @@ function checkMood() {
 	else if((grudgeCount[mostHarmful] > 10) && (grudgeCount[mostHarmful] < 60)) {
 		var derr = enumStruct(mostHarmful, structures.derricks);
 		var struc = enumStruct(mostHarmful);
-			
+
 		var cyb = enumGroup(cyborgGroup);
 		var target;
 		if(derr.length > 0)
@@ -30,25 +30,25 @@ function checkMood() {
 				return;
 			}
 		}
-			
+
 		for (var i = 0; i < cyb.length; i++) {
 			if(isDefined(cyb[i]) && droidReady(cyb[i])) {
 				if(!repairDroid(cyb[i]) && isDefined(target) && droidCanReach(cyb[i], target.x, target.y))
 					orderDroidLoc(cyb[i], DORDER_SCOUT, target.x, target.y);
 			}
 		}
-		
+
 		var vtols = enumGroup(vtolGroup);
 		var vtTarget;
 		if(vtols.length > 0)
 			vtTarget = rangeStep(vtols[0], false);
-			
+
 		for (var i = 0; i < vtols.length; ++i) {
 			if(isDefined(vtols[i]) && vtolReady(vtols[i]) && isDefined(vtTarget[0])) {
 				orderDroidLoc(vtols[i], DORDER_SCOUT, vtTarget[0].x, vtTarget[0].y);
 			}
 		}
-			
+
 		grudgeCount[mostHarmful] = Math.floor(grudgeCount[mostHarmful] / 2);
 	}
 }
@@ -61,29 +61,33 @@ function attackStuff(attacker) {
 	var enemy = playerAlliance(false);
 	var str = lastMsg.slice(0, -1);
 	var selectedEnemy = enemy[random(enemy.length)];
-	
+
 	if(isDefined(attacker) && !allianceExistsBetween(attacker, me) && (attacker !== me)) {
 		selectedEnemy = attacker;
 		if(!isDefined(scavengerNumber) || (isDefined(scavengerNumber) && (attacker.player !== scavengerNumber)))
 			grudgeCount[attacker] = 100;
 	}
-		
+
 	var derr = enumStruct(selectedEnemy, structures.derricks);
 	var fac = enumStruct(selectedEnemy, structures.factories);
-	fac.concat(enumStruct(selectedEnemy, structures.templateFactories));
-	
+	var templatesFacs = enumStruct(selectedEnemy, structures.templateFactories);
+	for(var c = 0; c < templatesFacs.length; ++c)
+		fac.push(templatesFacs[c]);
+
 	var target = derr[random(derr.length)];
 	var targetFac = fac[random(fac.length)];
-		
+
 	if((str != "attack") && (str != "oil")) {
-		if(random(20)) {
+		if((countStruct(structures.derricks) > 7) && (playerPower(me) > 0)) {
 			sendChatMessage("attack" + selectedEnemy, ALLIES);
 		}
 		else  {
 			sendChatMessage("oil" + selectedEnemy, ALLIES);
+			chatAttackOil(selectedEnemy);
+			return; //Otherwise it will look like Cobra can not decide what to attack.
 		}
 	}
-	
+
 	if(tanks.length > 4) {
 		for (var j = 0; j < tanks.length; j++) {
 			if(isDefined(tanks[j]) && droidReady(tanks[j])) {
@@ -135,34 +139,28 @@ function attackStuff(attacker) {
 function repairDroid(droid, force) {
 	if(!isDefined(force))
 		force = false;
-	
+
 	var percent = 40;
-	
+
 	if((droid.order === DORDER_RTR) && ((droid.health < 100) || force))
 		return true;
-	
+
 	var repairs = countStruct(structures.extras[0]);
 	if((repairs > 0) && (force || (droid.health <= percent))) {
 		orderDroid(droid, DORDER_RTR);
 		return true;
 	}
-	
+
 	return false;
 }
 
-//Check all units for repair needs. 
+//Check all units for repair needs.
 function repairAll() {
-	var tanks = enumGroup(attackGroup);
-	var cyborgs = enumGroup(cyborgGroup);
-	
-	for(var x = 0; x < tanks.length; ++x) {
-		if(tanks[x].health < 30)
-			repairDroid(tanks[x], true);
-	}
-	
-	for(var x = 0; x < cyborgs.length; ++x) {
-		if(cyborgs[x].health < 30)
-			repairDroid(cyborgs[x], true);
+	var droids = enumDroid(me).filter(function(dr) {return !isVTOL(dr)});
+
+	for(var x = 0; x < droids.length; ++x) {
+		if(droids[x].health < 30)
+			repairDroid(droids[x], true);
 	}
 }
 
@@ -172,27 +170,27 @@ function spyRoutine() {
 	var sensors = enumGroup(sensorGroup);
 	if(!sensors.length) { return false; }
 	sensors = sortAndReverseDistance(sensors);
-	
+
 	for(var i = 0; i < sensors.length; ++i) {
 		if(!repairDroid(sensors[i], false)) {
 			if(!isDefined(sensor))
 				sensor = sensors[i];
 		}
 	}
-	
+
 	if(!isDefined(sensor)) { return; }
 
 	//Observe closest enemy object with a hover unit
 	var object = rangeStep(sensor, false);
-	if(isDefined(object) && droidCanReach(sensor, object.x, object.y)) {
+	if(isDefined(object)) {
 		orderDroidObj(sensor, DORDER_OBSERVE, object);
 
 		var tanks = enumGroup(attackGroup).filter(function(obj) { return obj.propulsion === "hover01" });
 		if(tanks.length === 0) { tanks = enumGroup(attackGroup); }
 		if(tanks.length === 0) { return false; }
-		
+
 		tanks = sortAndReverseDistance(tanks);
-		
+
 		if(isDefined(tanks[0]) && !repairDroid(tanks[0])) {
 			//grudgeCount[object.player] += 2;
 			var xPos = (sensor.x + object.x) / 2;
@@ -208,17 +206,17 @@ function spyRoutine() {
 function attackEnemyOil() {
 	var who = chooseGroup();
 	var tmp = 0;
-	if(who.length < 3) { return false; }
-		
+	if(who.length < 8) { return false; }
+
 	var derr = findEnemyDerricks();
 	if(!derr.length) { return false; }
 	derr.sort(distanceToBase);
 
 	for(var i = 0; i < who.length; ++i) {
 		if(isDefined(who[i]) && droidReady(who[i])) {
-			if(isDefined(derr[tmp]) && !repairDroid(who[i], false) && droidCanReach(who[i], derr[tmp].x, derr[tmp].y)) {
+			if(isDefined(derr[tmp]) && !repairDroid(who[i]) && droidCanReach(who[i], derr[tmp].x, derr[tmp].y)) {
 				orderDroidObj(who[i], DORDER_ATTACK, derr[tmp]);
-				if(!((i + 1) % 3))
+				if(!((i + 1) % 8))
 					tmp += 1;
 			}
 		}
@@ -231,22 +229,30 @@ function recycleObsoleteDroids() {
 	//var vtols = enumGroup(vtolGroup);
 	var systems = enumGroup(sensorGroup).concat(enumDroid(me, DROID_CONSTRUCT));
 	var temp = false;
- 
+
 	if(countStruct(structures.factories) > 1) {
 		for(var i = 0; i < systems.length; ++i) {
 			if((unfinishedStructures().length === 0) && (systems[i].propulsion !== "hover01") && componentAvailable("hover01")) {
-				
 				temp = true;
 				orderDroid(systems[i], DORDER_RECYCLE);
 			}
 		}
-	
+
 		if(forceHover === true) {
 			for(var i = 0; i < tanks.length; ++i) {
 				if((tanks[i].propulsion != "hover01") && componentAvailable("hover01"))
 					orderDroid(tanks[i], DORDER_RECYCLE);
 			}
 		}
+		/*
+		for(var i = 0; i < tanks.length; ++i) {
+			orderDroid(tanks[i], DORDER_RECYCLE);
+		}
+
+		for(var i = 0; i < vtols.length; ++i) {
+			orderDroid(vtols[i], DORDER_RECYCLE);
+		}
+		*/
 	}
 	return temp;
 }
@@ -256,18 +262,33 @@ function chatAttackOil(playerNumber) {
 	var derr = findEnemyDerricks(playerNumber);
 	var who = chooseGroup();
 	var tmp = 0;
-	
+
 	if(!derr.length || (who.length < 4)) { return false; }
 	derr.sort(distanceToBase);
-	
+
 	for(var i = 0; i < who.length; ++i) {
 		if(isDefined(who[i]) && !repairDroid(who[i]) && droidReady(who[i])) {
 			if(isDefined(derr[tmp])) {
 				orderDroidObj(who[i], DORDER_ATTACK, derr[tmp]);
-				if(!((i + 1) % 5))
+				if(!((i + 1) % 4))
 					tmp += 1;
 			}
 		}
 	}
 }
 
+//Commanders target whatever is nearby.
+/*
+function commandTactics() {
+	var coms = enumGroup(commanderGroup);
+
+	for(var i = 0; i < coms.length; ++i) {
+		if(isDefined(coms[i]) && !repairDroid(coms[i]) && droidReady(coms[i])) {
+			var target = rangeStep(coms[i], false);
+			if(isDefined(target)) {
+				orderDroidObj(coms[i], DORDER_ATTACK, target);
+			}
+		}
+	}
+}
+*/
