@@ -129,16 +129,11 @@ const weaponStats = {
 			{ res: "R-Wpn-Cannon5", stat: "Cannon5VulcanMk1" }, // ac
 			{ res: "R-Wpn-Cannon6TwinAslt", stat: "Cannon6TwinAslt" }, // tac
 			{ res: "R-Wpn-Cannon3Mk1", stat: "Cannon375mmMk1" }, // hc
-			{ res: "R-Wpn-RailGun01", stat: "RailGun1Mk1" }, // needle
-			{ res: "R-Wpn-RailGun02", stat: "RailGun2Mk1" }, // rail
-			{ res: "R-Wpn-RailGun03", stat: "RailGun3Mk1" }, // gauss
 		],
 		vtols: [
 			{ res: "R-Wpn-Cannon1Mk1", stat: "Cannon1-VTOL" }, // lc
 			{ res: "R-Wpn-Cannon4AMk1", stat: "Cannon4AUTO-VTOL" }, // hpv
 			{ res: "R-Wpn-Cannon5", stat: "Cannon5Vulcan-VTOL" }, // ac
-			{ res: "R-Wpn-RailGun01", stat: "RailGun1-VTOL" }, // needle
-			{ res: "R-Wpn-RailGun02", stat: "RailGun2-VTOL" }, // rail
 		],
 		defenses: [
 			{ res: "R-Defense-Pillbox04", stat: "PillBox4" }, // lc bunker
@@ -150,6 +145,31 @@ const weaponStats = {
 			{ res: "R-Defense-Cannon6", stat: "PillBox-Cannon6" }, // tac bunker
 			{ res: "R-Defense-WallTower04", stat: "WallTower04" }, // hc hard
 			{ res: "R-Defense-Super-Cannon", stat: "X-Super-Cannon" }, // cannon fort
+		],
+		templates: [
+			{ res: "R-Wpn-Cannon1Mk1", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "CyborgCannon", ] }, // lc borg
+			{ res: "R-Cyborg-Hvywpn-Mcannon", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-Mcannon", ] }, // mc super
+			{ res: "R-Cyborg-Hvywpn-HPV", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-HPV", ] }, // hpv super
+			{ res: "R-Cyborg-Hvywpn-Acannon", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-Acannon", ] }, // ac super
+		],
+		extras: [
+			"R-Wpn-Cannon-Accuracy02",
+			"R-Wpn-Cannon-Damage09",
+			"R-Wpn-Cannon-ROF06",
+			"R-Vehicle-Engine09", // cannons are heeeeavy
+		],
+	},
+	gauss: {
+		weapons: [
+			{ res: "R-Wpn-RailGun01", stat: "RailGun1Mk1" }, // needle
+			{ res: "R-Wpn-RailGun02", stat: "RailGun2Mk1" }, // rail
+			{ res: "R-Wpn-RailGun03", stat: "RailGun3Mk1" }, // gauss
+		],
+		vtols: [
+			{ res: "R-Wpn-RailGun01", stat: "RailGun1-VTOL" }, // needle
+			{ res: "R-Wpn-RailGun02", stat: "RailGun2-VTOL" }, // rail
+		],
+		defenses: [
 			{ res: "R-Defense-GuardTower-Rail1", stat: "GuardTower-Rail1" }, // needle tower
 			{ res: "R-Defense-Rail2", stat: "Emplacement-Rail2" }, // rail empl
 			{ res: "R-Defense-WallTower-Rail2", stat: "WallTower-Rail2" }, // rail hard
@@ -158,20 +178,12 @@ const weaponStats = {
 			{ res: "R-Defense-MassDriver", stat: "X-Super-MassDriver" }, // mass driver fort
 		],
 		templates: [
-			{ res: "R-Wpn-Cannon1Mk1", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "CyborgCannon", ] }, // lc borg
-			{ res: "R-Cyborg-Hvywpn-Mcannon", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-Mcannon", ] }, // mc super
-			{ res: "R-Cyborg-Hvywpn-HPV", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-HPV", ] }, // hpv super
-			{ res: "R-Cyborg-Hvywpn-Acannon", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-Acannon", ] }, // ac super
 			{ res: "R-Wpn-RailGun01", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "Cyb-Wpn-Rail1", ] }, // needle borg
 			{ res: "R-Cyborg-Hvywpn-RailGunner", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-RailGunner", ] }, // rail super
 		],
 		extras: [
-			"R-Wpn-Cannon-Accuracy02",
-			"R-Wpn-Cannon-Damage09",
-			"R-Wpn-Cannon-ROF06",
 			"R-Wpn-Rail-Damage03", // sure it's required by gauss, but what if our AI uses only cyborgs and vtols?
 			"R-Wpn-Rail-ROF03",
-			"R-Vehicle-Engine09", // cannons are heeeeavy
 		],
 	},
 	cannons_AA: {
@@ -219,10 +231,33 @@ const weaponStats = {
 			"R-Wpn-Howitzer-Accuracy03",
 		],
 	},
+	howitzers: {
+		weapons: [
+			{ res: "R-Wpn-HowitzerMk1", stat: "Howitzer105Mk1" },
+			{ res: "R-Wpn-Howitzer03-Rot", stat: "Howitzer03-Rot" },
+			{ res: "R-Wpn-HvyHowitzer", stat: "Howitzer150Mk1" },
+		],
+		vtols: [
+			{ res: "R-Wpn-Bomb01", stat: "Bomb1-VTOL-LtHE" },
+			{ res: "R-Wpn-Bomb02", stat: "Bomb2-VTOL-HvHE" },
+		],
+		defenses: [
+			{ res: "R-Defense-Howitzer", stat: "Emplacement-Howitzer105" },
+			{ res: "R-Defense-RotHow", stat: "Emplacement-RotHow" },
+			{ res: "R-Defense-HvyHowitzer", stat: "Emplacement-Howitzer150" },
+		],
+		templates: [
+			{ res: "R-Wpn-Mortar01Lt", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "Cyb-Wpn-Grenade", ] },
+		],
+		extras: [
+			"R-Wpn-Howitzer-Damage06",
+			"R-Wpn-Howitzer-ROF04",
+			"R-Wpn-Howitzer-Accuracy03",
+		],
+	},
 	fireMortars: {
 		weapons: [
-			{ res: "R-Wpn-Mortar01Lt", stat: "Mortar1Mk1" }, // duplicate stat!
-			{ res: "R-Wpn-Mortar-Incenediary", stat: "Mortar-Incenediary" },
+			//{ res: "R-Wpn-Mortar-Incenediary", stat: "Mortar-Incenediary" },
 			{ res: "R-Wpn-Howitzer-Incenediary", stat: "Howitzer-Incenediary" },
 		],
 		vtols: [
@@ -231,14 +266,11 @@ const weaponStats = {
 			{ res: "R-Wpn-Bomb05", stat: "Bomb5-VTOL-Plasmite" },
 		],
 		defenses: [
-			{ res: "R-Defense-MortarPit-Incenediary", stat: "Emplacement-MortarPit-Incenediary" },
+			//{ res: "R-Defense-MortarPit-Incenediary", stat: "Emplacement-MortarPit-Incenediary" },
 			{ res: "R-Defense-Howitzer-Incenediary", stat: "Emplacement-Howitzer-Incenediary" },
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-Mortar-Damage06",
-			"R-Wpn-Mortar-ROF04",
-			"R-Wpn-Mortar-Acc03",
 			"R-Wpn-Howitzer-Damage06",
 			"R-Wpn-Howitzer-ROF04",
 			"R-Wpn-Howitzer-Accuracy03",

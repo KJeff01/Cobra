@@ -1,32 +1,35 @@
-//If power levels are low, then go for a more economic friendly personality.
-function adaptToPowerLevels() {
-	var choice = "";
-	const POWER = getRealPower();
 
-	if(POWER < -600) {
-		if(random(2)) { choice = ADAPT_PERSONALITIES[0]; }
-		else { choice = ADAPT_PERSONALITIES[1]; }
+//Choose the personality as described in the global subpersonalities.
+//When called from chat it will switch to that one directly.
+function choosePersonality(chatEvent) {
+	var person = "";
+	var len = 4;
+
+	if(!isDefined(chatEvent)) {
+		return adaptToMap();
 	}
 	else {
-		if(random(2)) { choice = ADAPT_PERSONALITIES[2]; }
-		else { choice = ADAPT_PERSONALITIES[3]; }
+		personality = chatEvent;
+		initializeResearchLists();
+		sendChatMessage("Using personality: " + personality, ALLIES);
 	}
-
-	choosePersonality(choice);
 }
 
-//Choose personality based on map oil count. Called from eventStartLevel().
+//Choose personality based on map oil/ally count. Called from eventStartLevel().
 function adaptToMap() {
 	var choice = "";
+	const ENEMY_COUNT = playerAlliance(false).length;
+	const ALLY_COUNT = playerAlliance(true).length;
 	const MAP_OIL_LEVEL = mapOilLevel();
 
-	if(MAP_OIL_LEVEL === "LOW") {
-		if(random(2)) { choice = ADAPT_PERSONALITIES[0]; }
-		else { choice = ADAPT_PERSONALITIES[1]; }
-	}
-	else if (MAP_OIL_LEVEL === "MEDIUM") {
+	//If outnumbered (or high tech level), go for cannons and rockets.
+	if ((MAP_OIL_LEVEL === "MEDIUM") || ((ALLY_COUNT !== 0) && (ALLY_COUNT < ENEMY_COUNT)) || (turnOffMG === true)) {
 		if(random(2)) { choice = ADAPT_PERSONALITIES[2]; }
 		else { choice = ADAPT_PERSONALITIES[3]; }
+	}
+	else if((MAP_OIL_LEVEL === "LOW") || (ALLY_COUNT === 0)) {
+		if(!componentAvailable("hover01")) { choice = ADAPT_PERSONALITIES[0]; }
+		else { choice = ADAPT_PERSONALITIES[1]; }
 	}
 	else {
 		choice = ADAPT_PERSONALITIES[3];

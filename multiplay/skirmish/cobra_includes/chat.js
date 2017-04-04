@@ -1,3 +1,15 @@
+
+//A way to control chat messages sent to Cobra AI.
+function sendChatMessage(msg, receiver) {
+	if(!isDefined(msg)) { return; }
+	if(!isDefined(receiver)) { receiver = ALLIES; }
+
+	if(lastMsg != msg) {
+		lastMsg = msg;
+		chat(receiver, msg);
+	}
+}
+
 function eventChat(from, to, message) {
 	if(to != me) { return; }
 

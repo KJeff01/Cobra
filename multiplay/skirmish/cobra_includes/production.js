@@ -8,12 +8,13 @@ function choosePersonalityWeapon(type) {
 	if(!isDefined(type)) { type = "TANK"; }
 
 	if(type === "TANK") {
-		switch(random(5)) {
+		switch(random(6)) {
 			case 0: weaps = subpersonalities[personality]["primaryWeapon"]; break;
-			case 1: if((turnOffMG === false) || (personality === "AM")) { weaps = subpersonalities[personality]["secondaryWeapon"]; } break;
+			case 1: if((turnOffMG === false) || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
 			case 2: weaps = subpersonalities[personality]["artillery"]; break;
-			case 3: weaps = subpersonalities[personality]["tertiaryWeapon"]; break;
-			case 4: weaps = weaponStats.AS; break;
+			case 3: weaps = weaponStats.lasers; break;
+			case 4: weaps = subpersonalities[personality]["secondaryWeapon"]; break;
+			case 5: weaps = weaponStats.AS; break;
 			default: weaps = subpersonalities[personality]["primaryWeapon"]; break;
 		}
 
@@ -45,30 +46,50 @@ function choosePersonalityWeapon(type) {
 		}
 	}
 	else if(type === "CYBORG") {
-		switch(random(3)) {
-			case 0: weaps = subpersonalities[personality]["primaryWeapon"]; break;
-			case 1: {
-				if(isDesignable("CyborgRotMG", "CyborgLightBody", "CyborgLegs") &&
-					(turnOffMG === false) || (personality === "AM")) {
-						weaps = subpersonalities[personality]["secondaryWeapon"];
-					}
-					break;
+		var haveAG = isDesignable("CyborgRotMG", "CyborgLightBody", "CyborgLegs");
+		switch(random(4)) {
+			case 0:	weaps = subpersonalities[personality]["primaryWeapon"]; break;
+			case 1:
+				if((haveAG === true) && (turnOffMG === false) || (personality === "AM")) {
+					weaps = weaponStats.machineguns;
 				}
-			case 2: weaps = subpersonalities[personality]["tertiaryWeapon"]; break;
+				break;
+			case 2: weaps = weaponStats.lasers; break;
+			case 3: weaps = subpersonalities[personality]["secondaryWeapon"]; break;
 			default: weaps = subpersonalities[personality]["primaryWeapon"]; break;
 		}
 	}
 	else if(type === "VTOL") {
-		if(personality !== "AB")
-			weaps = weaponStats.bombs;
-		else
-			weaps = weaponStats.rockets_AT;
+		switch(random(2)) {
+			case 0: {
+				if(personality !== "AB") weaps = weaponStats.bombs;
+				else weaps = weaponStats.rockets_AT;
+				break;
+			}
+			case 1: weaps = weaponStats.lasers; break;
+			default: weaps = weaponStats.lasers; break;
+		}
 		for(var i = weaps.vtols.length - 1; i >= 0; --i) {
 			weaponList.push(weaps.vtols[i].stat);
 		}
 	}
 
 	return ((type === "CYBORG") || !isDefined(weaps)) ? weaps : weaponList;
+}
+
+function useHover(weap) {
+	var isFlamer = false;
+	switch(weap) {
+		case "Flame1Mk1":
+		case "Flame2":
+		case "PlasmiteFlamer":
+			isFlamer = true;
+			break;
+		default:
+			isFlamer = false;
+			break;
+	}
+	return ((isFlamer === true) || (forceHover === true)) ? true : false;
 }
 
 //Create a ground attacker tank with a heavy body when possible.
@@ -83,24 +104,24 @@ function buildAttacker(struct) {
 	var weap = choosePersonalityWeapon("TANK");
 
 	if(!isDefined(weap)) { return false; }
-	if(((useHover() === true) || (forceHover === true) || !random(12)) && componentAvailable("hover01")) {
+	if(((useHover(weap) === true) || !random(12)) && componentAvailable("hover01")) {
 		if(!random(5) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
 			if(weap != "MortarEMP") {
-				buildDroid(struct, "Hover Droid", tankBody, "hover01", null, null, weap, "EMP-Cannon");
+				buildDroid(struct, "Hover EMP Droid", tankBody, "hover01", "", "", weap, "EMP-Cannon");
 				return true; //Forced success
 			}
 		}
-		buildDroid(struct, "Hover Droid", tankBody, "hover01", null, null, weap, weap);
+		buildDroid(struct, "Hover Droid", tankBody, "hover01", "", "", weap, weap);
 		return true; //Forced success
 	}
 
 	if(!random(5) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
 		if((weap != "MortarEMP")) {
-			if(buildDroid(struct, "Droid", tankBody, tankProp, null, null, weap, "EMP-Cannon"))
+			if(buildDroid(struct, "EMP Droid", tankBody, tankProp, "", "", weap, "EMP-Cannon"))
 				return true;
 		}
 	}
-	if (buildDroid(struct, "Droid", tankBody, tankProp, null, null, weap, weap)) { return true; }
+	if (buildDroid(struct, "Droid", tankBody, tankProp, "", "", weap, weap)) { return true; }
 
 	return false;
 }
@@ -108,7 +129,7 @@ function buildAttacker(struct) {
 //Create trucks or sensors with a light body. Default to a sensor.
 function buildSys(struct, weap) {
 	if(!isDefined(weap)) { weap = ["Sensor-WideSpec", "SensorTurret1Mk1"]; }
-	if (buildDroid(struct, "System unit", sysBody, sysProp, null, null, weap)) { return true; }
+	if (buildDroid(struct, "System unit", sysBody, sysProp, "", "", weap)) { return true; }
 	return false;
 }
 
@@ -125,7 +146,7 @@ function buildCyborg(fac) {
 		body = weapon.templates[x].body;
 		prop = weapon.templates[x].prop;
 		weap = weapon.templates[x].weapons[0];
-		if(buildDroid(fac, "Cyborg", body, prop, null, null, weap, weap)) {
+		if(buildDroid(fac, "Cyborg", body, prop, "", "", weap, weap)) {
 			return true;
 		}
 	}
@@ -136,7 +157,7 @@ function buildCyborg(fac) {
 //Create a vtol fighter with a medium body.
 function buildVTOL(struct) {
 	var weap = choosePersonalityWeapon("VTOL");
-	if (buildDroid(struct, "VTOL unit", vtolBody, "V-Tol", null, null, weap, weap)) { return true; }
+	if (buildDroid(struct, "VTOL unit", vtolBody, "V-Tol", "", "", weap, weap)) { return true; }
 
 	return false;
 }

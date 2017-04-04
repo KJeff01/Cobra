@@ -1,4 +1,3 @@
-
 //This file contains generic events. Chat and research events are split into
 //their own seperate files.
 
@@ -68,33 +67,19 @@ function eventGameInit() {
 	*/
 }
 
+//Initialze global variables and setup timers.
 function eventStartLevel() {
-	nexusWaveOn = false;
-	grudgeCount = [];
-	turnOffCyborgs = false;
-	throttleTime = [];
-	personality = choosePersonality();
+	initiaizeRequiredGlobals();
+	buildOrder(); //Start building right away.
 
-	for(var i = 0; i < maxPlayers; ++i) { grudgeCount.push(0); }
-	for(var i = 0; i < 4; ++i) { throttleTime.push(0); }
-
-	checkForScavs();
-	diffPerks();
-	initializeResearchLists();
-
-	forceHover = checkIfSeaMap(); //TurnOffCyborgs can be assigned true here
-	turnOffMG = CheckStartingBases();
-
-	buildOrder();
-	setTimer("buildOrder", 350 + 3 * random(60));
-	setTimer("produce", 700 + 3 * random(60));
-	setTimer("repairAll", 1000 + 5 * random(60));
-	//setTimer("commandTactics", 2000 + 3 * random(60));
-	setTimer("spyRoutine", 8000 + 4 * random(60));
-	setTimer("nexusWave", 10000 + 3 * random(70));
-	setTimer("checkMood", 20000 + 4 * random(60));
-	setTimer("attackEnemyOil", 60000 + 5 * random(60));
-	//setTimer("adaptToPowerLevels", 600000 + 7 * random(60));
+	setTimer("repairAll", thinkLonger + 325 + 3 * random(80));
+	setTimer("buildOrder", thinkLonger + 450 + 3 * random(60));
+	setTimer("produce", thinkLonger + 700 + 3 * random(70));
+	//setTimer("commandTactics", thinkLonger + 2000 + 3 * random(60));
+	setTimer("spyRoutine", thinkLonger + 8000 + 4 * random(60));
+	setTimer("nexusWave", thinkLonger + 10000 + 3 * random(70));
+	setTimer("checkMood", thinkLonger + 20000 + 4 * random(90));
+	setTimer("attackEnemyOil", thinkLonger + 35000 + 5 * random(60));
 }
 
 function eventAttacked(victim, attacker) {
@@ -116,13 +101,18 @@ function eventAttacked(victim, attacker) {
 		if(stopExecution(0, 20000) === true) { return; }
 
 		//find nearby units.
-		var units = enumRange(victim.x, victim.y, 15, me, false).filter(function(d) {
+		var units = enumRange(victim.x, victim.y, 20, me, false).filter(function(d) {
 			return (d.type == DROID) && ((d.droidType == DROID_WEAPON) || (d.droidType == DROID_CYBORG))
 		});
 
 		//Be a bit aggressive when a structure is attacked.
 		if(victim.type == STRUCTURE) {
 			units = chooseGroup();
+		}
+
+		//The cheapest way for cyborg control.
+		if(forceHover === false && attacker.type == DROID && attacker.droidType === DROID_CYBORG) {
+			turnOffMG = false;
 		}
 
 		for (var i = 0; i < units.length; i++) {
@@ -155,7 +145,7 @@ function eventAttacked(victim, attacker) {
 	}
 }
 
-//Increase grudge counter
+//Add a beacon and potentially request a unit.
 function eventGroupLoss(droid, group, size) {
 	if(droid.order == DORDER_RECYCLE) { return; }
 
@@ -177,13 +167,13 @@ function eventGroupLoss(droid, group, size) {
 	*/
 
 	if(playerAlliance(true).length > 0) {
-		if (enumGroup(attackGroup).length < 2) {
+		if (enumGroup(attackGroup).length < 5) {
 			sendChatMessage("need tank", ALLIES);
 		}
-		if (countStruct(structures.templateFactories) && enumGroup(cyborgGroup).length < 2) {
+		if (countStruct(structures.templateFactories) && enumGroup(cyborgGroup).length < 5) {
 			sendChatMessage("need cyborg", ALLIES);
 		}
-		if (countStruct(structures.vtolFactories) && enumGroup(vtolGroup).length < 2) {
+		if (countStruct(structures.vtolFactories) && enumGroup(vtolGroup).length < 5) {
 			sendChatMessage("need vtol", ALLIES);
 		}
 	}
@@ -206,7 +196,7 @@ function eventDroidIdle(droid) {
 					}
 				}
 				else {
-					orderDroid(droid, DORDER_RTB);
+					orderDroid(droid, DORDER_RTB); //wait for death.
 				}
 			}
 		}
@@ -214,7 +204,7 @@ function eventDroidIdle(droid) {
 
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message) {
-	if(stopExecution(2, 40000) === true) { return; }
+	if(stopExecution(2, 30000) === true) { return; }
 
 	if(allianceExistsBetween(from, to) || (to == from)) {
 		var cyborgs = enumGroup(cyborgGroup);
@@ -255,7 +245,7 @@ function eventObjectTransfer(obj, from) {
 	}
 }
 
-//Mostly meant to reduce stress about enemies or tell if a structures are being destroyed.
+//Mostly meant to reduce stress about enemies or tell if a structures is destroyed.
 function eventDestroyed(object) {
 	if(isDefined(scavengerNumber) && (object.player === scavengerNumber))
 		return;
@@ -276,8 +266,8 @@ function eventStructureReady(structure) {
 			return;
 	}
 
-	var enemy = playerAlliance(false);
-	enemy = enemy[random(enemy.length)];
+	var enemies = playerAlliance(false);
+	var enemy = enemies[random(enemies.length)];
 	var facs = enumStruct(enemy, structures.factories);
 	var tempFacs = enumStruct(enemy, structures.templateFactories);
 

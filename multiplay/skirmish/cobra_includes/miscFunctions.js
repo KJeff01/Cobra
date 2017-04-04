@@ -1,3 +1,5 @@
+//Contains functions that are either used about everywhere or do not have
+//a better file to be placed in yet.
 
 // Random number between 0 and max-1.
 function random(max) {
@@ -19,15 +21,13 @@ function sortAndReverseDistance(arr) {
 	return (arr.sort(distanceToBase)).reverse();
 }
 
-//A controlled way to send chat messages between Cobra AI.
-function sendChatMessage(msg, receiver) {
-	if(!isDefined(msg)) { return; }
-	if(!isDefined(receiver)) { receiver = ALLIES; }
-
-	if(lastMsg != msg) {
-		lastMsg = msg;
-		chat(receiver, msg);
+//Push list elements into another.
+function appendListElements(list, items) {
+	var temp = list;
+	for(var i = 0; i < items.length; ++i) {
+		temp.push(items[i]);
 	}
+	return temp;
 }
 
 //Control the amount of objects being put in memory so we do not create a large array of objects.
@@ -110,21 +110,21 @@ function playerAlliance(ally) {
 function diffPerks() {
 	switch(difficulty) {
 		case EASY:
-			//maybe make the worst build order ever.
+			ThinkLonger = 4000 + ((1 + random(4)) * random(1200));
 			break;
 		case MEDIUM:
 			//Do nothing
 			break;
 		case HARD:
 			if(!isStructureAvailable("A0PowMod1"))
-				completeRequiredResearch("R-Vehicle-Engine01");
+				completeRequiredResearch("R-Sys-Engineering01");
 			makeComponentAvailable("PlasmaHeavy", me);
 			makeComponentAvailable("MortarEMP", me);
 			break;
 		case INSANE:
 			//In addition to what Hard does, turn on the NIP.
 			if(!isStructureAvailable("A0PowMod1"))
-				completeRequiredResearch("R-Struc-PowerModuleMk1");
+				completeRequiredResearch("R-Sys-Engineering01");
 			nexusWaveOn = true;
 			makeComponentAvailable("PlasmaHeavy", me);
 			makeComponentAvailable("MortarEMP", me);
@@ -185,69 +185,9 @@ function getRealPower() {
 	return playerPower(me) - queuedPower(me);
 }
 
-//Need to search for scavenger player number. Keep undefined if there are no scavengers.
-function checkForScavs() {
-	for(var x = maxPlayers; x < 11; ++x) {
-		if(enumStruct(x).length > 0) {
-			scavengerNumber = x;
-			break;
-		}
-	}
-}
-
 //Returns all unfinished structures.
 function unfinishedStructures() {
 	return enumStruct(me).filter(function(struct){ return struct.status != BUILT});
-}
-
-//Choose the personality as described in the global subpersonalities.
-//When called from chat it will switch to that one directly.
-function choosePersonality(chatEvent) {
-	var person = "";
-	var len = 4;
-
-	if(!isDefined(chatEvent)) {
-		return adaptToMap();
-	}
-	else {
-		personality = chatEvent;
-		initializeResearchLists();
-		sendChatMessage("Using personality: " + personality, ALLIES);
-	}
-}
-
-
-function useHover() {
-	return (personality === "AR") ? true : false;
-}
-
-//Find the derricks of all enemy players, or just a specific one.
-function findEnemyDerricks(playerNumber) {
-	var derr = [];
-
-	if(!isDefined(playerNumber)) {
-		var enemy = playerAlliance(false);
-		for(var i = 0; i < enemy.length; ++i) {
-
-			var objs = enumStruct(enemy[i], structures.derricks);
-			for(var s = 0; s < objs.length; ++s) {
-				derr.push(objs[s]);
-			}
-		}
-
-		//Check for scavs
-		if(isDefined(scavengerNumber) && !allianceExistsBetween(scavengerNumber, me)) {
-			var objs = enumStruct(scavengerNumber, structures.derricks);
-			for(var s = 0; s < objs.length; ++s) {
-				derr.push(objs[s]);
-			}
-		}
-	}
-	else {
-		derr = enumStruct(playerNumber, structures.derricks);
-	}
-
-	return derr;
 }
 
 //choose either cyborgs or tanks. prefer cyborgs if any.
@@ -321,3 +261,26 @@ function findOldDroids(group) {
 	}
 }
 */
+
+//Called from eventStartLevel, this initializes the globals.
+function initiaizeRequiredGlobals() {
+	nexusWaveOn = false;
+	grudgeCount = [];
+	turnOffCyborgs = false;
+	throttleTime = [];
+	thinkLonger = 0;
+
+	for(var i = 0; i < maxPlayers; ++i) { grudgeCount.push(0); }
+	for(var i = 0; i < 4; ++i) { throttleTime.push(0); }
+
+	checkForScavs();
+	diffPerks();
+
+	forceHover = checkIfSeaMap(); //TurnOffCyborgs can be assigned true here
+	personality = choosePersonality();
+	turnOffMG = CheckStartingBases();
+	//Do not start with AM or AR if technology is good enough.
+	if(turnOffMG === true)
+		personality = choosePersonality();
+	initializeResearchLists();
+}

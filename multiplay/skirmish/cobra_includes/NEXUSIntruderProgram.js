@@ -1,4 +1,7 @@
 
+//Experimental code to be later used in the campaign scripts. This code
+//only is used on insane difficulty.
+
 //Sometimes the required research list has duplicate strings. So lets remove them.
 function cleanResearchItem(res, player) {
 	var temp = findResearch(res, player).reverse();
@@ -44,7 +47,7 @@ function analyzeDroidAlloys(droid) {
 }
 
 //Figure out if we can steal some new technology. returns true if a new
-//compoenent was found.
+//component was found.
 function analyzeComponent(statList, component, droid) {
 	var statHolder;
 	var foundComponent = false;
@@ -115,18 +118,69 @@ function analyzeDroidComponents(droid) {
 	}
 }
 
-//Check the units technology and enable it for Cobra if it is new.
+//Check the unit's technology and enable it for Cobra if it is new.
 //Called from nexusWave. (insane difficulty only).
 function stealEnemyTechnology(droid) {
 	analyzeDroidComponents(droid);
 	analyzeDroidAlloys(droid);
 }
 
+//Droid will attack allies. Either the enemy will attack its units or a friend.
+function malfunctionDroid() {
+	var enemies = playerAlliance(false);
+	var enemy = enemies[random(enemies.length)];
+
+	var droids = enumDroid(enemy).filter(function(d) { return d.droidType !== DROID_SENSOR });
+	if(droids.length > 2) {
+		if(random(2)) {
+			var aDroid = droids[droids.length - 1];
+			var victim = droids[droids.length - 2];
+			logObj(aDroid, "Enemy droid told to attack its own units");
+			if(isDefined(aDroid) && isDefined(victim))
+				orderDroidObj(aDroid, DORDER_ATTACK, victim);
+		}
+		else {
+			for(var j = 0; j < droids.length; ++j) {
+				if(!random(4) && isDefined(droids[j])) {
+					var dr = droids[j];
+					var rg = enumRange(dr.x, dr.y, 40, ALL_PLAYERS, false).filter(function(obj) {
+						return obj.type === DROID && allianceExistsBetween(enemy, obj) || obj.player === enemy
+					});
+					if(rg.length > 0) {
+						var newDroid = rg[random(rg.length)];
+						if(isDefined(dr) && isDefined(newDroid))
+							orderDroidObj(dr, DORDER_ATTACK, newDroid);
+					}
+					else
+						break;
+				}
+			}
+		}
+	}
+}
+
+//Steal technology and potentially compromise the droid itself.
+function analyzeRandomEnemyDroid() {
+	var enemies = playerAlliance(false);
+	var enemy = enemies[random(enemies.length)];
+	var enemyDroids = enumDroid(enemy).filter(function(d) {
+		return isVTOL(d) || d.droidType == DROID_WEAPON || d.droidType == DROID_CYBORG || d.droidType == DROID_SENSOR
+	});
+
+	//Steal a randomly selected player technology.
+	if(enemyDroids.length > 0) {
+		var dr = enemyDroids[random(enemyDroids.length)];
+		stealEnemyTechnology(dr);
+		if(!random(20)) {
+			donateObject(dr, me);
+		}
+	}
+}
+
 //On insane difficulty Cobra can mess with other player's units
 //in ways of stopping what they are doing or ordering them to attack
 //another player or even stealing technology.
-//This effect only occurs while the Cobra command center is not destroyed
-
+//This effect only occurs while the Cobra command center is not destroyed.
 function nexusWave() {
 	if(isDefined(nexusWaveOn) && (nexusWaveOn === false)) {
 		removeTimer("nexusWave");
@@ -134,64 +188,9 @@ function nexusWave() {
 	}
 
 	if(isDefined(nexusWaveOn) && (nexusWaveOn === true) && (countStruct(structures.hqs) > 0)) {
-		var enemies = playerAlliance(false);
-		var firstEnemy = enemies[random(enemies.length)];
-		var firstDroids = enumDroid(firstEnemy).filter(function(d) {
-			return isVTOL(d) || d.droidType == DROID_WEAPON || d.droidType == DROID_CYBORG || d.droidType == DROID_SENSOR
-		});
-		var secondEnemy = enemies[random(enemies.length)];
-		var secondDroids = enumDroid(secondEnemy).filter(function(d) {
-			return isVTOL(d) || d.droidType == DROID_WEAPON || d.droidType == DROID_CYBORG || d.droidType == DROID_SENSOR
-		});
-
-		//Steal a randomly selected player technology
-		if(isDefined(firstEnemy) && isDefined(firstDroids) && (firstDroids.length > 0)) {
-			var dr = firstDroids[random(firstDroids.length)];
-			stealEnemyTechnology(dr);
-			if(!random(30)) {
-				donateObject(dr, me);
-			}
-		}
-
-		if(isDefined(secondEnemy) && isDefined(secondDroids) && (secondDroids.length > 0)) {
-			var dr = secondDroids[random(secondDroids.length)];
-			stealEnemyTechnology(dr);
-			if(!random(30)) {
-				donateObject(dr, me);
-			}
-		}
-
-		var enemyStruct = enumStruct(firstEnemy);
-
-		if(enemyStruct.length > 0) {
-			var newStruct = enemyStruct[random(enemyStruct.length)];
-
-			if(!random(10)) {
-				var aDroid = secondDroids[random(secondDroids.length)];
-				//log("NXwave -> player " + aDroid.player + " told to attack player " + newStruct.player);
-				if(isDefined(aDroid) && isDefined(newStruct))
-					orderDroidObj(aDroid, DORDER_ATTACK, newStruct);
-			}
-			else if(!random(10)) {
-				//log("NXwave -> player " + secondDroids[0].player + "'s droids malfunctioned.");
-				for(var j = 0; j < secondDroids.length; ++j) {
-					//Attack own units
-					if(!random(5) && isDefined(secondDroids[j])) {
-						var dr = secondDroids[j];
-						var rg = enumRange(dr.x, dr.y, 8, dr.player, false).filter(function(obj) {
-							return obj.type == DROID
-						});
-						if((rg.length > 0)) {
-							var newDroid = rg[random(rg.length)];
-
-							if(isDefined(dr) && isDefined(newDroid))
-								orderDroidObj(dr, DORDER_ATTACK, newDroid);
-							else
-								break;
-						}
-					}
-				}
-			}
+		analyzeRandomEnemyDroid();
+		if(!random(15)) {
+			malfunctionDroid();
 		}
 	}
 }
