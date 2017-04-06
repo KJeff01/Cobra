@@ -57,7 +57,7 @@ function evalResearch(lab, list) {
 //The research decisions. On T2/T3 it is more artillery/laser/vtol focused
 //Needs to have bloat reduction here.
 function eventResearched() {
-	if(!isDefined(techlist)) { return; }
+	if(!isDefined(techlist) || !isDefined(turnOffMG) || !isDefined(turnOffCyborgs)) { return; }
 	if(getRealPower() < -400) { return; }
 
 	const PROPULSION = [
@@ -70,6 +70,7 @@ function eventResearched() {
 	const REPAIR_UPGRADES = [
 		"R-Sys-Autorepair-General", "R-Struc-RprFac-Upgrade06"
 	]
+	const FLAMER = ["R-Wpn-Flamer-Damage09", "R-Wpn-Flamer-ROF03"]
 
 	var lablist = enumStruct(me, structures.labs);
 	for (var i = 0; i < lablist.length; ++i) {
@@ -89,41 +90,42 @@ function eventResearched() {
 				found = pursueResearch(lab, fastestResearch);
 
 			//If T1 - Go for machine-guns. else focus on lasers and the primary weapon.
-			if(isDefined(turnOffMG) && (turnOffMG === false) || (personality === "AM")) {
+			if((turnOffMG === false) || (personality === "AM")) {
 				if(!found)
 					found = pursueResearch(lab, mgWeaponTech);
 				if(!found)
 					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
 			}
 
-			if(isDefined(turnOffCyborgs)) {
+			if(!random(4)) {
 				if(turnOffCyborgs === false) {
 					if(!found)
 						found = evalResearch(lab, kineticResearch);
-				}
-				else {
-					if(!found)
+					}
+					else {
+						if(!found)
 						found = pursueResearch(lab, "R-Vehicle-Metals09");
-				}
+					}
 			}
 
-			if(isDefined(turnOffCyborgs) && (turnOffCyborgs === false) && !found)
+			if((turnOffCyborgs === false) && !found)
 				found = evalResearch(lab, cyborgWeaps);
+			if((turnOffCyborgs === false) && !found)
+				found = evalResearch(lab, FLAMER);
 
 			if(random(2)) {
 				if(!found)
 					found = evalResearch(lab, extraTech);
 				if(!found)
-					found = evalResearch(lab, weaponTech);
-				if(!found)
 					found = evalResearch(lab, artilleryTech);
+				if(!found)
+					found = evalResearch(lab, weaponTech);
 				if(!found)
 					found = evalResearch(lab, artillExtra);
 			}
-			else if((gameTime > 1600000) && random(2)) {
-
+			else if((gameTime > 1400000) && random(2)) {
 				if(!found)
-					found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade02");
+					found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade06");
 
 				if(!found && (personality !== "AB"))
 					found = pursueResearch(lab, "R-Wpn-Bomb04");
@@ -134,16 +136,17 @@ function eventResearched() {
 					if(!found)
 						found = evalResearch(lab, vtolWeapons);
 				}
-				else {
-					if(!found)
-						found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade06");
-				}
 
 				if(!found)
 					found = evalResearch(lab, antiAirTech);
 				if(!found)
 					found = evalResearch(lab, antiAirExtras);
 			}
+
+			if(!found)
+				found = evalResearch(lab, REPAIR_UPGRADES);
+			if(!found)
+				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 
 			if(!found)
 				found = evalResearch(lab, laserExtra);
@@ -161,25 +164,18 @@ function eventResearched() {
 			*/
 
 			if(!found)
-				found = evalResearch(lab, REPAIR_UPGRADES);
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
-
-			if(!found)
 				found = pursueResearch(lab, "R-Sys-Sensor-WS");
 			if(!found)
 				found = evalResearch(lab, bodyResearch);
 
 
-			if(isDefined(turnOffCyborgs)) {
-				if(turnOffCyborgs === false) {
-					if(!found)
-						found = evalResearch(lab, thermalResearch);
-				}
-				else {
-					if(!found)
-						found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
-				}
+			if(turnOffCyborgs === false) {
+				if(!found)
+					found = evalResearch(lab, thermalResearch);
+			}
+			else {
+				if(!found)
+					found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
 			}
 
 			if(!found)

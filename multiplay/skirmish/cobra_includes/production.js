@@ -46,14 +46,9 @@ function choosePersonalityWeapon(type) {
 		}
 	}
 	else if(type === "CYBORG") {
-		var haveAG = isDesignable("CyborgRotMG", "CyborgLightBody", "CyborgLegs");
 		switch(random(4)) {
 			case 0:	weaps = subpersonalities[personality]["primaryWeapon"]; break;
-			case 1:
-				if((haveAG === true) && (turnOffMG === false) || (personality === "AM")) {
-					weaps = weaponStats.machineguns;
-				}
-				break;
+			case 1: weaps = weaponStats.flamers; break;
 			case 2: weaps = weaponStats.lasers; break;
 			case 3: weaps = subpersonalities[personality]["secondaryWeapon"]; break;
 			default: weaps = subpersonalities[personality]["primaryWeapon"]; break;

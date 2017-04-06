@@ -11,8 +11,9 @@ function sendChatMessage(msg, receiver) {
 }
 
 function eventChat(from, to, message) {
-	if(to != me) { return; }
+	if(to !== me) { return; }
 
+	//Here are all chat messages that can be executed by itself.
 	if((message === "AC") || (message === "AR") || (message === "AB") || (message === "AM")) {
 		if(allianceExistsBetween(from, to) && (personality !== message)) {
 			choosePersonality(message);
@@ -30,9 +31,12 @@ function eventChat(from, to, message) {
 	else if((message === "FFA") && allianceExistsBetween(from, to)) {
 		freeForAll();
 	}
+	else if((message === "force hover") && allianceExistsBetween(from, to)) {
+		forceHover = true;
+	}
 
-
-	if(to == from) { return; }
+	//Do not execute these statements if from is me.
+	if(to === from) { return; }
 
 
 	if((message === "need truck") && allianceExistsBetween(from, to)) {
@@ -47,19 +51,16 @@ function eventChat(from, to, message) {
 	else if((message === "need tank") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_WEAPON);
 		if(droids.length < 6) { return; }
-
 		donateObject(droids[random(droids.length)], from);
 	}
 	else if((message === "need cyborg") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_CYBORG);
 		if(droids.length < 6) { return; }
-
 		donateObject(droids[random(droids.length)], from);
 	}
 	else if((message === "need vtol") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me).filter(function(obj){ return isVTOL(obj); });
 		if(droids.length < 6) { return; }
-
 		donateObject(droids[random(droids.length)], from);
 	}
 	else if(((message === "help me!") || (message == "help me!!")) && allianceExistsBetween(from, to)) {

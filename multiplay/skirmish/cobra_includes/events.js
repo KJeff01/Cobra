@@ -72,7 +72,7 @@ function eventStartLevel() {
 	initiaizeRequiredGlobals();
 	buildOrder(); //Start building right away.
 
-	setTimer("repairAll", thinkLonger + 325 + 3 * random(80));
+	setTimer("repairAll", thinkLonger + 310 + 3 * random(80));
 	setTimer("buildOrder", thinkLonger + 450 + 3 * random(60));
 	setTimer("produce", thinkLonger + 700 + 3 * random(70));
 	//setTimer("commandTactics", thinkLonger + 2000 + 3 * random(60));
@@ -98,21 +98,20 @@ function eventAttacked(victim, attacker) {
 		if(grudgeCount[attacker.player] < 500)
 			grudgeCount[attacker.player] += (victim.type == STRUCTURE) ? 15 : 5;
 
+		//Constructs are timid.
+		if((victim.type === DROID) && (victim.droidType === DROID_CONSTRUCT) && countStruct(structures.extras[0]))
+			orderDroid(victim, DORDER_RTR);
+
 		if(stopExecution(0, 20000) === true) { return; }
 
-		//find nearby units.
-		var units = enumRange(victim.x, victim.y, 20, me, false).filter(function(d) {
-			return (d.type == DROID) && ((d.droidType == DROID_WEAPON) || (d.droidType == DROID_CYBORG))
-		});
-
-		//Be a bit aggressive when a structure is attacked.
+		var units;
 		if(victim.type == STRUCTURE) {
 			units = chooseGroup();
 		}
-
-		//The cheapest way for cyborg control.
-		if(forceHover === false && attacker.type == DROID && attacker.droidType === DROID_CYBORG) {
-			turnOffMG = false;
+		else {
+			units = enumRange(victim.x, victim.y, 20, me, false).filter(function(d) {
+				return (d.type == DROID) && ((d.droidType == DROID_WEAPON) || (d.droidType == DROID_CYBORG))
+			});
 		}
 
 		for (var i = 0; i < units.length; i++) {

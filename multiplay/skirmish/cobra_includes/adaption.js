@@ -28,7 +28,7 @@ function adaptToMap() {
 		else { choice = ADAPT_PERSONALITIES[3]; }
 	}
 	else if((MAP_OIL_LEVEL === "LOW") || (ALLY_COUNT === 0)) {
-		if(!componentAvailable("hover01")) { choice = ADAPT_PERSONALITIES[0]; }
+		if(random(2)) { choice = ADAPT_PERSONALITIES[0]; }
 		else { choice = ADAPT_PERSONALITIES[1]; }
 	}
 	else {

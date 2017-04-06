@@ -36,7 +36,7 @@ function buildStructure(droid, stat) {
 	else
 		return false;
 
-	if (isDefined(droid) && (!safeDest(me, loc.x, loc.y) || (dist > (5 + Math.floor(1.4 * derricks))))) {
+	if (isDefined(droid) && (!safeDest(me, loc.x, loc.y) || (dist > (6 + Math.floor(1.5 * derricks))))) {
 		orderDroid(droid, DORDER_RTB);
 		return false;
 	}
@@ -215,7 +215,7 @@ function buildPhase3() {
 	if((gameTime > 680000) || (forceHover === true) && (playerPower(me) > 140) ) {
 		if(countAndBuild(structures.labs, 5)) { return true; }
 
-		if (isStructureAvailable(structures.vtolFactories) && (gameTime > 1800000)) {
+		if (isStructureAvailable(structures.vtolFactories) && (gameTime > 1400000)) {
 			if (countAndBuild(structures.vtolFactories, 2)) { return true; }
 		}
 
@@ -241,7 +241,7 @@ function buildPhase3() {
 
 //Finish building all vtol factories
 function buildPhase4() {
-	if ((gameTime > 1800000) && (playerPower(me) > 150) && isStructureAvailable(structures.vtolFactories))
+	if ((gameTime > 1400000) && (playerPower(me) > 150) && isStructureAvailable(structures.vtolFactories))
 	{
 		if (countAndBuild(structures.vtolFactories, 5)) { return true; }
 	}
@@ -274,8 +274,8 @@ function buildOrder() {
 	lookForOil();
 	if(getRealPower() < -600) { return false; }
 	if(buildPhase2()) { return false; }
-	if(buildPhase3()) { return false; }
 	if(buildDefenses()) { return false; }
+	if(buildPhase3()) { return false; }
 	if(buildPhase4()) { return false; }
 	if(buildPhase5()) { return false; }
 }

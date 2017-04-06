@@ -23,8 +23,8 @@ const thermalResearch = [
 
 const bodyResearch = [
 	"R-Vehicle-Body11",
-	"R-Vehicle-Body12",
-	"R-Vehicle-Body09",
+//	"R-Vehicle-Body12",
+//	"R-Vehicle-Body09",
 	"R-Vehicle-Body10",
 	"R-Vehicle-Body14",
 ]
@@ -33,8 +33,8 @@ const tankBody = [
 	"Body14SUP", // Dragon
 	"Body13SUP", // Wyvern
 	"Body10MBT", // Vengeance
-	"Body9REC",  // Tiger
-	"Body12SUP", // Mantis
+//	"Body9REC",  // Tiger
+//	"Body12SUP", // Mantis
 	"Body11ABT", // Python
 	"Body5REC",  // Cobra
 	"Body1REC",  // Viper
@@ -48,7 +48,7 @@ const tankProp = [
 
 const sysBody = [
 	"Body3MBT",  // Retaliation
-	"Body2SUP",  // Leopard
+//	"Body2SUP",  // Leopard
 	"Body4ABT",  // Bug
 	"Body1REC",  // Viper
 ];
@@ -60,7 +60,7 @@ const sysProp = [
 
 const vtolBody = [
 	"Body7ABT",  // Retribution
-	"Body6SUPP", // Panther
+//	"Body6SUPP", // Panther
 	"Body8MBT",  // Scorpion
 	"Body5REC",  // Cobra
 ];
@@ -123,9 +123,8 @@ const subpersonalities = {
 			"R-Wpn-MG-Damage01",
 			"R-Wpn-MG1Mk1",
 			"R-Struc-PowerModuleMk1",
-			"R-Wpn-MG2Mk1",
-			"R-Wpn-Flamer-Damage02",
-			"R-Wpn-Flamer-ROF02",
+			"R-Wpn-Flamer-Damage03",
+			"R-Wpn-Flamer-ROF03",
 			"R-Wpn-Flame2",
 			"R-Struc-RprFac-Upgrade01",
 		],

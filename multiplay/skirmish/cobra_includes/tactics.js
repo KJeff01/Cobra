@@ -2,7 +2,7 @@
 //Droids that are attacking should not be pulled away until
 //they destroy whatever thay are attacking or need repair.
 function droidReady(droid) {
-	return droid.order != DORDER_ATTACK;
+	return (!repairDroid(droid, false) && (droid.order != DORDER_ATTACK));
 }
 
 //Find the derricks of all enemy players, or just a specific one.
@@ -12,19 +12,12 @@ function findEnemyDerricks(playerNumber) {
 	if(!isDefined(playerNumber)) {
 		var enemy = playerAlliance(false);
 		for(var i = 0; i < enemy.length; ++i) {
-
-			var objs = enumStruct(enemy[i], structures.derricks);
-			for(var s = 0; s < objs.length; ++s) {
-				derr.push(objs[s]);
-			}
+			derr = appendListElements(derr, enumStruct(enemy[i], structures.derricks));
 		}
 
 		//Check for scavs
 		if(isDefined(scavengerNumber) && !allianceExistsBetween(scavengerNumber, me)) {
-			var objs = enumStruct(scavengerNumber, structures.derricks);
-			for(var s = 0; s < objs.length; ++s) {
-				derr.push(objs[s]);
-			}
+			derr = appendListElements(derr, enumStruct(scavengerNumber, structures.derricks));
 		}
 	}
 	else {
@@ -66,7 +59,7 @@ function checkMood() {
 		if(enumGroup(cyborgGroup).length > 7) {
 			for (var i = 0; i < cyb.length; i++) {
 				if(isDefined(cyb[i]) && droidReady(cyb[i])) {
-					if(!repairDroid(cyb[i]) && isDefined(target) && droidCanReach(cyb[i], target.x, target.y))
+					if(isDefined(target) && droidCanReach(cyb[i], target.x, target.y))
 						orderDroidLoc(cyb[i], DORDER_SCOUT, target.x, target.y);
 				}
 			}
@@ -138,7 +131,7 @@ function attackStuff(attacker) {
 	if(tanks.length > 7) {
 		for (var j = 0; j < tanks.length; j++) {
 			if(isDefined(tanks[j]) && droidReady(tanks[j])) {
-				if(isDefined(targetFac) && !repairDroid(tanks[j]) && droidCanReach(tanks[j], targetFac.x, targetFac.y))
+				if(isDefined(targetFac) && droidCanReach(tanks[j], targetFac.x, targetFac.y))
 					orderDroidObj(tanks[j], DORDER_ATTACK, targetFac, targetFac);
 				else {
 					findNearestEnemySturcture(tanks[j], selectedEnemy);
@@ -150,7 +143,7 @@ function attackStuff(attacker) {
 	if(isDefined(turnOffCyborgs) && (turnOffCyborgs === false) && (cyborgs.length > 7)) {
 		for (var j = 0; j < cyborgs.length; j++) {
 			if(isDefined(cyborgs[j]) && droidReady(cyborgs[j])) {
-				if(isDefined(target) && !repairDroid(cyborgs[j]) && droidCanReach(cyborgs[j], target.x, target.y))
+				if(isDefined(target) && droidCanReach(cyborgs[j], target.x, target.y))
 					orderDroidObj(cyborgs[j], DORDER_ATTACK, target, target);
 				else {
 					findNearestEnemySturcture(cyborgs[j], selectedEnemy);
@@ -192,7 +185,7 @@ function repairAll() {
 	var droids = enumDroid(me).filter(function(dr) {return !isVTOL(dr)});
 
 	for(var x = 0; x < droids.length; ++x) {
-		if(droids[x].health < (45 + Math.floor(droids[x].experience / 30)))
+		if(droids[x].health < (52 + Math.floor(droids[x].experience / 28)))
 			repairDroid(droids[x], true);
 	}
 }
@@ -247,7 +240,7 @@ function attackEnemyOil() {
 
 	for(var i = 0; i < who.length; ++i) {
 		if(isDefined(who[i]) && droidReady(who[i])) {
-			if(isDefined(derr[tmp]) && !repairDroid(who[i]) && droidCanReach(who[i], derr[tmp].x, derr[tmp].y)) {
+			if(isDefined(derr[tmp]) && droidCanReach(who[i], derr[tmp].x, derr[tmp].y)) {
 				orderDroidObj(who[i], DORDER_ATTACK, derr[tmp]);
 				if(!((i + 1) % Math.floor(who.length / 3)))
 					tmp += 1;
@@ -300,7 +293,7 @@ function chatAttackOil(playerNumber) {
 	derr.sort(distanceToBase);
 
 	for(var i = 0; i < who.length; ++i) {
-		if(isDefined(who[i]) && !repairDroid(who[i]) && droidReady(who[i])) {
+		if(isDefined(who[i]) && droidReady(who[i])) {
 			if(isDefined(derr[tmp])) {
 				orderDroidObj(who[i], DORDER_ATTACK, derr[tmp]);
 				if(!((i + 1) % Math.floor(who.length / 3)))
@@ -316,7 +309,7 @@ function commandTactics() {
 	var coms = enumGroup(commanderGroup);
 
 	for(var i = 0; i < coms.length; ++i) {
-		if(isDefined(coms[i]) && !repairDroid(coms[i]) && droidReady(coms[i])) {
+		if(isDefined(coms[i]) && droidReady(coms[i])) {
 			var target = rangeStep(coms[i], false);
 			if(isDefined(target)) {
 				orderDroidObj(coms[i], DORDER_ATTACK, target);
