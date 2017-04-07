@@ -1,3 +1,5 @@
+//Contains functions that are either used about everywhere or do not have
+//a better file to be placed in yet.
 
 // Random number between 0 and max-1.
 function random(max) {
@@ -19,31 +21,35 @@ function sortAndReverseDistance(arr) {
 	return (arr.sort(distanceToBase)).reverse();
 }
 
-//A controlled way to send chat messages between Cobra AI.
-function sendChatMessage(msg, receiver) {
-	if(!isDefined(msg)) { return; }
-	if(!isDefined(receiver)) { receiver = ALLIES; }
-	
-	if(lastMsg != msg) {
-		lastMsg = msg;
-		chat(receiver, msg);
+//Push list elements into another.
+function appendListElements(list, items) {
+	var temp = list;
+	for(var i = 0; i < items.length; ++i) {
+		temp.push(items[i]);
 	}
+	return temp;
 }
 
 //Control the amount of objects being put in memory so we do not create a large array of objects.
 //Returns the closest enemy object from Cobra base.
 function rangeStep(obj, visibility) {
-	const step = 3000;
+	const step = 2000;
 	var target;
-	
-	for(var i = 0; i <= 30000; i += step) {	
+
+	for(var i = 0; i <= 30000; i += step) {
 		var temp = enumRange(obj.x, obj.y, i, ENEMIES, visibility);
 		if(temp.length > 0) {
+			temp.filter(function(targ) { return droidCanReach(obj, targ.x, targ.y) });
+			temp.filter(function(targ) {
+				return (targ.type == DROID) ||
+				((targ.type == STRUCTURE) && (targ.stattype != WALL))
+			});
+
 			temp.sort(distanceToBase);
 			return temp[0];
 		}
 	}
-	
+
 	return target;
 }
 
@@ -52,14 +58,14 @@ function rangeStep(obj, visibility) {
 function vtolArmed(obj, percent) {
 	if (obj.type != DROID)
 		return;
-	
+
 	if (!isVTOL(obj))
 		return false;
-	
+
 	for (var i = 0; i < obj.weapons.length; ++i)
 		if (obj.weapons[i].armed >= percent)
 			return true;
-		
+
 	return false;
 }
 
@@ -68,14 +74,14 @@ function vtolArmed(obj, percent) {
 function vtolReady(droid) {
 	if (droid.order == DORDER_ATTACK)
 		return false;
-	
+
 	if (vtolArmed(droid, 1))
 		return true;
-	
+
 	if (droid.order != DORDER_REARM) {
 		orderDroid(droid, DORDER_REARM);
 	}
-	
+
 	return false;
 }
 
@@ -84,7 +90,7 @@ function vtolReady(droid) {
 function playerAlliance(ally) {
 	if(!isDefined(ally)) { ally = false; }
 	var players = [];
-	
+
 	for(var i = 0; i < maxPlayers; ++i) {
 		if(!ally) {
 			if(!allianceExistsBetween(i, me) && (i != me)) {
@@ -101,24 +107,24 @@ function playerAlliance(ally) {
 }
 
 //Change stuff depending on difficulty.
-function diffPerks() {	
+function diffPerks() {
 	switch(difficulty) {
 		case EASY:
-			//maybe make the worst build order ever.
+			ThinkLonger = 4000 + ((1 + random(4)) * random(1200));
 			break;
 		case MEDIUM:
 			//Do nothing
 			break;
 		case HARD:
 			if(!isStructureAvailable("A0PowMod1"))
-				completeRequiredResearch("R-Vehicle-Engine01");
+				completeRequiredResearch("R-Sys-Engineering01");
 			makeComponentAvailable("PlasmaHeavy", me);
 			makeComponentAvailable("MortarEMP", me);
 			break;
 		case INSANE:
 			//In addition to what Hard does, turn on the NIP.
 			if(!isStructureAvailable("A0PowMod1"))
-				completeRequiredResearch("R-Struc-PowerModuleMk1");
+				completeRequiredResearch("R-Sys-Engineering01");
 			nexusWaveOn = true;
 			makeComponentAvailable("PlasmaHeavy", me);
 			makeComponentAvailable("MortarEMP", me);
@@ -133,7 +139,7 @@ function log(message) {
 
 //Dump information about an object and some text.
 function logObj(obj, message) {
-	dump(gameTime + " [" + obj.name + " id=" + obj.id + "] > " + message);
+	dump(gameTime + " : [" + obj.name + " id=" + obj.id + "] > " + message);
 }
 
 //Distance between an object and the Cobra base.
@@ -151,7 +157,7 @@ function isDesignable(item, body, prop) {
 		body = "Body1REC";
 	if(!isDefined(prop))
 		prop = "wheeled01";
-	
+
 	var virDroid = makeTemplate(me, "Virtual Droid", body, prop, null, null, item, item);
 	return (virDroid != null) ? true : false;
 }
@@ -159,30 +165,24 @@ function isDesignable(item, body, prop) {
 //See if power levels are low. This takes account of only the power obtained from the generators.
 function checkLowPower(pow) {
 	if(!isDefined(pow)) { pow = 25; }
-	
+
 	if(playerPower(me) < pow) {
 		if(playerAlliance(true).length > 0) {
 			sendChatMessage("need Power", ALLIES);
 		}
 		return true;
 	}
-	
+
 	return false;
 }
 
 //return real power levels.
 function getRealPower() {
-	return playerPower(me) - queuedPower(me);
-}
-
-//Need to search for scavenger player number. Keep undefined if there are no scavengers.
-function checkForScavs() {
-	for(var x = maxPlayers; x < 11; ++x) {
-		if(enumStruct(x).length > 0) {
-			scavengerNumber = x;
-			break;
-		}
+	var pow = playerPower(me) - queuedPower(me);
+	if((playerAlliance(true).length > 0) && (pow < 50)) {
+		sendChatMessage("need Power", ALLIES);
 	}
+	return playerPower(me) - queuedPower(me);
 }
 
 //Returns all unfinished structures.
@@ -190,119 +190,23 @@ function unfinishedStructures() {
 	return enumStruct(me).filter(function(struct){ return struct.status != BUILT});
 }
 
-//Choose the personality as described in the global subpersonalities.
-//When called from chat it will switch to that one directly.
-function choosePersonality(chatEvent) {
-	var person = "";
-	var len = 4;
-	
-	if(!isDefined(chatEvent)) {
-		switch(random(len)) {
-			case 0: person = "AC"; break;
-			case 1: person = "AR"; break;
-			case 2: person = "AB"; break;
-			case 3: person = "AM"; break;
-			default: person = "AC"; break;
-		}
-		
-		return person;
-	}
-	else {
-		personality = chatEvent;
-		initializeResearchLists();
-		sendChatMessage("Using personality: " + personality, ALLIES);
-	}
-}
-
-//Randomly choose the best weapon with current technology.
-//Defaults to machine-guns when other choices are unavailable (if allowed). May return undefined.
-//Also cyborgs will not return the actual stat list with this function due to how they are built.
-function choosePersonalityWeapon(type) {
-	var weaps;
-	var weaponList = [];
-	if(!isDefined(type)) { type = "TANK"; }
-	
-	if(type === "TANK") {
-		switch(random(5)) {
-			case 0: weaps = subpersonalities[personality]["primaryWeapon"]; break;
-			case 1: if((turnOffMG === false) || (personality === "AM")) { weaps = subpersonalities[personality]["secondaryWeapon"]; } break;
-			case 2: weaps = subpersonalities[personality]["artillery"]; break;
-			case 3: weaps = subpersonalities[personality]["tertiaryWeapon"]; break;
-			case 4: weaps = weaponStats.AS; break;
-			default: weaps = subpersonalities[personality]["primaryWeapon"]; break;
-		}
-		
-		if(isDefined(weaps)) {
-			for(var i = weaps.weapons.length - 1; i >= 0; --i) {
-				weaponList.push(weaps.weapons[i].stat);
-			}
-		
-			//on hard difficulty and above.
-			if(componentAvailable("MortarEMP") && componentAvailable("tracked01") && !random(66))
-				weaponList = ["MortarEMP"];
-			else if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(66))
-				weaponList = ["PlasmaHeavy"];
-		
-			//Try defaulting to machine-guns then.
-			if((isDesignable(weaponList, tankBody, tankProp) === false) && (turnOffMG === false)) {
-				weaponList = [];
-				for(var i = weaponStats.machineguns.weapons.length - 1; i >= 0; --i) {
-					weaponList.push(weaponStats.machineguns.weapons[i].stat);
-				}
-			}
-		}
-	}
-	else if(type === "CYBORG") {
-		switch(random(3)) {
-			case 0: weaps = subpersonalities[personality]["primaryWeapon"]; break;
-			case 1: if((turnOffMG === false) || (personality === "AM")) { weaps = subpersonalities[personality]["secondaryWeapon"]; } break;
-			case 2: weaps = subpersonalities[personality]["tertiaryWeapon"]; break;
-			default: weaps = subpersonalities[personality]["primaryWeapon"]; break;
-		}
-	}
-	else if(type === "VTOL") {
-		weaps = weaponStats.bombs;
-		for(var i = weaps.vtols.length - 1; i >= 0; --i) {
-			weaponList.push(weaps.vtols[i].stat);
-		}
-	}
-	
-	return ((type === "CYBORG") || !isDefined(weaps)) ? weaps : weaponList;
-}
-
-function useHover() {
-	return (personality === "AR") ? true : false;
-}
-
-//Find the derricks of all enemy players, or just a specific one.
-function findEnemyDerricks(playerNumber) {
-	var derr = [];
-	
-	if(!isDefined(playerNumber)) {
-		var enemy = playerAlliance(false);
-		for(var i = 0; i < enemy.length; ++i) {
-			derr.concat(enumStruct(enemy[i], structures.derricks));
-		}
-		
-		//Check for scavs
-		if(isDefined(scavengerNumber) && !allianceExistsBetween(scavengerNumber, me)) {
-			derr.concat(enumStruct(scavengerNumber, structures.derricks));
-		}
-	}
-	else {
-		derr = enumStruct(playerNumber, structures.derricks);
-	}
-	
-	return derr;
-}
-
 //choose either cyborgs or tanks. prefer cyborgs if any.
 function chooseGroup() {
-	if(enumGroup(cyborgGroup).length > 3) { return enumGroup(cyborgGroup); }
-	else { return enumGroup(attackGroup); }
+	var tanks  = enumGroup(attackGroup);
+	var borgs = enumGroup(cyborgGroup);
+
+	if((borgs.length > 4) && (borgs.length > tanks.length) && !random(10)) {
+		return borgs;
+	}
+	else {
+		if(tanks.length > 4)
+			return tanks;
+	}
+
+	return tanks;
 }
 
-//Determine if something (namely events) should be skipped until enough time has passed. Each event gets its own timer value:
+//Determine if something (namely events) should be skipped momentarily.
 //0 - eventAttacked().
 //1 - eventChat().
 //2 - eventBeacon().
@@ -314,7 +218,7 @@ function stopExecution(throttleNumber, ms) {
 		throttleNumber = 0;
 	if(!isDefined(ms))
 		ms = 1000;
-	
+
 	if(gameTime > (throttleTime[throttleNumber] + ms)) {
 		throttleTime[throttleNumber] = gameTime + (4 * random(500));
 		return false;
@@ -322,17 +226,61 @@ function stopExecution(throttleNumber, ms) {
 	else { return true; }
 }
 
-//Tell allies (ideally non-bots) who is attacking Cobra the most.
+//Tell allies who is attacking Cobra the most.
 //When called from chat using "stats" it will also tell you who is the most aggressive towards Cobra.
 function getMostHarmfulPlayer(chatEvent) {
-	var mostHarmful = grudgeCount;
-	mostHarmful = (mostHarmful.sort(sortArrayNumeric)).reverse();
-	
-	if(isDefined(chatEvent)) {
-		sendChatMessage("Most harmful player: " + mostHarmful[0], ALLIES);
+	var mostHarmful = 0;
+ 	for(var x = 0; x < maxPlayers; ++x) {
+ 		if((grudgeCount[x] > 0) && (grudgeCount[x] > grudgeCount[mostHarmful]))
+ 			mostHarmful = x;
+ 	}
+ 	if(isDefined(chatEvent)) {
+		sendChatMessage("Most harmful player: " + mostHarmful, ALLIES);
 	}
-	
-	return mostHarmful[0];
+
+	return mostHarmful;
 }
 
+//Removes duplicate items from something.
+function removeDuplicateItems(temp) {
+	var prims = {"boolean":{}, "number":{}, "string":{}}, objs = [];
+	return temp.filter(function(item) {
+	 var type = typeof item;
+	  if(type in prims)
+	   return prims[type].hasOwnProperty(item) ? false : (prims[type][item] = true);
+	  else
+	   return objs.indexOf(item) >= 0 ? false : objs.push(item);
+	});
+}
 
+//Find droids that are old.
+/*
+function findOldDroids(group) {
+	return group.filter(function(dr) {
+		((dr.born + 800000) < gameTime) && (dr.cost <
+	}
+}
+*/
+
+//Called from eventStartLevel, this initializes the globals.
+function initiaizeRequiredGlobals() {
+	nexusWaveOn = false;
+	grudgeCount = [];
+	turnOffCyborgs = false;
+	throttleTime = [];
+	thinkLonger = 0;
+
+	for(var i = 0; i < maxPlayers; ++i) { grudgeCount.push(0); }
+	for(var i = 0; i < 4; ++i) { throttleTime.push(0); }
+
+	checkForScavs();
+	diffPerks();
+
+	forceHover = checkIfSeaMap(); //TurnOffCyborgs can be assigned true here
+	personality = choosePersonality();
+	turnOffMG = CheckStartingBases();
+	//Do not start with AM or AR if technology is good enough.
+	if(turnOffMG === true)
+		personality = choosePersonality();
+	initializeResearchLists();
+}
