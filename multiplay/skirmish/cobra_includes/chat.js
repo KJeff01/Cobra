@@ -19,11 +19,11 @@ function eventChat(from, to, message) {
 			choosePersonality(message);
 		}
 	}
-	else if((message === "no cyborg") && allianceExistsBetween(from, to)) {
-		turnOffCyborgs = true;
+	else if((message === "toggle cyborg") && allianceExistsBetween(from, to)) {
+		turnOffCyborgs = !turnOffCyborgs;
 	}
-	else if((message === "no mg") && allianceExistsBetween(from, to)) {
-		turnOffMG = true;
+	else if((message === "toggle mg") && allianceExistsBetween(from, to)) {
+		turnOffMG = !turnOffMG;
 	}
 	else if((message === "stats") && allianceExistsBetween(from, to)) {
 		getMostHarmfulPlayer("chatEvent");
@@ -31,8 +31,8 @@ function eventChat(from, to, message) {
 	else if((message === "FFA") && allianceExistsBetween(from, to)) {
 		freeForAll();
 	}
-	else if((message === "force hover") && allianceExistsBetween(from, to)) {
-		forceHover = true;
+	else if((message === "toggle hover") && allianceExistsBetween(from, to)) {
+		forceHover = !forceHover;
 	}
 
 	//Do not execute these statements if from is me.

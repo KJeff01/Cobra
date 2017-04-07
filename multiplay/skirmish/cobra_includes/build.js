@@ -182,7 +182,7 @@ function buildPhase1() {
 		if(countAndBuild(structures.extras[0], 2)) { return true; }
 	}
 
-	if ((gameTime > 240000) && isDefined(turnOffCyborgs) && (turnOffCyborgs === false)
+	if ((gameTime > 240000) && !turnOffCyborgs
 		&& isStructureAvailable(structures.templateFactories)) {
 		if (countAndBuild(structures.templateFactories, 1)) { return true; }
 	}
@@ -196,14 +196,14 @@ function buildPhase1() {
 
 //Build three research labs and three ground/cyborg factories and 1 repair center
 function buildPhase2() {
-	if((gameTime < 190000) && (forceHover !== true)) { return true; }
+	if((gameTime < 190000) && (!forceHover)) { return true; }
 
 	if(playerPower(me) > 140) {
 		if(countAndBuild(structures.labs, 3)) { return true; }
-		if(countAndBuild(structures.factories, 3)) { return true; }
-		if (isDefined(turnOffCyborgs) && (turnOffCyborgs === false) && isStructureAvailable(structures.templateFactories)) {
-			if (countAndBuild(structures.templateFactories, 1)) { return true; }
+		if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
+			if (countAndBuild(structures.templateFactories, 3)) { return true; }
 		}
+		if(countAndBuild(structures.factories, 3)) { return true; }
 	}
 
 	return false;
@@ -212,7 +212,7 @@ function buildPhase2() {
 //Build five research labs and the minimum vtol factories and maximum ground/cyborg factories and repair centers
 function buildPhase3() {
 	if(getRealPower() < -200) { return true; }
-	if((gameTime > 680000) || (forceHover === true) && (playerPower(me) > 140) ) {
+	if((gameTime > 680000) || forceHover && (playerPower(me) > 140)) {
 		if(countAndBuild(structures.labs, 5)) { return true; }
 
 		if (isStructureAvailable(structures.vtolFactories) && (gameTime > 1400000)) {
@@ -224,13 +224,10 @@ function buildPhase3() {
 			if(countAndBuild("A0ComDroidControl", 1)) { return true; }
 		}
 		*/
-
-		if(countAndBuild(structures.factories, 5)) { return true; }
-
-		if (isDefined(turnOffCyborgs) && (turnOffCyborgs === false) && isStructureAvailable(structures.templateFactories)) {
+		if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
 			if (countAndBuild(structures.templateFactories, 5)) { return true; }
 		}
-
+		if(countAndBuild(structures.factories, 5)) { return true; }
 		if(isStructureAvailable(structures.extras[0])) {
 			if(countAndBuild(structures.extras[0], 5)) { return true; }
 		}
@@ -269,8 +266,8 @@ function buildOrder() {
 	if(recycleObsoleteDroids()) { return false; }
 	if(checkUnfinishedStructures()) { return false; }
 	if(buildPhase1()) { return false; }
-	if((turnOffMG === true) && maintenance()) { return false; } //T2/T3
-	if((turnOffMG === false) && (gameTime > 80000) && maintenance()) { return false; } //T1
+	if(turnOffMG && maintenance()) { return false; } //T2/T3
+	if(!turnOffMG && (gameTime > 80000) && maintenance()) { return false; } //T1
 	lookForOil();
 	if(getRealPower() < -600) { return false; }
 	if(buildPhase2()) { return false; }

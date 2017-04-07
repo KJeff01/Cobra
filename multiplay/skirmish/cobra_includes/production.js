@@ -10,7 +10,7 @@ function choosePersonalityWeapon(type) {
 	if(type === "TANK") {
 		switch(random(6)) {
 			case 0: weaps = subpersonalities[personality]["primaryWeapon"]; break;
-			case 1: if((turnOffMG === false) || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
+			case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
 			case 2: weaps = subpersonalities[personality]["artillery"]; break;
 			case 3: weaps = weaponStats.lasers; break;
 			case 4: weaps = subpersonalities[personality]["secondaryWeapon"]; break;
@@ -37,7 +37,7 @@ function choosePersonalityWeapon(type) {
 				weaponList = ["PlasmaHeavy"];
 
 			//Try defaulting to machine-guns then.
-			if((isDesignable(weaponList, tankBody, tankProp) === false) && (turnOffMG === false)) {
+			if(!isDesignable(weaponList, tankBody, tankProp) && !turnOffMG) {
 				weaponList = [];
 				for(var i = weaponStats.machineguns.weapons.length - 1; i >= 0; --i) {
 					weaponList.push(weaponStats.machineguns.weapons[i].stat);
@@ -47,7 +47,7 @@ function choosePersonalityWeapon(type) {
 	}
 	else if(type === "CYBORG") {
 		switch(random(4)) {
-			case 0:	weaps = subpersonalities[personality]["primaryWeapon"]; break;
+			case 0: weaps = subpersonalities[personality]["primaryWeapon"]; break;
 			case 1: weaps = weaponStats.flamers; break;
 			case 2: weaps = weaponStats.lasers; break;
 			case 3: weaps = subpersonalities[personality]["secondaryWeapon"]; break;
@@ -55,13 +55,14 @@ function choosePersonalityWeapon(type) {
 		}
 	}
 	else if(type === "VTOL") {
-		switch(random(2)) {
+		switch(random(3)) {
 			case 0: {
 				if(personality !== "AB") weaps = weaponStats.bombs;
 				else weaps = weaponStats.rockets_AT;
 				break;
 			}
 			case 1: weaps = weaponStats.lasers; break;
+			case 2: weaps = subpersonalities[personality]["secondaryWeapon"]; break;
 			default: weaps = weaponStats.lasers; break;
 		}
 		for(var i = weaps.vtols.length - 1; i >= 0; --i) {
@@ -84,7 +85,7 @@ function useHover(weap) {
 			isFlamer = false;
 			break;
 	}
-	return ((isFlamer === true) || (forceHover === true)) ? true : false;
+	return (isFlamer || forceHover) ? true : false;
 }
 
 //Create a ground attacker tank with a heavy body when possible.
@@ -93,15 +94,15 @@ function useHover(weap) {
 function buildAttacker(struct) {
 	if(!isDefined(forceHover) || !isDefined(seaMapWithLandEnemy) || !isDefined(turnOffMG))
 		return false;
-	if((forceHover === true) && (seaMapWithLandEnemy === false) && !componentAvailable("hover01"))
+	if(forceHover && seaMapWithLandEnemy && !componentAvailable("hover01"))
 		return false;
 
 	var weap = choosePersonalityWeapon("TANK");
-
 	if(!isDefined(weap)) { return false; }
-	if(((useHover(weap) === true) || !random(12)) && componentAvailable("hover01")) {
+
+	if((useHover(weap) || !random(12)) && componentAvailable("hover01")) {
 		if(!random(5) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
-			if(weap != "MortarEMP") {
+			if(weap !== "MortarEMP") {
 				buildDroid(struct, "Hover EMP Droid", tankBody, "hover01", "", "", weap, "EMP-Cannon");
 				return true; //Forced success
 			}
@@ -111,7 +112,7 @@ function buildAttacker(struct) {
 	}
 
 	if(!random(5) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
-		if((weap != "MortarEMP")) {
+		if((weap !== "MortarEMP")) {
 			if(buildDroid(struct, "EMP Droid", tankBody, tankProp, "", "", weap, "EMP-Cannon"))
 				return true;
 		}

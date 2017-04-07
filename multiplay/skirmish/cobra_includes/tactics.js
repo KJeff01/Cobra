@@ -31,11 +31,11 @@ function findEnemyDerricks(playerNumber) {
 function checkMood() {
 	var mostHarmful = getMostHarmfulPlayer();
 
-	if(grudgeCount[mostHarmful] >= 200) {
+	if(grudgeCount[mostHarmful] >= 325) {
 		attackStuff(mostHarmful);
 		grudgeCount[mostHarmful] = 10;
 	}
-	else if((grudgeCount[mostHarmful] > 10) && (grudgeCount[mostHarmful] < 200)) {
+	else if((grudgeCount[mostHarmful] > 10) && (grudgeCount[mostHarmful] < 325)) {
 		var derr = enumStruct(mostHarmful, structures.derricks);
 		var struc = enumStruct(mostHarmful);
 
@@ -192,17 +192,10 @@ function repairAll() {
 
 //Sensors know all your secrets. They will observe what is close to them.
 function spyRoutine() {
-	var sensor;
 	var sensors = enumGroup(sensorGroup);
 	if(!sensors.length) { return false; }
 	sensors = sortAndReverseDistance(sensors);
-
-	for(var i = 0; i < sensors.length; ++i) {
-		if(!repairDroid(sensors[i], false)) {
-			if(!isDefined(sensor))
-				sensor = sensors[i];
-		}
-	}
+	var sensor = sensors[0];
 
 	if(!isDefined(sensor)) { return; }
 
@@ -216,7 +209,7 @@ function spyRoutine() {
 
 		tanks = sortAndReverseDistance(tanks);
 
-		if(isDefined(tanks[0]) && !repairDroid(tanks[0])) {
+		if(isDefined(tanks[0]) && droidReady(tanks[0])) {
 			orderDroidObj(sensor, DORDER_OBSERVE, object);
 			//grudgeCount[object.player] += 2;
 			var xPos = (sensor.x + object.x) / 2;

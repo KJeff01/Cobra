@@ -1,36 +1,6 @@
 //This file contains generic events. Chat and research events are split into
 //their own seperate files.
 
-//Groups droid types.
-function eventDroidBuilt(droid, struct) {
-	if (droid && (droid.droidType != DROID_CONSTRUCT)) {
-		if(isVTOL(droid)) {
-			groupAdd(vtolGroup, droid);
-		}
-		else if(droid.droidType == DROID_SENSOR) {
-			groupAdd(sensorGroup, droid);
-		}
-		else if(droid.droidType == DROID_CYBORG) {
-			groupAdd(cyborgGroup, droid);
-		}
-		/*
-		else if(isDefined(droid.weapons[0]) && (droid.weapons[0].name === "CommandTurret1")) {
-			groupAdd(commanderGroup, droid);
-		}
-		*/
-		else if((droid.droidType == DROID_WEAPON)) {
-			/*
-			var coms = enumGroup(commanderGroup);
-			for(var i = 0; i < coms.length; ++i) {
-				if(orderDroidObj(droid, DORDER_COMMANDERSUPPORT, coms[i]))
-					return;
-			}
-			*/
-			groupAdd(attackGroup, droid);
-		}
-	}
-}
-
 //Initialize groups
 function eventGameInit() {
 	attackGroup = newGroup();
@@ -82,6 +52,48 @@ function eventStartLevel() {
 	setTimer("attackEnemyOil", thinkLonger + 35000 + 5 * random(60));
 }
 
+//This is meant to check for nearby oil resources next to the construct.
+function eventStructureBuilt(structure, droid) {
+	if(isDefined(droid) && (structure === structures.derricks)) {
+		var nearbyOils = enumRange(droid,x, droid.y, 20, me, false);
+		nearbyOils.filter(function(obj) { return obj.type === STRUCTURE &&
+			obj.stattype == OIL_RESOURCE
+		});
+		if(nearbyOils.length && isDefined(nearbyOils[0]))
+			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
+	}
+}
+
+//Groups droid types.
+function eventDroidBuilt(droid, struct) {
+	if (droid && (droid.droidType != DROID_CONSTRUCT)) {
+		if(isVTOL(droid)) {
+			groupAdd(vtolGroup, droid);
+		}
+		else if(droid.droidType == DROID_SENSOR) {
+			groupAdd(sensorGroup, droid);
+		}
+		else if(droid.droidType == DROID_CYBORG) {
+			groupAdd(cyborgGroup, droid);
+		}
+		/*
+		else if(isDefined(droid.weapons[0]) && (droid.weapons[0].name === "CommandTurret1")) {
+			groupAdd(commanderGroup, droid);
+		}
+		*/
+		else if((droid.droidType == DROID_WEAPON)) {
+			/*
+			var coms = enumGroup(commanderGroup);
+			for(var i = 0; i < coms.length; ++i) {
+				if(orderDroidObj(droid, DORDER_COMMANDERSUPPORT, coms[i]))
+					return;
+			}
+			*/
+			groupAdd(attackGroup, droid);
+		}
+	}
+}
+
 function eventAttacked(victim, attacker) {
 	if(isDefined(scavengerNumber) && (attacker.player === scavengerNumber)) {
 		if(isDefined(victim) && isDefined(attacker) && (victim.type == DROID) && !repairDroid(victim, false)) {
@@ -99,7 +111,7 @@ function eventAttacked(victim, attacker) {
 			grudgeCount[attacker.player] += (victim.type == STRUCTURE) ? 15 : 5;
 
 		//Constructs are timid.
-		if((victim.type === DROID) && (victim.droidType === DROID_CONSTRUCT) && countStruct(structures.extras[0]))
+		if((victim.type === DROID) && ((victim.droidType === DROID_SENSOR) || (victim.droidType === DROID_CONSTRUCT)) && countStruct(structures.extras[0]))
 			orderDroid(victim, DORDER_RTR);
 
 		if(stopExecution(0, 20000) === true) { return; }
@@ -226,13 +238,6 @@ function eventBeacon(x, y, from, to, message) {
 
 function eventObjectTransfer(obj, from) {
 	logObj(obj, "eventObjectTransfer event. from: " + from + ". health: " + obj.health);
-
-	//REMOVE: when check_droid no longer spams the log file.
-	//This WILL destroy droids from other player as well.
-	if(obj.health > 100) {
-		log("eventObjectTranfer: Destroying droid with health over 100%");
-		removeObject(obj, true);
-	}
 
 	if((from !== me) && allianceExistsBetween(from, me)) {
 		if(obj.type == DROID) { eventDroidBuilt(obj, null); }

@@ -33,7 +33,7 @@ function appendListElements(list, items) {
 //Control the amount of objects being put in memory so we do not create a large array of objects.
 //Returns the closest enemy object from Cobra base.
 function rangeStep(obj, visibility) {
-	const step = 3000;
+	const step = 2000;
 	var target;
 
 	for(var i = 0; i <= 30000; i += step) {

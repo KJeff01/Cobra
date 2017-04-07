@@ -70,7 +70,7 @@ function eventResearched() {
 	const REPAIR_UPGRADES = [
 		"R-Sys-Autorepair-General", "R-Struc-RprFac-Upgrade06"
 	]
-	const FLAMER = ["R-Wpn-Flamer-Damage09", "R-Wpn-Flamer-ROF03"]
+	const FLAMER = ["R-Wpn-Flame2", "R-Wpn-Flamer-ROF03", "R-Wpn-Flamer-Damage09"]
 
 	var lablist = enumStruct(me, structures.labs);
 	for (var i = 0; i < lablist.length; ++i) {
@@ -108,10 +108,14 @@ function eventResearched() {
 					}
 			}
 
-			if((turnOffCyborgs === false) && !found)
-				found = evalResearch(lab, cyborgWeaps);
-			if((turnOffCyborgs === false) && !found)
-				found = evalResearch(lab, FLAMER);
+			if(random(3)) {
+				if((turnOffCyborgs === false) && !found)
+					found = evalResearch(lab, FLAMER);
+				if((turnOffCyborgs === false) && !found)
+					found = evalResearch(lab, cyborgWeaps);
+				if(!found)
+					found = evalResearch(lab, REPAIR_UPGRADES);
+			}
 
 			if(random(2)) {
 				if(!found)
@@ -143,8 +147,6 @@ function eventResearched() {
 					found = evalResearch(lab, antiAirExtras);
 			}
 
-			if(!found)
-				found = evalResearch(lab, REPAIR_UPGRADES);
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 
