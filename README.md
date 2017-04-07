@@ -10,7 +10,7 @@ AC: Focus on Cannon/Gauss/Incendiary howitzers technology. AR: Focus on Flamer/R
 Machine-gun and cyborg usage depends heavily on the starting conditions of the skirmish and mostly are only used when starting on T1. Hard/insane difficulty enables some hidden weapons (Heavy Plasma Laucher/EMP Mortar) for Cobra (very small chance of being built at any given time after it obtains tracked propulsion). It does respond mostly through beacon calls dropped with alt+h.
 
 
-This AI will try to emulate the the core functionality of the NEXUS Intruder Program (Insane difficulty only). As long as Cobra's HQ is intact it will scan enemy droids for technologies that Cobra does not have (Weapons/Propulsion/Body). If an enemy unit has superior technology, then Cobra can assimilate the new core components of the droid. Even better is that Cobra will be granted all the required research that leads to the new component. Also it can force enemy droids to malfunction and attack friendly units/its own structures/or even stop the action of the target droid. This is mostly a toy feature.
+This AI will try to emulate the the core functionality of the NEXUS Intruder Program (Insane difficulty only). As long as Cobra's HQ is intact it will scan enemy droids for technologies that Cobra does not have (Weapons/Propulsion/Body) and even defense upgrades. If an enemy unit has superior technology, then Cobra can assimilate the new core components of the droid. Even better is that Cobra will be granted all the required research that leads to the new component. Also it can force enemy droids to malfunction and attack friendly units/its own structures/or even stop the action of the target droid. This is mostly a toy feature.
 
 
 chat commands include: 
@@ -19,9 +19,9 @@ attackX -- (X being a player number).
 oilX -- to specifically attack nearby enemy oil. help me!/help me!! for calling for Cobra units to go to your hq (for compatibility with Nexus AI). 
 AC/AR/AB/AM -- make it switch personalities.
 FFA -- after a team skirmish is won, break alliance and fight it.
-no mg -- disable machinegun use.
-no cyborg -- disable cyborg use.
-force hover -- force Cobra to use hover propulsion.
+toggle mg -- disable/enable machinegun use.
+toggle cyborg -- disable/enable cyborg use.
+toggle hover -- disable/enable force Cobra to use hover propulsion.
 
 warzone2100 links:
 
