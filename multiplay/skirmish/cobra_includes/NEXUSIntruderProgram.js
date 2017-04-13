@@ -38,7 +38,6 @@ function analyzeDroidAlloys(droid) {
 				var armorAlloy = temp + i;
 				if(findResearch(armorAlloy).length > 0) {
 					completeRequiredResearch(armorAlloy);
-					i = 10;
 					break;
 				}
 			}
@@ -77,14 +76,9 @@ function analyzeComponent(statList, component, droid) {
 
 //Check a enemy droid and steal any new components not researched.
 function analyzeDroidComponents(droid) {
-	var body;
-	var propulsion;
+	var body = droid.body;
+	var propulsion = droid.propulsion;
 	var weapon;
-
-	if(isDefined(droid.body))
-		body = droid.body;
-	if(isDefined(droid.propulsion))
-		propulsion = droid.propulsion;
 
 	if(isDefined(droid.weapons[0]))
 		weapon = droid.weapons[0].name;

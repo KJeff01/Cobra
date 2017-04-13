@@ -90,7 +90,7 @@ function eventResearched() {
 				found = pursueResearch(lab, fastestResearch);
 
 			//If T1 - Go for machine-guns. else focus on lasers and the primary weapon.
-			if((turnOffMG === false) || (personality === "AM")) {
+			if(!turnOffMG || (personality === "AM")) {
 				if(!found)
 					found = pursueResearch(lab, mgWeaponTech);
 				if(!found)
@@ -98,7 +98,7 @@ function eventResearched() {
 			}
 
 			if(!random(4)) {
-				if(turnOffCyborgs === false) {
+				if(!turnOffCyborgs) {
 					if(!found)
 						found = evalResearch(lab, kineticResearch);
 					}
@@ -109,9 +109,9 @@ function eventResearched() {
 			}
 
 			if(random(3)) {
-				if((turnOffCyborgs === false) && !found)
+				if(!turnOffCyborgs && !found)
 					found = evalResearch(lab, FLAMER);
-				if((turnOffCyborgs === false) && !found)
+				if(!turnOffCyborgs && !found)
 					found = evalResearch(lab, cyborgWeaps);
 				if(!found)
 					found = evalResearch(lab, REPAIR_UPGRADES);
@@ -127,20 +127,22 @@ function eventResearched() {
 				if(!found)
 					found = evalResearch(lab, artillExtra);
 			}
-			else if((gameTime > 1400000) && random(2)) {
+			else if((gameTime > 800000) && random(2)) {
 				if(!found)
-					found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade06");
-
+					found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
 				if(!found && (personality !== "AB"))
 					found = pursueResearch(lab, "R-Wpn-Bomb04");
-
 				if(personality !== "AB") {
 					if(!found)
 						found = evalResearch(lab, vtolExtras);
 					if(!found)
 						found = evalResearch(lab, vtolWeapons);
 				}
+				if(!found)
+					found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade06");
+			}
 
+			if(countEnemyVTOL()) {
 				if(!found)
 					found = evalResearch(lab, antiAirTech);
 				if(!found)
@@ -149,15 +151,10 @@ function eventResearched() {
 
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
-
-			if(!found)
-				found = evalResearch(lab, laserExtra);
 			if(!found)
 				found = evalResearch(lab, laserTech);
 			if(!found)
-				found = evalResearch(lab, secondaryWeaponExtra);
-			if(!found)
-				found = evalResearch(lab, secondaryWeaponTech);
+				found = evalResearch(lab, laserExtra);
 
 
 			/*
@@ -166,12 +163,16 @@ function eventResearched() {
 			*/
 
 			if(!found)
-				found = pursueResearch(lab, "R-Sys-Sensor-WS");
-			if(!found)
 				found = evalResearch(lab, bodyResearch);
+			if(!found)
+				found = evalResearch(lab, secondaryWeaponTech);
+			if(!found)
+				found = evalResearch(lab, secondaryWeaponExtra);
+			if(!found)
+				found = pursueResearch(lab, "R-Sys-Sensor-WS");
 
 
-			if(turnOffCyborgs === false) {
+			if(!turnOffCyborgs) {
 				if(!found)
 					found = evalResearch(lab, thermalResearch);
 			}

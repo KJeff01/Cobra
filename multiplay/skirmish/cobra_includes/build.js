@@ -1,12 +1,17 @@
-//TODO: Build order gets slow when anti-air or vtol pads are made.
+
+//Returns all unfinished structures.
+function unfinishedStructures() {
+	return enumStruct(me).filter(function(struct){ return struct.status != BUILT});
+}
+
 //Can a construction droid do something right now.
 function conCanHelp(mydroid, bx, by) {
 	return (mydroid.order != DORDER_HELPBUILD
-	        && mydroid.order != DORDER_BUILD
-	        && mydroid.order != DORDER_LINEBUILD
-		   && mydroid.busy != true
-		   && !repairDroid(mydroid)
-	        && droidCanReach(mydroid, bx, by)
+		&& mydroid.order != DORDER_BUILD
+		&& mydroid.order != DORDER_LINEBUILD
+		&& mydroid.busy != true
+		&& !repairDroid(mydroid)
+		&& droidCanReach(mydroid, bx, by)
 	);
 }
 
@@ -26,7 +31,7 @@ function buildStructure(droid, stat) {
 
 	if (!isStructureAvailable(stat, me)) { return false; }
 	if(isDefined(droid)) {
-		loc = pickStructLocation(droid, stat, droid.x, droid.y, 0);
+		loc = pickStructLocation(droid, stat, droid.x, droid.y, 1);
 	}
 	if(!isDefined(loc)) { return false; }
 
@@ -36,7 +41,7 @@ function buildStructure(droid, stat) {
 	else
 		return false;
 
-	if (isDefined(droid) && (!safeDest(me, loc.x, loc.y) || (dist > (6 + Math.floor(1.5 * derricks))))) {
+	if (isDefined(droid) && (!safeDest(me, loc.x, loc.y) || (dist > (8 + Math.floor(1.5 * derricks))))) {
 		orderDroid(droid, DORDER_RTB);
 		return false;
 	}
@@ -100,6 +105,7 @@ function checkUnfinishedStructures() {
 				return true;
 		}
 	}
+
 	return false;
 }
 
@@ -135,14 +141,7 @@ function lookForOil() {
 
 //Only supports Anti-Air for now
 function buildDefenses() {
-	var enemies = playerAlliance(false);
-	var enemyVtolCount = 0;
-
-	for (var x = 0; x < enemies.length; ++x) {
-		var temp = enumDroid(enemies[x]).filter(function(obj){ return isVTOL(obj) }).length;
-		enemyVtolCount += temp;
-	}
-
+	var enemyVtolCount = countEnemyVTOL();
 	if((enemyVtolCount > 0) && (playerPower(me) > 150)) {
 		if(isStructureAvailable("AASite-QuadRotMg")) {
 			if(countAndBuild("AASite-QuadRotMg", Math.floor(enemyVtolCount / 2))) { return true; }
@@ -161,7 +160,7 @@ function buildDefenses() {
 function buildPhase1() {
 
 	//if a hover map without land enemies, then build research labs first to get to hover propulsion even faster
-	if((forceHover === false) || (seaMapWithLandEnemy === true)) {
+	if(!forceHover || seaMapWithLandEnemy) {
 		if(countAndBuild(structures.factories, 1)) { return true; }
 		if(countAndBuild(structures.labs, 1)) { return true; }
 		if(countAndBuild(structures.hqs, 1)) { return true; }
@@ -182,8 +181,7 @@ function buildPhase1() {
 		if(countAndBuild(structures.extras[0], 2)) { return true; }
 	}
 
-	if ((gameTime > 240000) && !turnOffCyborgs
-		&& isStructureAvailable(structures.templateFactories)) {
+	if ((gameTime > 240000) && !turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
 		if (countAndBuild(structures.templateFactories, 1)) { return true; }
 	}
 
@@ -196,14 +194,14 @@ function buildPhase1() {
 
 //Build three research labs and three ground/cyborg factories and 1 repair center
 function buildPhase2() {
-	if((gameTime < 190000) && (!forceHover)) { return true; }
+	if((gameTime < 210000) && !forceHover) { return true; }
 
 	if(playerPower(me) > 140) {
 		if(countAndBuild(structures.labs, 3)) { return true; }
-		if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
-			if (countAndBuild(structures.templateFactories, 3)) { return true; }
-		}
 		if(countAndBuild(structures.factories, 3)) { return true; }
+		if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
+			if (countAndBuild(structures.templateFactories, 2)) { return true; }
+		}
 	}
 
 	return false;
@@ -215,7 +213,7 @@ function buildPhase3() {
 	if((gameTime > 680000) || forceHover && (playerPower(me) > 140)) {
 		if(countAndBuild(structures.labs, 5)) { return true; }
 
-		if (isStructureAvailable(structures.vtolFactories) && (gameTime > 1400000)) {
+		if (isStructureAvailable(structures.vtolFactories) && (gameTime > 800000)) {
 			if (countAndBuild(structures.vtolFactories, 2)) { return true; }
 		}
 
@@ -224,10 +222,10 @@ function buildPhase3() {
 			if(countAndBuild("A0ComDroidControl", 1)) { return true; }
 		}
 		*/
+		if(countAndBuild(structures.factories, 5)) { return true; }
 		if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
 			if (countAndBuild(structures.templateFactories, 5)) { return true; }
 		}
-		if(countAndBuild(structures.factories, 5)) { return true; }
 		if(isStructureAvailable(structures.extras[0])) {
 			if(countAndBuild(structures.extras[0], 5)) { return true; }
 		}
@@ -238,7 +236,7 @@ function buildPhase3() {
 
 //Finish building all vtol factories
 function buildPhase4() {
-	if ((gameTime > 1400000) && (playerPower(me) > 150) && isStructureAvailable(structures.vtolFactories))
+	if ((gameTime > 800000) && (playerPower(me) > 150) && isStructureAvailable(structures.vtolFactories))
 	{
 		if (countAndBuild(structures.vtolFactories, 5)) { return true; }
 	}
@@ -272,6 +270,7 @@ function buildOrder() {
 	if(getRealPower() < -600) { return false; }
 	if(buildPhase2()) { return false; }
 	if(buildDefenses()) { return false; }
+	if(!componentAvailable("Body11ABT")) { return false; } //prevent too much from being built in T1 no bases early.
 	if(buildPhase3()) { return false; }
 	if(buildPhase4()) { return false; }
 	if(buildPhase5()) { return false; }

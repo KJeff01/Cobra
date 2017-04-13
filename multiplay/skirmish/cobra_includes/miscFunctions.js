@@ -1,4 +1,4 @@
-//Contains functions that are either used about everywhere or do not have
+//Contains functions that are either used everywhere or do not have
 //a better file to be placed in yet.
 
 // Random number between 0 and max-1.
@@ -53,38 +53,6 @@ function rangeStep(obj, visibility) {
 	return target;
 }
 
-//Taken from nullbot v3.06
-//Do the vtol weapon have ammo?
-function vtolArmed(obj, percent) {
-	if (obj.type != DROID)
-		return;
-
-	if (!isVTOL(obj))
-		return false;
-
-	for (var i = 0; i < obj.weapons.length; ++i)
-		if (obj.weapons[i].armed >= percent)
-			return true;
-
-	return false;
-}
-
-//Taken from nullbot v3.06
-//Should the vtol attack when ammo is high enough?
-function vtolReady(droid) {
-	if (droid.order == DORDER_ATTACK)
-		return false;
-
-	if (vtolArmed(droid, 1))
-		return true;
-
-	if (droid.order != DORDER_REARM) {
-		orderDroid(droid, DORDER_REARM);
-	}
-
-	return false;
-}
-
 //Ally is false for checking for enemy players
 //Ally is true for allies.
 function playerAlliance(ally) {
@@ -115,17 +83,11 @@ function diffPerks() {
 		case MEDIUM:
 			//Do nothing
 			break;
+		case INSANE: //Fall through
+			nexusWaveOn = true;
 		case HARD:
 			if(!isStructureAvailable("A0PowMod1"))
 				completeRequiredResearch("R-Sys-Engineering01");
-			makeComponentAvailable("PlasmaHeavy", me);
-			makeComponentAvailable("MortarEMP", me);
-			break;
-		case INSANE:
-			//In addition to what Hard does, turn on the NIP.
-			if(!isStructureAvailable("A0PowMod1"))
-				completeRequiredResearch("R-Sys-Engineering01");
-			nexusWaveOn = true;
 			makeComponentAvailable("PlasmaHeavy", me);
 			makeComponentAvailable("MortarEMP", me);
 			break;
@@ -185,27 +147,6 @@ function getRealPower() {
 	return playerPower(me) - queuedPower(me);
 }
 
-//Returns all unfinished structures.
-function unfinishedStructures() {
-	return enumStruct(me).filter(function(struct){ return struct.status != BUILT});
-}
-
-//choose either cyborgs or tanks. prefer cyborgs if any.
-function chooseGroup() {
-	var tanks  = enumGroup(attackGroup);
-	var borgs = enumGroup(cyborgGroup);
-
-	if((borgs.length > 4) && (borgs.length > tanks.length) && !random(10)) {
-		return borgs;
-	}
-	else {
-		if(tanks.length > 4)
-			return tanks;
-	}
-
-	return tanks;
-}
-
 //Determine if something (namely events) should be skipped momentarily.
 //0 - eventAttacked().
 //1 - eventChat().
@@ -223,7 +164,9 @@ function stopExecution(throttleNumber, ms) {
 		throttleTime[throttleNumber] = gameTime + (4 * random(500));
 		return false;
 	}
-	else { return true; }
+	else {
+		return true;
+	}
 }
 
 //Tell allies who is attacking Cobra the most.
@@ -253,7 +196,7 @@ function removeDuplicateItems(temp) {
 	});
 }
 
-//Find droids that are old.
+//Find droids that are obseleted by superior technology.
 /*
 function findOldDroids(group) {
 	return group.filter(function(dr) {
@@ -283,4 +226,16 @@ function initiaizeRequiredGlobals() {
 	if(turnOffMG === true)
 		personality = choosePersonality();
 	initializeResearchLists();
+}
+
+//Count how many Enemy VTOL units are on the map.
+function countEnemyVTOL() {
+	const ENEMIES = playerAlliance(false);
+	var enemyVtolCount = 0;
+
+	for (var x = 0; x < ENEMIES.length; ++x) {
+		enemyVtolCount += enumDroid(ENEMIES[x]).filter(function(obj) { return isVTOL(obj) }).length;
+	}
+
+	return enemyVtolCount;
 }

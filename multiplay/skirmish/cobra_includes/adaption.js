@@ -2,9 +2,6 @@
 //Choose the personality as described in the global subpersonalities.
 //When called from chat it will switch to that one directly.
 function choosePersonality(chatEvent) {
-	var person = "";
-	var len = 4;
-
 	if(!isDefined(chatEvent)) {
 		return adaptToMap();
 	}

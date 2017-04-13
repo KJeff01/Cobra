@@ -68,21 +68,6 @@ const vtolBody = [
 const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC"];
 
 /*
-//These are for ground unit production only (non-system).
-const kineticBody = [
-	"Body14SUP", // Dragon
-	"Body13SUP", // Wyvern
-	"Body9REC",  // Tiger
-	"Body11ABT", // Python
-];
-
-//For ground unit production only (non-system).
-const thermalBody = [
-	"Body10MBT", // Vengeance
-	"Body12SUP", // Mantis
-];
-*/
-/*
 const repairTurrets = [
 	"HeavyRepair",
 	"LightRepair1",
@@ -100,7 +85,7 @@ const subpersonalities = {
 	AC: {
 		"primaryWeapon": weaponStats.cannons,
 		"secondaryWeapon": weaponStats.gauss,
-		"artillery": weaponStats.fireMortars,
+		"artillery": weaponStats.howitzers,
 		"antiAir": weaponStats.AA,
 		"res": [
 			"R-Wpn-MG-Damage01",
@@ -123,6 +108,7 @@ const subpersonalities = {
 			"R-Wpn-MG-Damage01",
 			"R-Wpn-MG1Mk1",
 			"R-Struc-PowerModuleMk1",
+			"R-Wpn-MG2Mk1",
 			"R-Wpn-Flamer-Damage03",
 			"R-Wpn-Flamer-ROF03",
 			"R-Wpn-Flame2",
@@ -139,23 +125,25 @@ const subpersonalities = {
 			"R-Wpn-MG1Mk1",
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
+			"R-Wpn-MG-Damage02",
 			"R-Wpn-Rocket02-MRL",
 			"R-Wpn-Rocket07-Tank-Killer",
 			"R-Wpn-Rocket06-IDF",
 			"R-Struc-RprFac-Upgrade01",
+			"R-Wpn-Rocket-ROF03",
 		],
 	},
 	AM: {
 		"primaryWeapon": weaponStats.machineguns,
 		"secondaryWeapon": weaponStats.lasers,
-		"artillery": weaponStats.fireMortars,
+		"artillery": weaponStats.howitzers,
 		"antiAir": weaponStats.AA,
 		"res": [
 			"R-Wpn-MG-Damage01",
 			"R-Wpn-MG1Mk1",
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
-			"R-Wpn-MG-Damage02",
+			"R-Wpn-MG-Damage03",
 			"R-Struc-RprFac-Upgrade01",
 		],
 	},

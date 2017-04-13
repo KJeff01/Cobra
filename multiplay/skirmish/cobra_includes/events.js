@@ -9,9 +9,7 @@ function eventGameInit() {
 	sensorGroup = newGroup();
 	//commanderGroup = newGroup();
 	lastMsg = "eventGameInit";
-	buildStop = 0;
 
-	//-- START Group initialization
 	var tanks = enumDroid(me, DROID_WEAPON);
 	var cyborgs = enumDroid(me, DROID_CYBORG);
 	var vtols = enumDroid(me).filter(function(obj){ return isVTOL(obj) });
@@ -37,13 +35,17 @@ function eventGameInit() {
 	*/
 }
 
+function eventGameLoaded() {
+	eventGameInit();
+}
+
 //Initialze global variables and setup timers.
 function eventStartLevel() {
 	initiaizeRequiredGlobals();
 	buildOrder(); //Start building right away.
 
-	setTimer("repairAll", thinkLonger + 310 + 3 * random(80));
-	setTimer("buildOrder", thinkLonger + 450 + 3 * random(60));
+	setTimer("repairAll", thinkLonger + 290 + 3 * random(80));
+	setTimer("buildOrder", thinkLonger + 320 + 3 * random(60));
 	setTimer("produce", thinkLonger + 700 + 3 * random(70));
 	//setTimer("commandTactics", thinkLonger + 2000 + 3 * random(60));
 	setTimer("spyRoutine", thinkLonger + 8000 + 4 * random(60));
@@ -54,11 +56,12 @@ function eventStartLevel() {
 
 //This is meant to check for nearby oil resources next to the construct.
 function eventStructureBuilt(structure, droid) {
-	if(isDefined(droid) && (structure === structures.derricks)) {
-		var nearbyOils = enumRange(droid,x, droid.y, 20, me, false);
-		nearbyOils.filter(function(obj) { return obj.type === STRUCTURE &&
-			obj.stattype == OIL_RESOURCE
+	if(isDefined(droid) && (structure.stattype === RESOURCE_EXTRACTOR)) {
+		var nearbyOils = enumRange(droid.x, droid.y, 6, ALL_PLAYERS, false);
+		nearbyOils = nearbyOils.filter(function(obj) {
+			return obj.type === FEATURE && obj.stattype == OIL_RESOURCE
 		});
+		nearbyOils.sort(distanceToBase);
 		if(nearbyOils.length && isDefined(nearbyOils[0]))
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
 	}
@@ -160,7 +163,7 @@ function eventAttacked(victim, attacker) {
 function eventGroupLoss(droid, group, size) {
 	if(droid.order == DORDER_RECYCLE) { return; }
 
-	if(stopExecution(3, 15000) === false){
+	if(stopExecution(3, 10000) === false){
 		addBeacon(droid.x, droid.y, ALLIES);
 	}
 
@@ -215,18 +218,18 @@ function eventDroidIdle(droid) {
 
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message) {
-	if(stopExecution(2, 30000) === true) { return; }
+	if(stopExecution(2, 12000) === true) { return; }
 
 	if(allianceExistsBetween(from, to) || (to == from)) {
 		var cyborgs = enumGroup(cyborgGroup);
 		var tanks = enumGroup(attackGroup);
 		var vtols = enumGroup(vtolGroup);
 		for (var i = 0; i < cyborgs.length; i++) {
-			if(!repairDroid(cyborgs[i]) && droidCanReach(cyborgs[i], x, y))
+			if(droidReady(cyborgs[i]) && droidCanReach(cyborgs[i], x, y))
 				orderDroidLoc(cyborgs[i], DORDER_SCOUT, x, y);
 		}
 		for (var i = 0; i < tanks.length; i++) {
-			if(!repairDroid(tanks[i]) && droidCanReach(tanks[i], x, y))
+			if(droidReady(tanks[i]) && droidCanReach(tanks[i], x, y))
 				orderDroidLoc(tanks[i], DORDER_SCOUT, x, y);
 		}
 		for (var i = 0; i < vtols.length; i++) {
@@ -243,7 +246,6 @@ function eventObjectTransfer(obj, from) {
 		if(obj.type == DROID) { eventDroidBuilt(obj, null); }
 	}
 
-	//NexusWave transer
 	if((from !== me) && (from === obj.player) && !allianceExistsBetween(obj.player, me)) {
 		if(obj.type == DROID) { eventDroidBuilt(obj, null); }
 	}
@@ -256,7 +258,7 @@ function eventDestroyed(object) {
 
 	if(!allianceExistsBetween(object.player, me)) {
 		if(grudgeCount[object.player] > 0)
-			grudgeCount[object.player] -= 1;
+			grudgeCount[object.player] = Math.floor(grudgeCount[object.player] / 1.05);
 	}
 }
 

@@ -5,6 +5,53 @@ function droidReady(droid) {
 	return (!repairDroid(droid, false) && (droid.order != DORDER_ATTACK));
 }
 
+//Taken from nullbot v3.06
+//Does the vtol weapons have ammo?
+function vtolArmed(obj, percent) {
+	if (obj.type != DROID)
+		return;
+
+	if (!isVTOL(obj))
+		return false;
+
+	for (var i = 0; i < obj.weapons.length; ++i)
+		if (obj.weapons[i].armed >= percent)
+			return true;
+
+	return false;
+}
+
+//Should the vtol attack when ammo is high enough?
+function vtolReady(droid) {
+	if (droid.order == DORDER_ATTACK)
+		return false;
+
+	if (vtolArmed(droid, 1))
+		return true;
+
+	if (droid.order != DORDER_REARM) {
+		orderDroid(droid, DORDER_REARM);
+	}
+
+	return false;
+}
+
+//choose either cyborgs or tanks. prefer cyborgs if any.
+function chooseGroup() {
+	var tanks  = enumGroup(attackGroup);
+	var borgs = enumGroup(cyborgGroup);
+
+	if((borgs.length > 4) && (borgs.length > tanks.length) && !random(10)) {
+		return borgs;
+	}
+	else {
+		if(tanks.length > 4)
+			return tanks;
+	}
+
+	return tanks;
+}
+
 //Find the derricks of all enemy players, or just a specific one.
 function findEnemyDerricks(playerNumber) {
 	var derr = [];
@@ -33,56 +80,21 @@ function checkMood() {
 
 	if(grudgeCount[mostHarmful] >= 325) {
 		attackStuff(mostHarmful);
-		grudgeCount[mostHarmful] = 10;
+		grudgeCount[mostHarmful] = 100;
 	}
 	else if((grudgeCount[mostHarmful] > 10) && (grudgeCount[mostHarmful] < 325)) {
-		var derr = enumStruct(mostHarmful, structures.derricks);
-		var struc = enumStruct(mostHarmful);
-
-		var cyb = enumGroup(cyborgGroup);
-		var target;
-		if(derr.length > 0) {
-			derr.sort(distanceToBase);
-			target = derr[0];
-		}
-		else {
-			if(struc.length > 0) {
-				struc.sort(distanceToBase);
-				target = struc[0];
-			}
-			else {
-				grudgeCount[mostHarmful] = 0;
-				return; //They not too much of a problem now.
-			}
+		if(isDefined(turnOffCyborgs) && !turnOffCyborgs) {
+			attackWithGroup(enumGroup(cyborgGroup), enumStruct(mostHarmful, structures.derricks), mostHarmful);
 		}
 
-		if(enumGroup(cyborgGroup).length > 7) {
-			for (var i = 0; i < cyb.length; i++) {
-				if(isDefined(cyb[i]) && droidReady(cyb[i])) {
-					if(isDefined(target) && droidCanReach(cyb[i], target.x, target.y))
-						orderDroidLoc(cyb[i], DORDER_SCOUT, target.x, target.y);
-				}
-			}
-		}
-
-		var vtols = enumGroup(vtolGroup);
-		var vtTarget;
-		if(vtols.length > 0)
-			vtTarget = rangeStep(vtols[0], false);
-
-		for (var i = 0; i < vtols.length; ++i) {
-			if(isDefined(vtols[i]) && vtolReady(vtols[i]) && isDefined(vtTarget[0])) {
-				orderDroidLoc(vtols[i], DORDER_SCOUT, vtTarget[0].x, vtTarget[0].y);
-			}
-		}
-
+		attackWithGroup(enumGroup(vtolGroup), enumStruct(mostHarmful), mostHarmful);
 		grudgeCount[mostHarmful] = Math.floor(grudgeCount[mostHarmful] / 2);
 	}
 }
 
 //Tell a droid to find the nearest enemy structure.
-function findNearestEnemySturcture(droid, enemy) {
-	var s = enumStruct(enemy).filter(function(obj) { return obj.stattype !== WALL });
+function findNearestEnemyStructure(droid, enemy, targets) {
+	var s = (isDefined(targets)) ? targets : enumStruct(enemy).filter(function(obj) { return obj.stattype !== WALL });
 	if(s.length === 0)
 		s = enumStruct(enemy);
 
@@ -93,14 +105,52 @@ function findNearestEnemySturcture(droid, enemy) {
 	}
 }
 
+//Attack something.
+function attackWithGroup(droids, targets, enemy) {
+	if(droids.length < 6)
+		return false;
+
+	var target;
+
+	if(targets.length) {
+		targets.sort(distanceToBase);
+		var target = targets[0];
+	}
+
+	for (var j = 0; j < droids.length; j++) {
+		if(isDefined(droids[j]) && droidReady(droids[j])) {
+			if(isDefined(target) && droidCanReach(droids[j], target.x, target.y))
+				orderDroidObj(droids[j], DORDER_ATTACK, target);
+			else {
+				findNearestEnemyStructure(droids[j], enemy);
+			}
+		}
+	}
+}
+
+//returns undefined for tactics that allow 'me' to attack something other than derricks.
+function chatTactic(enemy) {
+	var str = lastMsg.slice(0, -1);
+	var code;
+
+	if((str != "attack") && (str != "oil")) {
+		if((countStruct(structures.derricks) > 7) && (enumDroid(me) > 20)) {
+			sendChatMessage("attack" + enemy, ALLIES);
+		}
+		else  {
+			sendChatMessage("oil" + enemy, ALLIES);
+			chatAttackOil(enemy);
+			code = true;
+		}
+	}
+
+	return code;
+}
+
 //attacker is a player number. Attack a specific player.
 function attackStuff(attacker) {
-	var tanks = enumGroup(attackGroup);
-	var cyborgs = enumGroup(cyborgGroup);
-	var vtols = enumGroup(vtolGroup);
-	var enemy = playerAlliance(false);
-	var str = lastMsg.slice(0, -1);
-	var selectedEnemy = enemy[random(enemy.length)];
+	var enemies = playerAlliance(false);
+	var selectedEnemy = enemies[random(enemies.length)];
 
 	if(isDefined(attacker) && !allianceExistsBetween(attacker, me) && (attacker !== me)) {
 		selectedEnemy = attacker;
@@ -108,56 +158,26 @@ function attackStuff(attacker) {
 			grudgeCount[attacker] = 100;
 	}
 
-	var derr = enumStruct(selectedEnemy, structures.derricks);
-	var fac = enumStruct(selectedEnemy, structures.factories);
-	var templatesFacs = enumStruct(selectedEnemy, structures.templateFactories);
-	for(var c = 0; c < templatesFacs.length; ++c)
-		fac.push(templatesFacs[c]);
+	if(isDefined(chatTactic(selectedEnemy)))
+		return;
 
-	var target = derr[random(derr.length)];
-	var targetFac = fac[random(fac.length)];
-
-	if((str != "attack") && (str != "oil")) {
-		if((countStruct(structures.derricks) > 7) && (enumDroid(me) > 20)) {
-			sendChatMessage("attack" + selectedEnemy, ALLIES);
-		}
-		else  {
-			sendChatMessage("oil" + selectedEnemy, ALLIES);
-			chatAttackOil(selectedEnemy);
-			return; //Otherwise it will look like Cobra can not decide what to attack.
-		}
+	attackWithGroup(enumGroup(attackGroup), enumStruct(selectedEnemy, structures.factories), selectedEnemy);
+	if(isDefined(turnOffCyborgs) && !turnOffCyborgs) {
+		attackWithGroup(enumGroup(cyborgGroup), enumStruct(selectedEnemy, structures.templateFactories), selectedEnemy);
 	}
 
-	if(tanks.length > 7) {
-		for (var j = 0; j < tanks.length; j++) {
-			if(isDefined(tanks[j]) && droidReady(tanks[j])) {
-				if(isDefined(targetFac) && droidCanReach(tanks[j], targetFac.x, targetFac.y))
-					orderDroidObj(tanks[j], DORDER_ATTACK, targetFac, targetFac);
-				else {
-					findNearestEnemySturcture(tanks[j], selectedEnemy);
-				}
-			}
-		}
-	}
-
-	if(isDefined(turnOffCyborgs) && (turnOffCyborgs === false) && (cyborgs.length > 7)) {
-		for (var j = 0; j < cyborgs.length; j++) {
-			if(isDefined(cyborgs[j]) && droidReady(cyborgs[j])) {
-				if(isDefined(target) && droidCanReach(cyborgs[j], target.x, target.y))
-					orderDroidObj(cyborgs[j], DORDER_ATTACK, target, target);
-				else {
-					findNearestEnemySturcture(cyborgs[j], selectedEnemy);
-				}
-			}
-		}
-	}
+	//VTOL units favor targeting derricks before anything else.
+	var vtols = enumGroup(vtolGroup);
 	if(vtols.length > 4) {
+		var derr = findEnemyDerricks(selectedEnemy);
+
 		for (var j = 0; j < vtols.length; j++) {
 			if (isDefined(vtols[j]) && vtolReady(vtols[j])) {
-				findNearestEnemySturcture(vtols[j], selectedEnemy);
+				findNearestEnemyStructure(vtols[j], selectedEnemy, derr);
 			}
 		}
 	}
+
 }
 
 
