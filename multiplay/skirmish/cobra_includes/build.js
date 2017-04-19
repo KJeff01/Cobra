@@ -1,14 +1,16 @@
 
 //Returns all unfinished structures.
 function unfinishedStructures() {
-	return enumStruct(me).filter(function(struct){ return struct.status != BUILT});
+	return enumStruct(me).filter(function(struct) {
+		return (struct.status !== BUILT) && (struct.stattype !== RESOURCE_EXTRACTOR)
+	});
 }
 
 //Can a construction droid do something right now.
 function conCanHelp(mydroid, bx, by) {
-	return (mydroid.order != DORDER_BUILD
-		&& mydroid.order != DORDER_LINEBUILD
-		&& mydroid.busy != true
+	return (mydroid.order !== DORDER_BUILD
+		&& mydroid.order !== DORDER_LINEBUILD
+		&& mydroid.busy !== true
 		&& !repairDroid(mydroid)
 		&& droidCanReach(mydroid, bx, by)
 	);
@@ -103,6 +105,12 @@ function lookForOil() {
 	oils.sort(distanceToBase); // grab closer oils first
 	droids.sort(distanceToBase);
 
+	if(!componentAvailable("hover01")) {
+		//Cheap way to not go after farthest oil without oil.
+		if(oils.length)
+			oils.pop();
+	}
+
 	for (var i = 0; i < oils.length; i++) {
 		for (var j = 0; j < droids.length - (1 * (gameTime > 110000)); j++) {
 			if(i + s >= oils.length)
@@ -194,7 +202,7 @@ function buildPhase2() {
 
 //Build five research labs and the minimum vtol factories and maximum ground/cyborg factories and repair centers
 function buildPhase3() {
-	if((getRealPower() < -200) || (countStruct(structures.derricks) < 10)) {
+	if((getRealPower() < -200) || (countStruct(structures.derricks) <= 7)) {
 		return true;
 	}
 
@@ -224,7 +232,7 @@ function buildPhase3() {
 
 //Finish building all vtol factories
 function buildPhase4() {
-	if ((countStruct(structures.derricks) > 12) && (gameTime > 600000) && (playerPower(me) > 150) && isStructureAvailable(structures.vtolFactories))
+	if ((countStruct(structures.derricks) >= 12) && (gameTime > 600000) && (playerPower(me) > 150) && isStructureAvailable(structures.vtolFactories))
 	{
 		if (countAndBuild(structures.vtolFactories, 5)) { return true; }
 	}
@@ -252,8 +260,7 @@ function buildOrder() {
 	if(recycleObsoleteDroids()) { return false; }
 	if(checkUnfinishedStructures()) { return false; }
 	if(buildPhase1()) { return false; }
-	if(turnOffMG && maintenance()) { return false; } //T2/T3
-	if(!turnOffMG && (gameTime > 80000) && maintenance()) { return false; } //T1
+	if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return false; }
 	lookForOil();
 	if(getRealPower() < -600) { return false; }
 	if(buildPhase2()) { return false; }

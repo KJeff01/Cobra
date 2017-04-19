@@ -257,7 +257,7 @@ const weaponStats = {
 	},
 	fireMortars: {
 		weapons: [
-			//{ res: "R-Wpn-Mortar-Incenediary", stat: "Mortar-Incenediary" },
+			{ res: "R-Wpn-Mortar-Incenediary", stat: "Mortar-Incenediary" },
 			{ res: "R-Wpn-Howitzer-Incenediary", stat: "Howitzer-Incenediary" },
 		],
 		vtols: [

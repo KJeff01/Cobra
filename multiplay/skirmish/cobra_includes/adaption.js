@@ -25,6 +25,7 @@ function choosePersonality(chatEvent) {
 }
 
 //Choose personality based on map oil/ally count. Called from eventStartLevel().
+//isDesignable("Howitzer03-Rot") checks if it a T3 match and allows personality AL to be used.
 function adaptToMap() {
 	var choice = "";
 	const ENEMY_COUNT = playerAlliance(false).length;
@@ -35,10 +36,12 @@ function adaptToMap() {
 		choice = ADAPT_PERSONALITIES[random(2)]; // AM, AR.
 	}
 	else if ((MAP_OIL_LEVEL === "MEDIUM") || ((ALLY_COUNT !== 0) && (ALLY_COUNT < ENEMY_COUNT))) {
-		choice = ADAPT_PERSONALITIES[random(3) + 1]; //AR, AB, AC.
+		var offset = (isDesignable("Howitzer03-Rot")) ? 4 : 3;
+		choice = ADAPT_PERSONALITIES[random(offset) + 1]; //AR, AB, AC, AL.
 	}
 	else {
-		choice = ADAPT_PERSONALITIES[random(2) + 2]; //AB, AC.
+		var offset = (isDesignable("Howitzer03-Rot")) ? 3 : 2;
+		choice = ADAPT_PERSONALITIES[random(offset) + 2]; //AB, AC, AL.
 	}
 
 	return choice;

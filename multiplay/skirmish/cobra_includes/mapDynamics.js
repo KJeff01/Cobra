@@ -87,6 +87,11 @@ function freeForAll() {
 //Turn off Machine-guns on T2 and T3
 //Very cheap analysis done here.
 function CheckStartingBases() {
+
+	if(personality === "AL") {
+		return true;
+	}
+
 	for(var i = 0; i < subpersonalities[personality]["primaryWeapon"].weapons.length; ++i) {
 		if(isDesignable(subpersonalities[personality]["primaryWeapon"].weapons[i].stat)) {
 			return true;

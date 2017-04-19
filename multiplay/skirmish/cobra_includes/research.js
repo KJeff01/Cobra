@@ -85,12 +85,11 @@ function eventResearched() {
 			if(!found)
 				found = evalResearch(lab, START_BODY);
 			if(!found)
-				found = evalResearch(lab, PROPULSION);
-
-			if(!found)
 				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
 			if(!found)
 				found = pursueResearch(lab, fastestResearch);
+			if(!found)
+				found = evalResearch(lab, PROPULSION);
 
 			//If T1 - Go for machine-guns. else focus on lasers and the primary weapon.
 			if(!turnOffMG || (personality === "AM")) {
@@ -124,9 +123,9 @@ function eventResearched() {
 				if(!found)
 					found = evalResearch(lab, weaponTech);
 				if(!found)
-					found = evalResearch(lab, secondaryWeaponTech);
-				if(!found)
 					found = evalResearch(lab, extraTech);
+				if(!found)
+					found = evalResearch(lab, secondaryWeaponTech);
 				if(!found)
 					found = evalResearch(lab, secondaryWeaponExtra);
 			}

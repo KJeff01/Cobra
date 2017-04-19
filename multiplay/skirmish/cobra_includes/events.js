@@ -63,6 +63,10 @@ function eventStructureBuilt(structure, droid) {
 		if(nearbyOils.length && isDefined(nearbyOils[0]))
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
 	}
+	else {
+		if(checkUnfinishedStructures()) { return false; }
+		if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return false; }
+	}
 }
 
 //Groups droid types.
@@ -122,11 +126,14 @@ function eventAttacked(victim, attacker) {
 				orderDroid(victim, DORDER_RTR);
 			}
 			else {
+				//Try to escape their weapon range.
+				if(Math.floor(victim.health) < 20)
+					orderDroidLoc(victim, DORDER_MOVE, startPositions[me].x, startPositions[me].y);
 				repairDroid(victim, false);
 			}
 		}
 
-		if(stopExecution(0, 4000) === true) { return; }
+		//if(stopExecution(0, 2000) === true) { return; }
 
 		var units;
 		if(victim.type === STRUCTURE) {

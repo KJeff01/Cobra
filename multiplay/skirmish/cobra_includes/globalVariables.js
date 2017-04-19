@@ -65,7 +65,7 @@ const vtolBody = [
 	"Body5REC",  // Cobra
 ];
 
-const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC"];
+const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC", "AL"];
 
 /*
 const repairTurrets = [
@@ -78,7 +78,8 @@ const repairTurrets = [
 //AC: Cannon/gauss/howitzer.
 //AR: Flamer/Rocket/howitzer.
 //AB: Rocket/Missle/gauss.
-//AM: machine-gun/howitzer/Cannons.
+//AM: Machine-gun/howitzer/Cannons.
+//AL: Lasers/Lasers/fireMortars. *Strictly a T3 personality.
 //All personalities use laser technology. This includes the plasma cannon.
 //The secondary weapon has low priority.
 const subpersonalities = {
@@ -106,10 +107,9 @@ const subpersonalities = {
 			"R-Wpn-MG1Mk1",
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
-			"R-Wpn-Flamer-Damage03",
+			"R-Wpn-Flamer-Damage02",
 			"R-Struc-RprFac-Upgrade01",
-			"R-Wpn-Flamer-ROF03",
-			"R-Wpn-Flame2",
+			"R-Wpn-Flamer-ROF02",
 		],
 	},
 	AB: {
@@ -138,6 +138,17 @@ const subpersonalities = {
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-MG-Damage03",
 			"R-Struc-RprFac-Upgrade01",
+		],
+	},
+	AL: {
+		"primaryWeapon": weaponStats.lasers,
+		"secondaryWeapon": weaponStats.lasers,
+		"artillery": weaponStats.fireMortars,
+		"antiAir": weaponStats.AA,
+		"res": [
+			"R-Wpn-Mortar-Incenediary",
+			"R-Wpn-Laser01",
+			"R-Sys-Autorepair-General",
 		],
 	},
 }

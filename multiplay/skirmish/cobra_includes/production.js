@@ -5,6 +5,7 @@
 function choosePersonalityWeapon(type) {
 	var weaps;
 	var weaponList = [];
+	var isSecondary = false;
 	if(!isDefined(type)) { type = "TANK"; }
 
 	if(type === "TANK") {
@@ -13,7 +14,7 @@ function choosePersonalityWeapon(type) {
 			case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
 			case 2: weaps = subpersonalities[personality]["artillery"]; break;
 			case 3: weaps = weaponStats.lasers; break;
-			case 4: weaps = subpersonalities[personality]["secondaryWeapon"]; break;
+			case 4: weaps = subpersonalities[personality]["secondaryWeapon"]; isSecondary = true; break;
 			case 5: weaps = weaponStats.AS; break;
 			default: weaps = subpersonalities[personality]["primaryWeapon"]; break;
 		}
@@ -21,6 +22,12 @@ function choosePersonalityWeapon(type) {
 		if(isDefined(weaps)) {
 			for(var i = weaps.weapons.length - 1; i >= 0; --i) {
 				weaponList.push(weaps.weapons[i].stat);
+			}
+
+			//Secondary weapons are late and should only be produced without the
+			//first weapon in its line.
+			if((isSecondary === true) && (weaponList.length > 1)) {
+				weaponList.shift();
 			}
 
 			/*
@@ -74,7 +81,7 @@ function choosePersonalityWeapon(type) {
 }
 
 //What conditions will allow hover use. Flamers always use hover, rockets/missile
-//Have a 20% chance of using hover. Also there is a 15% chance regardless of weapon.
+//Have a 20% chance of using hover and a 35% chance for laser. Also there is a 15% chance regardless of weapon.
 //Expects an array of weapons.
 function useHover(weap) {
 	if(!isDefined(weap)) {
@@ -90,6 +97,11 @@ function useHover(weap) {
 
 		if((weap[i] === "Rocket-LtA-T") || (weap[i] === "Rocket-HvyA-T") || (weap[i] === "Missile-A-T")) {
 			useHover = (random(100) <= 20) ? true : false;
+			break;
+		}
+
+		if((weap[i] === "Laser3BEAMMk1") || (weap[i] === "Laser2PULSEMk1") || (weap[i] === "HeavyLaser")) {
+			useHover = (random(100) <= 35) ? true : false;
 			break;
 		}
 	}
