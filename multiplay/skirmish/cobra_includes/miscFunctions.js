@@ -23,6 +23,9 @@ function sortAndReverseDistance(arr) {
 
 //Push list elements into another.
 function appendListElements(list, items) {
+	if(!isDefined(list))
+		list = [];
+
 	var temp = list;
 	for(var i = 0; i < items.length; ++i) {
 		temp.push(items[i]);
@@ -40,11 +43,6 @@ function rangeStep(obj, visibility) {
 		var temp = enumRange(obj.x, obj.y, i, ENEMIES, visibility);
 		if(temp.length > 0) {
 			temp.filter(function(targ) { return droidCanReach(obj, targ.x, targ.y) });
-			temp.filter(function(targ) {
-				return (targ.type == DROID) ||
-				((targ.type == STRUCTURE) && (targ.stattype != WALL))
-			});
-
 			temp.sort(distanceToBase);
 			return temp[0];
 		}
@@ -61,12 +59,12 @@ function playerAlliance(ally) {
 
 	for(var i = 0; i < maxPlayers; ++i) {
 		if(!ally) {
-			if(!allianceExistsBetween(i, me) && (i != me)) {
+			if(!allianceExistsBetween(i, me) && (i !== me)) {
 				players.push(i);
 			}
 		}
 		else {
-			if(allianceExistsBetween(i, me) && (i != me)) {
+			if(allianceExistsBetween(i, me) && (i !== me)) {
 				players.push(i);
 			}
 		}
@@ -78,7 +76,7 @@ function playerAlliance(ally) {
 function diffPerks() {
 	switch(difficulty) {
 		case EASY:
-			ThinkLonger = 4000 + ((1 + random(4)) * random(1200));
+			//This is handled in eventStartLevel().
 			break;
 		case MEDIUM:
 			//Do nothing
@@ -169,12 +167,30 @@ function stopExecution(throttleNumber, ms) {
 	}
 }
 
+//Find enemies that are still alive.
+function findLivingEnemies() {
+	var alive = [];
+
+	for(var x = 0; x < maxPlayers; ++x) {
+ 		if((x !== me) && !allianceExistsBetween(me, x) && (enumDroid(x).length || enumStruct(x).length)) {
+			alive.push(x);
+		}
+		else {
+			grudgeCount[x] = -1; // Dead/me.
+		}
+ 	}
+
+	return alive;
+}
+
 //Tell allies who is attacking Cobra the most.
 //When called from chat using "stats" it will also tell you who is the most aggressive towards Cobra.
 function getMostHarmfulPlayer(chatEvent) {
 	var mostHarmful = 0;
- 	for(var x = 0; x < maxPlayers; ++x) {
- 		if((grudgeCount[x] > 0) && (grudgeCount[x] > grudgeCount[mostHarmful]))
+	var enemies = findLivingEnemies();
+
+ 	for(var x = 0; x < enemies.length; ++x) {
+ 		if((grudgeCount[enemies[x]] >= 0) && (grudgeCount[enemies[x]] > grudgeCount[mostHarmful]))
  			mostHarmful = x;
  	}
  	if(isDefined(chatEvent)) {
@@ -205,11 +221,19 @@ function findOldDroids(group) {
 }
 */
 
+//Target a random enemy at the start of the match. This is done by placing
+//random values into the grudge counter.
+function randomizeFirstEnemy() {
+	for(var i = 0; i < maxPlayers; ++i) {
+		grudgeCount[i] = random(30);
+	}
+}
+
 //Called from eventStartLevel, this initializes the globals.
 function initiaizeRequiredGlobals() {
 	nexusWaveOn = false;
+	researchComplete = false;
 	grudgeCount = [];
-	turnOffCyborgs = false;
 	throttleTime = [];
 	thinkLonger = 0;
 
@@ -219,23 +243,30 @@ function initiaizeRequiredGlobals() {
 	checkForScavs();
 	diffPerks();
 
-	forceHover = checkIfSeaMap(); //TurnOffCyborgs can be assigned true here
+	forceHover = checkIfSeaMap();
+	turnOffCyborgs = (forceHover === true) ? true : false;
 	personality = choosePersonality();
 	turnOffMG = CheckStartingBases();
-	//Do not start with AM or AR if technology is good enough.
-	if(turnOffMG === true)
-		personality = choosePersonality();
+	randomizeFirstEnemy();
 	initializeResearchLists();
 }
 
 //Count how many Enemy VTOL units are on the map.
 function countEnemyVTOL() {
-	const ENEMIES = playerAlliance(false);
+	var enemies = findLivingEnemies();
 	var enemyVtolCount = 0;
 
-	for (var x = 0; x < ENEMIES.length; ++x) {
-		enemyVtolCount += enumDroid(ENEMIES[x]).filter(function(obj) { return isVTOL(obj) }).length;
+	for (var x = 0; x < enemies.length; ++x) {
+		enemyVtolCount += enumDroid(enemies[x]).filter(function(obj) { return isVTOL(obj) }).length;
 	}
 
 	return enemyVtolCount;
+}
+
+//Donate a droid from one of Cobra's groups.
+function donateFromGroup(group, from) {
+	const MIN_DROID_COUNT = 9;
+	var droids = enumGroup(group);
+	if(droids.length < MIN_DROID_COUNT) { return; }
+	donateObject(droids[random(droids.length)], from);
 }

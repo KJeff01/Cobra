@@ -158,7 +158,7 @@ function analyzeRandomEnemyDroid() {
 	var enemies = playerAlliance(false);
 	var enemy = enemies[random(enemies.length)];
 	var enemyDroids = enumDroid(enemy).filter(function(d) {
-		return isVTOL(d) || d.droidType == DROID_WEAPON || d.droidType == DROID_CYBORG || d.droidType == DROID_SENSOR
+		return isVTOL(d) || d.droidType === DROID_WEAPON || d.droidType === DROID_CYBORG || d.droidType === DROID_SENSOR
 	});
 
 	//Steal a randomly selected player technology.
@@ -176,12 +176,12 @@ function analyzeRandomEnemyDroid() {
 //another player or even stealing technology.
 //This effect only occurs while the Cobra command center is not destroyed.
 function nexusWave() {
-	if(isDefined(nexusWaveOn) && (nexusWaveOn === false)) {
+	if(isDefined(nexusWaveOn) && !nexusWaveOn) {
 		removeTimer("nexusWave");
 		return;
 	}
 
-	if(isDefined(nexusWaveOn) && (nexusWaveOn === true) && (countStruct(structures.hqs) > 0)) {
+	if(isDefined(nexusWaveOn) && nexusWaveOn && countStruct(structures.hqs)) {
 		analyzeRandomEnemyDroid();
 		if(!random(15)) {
 			malfunctionDroid();

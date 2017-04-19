@@ -6,8 +6,7 @@ function unfinishedStructures() {
 
 //Can a construction droid do something right now.
 function conCanHelp(mydroid, bx, by) {
-	return (mydroid.order != DORDER_HELPBUILD
-		&& mydroid.order != DORDER_BUILD
+	return (mydroid.order != DORDER_BUILD
 		&& mydroid.order != DORDER_LINEBUILD
 		&& mydroid.busy != true
 		&& !repairDroid(mydroid)
@@ -25,23 +24,15 @@ function countAndBuild(stat, count) {
 
 //Find a location to build something within a safe area.
 function buildStructure(droid, stat) {
-	var derricks = countStruct(structures.derricks);
 	var loc;
-	var dist;
 
 	if (!isStructureAvailable(stat, me)) { return false; }
 	if(isDefined(droid)) {
-		loc = pickStructLocation(droid, stat, droid.x, droid.y, 1);
+		loc = pickStructLocation(droid, stat, startPositions[me].x, startPositions[me].y, 0);
 	}
 	if(!isDefined(loc)) { return false; }
 
-	//Try not to build stuff in dangerous locations
-	if(isDefined(droid))
-		dist = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, droid.x, droid.y);
-	else
-		return false;
-
-	if (isDefined(droid) && (!safeDest(me, loc.x, loc.y) || (dist > (8 + Math.floor(1.5 * derricks))))) {
+	if (isDefined(droid) && !safeDest(me, loc.x, loc.y)) {
 		orderDroid(droid, DORDER_RTB);
 		return false;
 	}
@@ -64,6 +55,7 @@ function buildStuff(struc, module) {
 		}
 
 		if(freeTrucks.length > 0) {
+			freeTrucks.sort(distanceToBase);
 			var truck = freeTrucks[random(freeTrucks.length)];
 
 			if(isDefined(struc) && isDefined(module) && isDefined(truck)) {
@@ -83,16 +75,6 @@ function buildStuff(struc, module) {
 function checkUnfinishedStructures() {
 	var struct = unfinishedStructures();
 	var breakOut = enumFeature(-1, oilResources).length;
-
-	//Prevent trucks from moving to finished structures that were previously unfinished
-	//or break away from building something to get oil.
-	var allTrucks = enumDroid(me, DROID_CONSTRUCT);
-	if((struct.length === 0) || ((gameTime > 280000) && (breakOut > 0))) {
-		for(var i = 0; i < allTrucks.length; ++i) {
-			allTrucks[i].busy = false;
-		}
-		if(breakOut > 0) { return false; }
-	}
 
 	if(struct.length > 0) {
 		var trucks = enumDroid(me, DROID_CONSTRUCT).filter(function(obj){
@@ -114,8 +96,9 @@ function lookForOil() {
 	var droids = enumDroid(me, DROID_CONSTRUCT);
 	var oils = enumFeature(-1, oilResources);
 	var s = 0;
+	const SAFE_RANGE = (gameTime < 210000) ? 9 : 5;
 
-	if ((droids.length <= 1) || (oils.length === 0)) { return; }
+	if ((droids.length <= 1) || !oils.length) { return; }
 
 	oils.sort(distanceToBase); // grab closer oils first
 	droids.sort(distanceToBase);
@@ -125,7 +108,7 @@ function lookForOil() {
 			if(i + s >= oils.length)
 				break;
 
-			var safe = enumRange(oils[i + s].x, oils[i + s].y, 4, ENEMIES, false);
+			var safe = enumRange(oils[i + s].x, oils[i + s].y, SAFE_RANGE, ENEMIES, false);
 			safe.filter(function(obj) { return (obj.type === DROID)
 				|| ((obj.type === STRUCTURE) && (obj.stattype !== WALL))
 			});
@@ -142,7 +125,7 @@ function lookForOil() {
 //Only supports Anti-Air for now
 function buildDefenses() {
 	var enemyVtolCount = countEnemyVTOL();
-	if((enemyVtolCount > 0) && (playerPower(me) > 150)) {
+	if(enemyVtolCount && (playerPower(me) > 150)) {
 		if(isStructureAvailable("AASite-QuadRotMg")) {
 			if(countAndBuild("AASite-QuadRotMg", Math.floor(enemyVtolCount / 2))) { return true; }
 		}
@@ -162,11 +145,11 @@ function buildPhase1() {
 	//if a hover map without land enemies, then build research labs first to get to hover propulsion even faster
 	if(!forceHover || seaMapWithLandEnemy) {
 		if(countAndBuild(structures.factories, 1)) { return true; }
-		if(countAndBuild(structures.labs, 1)) { return true; }
+		if(!researchComplete && countAndBuild(structures.labs, 1)) { return true; }
 		if(countAndBuild(structures.hqs, 1)) { return true; }
 	}
 	else {
-		if(countAndBuild(structures.labs, 2)) { return true; }
+		if(!researchComplete && countAndBuild(structures.labs, 2)) { return true; }
 		if(countAndBuild(structures.factories, 1)) { return true; }
 		if(countAndBuild(structures.hqs, 1)) { return true; }
 	}
@@ -194,10 +177,12 @@ function buildPhase1() {
 
 //Build three research labs and three ground/cyborg factories and 1 repair center
 function buildPhase2() {
-	if((gameTime < 210000) && !forceHover) { return true; }
+	if((gameTime < 210000) && !forceHover) {
+		return true;
+	}
 
 	if(playerPower(me) > 140) {
-		if(countAndBuild(structures.labs, 3)) { return true; }
+		if(!researchComplete && countAndBuild(structures.labs, 3)) { return true; }
 		if(countAndBuild(structures.factories, 3)) { return true; }
 		if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
 			if (countAndBuild(structures.templateFactories, 2)) { return true; }
@@ -209,11 +194,14 @@ function buildPhase2() {
 
 //Build five research labs and the minimum vtol factories and maximum ground/cyborg factories and repair centers
 function buildPhase3() {
-	if(getRealPower() < -200) { return true; }
-	if((gameTime > 680000) || forceHover && (playerPower(me) > 140)) {
-		if(countAndBuild(structures.labs, 5)) { return true; }
+	if((getRealPower() < -200) || (countStruct(structures.derricks) < 10)) {
+		return true;
+	}
 
-		if (isStructureAvailable(structures.vtolFactories) && (gameTime > 800000)) {
+	if((gameTime > 680000) || forceHover && (playerPower(me) > 140)) {
+		if(!researchComplete && countAndBuild(structures.labs, 5)) { return true; }
+
+		if (isStructureAvailable(structures.vtolFactories)) {
 			if (countAndBuild(structures.vtolFactories, 2)) { return true; }
 		}
 
@@ -236,7 +224,7 @@ function buildPhase3() {
 
 //Finish building all vtol factories
 function buildPhase4() {
-	if ((gameTime > 800000) && (playerPower(me) > 150) && isStructureAvailable(structures.vtolFactories))
+	if ((countStruct(structures.derricks) > 12) && (gameTime > 600000) && (playerPower(me) > 150) && isStructureAvailable(structures.vtolFactories))
 	{
 		if (countAndBuild(structures.vtolFactories, 5)) { return true; }
 	}
@@ -278,8 +266,8 @@ function buildOrder() {
 
 //Check if a building has modules to be built
 function maintenance() {
-	const list = ["A0PowMod1", "A0ResearchModule1", "A0FacMod1", "A0FacMod1"];
-	const mods = [1, 1, 2, 2]; //Number of modules paired with list above
+	const list = ["A0PowMod1", "A0FacMod1", "A0ResearchModule1", "A0FacMod1"];
+	const mods = [1, 2, 1, 2]; //Number of modules paired with list above
 	var struct = null, module = "", structList = [];
 
 	if(countStruct(structures.derricks) < 4) { return false; }
@@ -288,8 +276,8 @@ function maintenance() {
 		if (isStructureAvailable(list[i]) && (struct == null)) {
 			switch(i) {
 				case 0: { structList = enumStruct(me, structures.gens).sort(distanceToBase);  break; }
-				case 1: { structList = enumStruct(me, structures.labs).sort(distanceToBase);  break; }
-				case 2: { structList = enumStruct(me, structures.factories).sort(distanceToBase);  break; }
+				case 1: { structList = enumStruct(me, structures.factories).sort(distanceToBase);  break; }
+				case 2: { structList = enumStruct(me, structures.labs).sort(distanceToBase);  break; }
 				case 3: { structList = enumStruct(me, structures.vtolFactories).sort(distanceToBase);  break; }
 				default: { break; }
 			}
@@ -297,12 +285,14 @@ function maintenance() {
 			for (var c = 0; c < structList.length; ++c) {
 				if (structList[c].modules < mods[i]) {
 					//Only build the last factory module if we have a heavy body
-					if((i === 2) && (structList[c].modules === 1) && !componentAvailable("Body11ABT")) {
-						continue;
-					}
-					//Build last vtol factory module once Cobra gets retribution
-					if((i === 3) && (structList[c].modules === 1) && !componentAvailable("Body7ABT")) {
-						continue;
+					if(structList[c].modules === 1) {
+						if((i === 1) && !componentAvailable("Body11ABT")) {
+							continue;
+						}
+						//Build last vtol factory module once Cobra gets retribution (or has good power levels)
+						if((i === 3) && (getRealPower() < -200) && !componentAvailable("Body7ABT")) {
+							continue;
+						}
 					}
 					struct = structList[c];
 					module = list[i];
@@ -315,7 +305,16 @@ function maintenance() {
 		}
 	}
 
-	if ((!checkLowPower(35)) && (struct || (struct && (module === list[0])))) {
+	if (struct && !checkLowPower(35) ) {
+
+		//Force the closest truck to upgrade the structure.
+		var trucks = enumDroid(me, DROID_CONSTRUCT).filter(function(tr) {
+			return conCanHelp(tr, struct.x, struct.y)
+		});
+		trucks.sort(distanceToBase);
+		if(isDefined(trucks[0])) {
+			trucks[0].busy = false;
+		}
 		if(buildStuff(struct, module)) { return true; }
 	}
 

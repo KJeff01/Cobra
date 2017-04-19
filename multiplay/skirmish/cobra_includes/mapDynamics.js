@@ -12,7 +12,7 @@ function checkForScavs() {
 //Cobra's behavior will change dramatically if it is on a hover map. It will be more aggressive
 //than usual and have stronger units and research times.
 function checkIfSeaMap() {
-	turnOffCyborgs = false;
+	var hoverMap = false;
 	seaMapWithLandEnemy = false;
 
 	for(var i = 0; i < maxPlayers; ++i) {
@@ -27,14 +27,14 @@ function checkIfSeaMap() {
 			}
 
 			if(temp !== maxPlayers - 1) {
-				turnOffCyborgs = true; //And thus forceHover = true
+				hoverMap = true; //And thus forceHover = true
 				break;
 			}
 		}
 	}
 
 	//Determine if we are sharing land on a hover map with an enemy that can reach us via non-hover propulsion.
-	if(turnOffCyborgs === true) {
+	if(hoverMap === true) {
 		for(var i = 0; i < maxPlayers; ++i) {
 			if(propulsionCanReach("wheeled01", startPositions[me].x, startPositions[me].y, startPositions[i].x, startPositions[i].y)
 			&& (i !== me) && !allianceExistsBetween(i, me)) {
@@ -49,11 +49,12 @@ function checkIfSeaMap() {
 		}
 	}
 
-	return turnOffCyborgs;
+	return hoverMap;
 }
 
 //If played on the team that won, then break alliance with everybody and try to conquer them.
 //Completely pointless feature, but makes everything a bit more fun.
+//chat: 'FFA'.
 function freeForAll() {
 	var won = true;
 
@@ -87,7 +88,9 @@ function freeForAll() {
 //Very cheap analysis done here.
 function CheckStartingBases() {
 	for(var i = 0; i < subpersonalities[personality]["primaryWeapon"].weapons.length; ++i) {
-		if(isDesignable(subpersonalities[personality]["primaryWeapon"].weapons[i].stat)) { return true; }
+		if(isDesignable(subpersonalities[personality]["primaryWeapon"].weapons[i].stat)) {
+			return true;
+		}
 	}
 
 	return false;
@@ -99,7 +102,7 @@ function getDrumsAndArtifacts() {
 }
 */
 
-//All derricks and all oil resources to find the map total. --unused.
+//All derricks and all oil resources to find the map total.
 function countAllResources() {
 	var resources = enumFeature(-1, oilResources);
 	for(var i = 0; i < maxPlayers; ++i) {

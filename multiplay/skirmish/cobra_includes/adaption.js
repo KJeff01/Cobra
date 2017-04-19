@@ -1,4 +1,16 @@
 
+//Only use cyborgs if we have enough power.
+/*
+function useCyborgs() {
+	if(forceHover && (getRealPower() <= -500)) {
+		turnOffCyborgs = true;
+	}
+	else {
+		turnOffCyborgs = false;
+	}
+}
+*/
+
 //Choose the personality as described in the global subpersonalities.
 //When called from chat it will switch to that one directly.
 function choosePersonality(chatEvent) {
@@ -19,17 +31,14 @@ function adaptToMap() {
 	const ALLY_COUNT = playerAlliance(true).length;
 	const MAP_OIL_LEVEL = mapOilLevel();
 
-	//If outnumbered (or high tech level), go for cannons and rockets.
-	if ((MAP_OIL_LEVEL === "MEDIUM") || ((ALLY_COUNT !== 0) && (ALLY_COUNT < ENEMY_COUNT)) || (turnOffMG === true)) {
-		if(random(2)) { choice = ADAPT_PERSONALITIES[2]; }
-		else { choice = ADAPT_PERSONALITIES[3]; }
+	if(MAP_OIL_LEVEL === "LOW" || (enumStruct(me).length <= 1)) {
+		choice = ADAPT_PERSONALITIES[random(2)]; // AM, AR.
 	}
-	else if((MAP_OIL_LEVEL === "LOW") || (ALLY_COUNT === 0)) {
-		if(random(2)) { choice = ADAPT_PERSONALITIES[0]; }
-		else { choice = ADAPT_PERSONALITIES[1]; }
+	else if ((MAP_OIL_LEVEL === "MEDIUM") || ((ALLY_COUNT !== 0) && (ALLY_COUNT < ENEMY_COUNT))) {
+		choice = ADAPT_PERSONALITIES[random(3) + 1]; //AR, AB, AC.
 	}
 	else {
-		choice = ADAPT_PERSONALITIES[3];
+		choice = ADAPT_PERSONALITIES[random(2) + 2]; //AB, AC.
 	}
 
 	return choice;

@@ -75,10 +75,10 @@ const repairTurrets = [
 */
 
 //List of Cobra personalities:
-//AC: Cannon/gauss/fire mortar.
-//AR: Flamer/Rocket/Mortar.
+//AC: Cannon/gauss/howitzer.
+//AR: Flamer/Rocket/howitzer.
 //AB: Rocket/Missle/gauss.
-//AM: machine-gun/mortar/fireMortar/Cannons.
+//AM: machine-gun/howitzer/Cannons.
 //All personalities use laser technology. This includes the plasma cannon.
 //The secondary weapon has low priority.
 const subpersonalities = {
@@ -88,15 +88,12 @@ const subpersonalities = {
 		"artillery": weaponStats.howitzers,
 		"antiAir": weaponStats.AA,
 		"res": [
-			"R-Wpn-MG-Damage01",
-			"R-Wpn-MG1Mk1",
 			"R-Struc-PowerModuleMk1",
-			"R-Wpn-MG2Mk1",
 			"R-Wpn-Cannon-Damage03",
 			"R-Wpn-Cannon2Mk1",
 			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-Cannon-ROF03",
-			"R-Wpn-Cannon5",
+			"R-Wpn-Cannon4AMk1",
 		],
 	},
 	AR: {
@@ -110,9 +107,9 @@ const subpersonalities = {
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-Flamer-Damage03",
+			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-Flamer-ROF03",
 			"R-Wpn-Flame2",
-			"R-Struc-RprFac-Upgrade01",
 		],
 	},
 	AB: {
@@ -121,15 +118,11 @@ const subpersonalities = {
 		"artillery": weaponStats.rockets_Arty,
 		"antiAir": weaponStats.AA,
 		"res": [
-			"R-Wpn-MG-Damage01",
-			"R-Wpn-MG1Mk1",
 			"R-Struc-PowerModuleMk1",
-			"R-Wpn-MG2Mk1",
-			"R-Wpn-MG-Damage02",
 			"R-Wpn-Rocket02-MRL",
+			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-Rocket07-Tank-Killer",
 			"R-Wpn-Rocket06-IDF",
-			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-Rocket-ROF03",
 		],
 	},
@@ -167,7 +160,7 @@ var nexusWaveOn; //Determine if the 'NEXUS Intruder Program' feature is on.
 var scavengerNumber; //What player number are the scavengers. If none then keep undefined.
 var turnOffMG; //Turn off machine-gun related stuff.
 var throttleTime; //For events so that some do not trigger their code too fast. More details in stopExecution() in miscFunctions.
-var thinkLonger; //Cobra on easy difficulty takes more time to make decisions.
+var researchComplete; //Check if done with research.
 
 // -- Weapon research list (initializeResearchLists).
 var techlist;
@@ -178,8 +171,6 @@ var artilleryTech;
 var artillExtra;
 var laserExtra;
 var extraTech;
-var vtolWeapons;
-var vtolExtras;
 var cyborgWeaps;
 var antiAirTech;
 var antiAirExtras;

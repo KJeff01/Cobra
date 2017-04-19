@@ -56,15 +56,15 @@ function choosePersonalityWeapon(type) {
 	}
 	else if(type === "VTOL") {
 		switch(random(3)) {
-			case 0: {
-				if(personality !== "AB") weaps = weaponStats.bombs;
-				else weaps = weaponStats.rockets_AT;
-				break;
-			}
+			case 0: if(personality !== "AM") { weaps = subpersonalities[personality]["primaryWeapon"]; } break;
 			case 1: weaps = weaponStats.lasers; break;
 			case 2: weaps = subpersonalities[personality]["secondaryWeapon"]; break;
 			default: weaps = weaponStats.lasers; break;
 		}
+
+		if(!isDefined(weaps) || (weaps.vtols.length - 1 <= 0))
+			weaps = weaponStats.lasers;
+
 		for(var i = weaps.vtols.length - 1; i >= 0; --i) {
 			weaponList.push(weaps.vtols[i].stat);
 		}
@@ -73,19 +73,28 @@ function choosePersonalityWeapon(type) {
 	return ((type === "CYBORG") || !isDefined(weaps)) ? weaps : weaponList;
 }
 
+//What conditions will allow hover use. Flamers always use hover, rockets/missile
+//Have a 20% chance of using hover. Also there is a 15% chance regardless of weapon.
+//Expects an array of weapons.
 function useHover(weap) {
-	var isFlamer = false;
-	switch(weap) {
-		case "Flame1Mk1":
-		case "Flame2":
-		case "PlasmiteFlamer":
-			isFlamer = true;
-			break;
-		default:
-			isFlamer = false;
-			break;
+	if(!isDefined(weap)) {
+		return false;
 	}
-	return (isFlamer || forceHover) ? true : false;
+
+	var useHover = false;
+	for(var i = 0; i < weap.length; ++i) {
+		if((weap[i] === "Flame1Mk1") || (weap[i] === "Flame2") || (weap[i] === "PlasmiteFlamer")) {
+			useHover = true;
+			break;
+		}
+
+		if((weap[i] === "Rocket-LtA-T") || (weap[i] === "Rocket-HvyA-T") || (weap[i] === "Missile-A-T")) {
+			useHover = (random(100) <= 20) ? true : false;
+			break;
+		}
+	}
+
+	return ((useHover === true) || (forceHover === true) || (random(100) <= 15));
 }
 
 //Create a ground attacker tank with a heavy body when possible.
@@ -94,30 +103,36 @@ function useHover(weap) {
 function buildAttacker(struct) {
 	if(!isDefined(forceHover) || !isDefined(seaMapWithLandEnemy) || !isDefined(turnOffMG))
 		return false;
-	if(forceHover && seaMapWithLandEnemy && !componentAvailable("hover01"))
+	if(forceHover && !seaMapWithLandEnemy && !componentAvailable("hover01"))
 		return false;
 
 	var weap = choosePersonalityWeapon("TANK");
 	if(!isDefined(weap)) { return false; }
 
-	if((useHover(weap) || !random(12)) && componentAvailable("hover01")) {
-		if(!random(5) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
+	if(useHover(weap) && componentAvailable("hover01")) {
+		if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
 			if(weap !== "MortarEMP") {
-				buildDroid(struct, "Hover EMP Droid", tankBody, "hover01", "", "", weap, "EMP-Cannon");
-				return true; //Forced success
+				if(buildDroid(struct, "Hover EMP Droid", tankBody, "hover01", "", "", weap, "EMP-Cannon")) {
+					return true;
+				}
 			}
 		}
-		buildDroid(struct, "Hover Droid", tankBody, "hover01", "", "", weap, weap);
-		return true; //Forced success
-	}
-
-	if(!random(5) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
-		if((weap !== "MortarEMP")) {
-			if(buildDroid(struct, "EMP Droid", tankBody, tankProp, "", "", weap, "EMP-Cannon"))
-				return true;
+		else if(buildDroid(struct, "Hover Droid", tankBody, "hover01", "", "", weap, weap)) {
+			return true;
 		}
 	}
-	if (buildDroid(struct, "Droid", tankBody, tankProp, "", "", weap, weap)) { return true; }
+	else {
+		if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
+			if((weap !== "MortarEMP")) {
+				if(buildDroid(struct, "EMP Droid", tankBody, tankProp, "", "", weap, "EMP-Cannon")) {
+					return true;
+				}
+			}
+		}
+		else if (buildDroid(struct, "Droid", tankBody, tankProp, "", "", weap, weap)) {
+			return true;
+		}
+	}
 
 	return false;
 }
@@ -129,7 +144,7 @@ function buildSys(struct, weap) {
 	return false;
 }
 
-//Create a cyborg with avaliable research.
+//Create a cyborg with available research.
 function buildCyborg(fac) {
 	var weap;
 	var body;
@@ -161,7 +176,8 @@ function buildVTOL(struct) {
 
 //Produce a unit when factories allow it.
 function produce() {
-	eventResearched(); //check for idle research centers. TODO: Find a better place for this.
+	if(!researchComplete)
+		eventResearched(); //check for idle research centers. TODO: Find a better place for this.
 
 	//Try not to produce more units.
 	if((getRealPower() < -400) || ((enumDroid(me).length - 1) === 150)) { return false; }
@@ -176,9 +192,9 @@ function produce() {
 	for(var i = 0; i < fac.length; ++i) {
 		var virDroid = getDroidProduction(fac[i]);
 		if(virDroid != null) {
-			if(virDroid.droidType == DROID_CONSTRUCT)
+			if(virDroid.droidType === DROID_CONSTRUCT)
 				trucks += 1;
-			if(virDroid.droidType == DROID_SENSOR)
+			if(virDroid.droidType === DROID_SENSOR)
 				sens += 1;
 		}
 	}
@@ -186,7 +202,7 @@ function produce() {
 	for(var x = 0; x < fac.length; ++x) {
 		if(isDefined(fac[x]) && structureIdle(fac[x])) {
 			if (((countDroid(DROID_CONSTRUCT, me) + trucks) < 4)) {
-				if((playerAlliance(true).length > 0) && (countDroid(DROID_CONSTRUCT, me) < 2) && (gameTime > 10000)) {
+				if(playerAlliance(true).length && (countDroid(DROID_CONSTRUCT, me) < 2) && (gameTime > 10000)) {
 					sendChatMessage("need truck", ALLIES);
 				}
 				buildSys(fac[x], "Spade1Mk1");
@@ -195,12 +211,15 @@ function produce() {
 				buildSys(fac[x]);
 			}
 			else {
+				//Do not produce weak body units if we can give this factory a module.
+				if(fac[x].modules < 2 && componentAvailable("Body11ABT"))
+					continue;
 				buildAttacker(fac[x]);
 			}
 		}
 	}
 
-	if(isDefined(turnOffCyborgs) && (turnOffCyborgs === false)) {
+	if(isDefined(turnOffCyborgs) && !turnOffCyborgs) {
 		for(var x = 0; x < cybFac.length; ++x) {
 			if(isDefined(cybFac[x]) && structureIdle(cybFac[x])) {
 				buildCyborg(cybFac[x]);
