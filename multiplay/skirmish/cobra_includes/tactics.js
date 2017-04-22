@@ -160,11 +160,11 @@ function findNearestEnemyStructure(droid, enemy, targets) {
 				orderDroidObj(droid, DORDER_ATTACK, s[0]);
 			}
 			else {
-				if((s[0].type === STRUCTURE) && (s[0].stattype !== WALL)) {
+				if(s[0].stattype !== WALL) {
 					orderDroidLoc(droid, DORDER_SCOUT, s[0].x, s[0].y);
 				}
 				else {
-					orderDroidLoc(droid, DORDER_ATTACK, s[0].x, s[0].y);
+					orderDroidObj(droid, DORDER_ATTACK, s[0]);
 				}
 			}
 		}
@@ -256,7 +256,6 @@ function spyRoutine() {
 
 	if(!isDefined(sensor)) { return; }
 
-	//Observe closest enemy object with a hover unit
 	var object = rangeStep(sensor, false);
 	if(isDefined(object)) {
 		orderDroidObj(sensor, DORDER_OBSERVE, object);

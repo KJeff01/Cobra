@@ -45,11 +45,11 @@ function eventStartLevel() {
 	setTimer("buildOrder", THINK_LONGER + 320 + 3 * random(60));
 	setTimer("produce", THINK_LONGER + 700 + 3 * random(70));
 	//setTimer("commandTactics", THINK_LONGER + 2000 + 3 * random(60));
+	setTimer("switchOffMG", THINK_LONGER + 3000 + 5 * random(60));
 	setTimer("battleTactics", THINK_LONGER + 5000 + 5 * random(60));
 	setTimer("spyRoutine", THINK_LONGER + 8000 + 4 * random(60));
 	setTimer("nexusWave", THINK_LONGER + 10000 + 3 * random(70));
 	setTimer("checkMood", THINK_LONGER + 20000 + 4 * random(90));
-	//setTimer("useCyborgs", THINK_LONGER + 80000 + 5 * random(60));
 }
 
 //This is meant to check for nearby oil resources next to the construct.
@@ -126,10 +126,14 @@ function eventAttacked(victim, attacker) {
 				orderDroid(victim, DORDER_RTR);
 			}
 			else {
-				//Try to escape their weapon range.
-				if(Math.floor(victim.health) < 20)
+				//Try to repair.
+				if(Math.floor(victim.health) < 34) {
 					orderDroidLoc(victim, DORDER_MOVE, startPositions[me].x, startPositions[me].y);
-				repairDroid(victim, false);
+					repairDroid(victim, true);
+				}
+				else {
+					repairDroid(victim, false);
+				}
 			}
 		}
 

@@ -108,6 +108,7 @@ const subpersonalities = {
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-Flamer-Damage02",
+			"R-Defense-Tower01",
 			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-Flamer-ROF02",
 		],
@@ -137,6 +138,7 @@ const subpersonalities = {
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-MG-Damage03",
+			"R-Defense-Tower01",
 			"R-Struc-RprFac-Upgrade01",
 		],
 	},
@@ -149,6 +151,9 @@ const subpersonalities = {
 			"R-Wpn-Mortar-Incenediary",
 			"R-Wpn-Laser01",
 			"R-Sys-Autorepair-General",
+			"R-Wpn-Mortar-Damage06",
+			"R-Wpn-Mortar-ROF04",
+			"R-Wpn-Mortar-Acc03",
 		],
 	},
 }
@@ -188,3 +193,4 @@ var antiAirExtras;
 var extremeLaserTech;
 var secondaryWeaponTech;
 var secondaryWeaponExtra;
+var defenseTech;

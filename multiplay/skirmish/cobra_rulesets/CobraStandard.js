@@ -82,7 +82,6 @@ const weaponStats = {
 		],
 		defenses: [
 			{ res: "R-Defense-Tower01", stat: "GuardTower1" }, // hmg tower
-			{ res: "R-Defense-Tower01", stat: "GuardTower1" }, // hmg tower
 			{ res: "R-Defense-Pillbox01", stat: "PillBox1" }, // hmg bunker
 			{ res: "R-Defense-WallTower01", stat: "WallTower01" }, // hmg hardpoint
 			{ res: "R-Defense-RotMG", stat: "Pillbox-RotMG" }, // ag bunker
@@ -144,7 +143,7 @@ const weaponStats = {
 			{ res: "R-Defense-Wall-VulcanCan", stat: "Wall-VulcanCan" }, // ac hard
 			{ res: "R-Defense-Cannon6", stat: "PillBox-Cannon6" }, // tac bunker
 			{ res: "R-Defense-WallTower04", stat: "WallTower04" }, // hc hard
-			{ res: "R-Defense-Super-Cannon", stat: "X-Super-Cannon" }, // cannon fort
+			//{ res: "R-Defense-Super-Cannon", stat: "X-Super-Cannon" }, // cannon fort
 		],
 		templates: [
 			{ res: "R-Wpn-Cannon1Mk1", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "CyborgCannon", ] }, // lc borg
@@ -175,7 +174,7 @@ const weaponStats = {
 			{ res: "R-Defense-WallTower-Rail2", stat: "WallTower-Rail2" }, // rail hard
 			{ res: "R-Defense-Rail3", stat: "Emplacement-Rail3" }, // gauss empl
 			{ res: "R-Defense-WallTower-Rail3", stat: "WallTower-Rail3" }, // gauss hard
-			{ res: "R-Defense-MassDriver", stat: "X-Super-MassDriver" }, // mass driver fort
+			//{ res: "R-Defense-MassDriver", stat: "X-Super-MassDriver" }, // mass driver fort
 		],
 		templates: [
 			{ res: "R-Wpn-RailGun01", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "Cyb-Wpn-Rail1", ] }, // needle borg
@@ -266,7 +265,7 @@ const weaponStats = {
 			{ res: "R-Wpn-Bomb05", stat: "Bomb5-VTOL-Plasmite" },
 		],
 		defenses: [
-			//{ res: "R-Defense-MortarPit-Incenediary", stat: "Emplacement-MortarPit-Incenediary" },
+			{ res: "R-Defense-MortarPit-Incenediary", stat: "Emplacement-MortarPit-Incenediary" },
 			{ res: "R-Defense-Howitzer-Incenediary", stat: "Emplacement-Howitzer-Incenediary" },
 		],
 		templates: [],
@@ -297,10 +296,10 @@ const weaponStats = {
 			{ res: "R-Defense-WallTower06", stat: "WallTower06" }, // lancer hardpoint
 			{ res: "R-Defense-HvyA-Trocket", stat: "Emplacement-HvyATrocket" }, // tk emplacement
 			{ res: "R-Defense-WallTower-HvyA-Trocket", stat: "WallTower-HvATrocket" }, // tk hardpoint
-			{ res: "R-Defense-Super-Rocket", stat: "X-Super-Rocket" }, // rocket bastion
+			//{ res: "R-Defense-Super-Rocket", stat: "X-Super-Rocket" }, // rocket bastion
 			{ res: "R-Defense-GuardTower-ATMiss", stat: "GuardTower-ATMiss" }, // scourge tower
 			{ res: "R-Defense-WallTower-A-Tmiss", stat: "WallTower-Atmiss" }, // scourge hardpoint
-			{ res: "R-Defense-Super-Missile", stat: "X-Super-Missile" }, // missile fortress
+			//{ res: "R-Defense-Super-Missile", stat: "X-Super-Missile" }, // missile fortress
 		],
 		templates: [
 			{ res: "R-Wpn-Rocket01-LtAT", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "CyborgRocket", ] }, // lancer borg

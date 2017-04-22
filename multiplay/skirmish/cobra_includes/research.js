@@ -30,6 +30,9 @@ function initializeResearchLists() {
 	extraTech = updateResearchList(subpersonalities[personality]["primaryWeapon"].extras);
 	secondaryWeaponTech = updateResearchList(subpersonalities[personality]["secondaryWeapon"].weapons);
 	secondaryWeaponExtra = updateResearchList(subpersonalities[personality]["secondaryWeapon"].extras);
+	defenseTech = updateResearchList(subpersonalities[personality]["primaryWeapon"].defenses);
+	defenseTech.push("R-Struc-Materials09");
+	defenseTech.push("R-Defense-WallUpgrade12");
 	cyborgWeaps = updateResearchList(subpersonalities[personality]["primaryWeapon"].templates);
 	cyborgWeaps = appendListElements(cyborgWeaps, updateResearchList(weaponStats.lasers.templates));
 	cyborgWeaps = appendListElements(cyborgWeaps, updateResearchList(subpersonalities[personality]["secondaryWeapon"].templates));
@@ -60,7 +63,7 @@ function evalResearch(lab, list) {
 
 function eventResearched() {
 	if(!isDefined(techlist) || !isDefined(turnOffMG) || !isDefined(turnOffCyborgs)) { return; }
-	if(getRealPower() < -400 || researchComplete) { return; }
+	if(getRealPower() < -400) { return; }
 
 	const PROPULSION = [
 		"R-Vehicle-Prop-Hover", "R-Vehicle-Prop-Tracks"
@@ -133,11 +136,18 @@ function eventResearched() {
 				if(!found)
 					found = evalResearch(lab, laserTech);
 				if(!found)
-					found = evalResearch(lab, laserExtra);
-				if(!found)
 					found = evalResearch(lab, artilleryTech);
 				if(!found)
+					found = evalResearch(lab, laserExtra);
+				if(!found)
 					found = evalResearch(lab, artillExtra);
+			}
+
+			if(random(2)) {
+				if(!found)
+					found = evalResearch(lab, bodyResearch);
+				if(!found)
+					found = evalResearch(lab, defenseTech);
 			}
 
 			if(forceHover || (gameTime > 600000) && random(2)) {
@@ -152,7 +162,6 @@ function eventResearched() {
 					found = evalResearch(lab, antiAirExtras);
 			}
 
-
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 
@@ -163,8 +172,6 @@ function eventResearched() {
 
 			if(!found)
 				found = pursueResearch(lab, "R-Sys-Sensor-WS");
-			if(!found)
-				found = evalResearch(lab, bodyResearch);
 
 
 			if(!turnOffCyborgs) {
@@ -179,7 +186,7 @@ function eventResearched() {
 			if(!found)
 				found = pursueResearch(lab, "R-Wpn-PlasmaCannon");
 
-			if(componentAvailable("Laser4-PlasmaCannon") && (gameTime > 350000)) {
+			if(isDesignable("Laser4-PlasmaCannon") && (gameTime > 350000)) {
 				if(!found)
 					found = evalResearch(lab, extremeLaserTech);
 				if(!found)
@@ -188,14 +195,13 @@ function eventResearched() {
 					found = pursueResearch(lab, "R-Wpn-EMPCannon");
 				if(!found)
 					found = pursueResearch(lab, "R-Sys-Resistance-Circuits");
-				if(!found) {
-					found = pursueResearch(lab, "R-Struc-Materials09");
-					//Likely done with research by now.
-					if(!found && componentAvailable("Body14SUP")
-						&& componentAvailable("EMP-Cannon")
-						&& isStructureAvailable(structures.extras[2])
-					)
-						researchComplete = true;
+
+				//Very likely going to be done with research by now.
+				if(!found && componentAvailable("Body14SUP")
+					&& isDesignable("EMP-Cannon")
+					&& isStructureAvailable(structures.extras[2])
+				) {
+					researchComplete = true;
 				}
 			}
 		}

@@ -38,13 +38,17 @@ function choosePersonalityWeapon(type) {
 			*/
 
 			//on hard difficulty and above.
-			if(componentAvailable("MortarEMP") && componentAvailable("tracked01") && !random(66))
-				weaponList = ["MortarEMP"];
-			else if(componentAvailable("PlasmaHeavy") && componentAvailable("tracked01") && !random(66))
-				weaponList = ["PlasmaHeavy"];
+			if(componentAvailable("tracked01") && (random(101) <= 1)) {
+				if(componentAvailable("MortarEMP")) {
+					weaponList = ["MortarEMP"];
+				}
+				else if(componentAvailable("PlasmaHeavy")) {
+					weaponList = ["PlasmaHeavy"];
+				}
+			}
 
 			//Try defaulting to machine-guns then.
-			if(!isDesignable(weaponList, tankBody, tankProp) && !turnOffMG) {
+			if(!turnOffMG && !isDesignable(weaponList, tankBody, tankProp)) {
 				weaponList = [];
 				for(var i = weaponStats.machineguns.weapons.length - 1; i >= 0; --i) {
 					weaponList.push(weaponStats.machineguns.weapons[i].stat);
@@ -63,7 +67,7 @@ function choosePersonalityWeapon(type) {
 	}
 	else if(type === "VTOL") {
 		switch(random(3)) {
-			case 0: if(personality !== "AM") { weaps = subpersonalities[personality]["primaryWeapon"]; } break;
+			case 0: if((personality !== "AM") && (personality !== "AR")) { weaps = subpersonalities[personality]["primaryWeapon"]; } break;
 			case 1: weaps = weaponStats.lasers; break;
 			case 2: weaps = subpersonalities[personality]["secondaryWeapon"]; break;
 			default: weaps = weaponStats.lasers; break;
@@ -96,17 +100,17 @@ function useHover(weap) {
 		}
 
 		if((weap[i] === "Rocket-LtA-T") || (weap[i] === "Rocket-HvyA-T") || (weap[i] === "Missile-A-T")) {
-			useHover = (random(100) <= 20) ? true : false;
+			useHover = (random(101) <= 20) ? true : false;
 			break;
 		}
 
 		if((weap[i] === "Laser3BEAMMk1") || (weap[i] === "Laser2PULSEMk1") || (weap[i] === "HeavyLaser")) {
-			useHover = (random(100) <= 35) ? true : false;
+			useHover = (random(101) <= 35) ? true : false;
 			break;
 		}
 	}
 
-	return ((useHover === true) || (forceHover === true) || (random(100) <= 15));
+	return ((useHover === true) || (forceHover === true) || (random(101) <= 15));
 }
 
 //Create a ground attacker tank with a heavy body when possible.
@@ -119,7 +123,9 @@ function buildAttacker(struct) {
 		return false;
 
 	var weap = choosePersonalityWeapon("TANK");
-	if(!isDefined(weap)) { return false; }
+	if(!isDefined(weap)) {
+		return false;
+	}
 
 	if(useHover(weap) && componentAvailable("hover01")) {
 		if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
@@ -151,8 +157,12 @@ function buildAttacker(struct) {
 
 //Create trucks or sensors with a light body. Default to a sensor.
 function buildSys(struct, weap) {
-	if(!isDefined(weap)) { weap = ["Sensor-WideSpec", "SensorTurret1Mk1"]; }
-	if (buildDroid(struct, "System unit", sysBody, sysProp, "", "", weap)) { return true; }
+	if(!isDefined(weap)) {
+		weap = ["Sensor-WideSpec", "SensorTurret1Mk1"];
+	}
+	if (buildDroid(struct, "System unit", sysBody, sysProp, "", "", weap)) {
+		return true;
+	}
 	return false;
 }
 
@@ -163,7 +173,9 @@ function buildCyborg(fac) {
 	var prop;
 	var weapon = choosePersonalityWeapon("CYBORG");
 
-	if(!isDefined(weapon)) { return false; }
+	if(!isDefined(weapon)) {
+		return false;
+	}
 
 	for(var x = weapon.templates.length - 1; x >= 0; --x) {
 		body = weapon.templates[x].body;
@@ -180,7 +192,9 @@ function buildCyborg(fac) {
 //Create a vtol fighter with a medium body.
 function buildVTOL(struct) {
 	var weap = choosePersonalityWeapon("VTOL");
-	if (buildDroid(struct, "VTOL unit", vtolBody, "V-Tol", "", "", weap, weap)) { return true; }
+	if (buildDroid(struct, "VTOL unit", vtolBody, "V-Tol", "", "", weap, weap)) {
+		return true;
+	}
 
 	return false;
 }
