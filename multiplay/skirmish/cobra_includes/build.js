@@ -171,7 +171,7 @@ function lookForOil() {
 	var droids = enumDroid(me, DROID_CONSTRUCT);
 	var oils = enumFeature(-1, oilResources);
 	var s = 0;
-	const SAFE_RANGE = (gameTime < 210000) ? 9 : 5;
+	const SAFE_RANGE = (gameTime < 210000) ? 10 : 5;
 
 	if ((droids.length <= 1) || !oils.length) {
 		return;
@@ -179,13 +179,6 @@ function lookForOil() {
 
 	oils.sort(distanceToBase); // grab closer oils first
 	droids.sort(distanceToBase);
-
-	if(!componentAvailable("hover01")) {
-		//Cheap way to not go after farthest oil without hover.
-		if(oils.length) {
-			oils.pop();
-		}
-	}
 
 	for (var i = 0; i < oils.length; i++) {
 		for (var j = 0; j < droids.length - (1 * (gameTime > 110000)); j++) {
@@ -273,34 +266,38 @@ function buildPhase1() {
 	return false;
 }
 
-//Build five research labs and three ground/cyborg factories.
+//Build five research labs and three tank factories.
 function buildPhase2() {
+	if(!countStruct(structures.gens)) {
+		return true;
+	}
+
 	if(playerPower(me) > 80) {
 		if(!researchComplete && countAndBuild(structures.labs, 3)) {
 			return true;
 		}
 
-		if(countAndBuild(structures.factories, 2)) {
+		if(countAndBuild(structures.factories, 3)) {
+			return true;
+		}
+
+		if(!researchComplete && (getRealPower() > -50) && countAndBuild(structures.labs, 5)) {
 			return true;
 		}
 
 		if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
-			if (isStructureAvailable("A0PowMod1") && countAndBuild(structures.templateFactories, 2)) {
+			if (componentAvailable("Body11ABT") && countAndBuild(structures.templateFactories, 2)) {
 				return true;
 			}
-		}
-
-		if(!researchComplete && countAndBuild(structures.labs, 5)) {
-			return true;
 		}
 	}
 
 	return false;
 }
 
-//Build the minimum vtol factories and maximum ground/cyborg factories and repair centers
+//Build the minimum vtol factories and maximum ground/cyborg factories.
 function buildPhase3() {
-	if((getRealPower() < -200) || (countStruct(structures.derricks) <= 7)) {
+	if(!componentAvailable("Body11ABT") || (getRealPower() < -200) || (countStruct(structures.derricks) <= 7)) {
 		return true;
 	}
 
@@ -324,13 +321,7 @@ function buildPhase3() {
 		}
 
 		if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
-			if (isStructureAvailable("A0PowMod1") && countAndBuild(structures.templateFactories, 5)) {
-				return true;
-			}
-		}
-
-		if(isStructureAvailable(structures.extras[0])) {
-			if(countAndBuild(structures.extras[0], 5)) {
+			if (countAndBuild(structures.templateFactories, 5)) {
 				return true;
 			}
 		}
@@ -339,10 +330,15 @@ function buildPhase3() {
 	return false;
 }
 
-//Finish building all vtol factories
+//Finish building all vtol factories and repairs.
 function buildPhase4() {
 	if ((countStruct(structures.derricks) >= 10) && (getRealPower() > -200) && isStructureAvailable(structures.vtolFactories))
 	{
+		if(isStructureAvailable(structures.extras[0])) {
+			if(countAndBuild(structures.extras[0], 5)) {
+				return true;
+			}
+		}
 		if (countAndBuild(structures.vtolFactories, 5)) {
 			return true;
 		}
@@ -398,7 +394,6 @@ function buildOrder() {
 	if(buildExtras()) { return false; }
 	if(buildPhase2()) { return false; }
 	if(buildDefenses()) { return false; }
-	if(!componentAvailable("Body11ABT")) { return false; } //prevent too much from being built in T1 no bases early.
 	if(buildPhase3()) { return false; }
 	if(buildPhase4()) { return false; }
 	if(buildPhase5()) { return false; }
@@ -406,8 +401,8 @@ function buildOrder() {
 
 //Check if a building has modules to be built
 function maintenance() {
-	const list = ["A0PowMod1", "A0FacMod1", "A0ResearchModule1", "A0FacMod1"];
-	const mods = [1, 2, 1, 2]; //Number of modules paired with list above
+	const list = ["A0PowMod1", "A0ResearchModule1", "A0FacMod1", "A0FacMod1"];
+	const mods = [1, 1, 2, 2]; //Number of modules paired with list above
 	var struct = null, module = "", structList = [];
 
 	if(countStruct(structures.derricks) < 4) { return false; }
@@ -416,8 +411,8 @@ function maintenance() {
 		if (isStructureAvailable(list[i]) && (struct == null)) {
 			switch(i) {
 				case 0: { structList = enumStruct(me, structures.gens).sort(distanceToBase);  break; }
-				case 1: { structList = enumStruct(me, structures.factories).sort(distanceToBase);  break; }
-				case 2: { structList = enumStruct(me, structures.labs).sort(distanceToBase);  break; }
+				case 1: { structList = enumStruct(me, structures.labs).sort(distanceToBase);  break; }
+				case 2: { structList = enumStruct(me, structures.factories).sort(distanceToBase);  break; }
 				case 3: { structList = enumStruct(me, structures.vtolFactories).sort(distanceToBase);  break; }
 				default: { break; }
 			}
@@ -426,7 +421,7 @@ function maintenance() {
 				if (structList[c].modules < mods[i]) {
 					//Only build the last factory module if we have a heavy body
 					if(structList[c].modules === 1) {
-						if((i === 1) && !componentAvailable("Body11ABT")) {
+						if((i === 2) && (getRealPower() < -200) && !componentAvailable("Body11ABT")) {
 							continue;
 						}
 						//Build last vtol factory module once Cobra gets retribution (or has good power levels)

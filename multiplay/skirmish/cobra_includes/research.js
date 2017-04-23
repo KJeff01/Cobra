@@ -56,54 +56,50 @@ function evalResearch(lab, list) {
 	return found;
 }
 
-//The research decisions. On T2/T3 it is more artillery/laser/vtol focused
-//Needs to have bloat reduction here.
-
+//The general research order:
+//Get early machinegun and power module.
+//Make a mad dash for both research speed and power upgrades.
+//Get our basics like a early research list/body/propulsions.
+//Kinetic armor/weapons/defenses/more bodies/Air stuff/factory production upgrades/sensors/thermal armor.
+//Lastly we get the plasma cannon and that allows uplink/laser sat and the emp cannon.
 //TODO: Sort by .power and .points to complete cheaper research first.
 
 function eventResearched() {
 	if(!isDefined(techlist) || !isDefined(turnOffMG) || !isDefined(turnOffCyborgs)) { return; }
 	if(getRealPower() < -400) { return; }
 
-	const PROPULSION = [
-		"R-Vehicle-Prop-Hover", "R-Vehicle-Prop-Tracks"
-	];
-	const START_BODY = [
-		"R-Vehicle-Body05", "R-Vehicle-Body11"
-	];
-	const REPAIR_UPGRADES = [
-		"R-Sys-Autorepair-General", "R-Struc-RprFac-Upgrade06"
-	]
-	const FLAMER = ["R-Wpn-Flame2", "R-Wpn-Flamer-ROF03", "R-Wpn-Flamer-Damage09"]
+	const ESSENTIALS = [ "R-Wpn-MG1Mk1", "R-Wpn-MG-Damage02", "R-Struc-PowerModuleMk1" ];
+	const PROPULSION = [ "R-Vehicle-Prop-Hover", "R-Vehicle-Prop-Tracks", "R-Vehicle-Prop-VTOL" ];
+	const START_BODY = [ "R-Vehicle-Body05", "R-Vehicle-Body11" ];
+	const REPAIR_UPGRADES = [ "R-Sys-Autorepair-General", "R-Struc-RprFac-Upgrade06" ]
+	const FLAMER = [ "R-Wpn-Flame2", "R-Wpn-Flamer-ROF03", "R-Wpn-Flamer-Damage09" ]
 
 	var lablist = enumStruct(me, structures.labs);
 	for (var i = 0; i < lablist.length; ++i) {
 		var lab = lablist[i];
 		var found = false;
 		if (lab.status === BUILT && structureIdle(lab)) {
-			found = evalResearch(lab, techlist);
+			found = pursueResearch(lab, ESSENTIALS);
 
-			if(!found)
-				found = pursueResearch(lab, "R-Vehicle-Prop-Halftracks");
-			if(!found)
-				found = evalResearch(lab, START_BODY);
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
+			//To get all the good stuff as fast as possible.
 			if(!found)
 				found = pursueResearch(lab, fastestResearch);
 			if(!found)
+				found = pursueResearch(lab, "R-Struc-Power-Upgrade03a");
+
+			//Early research.
+			if(!found)
+				found = pursueResearch(lab, "R-Vehicle-Prop-Halftracks");
+			if(!found)
+				found = evalResearch(lab, techlist);
+
+			if(!found)
+				found = evalResearch(lab, START_BODY);
+			if(!found)
 				found = evalResearch(lab, PROPULSION);
 
-			//If T1 - Go for machine-guns. else focus on lasers and the primary weapon.
-			if(!turnOffMG || (personality === "AM")) {
-				if(!found)
-					found = pursueResearch(lab, mgWeaponTech);
-				if(!found)
-					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
-			}
-
-			if(!random(4)) {
-				if(!turnOffCyborgs) {
+			if(!random(3)) {
+				if(!turnOffCyborgs && componentAvailable("Body11ABT")) {
 					if(!found)
 						found = evalResearch(lab, kineticResearch);
 				}
@@ -113,14 +109,26 @@ function eventResearched() {
 				}
 			}
 
+			if(!turnOffMG || (personality === "AM")) {
+				if(!found)
+					found = pursueResearch(lab, mgWeaponTech);
+				if(!found)
+					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
+			}
+
+			//Just like the semperfi AI bots (which Cobra is derived from) it
+			//stays true to the use of those thermite cyborgs.
 			if(random(3)) {
 				if(!turnOffCyborgs && !found)
 					found = evalResearch(lab, FLAMER);
-				if(!turnOffCyborgs && !found)
-					found = evalResearch(lab, cyborgWeaps);
 				if(!found)
 					found = evalResearch(lab, REPAIR_UPGRADES);
+				if(!turnOffCyborgs && !found)
+					found = evalResearch(lab, cyborgWeaps);
 			}
+
+			if(!found)
+				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 
 			if(random(2)) {
 				if(!found)
@@ -162,9 +170,6 @@ function eventResearched() {
 					found = evalResearch(lab, antiAirExtras);
 			}
 
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
-
 			/*
 			if(!found)
 				found = pursueResearch(lab, "R-Comp-CommandTurret01");
@@ -175,7 +180,7 @@ function eventResearched() {
 
 
 			if(!turnOffCyborgs) {
-				if(!found)
+				if(!found && componentAvailable("Body11ABT"))
 					found = evalResearch(lab, thermalResearch);
 			}
 			else {

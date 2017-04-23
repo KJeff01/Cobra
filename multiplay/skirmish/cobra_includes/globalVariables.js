@@ -103,10 +103,6 @@ const subpersonalities = {
 		"artillery": weaponStats.howitzers,
 		"antiAir": weaponStats.AA,
 		"res": [
-			"R-Wpn-MG-Damage01",
-			"R-Wpn-MG1Mk1",
-			"R-Struc-PowerModuleMk1",
-			"R-Wpn-MG2Mk1",
 			"R-Wpn-Flamer-Damage02",
 			"R-Defense-Tower01",
 			"R-Struc-RprFac-Upgrade01",
@@ -133,9 +129,6 @@ const subpersonalities = {
 		"artillery": weaponStats.howitzers,
 		"antiAir": weaponStats.AA,
 		"res": [
-			"R-Wpn-MG-Damage01",
-			"R-Wpn-MG1Mk1",
-			"R-Struc-PowerModuleMk1",
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-MG-Damage03",
 			"R-Defense-Tower01",

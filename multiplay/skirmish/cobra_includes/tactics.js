@@ -234,9 +234,9 @@ function attackStuff(attacker) {
 	if(isDefined(chatTactic(selectedEnemy)))
 		return;
 
-	attackWithGroup(enumGroup(attackGroup), selectedEnemy, enumStruct(selectedEnemy, structures.factories));
+	attackWithGroup(enumGroup(attackGroup), selectedEnemy);
 	if(isDefined(turnOffCyborgs) && !turnOffCyborgs) {
-		attackWithGroup(enumGroup(cyborgGroup), selectedEnemy, enumStruct(selectedEnemy, structures.templateFactories));
+		attackWithGroup(enumGroup(cyborgGroup), selectedEnemy);
 	}
 
 	var vtols = enumGroup(vtolGroup);
