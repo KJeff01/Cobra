@@ -66,7 +66,7 @@ function chooseGroup() {
 	var tanks  = enumGroup(attackGroup);
 	var borgs = enumGroup(cyborgGroup);
 
-	if((borgs.length > MIN_DROID_COUNT) && (borgs.length > tanks.length)) {
+	if((borgs.length > MIN_DROID_COUNT) && (borgs.length >= tanks.length)) {
 		return borgs;
 	}
 	else {
@@ -87,9 +87,9 @@ function findEnemyDerricks(playerNumber) {
 			derr = appendListElements(derr, enumStruct(enemies[i], structures.derricks));
 		}
 
-		//Check for scavs
-		if(isDefined(scavengerNumber) && !allianceExistsBetween(scavengerNumber, me)) {
-			derr = appendListElements(derr, enumStruct(scavengerNumber, structures.derricks));
+		//Include scavenger owned derricks if they exist
+		if(isDefined(getScavengerNumber()) && !allianceExistsBetween(getScavengerNumber(), me)) {
+			derr = appendListElements(derr, enumStruct(getScavengerNumber(), structures.derricks));
 		}
 	}
 	else {
@@ -104,12 +104,12 @@ function checkMood() {
 	const GRUDGE_LEVEL = 300;
 	var mostHarmful = getMostHarmfulPlayer();
 
-	if(grudgeCount[mostHarmful] >= GRUDGE_LEVEL) {
+	if((grudgeCount[mostHarmful] >= GRUDGE_LEVEL) || (random(101) <= 1)) {
 		attackStuff(mostHarmful);
 		grudgeCount[mostHarmful] = Math.floor(grudgeCount[mostHarmful] / 1.75);
 	}
 	else if((grudgeCount[mostHarmful] >= 0) && (grudgeCount[mostHarmful] < GRUDGE_LEVEL)) {
-		if(isDefined(turnOffCyborgs) && !turnOffCyborgs) {
+		if(!turnOffCyborgs) {
 			attackWithGroup(enumGroup(cyborgGroup), mostHarmful);
 		}
 
@@ -119,7 +119,7 @@ function checkMood() {
 				findNearestEnemyStructure(vtols[j], mostHarmful);
 			}
 		}
-		grudgeCount[mostHarmful] = Math.floor(grudgeCount[mostHarmful] / 2.0);
+		grudgeCount[mostHarmful] = Math.floor(grudgeCount[mostHarmful] / 1.3);
 	}
 }
 
@@ -176,13 +176,18 @@ function findNearestEnemyStructure(droid, enemy, targets) {
 
 //Attack something.
 function attackWithGroup(droids, enemy, targets) {
+	if(!isDefined(droids)) {
+		return;
+	}
+
 	if(!isDefined(enemy)) {
 		enemy = getMostHarmfulPlayer();
 	}
 
 	const MIN_DROID_COUNT = 6;
-	if(droids.length < MIN_DROID_COUNT)
+	if(droids.length < MIN_DROID_COUNT) {
 		return false;
+	}
 
 	var target;
 	if(isDefined(targets) && targets.length) {
@@ -205,7 +210,7 @@ function attackWithGroup(droids, enemy, targets) {
 //returns undefined for tactics that allow 'me' to attack something other than derricks.
 function chatTactic(enemy) {
 	const MIN_DERRICKS = 6;
-	const MIN_DROID_COUNT = 15;
+	const MIN_DROID_COUNT = 12;
 	var str = lastMsg.slice(0, -1);
 	var code;
 
@@ -235,7 +240,7 @@ function attackStuff(attacker) {
 		return;
 
 	attackWithGroup(enumGroup(attackGroup), selectedEnemy);
-	if(isDefined(turnOffCyborgs) && !turnOffCyborgs) {
+	if(!turnOffCyborgs) {
 		attackWithGroup(enumGroup(cyborgGroup), selectedEnemy);
 	}
 
@@ -264,32 +269,51 @@ function spyRoutine() {
 
 //Attack enemy oil when tank group is large enough.
 function attackEnemyOil() {
-	var enemy = getMostHarmfulPlayer();
-	var derr = findEnemyDerricks(enemy);
-	if(derr.length) {
-		derr.sort(distanceToBase);
-		if(isDefined(derr[0])) {
-			attackWithGroup(chooseGroup(), enemy, derr);
-		}
+	//Attack most harmful player's derricks if they have been doing a lot of damage.
+	var mostHarmful = getMostHarmfulPlayer();
+	if(grudgeCount[mostHarmful] > 300) {
+		var derrs = findEnemyDerricks(mostHarmful);
+		attackWithGroup(chooseGroup(), mostHarmful, derrs);
+		return;
 	}
-	else {
-		checkMood();
+
+	//Else find whatever enemy derrick is closest.
+	var who = chooseGroup();
+	var tmp = 0;
+	if(who.length < 5) { return false; }
+
+	var derr = findEnemyDerricks();
+	if(!derr.length) { return false; }
+	derr.sort(distanceToBase);
+
+	for(var i = 0; i < who.length; ++i) {
+		if(isDefined(who[i]) && droidReady(who[i])) {
+			if(!isDefined(derr[tmp])) {
+				tmp += 1;
+			}
+			if(isDefined(derr[tmp]) && droidCanReach(who[i], derr[tmp].x, derr[tmp].y)) {
+				orderDroidObj(who[i], DORDER_ATTACK, derr[tmp]);
+			}
+			else {
+				break;
+			}
+		}
 	}
 }
 
 //Defend or attack.
 function battleTactics() {
-	var droids = enumRange(startPositions[me].x, startPositions[me].y, 3000, ENEMIES, true);
+	const MIN_ENEMY_DROIDS = 4;
+	var droids = enumRange(startPositions[me].x, startPositions[me].y, 30, ENEMIES, true);
 	droids.filter(function(obj) { return (obj.type === DROID) && !isVTOL(obj) });
 
 	//Go defend the base.
-	if(droids.length) {
+	if(droids.length > MIN_ENEMY_DROIDS) {
 		droids.sort(distanceToBase);
-		var myTanks = enumGroup(attackGroup);
-		for(var i = 0; i < myTanks.length; ++i) {
-			if(!repairDroid(myTanks[i]) && isDefined(droids[0])) {
-				orderDroidLoc(myTanks[i], DORDER_SCOUT, droids[0].x, droids[0].y);
-			}
+		var myDroids = enumGroup(attackGroup);
+		var player = droids[0].player;
+		for(var i = 0; i < myDroids.length; ++i) {
+			findNearestEnemyDroid(myDroids[i], player);
 		}
 	}
 	else {
@@ -335,7 +359,7 @@ function recycleObsoleteDroids() {
 
 //Attack oil specifically if a player requests it.
 function chatAttackOil(playerNumber) {
-	const MIN_DROID_COUNT = 8;
+	const MIN_DROID_COUNT = 5;
 	var derr = findEnemyDerricks(playerNumber);
 	var who = chooseGroup();
 

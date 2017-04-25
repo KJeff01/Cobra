@@ -31,7 +31,7 @@ const bodyResearch = [
 
 const tankBody = [
 	"Body14SUP", // Dragon
-	"Body13SUP", // Wyvern
+//	"Body13SUP", // Wyvern
 	"Body10MBT", // Vengeance
 //	"Body9REC",  // Tiger
 //	"Body12SUP", // Mantis
@@ -92,7 +92,6 @@ const subpersonalities = {
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-Cannon-Damage03",
 			"R-Wpn-Cannon2Mk1",
-			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-Cannon-ROF03",
 			"R-Wpn-Cannon4AMk1",
 		],
@@ -104,9 +103,8 @@ const subpersonalities = {
 		"antiAir": weaponStats.AA,
 		"res": [
 			"R-Wpn-Flamer-Damage02",
+			"R-Wpn-Flamer-ROF01",
 			"R-Defense-Tower01",
-			"R-Struc-RprFac-Upgrade01",
-			"R-Wpn-Flamer-ROF02",
 		],
 	},
 	AB: {
@@ -117,7 +115,6 @@ const subpersonalities = {
 		"res": [
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-Rocket02-MRL",
-			"R-Struc-RprFac-Upgrade01",
 			"R-Wpn-Rocket07-Tank-Killer",
 			"R-Wpn-Rocket06-IDF",
 			"R-Wpn-Rocket-ROF03",
@@ -130,9 +127,8 @@ const subpersonalities = {
 		"antiAir": weaponStats.AA,
 		"res": [
 			"R-Wpn-MG2Mk1",
-			"R-Wpn-MG-Damage03",
 			"R-Defense-Tower01",
-			"R-Struc-RprFac-Upgrade01",
+			"R-Wpn-MG-Damage04",
 		],
 	},
 	AL: {
@@ -152,6 +148,7 @@ const subpersonalities = {
 }
 
 // Groups
+//TODO: Put artillery units in a different group.
 var attackGroup; //All tanks units.
 var vtolGroup; //All vtol units.
 var cyborgGroup; //All cyborg units.
@@ -160,13 +157,12 @@ var sensorGroup; //All sensor units.
 
 
 var grudgeCount; //See who bullies this bot the most and act on it. DO NOT let this use the scavenger player number.
-var personality; //Initialization in eventStartLevel().
+var personality; //What personality is this instance of Cobra using.
 var lastMsg; //The last Cobra chat message.
-var forceHover; //Use hover propulsion only. Initialization in eventStartLevel().
-var seaMapWithLandEnemy; //Hover map with an enemy sharing land with Cobra. Initialization in eventStartLevel().
-var turnOffCyborgs; //Turn of cyborgs (hover maps).
+var forceHover; //Use hover propulsion only.
+var seaMapWithLandEnemy; //Hover map with an enemy sharing land with Cobra.
+var turnOffCyborgs; //Turn of cyborgs (hover maps/chat).
 var nexusWaveOn; //Determine if the 'NEXUS Intruder Program' feature is on.
-var scavengerNumber; //What player number are the scavengers. If none then keep undefined.
 var turnOffMG; //Turn off machine-gun related stuff.
 var throttleTime; //For events so that some do not trigger their code too fast. More details in stopExecution() in miscFunctions.
 var researchComplete; //Check if done with research.

@@ -172,11 +172,16 @@ function findLivingEnemies() {
 	var alive = [];
 
 	for(var x = 0; x < maxPlayers; ++x) {
- 		if((x !== me) && !allianceExistsBetween(me, x) && (enumDroid(x).length || enumStruct(x).length)) {
+ 		if((x !== me) && !allianceExistsBetween(x, me) && (enumDroid(x).length || enumStruct(x).length)) {
 			alive.push(x);
 		}
 		else {
-			grudgeCount[x] = -1; // Dead/me.
+			if(allianceExistsBetween(x, me) || (x === me)) {
+				grudgeCount[x] = -2; //Friendly player.
+			}
+			else {
+				grudgeCount[x] = -1; //Dead enemy.
+			}
 		}
  	}
 
@@ -191,7 +196,7 @@ function getMostHarmfulPlayer(chatEvent) {
 
  	for(var x = 0; x < enemies.length; ++x) {
  		if((grudgeCount[enemies[x]] >= 0) && (grudgeCount[enemies[x]] > grudgeCount[mostHarmful]))
- 			mostHarmful = x;
+ 			mostHarmful = enemies[x];
  	}
  	if(isDefined(chatEvent)) {
 		sendChatMessage("Most harmful player: " + mostHarmful, ALLIES);
@@ -225,7 +230,12 @@ function findOldDroids(group) {
 //random values into the grudge counter.
 function randomizeFirstEnemy() {
 	for(var i = 0; i < maxPlayers; ++i) {
-		grudgeCount[i] = random(30);
+		if((!allianceExistsBetween(i, me)) && (i !== me)) {
+			grudgeCount[i] = random(30);
+		}
+		else {
+			grudgeCount[i] = -2; //Otherwise bad stuff (attacking itself and allies) happens.
+		}
 	}
 }
 
@@ -235,12 +245,10 @@ function initiaizeRequiredGlobals() {
 	researchComplete = false;
 	grudgeCount = [];
 	throttleTime = [];
-	thinkLonger = 0;
 
 	for(var i = 0; i < maxPlayers; ++i) { grudgeCount.push(0); }
 	for(var i = 0; i < 4; ++i) { throttleTime.push(0); }
 
-	checkForScavs();
 	diffPerks();
 
 	forceHover = checkIfSeaMap();

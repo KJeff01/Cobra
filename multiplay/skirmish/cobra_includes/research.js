@@ -30,7 +30,7 @@ function initializeResearchLists() {
 	extraTech = updateResearchList(subpersonalities[personality]["primaryWeapon"].extras);
 	secondaryWeaponTech = updateResearchList(subpersonalities[personality]["secondaryWeapon"].weapons);
 	secondaryWeaponExtra = updateResearchList(subpersonalities[personality]["secondaryWeapon"].extras);
-	defenseTech = updateResearchList(subpersonalities[personality]["primaryWeapon"].defenses);
+	defenseTech = updateResearchList(subpersonalities[personality]["artillery"].defenses);
 	defenseTech.push("R-Struc-Materials09");
 	defenseTech.push("R-Defense-WallUpgrade12");
 	cyborgWeaps = updateResearchList(subpersonalities[personality]["primaryWeapon"].templates);
@@ -62,14 +62,13 @@ function evalResearch(lab, list) {
 //Get our basics like a early research list/body/propulsions.
 //Kinetic armor/weapons/defenses/more bodies/Air stuff/factory production upgrades/sensors/thermal armor.
 //Lastly we get the plasma cannon and that allows uplink/laser sat and the emp cannon.
-//TODO: Sort by .power and .points to complete cheaper research first.
 
 function eventResearched() {
 	if(!isDefined(techlist) || !isDefined(turnOffMG) || !isDefined(turnOffCyborgs)) { return; }
 	if(getRealPower() < -400) { return; }
 
 	const ESSENTIALS = [ "R-Wpn-MG1Mk1", "R-Wpn-MG-Damage02", "R-Struc-PowerModuleMk1" ];
-	const PROPULSION = [ "R-Vehicle-Prop-Hover", "R-Vehicle-Prop-Tracks", "R-Vehicle-Prop-VTOL" ];
+	const PROPULSION = [ "R-Vehicle-Prop-Hover", "R-Vehicle-Prop-Tracks" ];
 	const START_BODY = [ "R-Vehicle-Body05", "R-Vehicle-Body11" ];
 	const REPAIR_UPGRADES = [ "R-Sys-Autorepair-General", "R-Struc-RprFac-Upgrade06" ]
 	const FLAMER = [ "R-Wpn-Flame2", "R-Wpn-Flamer-ROF03", "R-Wpn-Flamer-Damage09" ]
@@ -96,6 +95,8 @@ function eventResearched() {
 			if(!found)
 				found = evalResearch(lab, START_BODY);
 			if(!found)
+				found = evalResearch(lab, REPAIR_UPGRADES);
+			if(!found)
 				found = evalResearch(lab, PROPULSION);
 
 			if(!random(3)) {
@@ -118,15 +119,17 @@ function eventResearched() {
 
 			//Just like the semperfi AI bots (which Cobra is derived from) it
 			//stays true to the use of those thermite cyborgs.
-			if(random(3)) {
-				if(!turnOffCyborgs && !found)
+			if(random(3) && !turnOffCyborgs) {
+				if(!found)
 					found = evalResearch(lab, FLAMER);
 				if(!found)
-					found = evalResearch(lab, REPAIR_UPGRADES);
-				if(!turnOffCyborgs && !found)
 					found = evalResearch(lab, cyborgWeaps);
 			}
 
+			/*
+			if(!found)
+				found = pursueResearch(lab, "R-Comp-CommandTurret01");
+			*/
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 
@@ -140,27 +143,21 @@ function eventResearched() {
 				if(!found)
 					found = evalResearch(lab, secondaryWeaponExtra);
 			}
-			else if(random(2)) {
+
+			if(random(4)) {
 				if(!found)
 					found = evalResearch(lab, laserTech);
 				if(!found)
-					found = evalResearch(lab, artilleryTech);
-				if(!found)
 					found = evalResearch(lab, laserExtra);
-				if(!found)
-					found = evalResearch(lab, artillExtra);
 			}
 
 			if(random(2)) {
 				if(!found)
-					found = evalResearch(lab, bodyResearch);
+					found = evalResearch(lab, artilleryTech);
+				if(!found)
+					found = evalResearch(lab, artillExtra);
 				if(!found)
 					found = evalResearch(lab, defenseTech);
-			}
-
-			if(forceHover || (gameTime > 600000) && random(2)) {
-				if(!found)
-					found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade06");
 			}
 
 			if(countEnemyVTOL()) {
@@ -170,10 +167,13 @@ function eventResearched() {
 					found = evalResearch(lab, antiAirExtras);
 			}
 
-			/*
-			if(!found)
-				found = pursueResearch(lab, "R-Comp-CommandTurret01");
-			*/
+			if(!found && random(2))
+				found = evalResearch(lab, bodyResearch);
+
+			if(random(2)) {
+				if(!found)
+					found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade06");
+			}
 
 			if(!found)
 				found = pursueResearch(lab, "R-Sys-Sensor-WS");

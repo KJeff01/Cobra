@@ -71,16 +71,18 @@ function eventChat(from, to, message) {
 	if(tmp === "attack") {
 		var num = message.slice(-1);
 		if(!allianceExistsBetween(num, me) && (num !== me)) {
-			if(!isDefined(scavengerNumber) || (isDefined(scavengerNumber) && (num !== scavengerNumber)))
-				grudgeCount[num] = grudgeCount[num] + 20;
+			if(!isDefined(getScavengerNumber()) || (isDefined(getScavengerNumber()) && (num !== getScavengerNumber()))) {
+				grudgeCount[num] += 20;
+			}
 			attackStuff(num);
 		}
 	}
 	else if(tmp === "oil") {
 		var num = message.slice(-1);
 		if(!allianceExistsBetween(num, me) && (num !== me)) {
-			if(!isDefined(scavengerNumber) || (isDefined(scavengerNumber) && (num !== scavengerNumber)))
-				grudgeCount[num] = grudgeCount[num] + 10;
+			if(!isDefined(getScavengerNumber()) || (isDefined(getScavengerNumber()) && (num !== getScavengerNumber()))) {
+				grudgeCount[num] += 20;
+			}
 			chatAttackOil(num);
 		}
 	}

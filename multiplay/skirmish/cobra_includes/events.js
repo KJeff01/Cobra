@@ -49,7 +49,7 @@ function eventStartLevel() {
 	setTimer("battleTactics", THINK_LONGER + 5000 + 5 * random(60));
 	setTimer("spyRoutine", THINK_LONGER + 8000 + 4 * random(60));
 	setTimer("nexusWave", THINK_LONGER + 10000 + 3 * random(70));
-	setTimer("checkMood", THINK_LONGER + 20000 + 4 * random(90));
+	setTimer("checkMood", THINK_LONGER + 20000 + 4 * random(70));
 }
 
 //This is meant to check for nearby oil resources next to the construct.
@@ -69,6 +69,29 @@ function eventStructureBuilt(structure, droid) {
 	}
 }
 
+//Make droids patrol around random oil derricks, else return to base if none.
+function eventDroidIdle(droid) {
+	if(droid.player === me) {
+		if(isDefined(droid) && ((droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid))) {
+				var derr = enumStruct(me, structures.derricks);
+				if(derr.length > 0) {
+					var newDerrs = [];
+					for(var t = 0; t < derr.length; ++t)
+						if(distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, derr[t].x, derr[t].y) > 12)
+							newDerrs.push(derr[t]);
+
+					if(newDerrs.length > 0) {
+						derr = newDerrs[random(newDerrs.length)];
+						orderDroidLoc(droid, DORDER_SCOUT, derr.x, derr.y);
+					}
+				}
+				else {
+					orderDroid(droid, DORDER_RTB); //wait for death.
+				}
+			}
+		}
+}
+
 //Groups droid types.
 function eventDroidBuilt(droid, struct) {
 	if (droid && (droid.droidType !== DROID_CONSTRUCT)) {
@@ -82,7 +105,7 @@ function eventDroidBuilt(droid, struct) {
 			groupAdd(cyborgGroup, droid);
 		}
 		/*
-		else if(isDefined(droid.weapons[0]) && (droid.weapons[0].name === "CommandTurret1")) {
+		else if(droid.droidType === DROID_COMMAND) {
 			groupAdd(commanderGroup, droid);
 		}
 		*/
@@ -104,13 +127,15 @@ function eventAttacked(victim, attacker) {
 		return;
 	}
 
-	if(isDefined(scavengerNumber) && (attacker.player === scavengerNumber)) {
+	if(stopExecution(0, 40) === true) { return; }
+
+	if(isDefined(getScavengerNumber()) && (attacker.player === getScavengerNumber())) {
 		if(isDefined(victim) && isDefined(attacker) && (victim.type === DROID) && !repairDroid(victim, false)) {
 			if((victim.droidType === DROID_WEAPON) || (victim.droidType === DROID_CYBORG))
 				orderDroidObj(victim, DORDER_ATTACK, attacker);
 		}
 		if(stopExecution(0, 2000) === false) {
-			attackStuff(scavengerNumber);
+			attackStuff(getScavengerNumber());
 		}
 		return;
 	}
@@ -137,8 +162,6 @@ function eventAttacked(victim, attacker) {
 			}
 		}
 
-		//if(stopExecution(0, 2000) === true) { return; }
-
 		var units;
 		if(victim.type === STRUCTURE) {
 			units = chooseGroup();
@@ -147,6 +170,10 @@ function eventAttacked(victim, attacker) {
 			units = enumRange(victim.x, victim.y, 18, me, false).filter(function(d) {
 				return (d.type === DROID) && ((d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG))
 			});
+
+			if(units.length < 5) {
+				units = chooseGroup();
+			}
 		}
 
 		units.filter(function(dr) { return dr !== victim });
@@ -168,10 +195,7 @@ function eventGroupLoss(droid, group, size) {
 
 	//Release the commander's droids to the attack group.
 	/*
-	var isCommand = (droid.droidType != DROID_CONSTRUCT) &&
-									(droid.droidType !== DROID_WEAPON) && (droid.droidType !== DROID_CYBORG) &&
-									(droid.droidType !== DROID_SENSOR) && !isVTOL(droid);
-	if((isCommand === true) && (droid.player === me)) {
+	if((droid.droidType === DROID_COMMAND) && (droid.player === me)) {
 		var comDroids = enumDroid(me).filter(function(dr) { return dr.group === null });
 		for(var i = 0; i < comDroids.length; ++i) {
 			groupAdd(attackGroup, comDroids[i]);
@@ -190,29 +214,6 @@ function eventGroupLoss(droid, group, size) {
 			sendChatMessage("need vtol", ALLIES);
 		}
 	}
-}
-
-//Make droids patrol around random oil derricks, else return to base if none.
-function eventDroidIdle(droid) {
-	if(droid.player === me) {
-		if(isDefined(droid) && ((droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid))) {
-				var derr = enumStruct(me, structures.derricks);
-				if(derr.length > 0) {
-					var newDerrs = [];
-					for(var t = 0; t < derr.length; ++t)
-						if(distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, derr[t].x, derr[t].y) > 12)
-							newDerrs.push(derr[t]);
-
-					if(newDerrs.length > 0) {
-						derr = newDerrs[random(newDerrs.length)];
-						orderDroidLoc(droid, DORDER_SCOUT, derr.x, derr.y);
-					}
-				}
-				else {
-					orderDroid(droid, DORDER_RTB); //wait for death.
-				}
-			}
-		}
 }
 
 //Better check what is going on over there.
@@ -252,7 +253,7 @@ function eventObjectTransfer(obj, from) {
 
 //Mostly meant to reduce stress about enemies or tell if a structures is destroyed.
 function eventDestroyed(object) {
-	if(isDefined(scavengerNumber) && (object.player === scavengerNumber))
+	if(isDefined(getScavengerNumber()) && (object.player === getScavengerNumber()))
 		return;
 
 	if(!allianceExistsBetween(object.player, me)) {
@@ -273,8 +274,7 @@ function eventStructureReady(structure) {
 		}
 	}
 
-	var enemies = playerAlliance(false);
-	var enemy = enemies[random(enemies.length)];
+	var enemy = getMostHarmfulPlayer();
 	var facs = enumStruct(enemy, structures.factories);
 	var tempFacs = enumStruct(enemy, structures.templateFactories);
 

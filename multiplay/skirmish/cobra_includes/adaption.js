@@ -1,15 +1,6 @@
 
-//Only use cyborgs if we have enough power.
-/*
-function useCyborgs() {
-	if(forceHover && (getRealPower() <= -500)) {
-		turnOffCyborgs = true;
-	}
-	else {
-		turnOffCyborgs = false;
-	}
-}
-*/
+//TODO: Analyze visible enemy components.
+
 
 //If starting with a low tech level, then disable Machine-guns when the
 //personality can design its primary weapon.
@@ -51,11 +42,11 @@ function adaptToMap() {
 		choice = ADAPT_PERSONALITIES[random(2)]; // AM, AR.
 	}
 	else if ((MAP_OIL_LEVEL === "MEDIUM") || ((ALLY_COUNT !== 0) && (ALLY_COUNT < ENEMY_COUNT))) {
-		var offset = (T3_MATCH && (enumStruct(me).length >= 1)) ? 4 : 3;
+		var offset = (T3_MATCH && (enumStruct(me).length > 1)) ? 4 : 3;
 		choice = ADAPT_PERSONALITIES[random(offset) + 1]; //AR, AB, AC, AL.
 	}
 	else {
-		var offset = (T3_MATCH && (enumStruct(me).length >= 1)) ? 3 : 2;
+		var offset = (T3_MATCH && (enumStruct(me).length > 1)) ? 3 : 2;
 		choice = ADAPT_PERSONALITIES[random(offset) + 2]; //AB, AC, AL.
 	}
 

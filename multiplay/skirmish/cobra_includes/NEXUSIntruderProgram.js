@@ -74,7 +74,7 @@ function analyzeComponent(statList, component, droid) {
 	return foundComponent;
 }
 
-//Check a enemy droid and steal any new components not researched.
+//Check an enemy droid and steal any new components not researched.
 function analyzeDroidComponents(droid) {
 	var body = droid.body;
 	var propulsion = droid.propulsion;
@@ -127,10 +127,10 @@ function malfunctionDroid() {
 	var droids = enumDroid(enemy).filter(function(d) { return d.droidType !== DROID_SENSOR });
 	if(droids.length > 2) {
 		if(random(2)) {
-			var aDroid = droids[droids.length - 1];
-			var victim = droids[droids.length - 2];
+			var aDroid = droids[random(droids.length)];
+			var victim = droids[random(droids.length)];
 			logObj(aDroid, "Enemy droid told to attack its own units");
-			if(isDefined(aDroid) && isDefined(victim))
+			if(isDefined(aDroid) && isDefined(victim) && (aDroid !== victim))
 				orderDroidObj(aDroid, DORDER_ATTACK, victim);
 		}
 		else {
@@ -165,7 +165,7 @@ function analyzeRandomEnemyDroid() {
 	if(enemyDroids.length > 0) {
 		var dr = enemyDroids[random(enemyDroids.length)];
 		stealEnemyTechnology(dr);
-		if(!random(20)) {
+		if(random(100) <= 20) {
 			donateObject(dr, me);
 		}
 	}
@@ -183,7 +183,7 @@ function nexusWave() {
 
 	if(isDefined(nexusWaveOn) && nexusWaveOn && countStruct(structures.hqs)) {
 		analyzeRandomEnemyDroid();
-		if(!random(15)) {
+		if(random(100) <= 15) {
 			malfunctionDroid();
 		}
 	}

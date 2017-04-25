@@ -221,7 +221,7 @@ function buildDefenses() {
 		}
 	}
 
-	if(protectUnguardedDerricks()) {
+	if((getRealPower() > -80) && protectUnguardedDerricks()) {
 		return true;
 	}
 
@@ -281,7 +281,7 @@ function buildPhase2() {
 			return true;
 		}
 
-		if(!researchComplete && (getRealPower() > -50) && countAndBuild(structures.labs, 5)) {
+		if(!researchComplete && (getRealPower() > -120) && countAndBuild(structures.labs, 5)) {
 			return true;
 		}
 
@@ -370,9 +370,13 @@ function buildExtras() {
 		return false;
 	}
 
-	//At least have two repair facilities.
+	//Build repair facilities based upon generator count.
 	if(isStructureAvailable(structures.extras[0])) {
-		if(countAndBuild(structures.extras[0], 2)) {
+		var limit = countStruct(structures.gens);
+		if(limit > 2) {
+			limit = 2;
+		}
+		if(countAndBuild(structures.extras[0], limit)) {
 			return true;
 		}
 	}
@@ -421,7 +425,7 @@ function maintenance() {
 				if (structList[c].modules < mods[i]) {
 					//Only build the last factory module if we have a heavy body
 					if(structList[c].modules === 1) {
-						if((i === 2) && (getRealPower() < -200) && !componentAvailable("Body11ABT")) {
+						if((i === 2) && !componentAvailable("Body11ABT")) {
 							continue;
 						}
 						//Build last vtol factory module once Cobra gets retribution (or has good power levels)
