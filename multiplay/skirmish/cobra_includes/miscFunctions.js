@@ -3,7 +3,7 @@
 
 // Random number between 0 and max-1.
 function random(max) {
-	return (max <= 0) ? 0 : Math.floor(Math.random() * max)
+	return (max <= 0) ? 0 : Math.floor(Math.random() * max);
 }
 
 // Returns true if something is defined
@@ -16,6 +16,16 @@ function sortArrayNumeric(a, b) {
 	return a - b;
 }
 
+//Sort an array from smallest to largest in terms of droid health.
+function sortDroidsByHealth(a, b) {
+	return a.health - b.health;
+}
+
+//Used for deciding if a truck will capture oil.
+function isUnsafeEnemyObject(obj) {
+	return (obj.type === DROID) || ((obj.type === STRUCTURE) && ((obj.stattype !== WALL)));
+}
+
 //Sort by distance to base and reverse.
 function sortAndReverseDistance(arr) {
 	return (arr.sort(distanceToBase)).reverse();
@@ -23,6 +33,9 @@ function sortAndReverseDistance(arr) {
 
 //Push list elements into another.
 function appendListElements(list, items) {
+	if(!isDefined(list))
+		list = [];
+
 	var temp = list;
 	for(var i = 0; i < items.length; ++i) {
 		temp.push(items[i]);
@@ -31,21 +44,27 @@ function appendListElements(list, items) {
 }
 
 //Control the amount of objects being put in memory so we do not create a large array of objects.
-//Returns the closest enemy object from Cobra base.
-function rangeStep(obj, visibility) {
-	const step = 2000;
+//Returns closest/farthest object, depending on parmeters supplied.
+function rangeStep(obj, visibility, player, invert) {
+	const STEP = 2000;
 	var target;
+	var temp;
 
-	for(var i = 0; i <= 30000; i += step) {
-		var temp = enumRange(obj.x, obj.y, i, ENEMIES, visibility);
+	for(var i = 0; i <= 30000; i += STEP) {
+		if(!isDefined(player)) {
+			temp = enumRange(obj.x, obj.y, i, ENEMIES, visibility);
+		}
+		else {
+			temp = enumRange(obj.x, obj.y, i, player, visibility);
+		}
 		if(temp.length > 0) {
-			temp.filter(function(targ) { return droidCanReach(obj, targ.x, targ.y) });
-			temp.filter(function(targ) {
-				return (targ.type == DROID) ||
-				((targ.type == STRUCTURE) && (targ.stattype != WALL))
-			});
-
-			temp.sort(distanceToBase);
+			temp.filter(function(targ) { return droidCanReach(obj, targ.x, targ.y); });
+			if(isDefined(invert)) {
+				temp = sortAndReverseDistance(temp);
+			}
+			else {
+				temp.sort(distanceToBase);
+			}
 			return temp[0];
 		}
 	}
@@ -61,12 +80,12 @@ function playerAlliance(ally) {
 
 	for(var i = 0; i < maxPlayers; ++i) {
 		if(!ally) {
-			if(!allianceExistsBetween(i, me) && (i != me)) {
+			if(!allianceExistsBetween(i, me) && (i !== me)) {
 				players.push(i);
 			}
 		}
 		else {
-			if(allianceExistsBetween(i, me) && (i != me)) {
+			if(allianceExistsBetween(i, me) && (i !== me)) {
 				players.push(i);
 			}
 		}
@@ -78,7 +97,7 @@ function playerAlliance(ally) {
 function diffPerks() {
 	switch(difficulty) {
 		case EASY:
-			ThinkLonger = 4000 + ((1 + random(4)) * random(1200));
+			//This is handled in eventStartLevel().
 			break;
 		case MEDIUM:
 			//Do nothing
@@ -121,7 +140,7 @@ function isDesignable(item, body, prop) {
 		prop = "wheeled01";
 
 	var virDroid = makeTemplate(me, "Virtual Droid", body, prop, null, null, item, item);
-	return (virDroid != null) ? true : false;
+	return (virDroid !== null) ? true : false;
 }
 
 //See if power levels are low. This takes account of only the power obtained from the generators.
@@ -169,13 +188,36 @@ function stopExecution(throttleNumber, ms) {
 	}
 }
 
+//Find enemies that are still alive.
+function findLivingEnemies() {
+	var alive = [];
+
+	for(var x = 0; x < maxPlayers; ++x) {
+ 		if((x !== me) && !allianceExistsBetween(x, me) && (enumDroid(x).length || enumStruct(x).length)) {
+			alive.push(x);
+		}
+		else {
+			if(allianceExistsBetween(x, me) || (x === me)) {
+				grudgeCount[x] = -2; //Friendly player.
+			}
+			else {
+				grudgeCount[x] = -1; //Dead enemy.
+			}
+		}
+ 	}
+
+	return alive;
+}
+
 //Tell allies who is attacking Cobra the most.
 //When called from chat using "stats" it will also tell you who is the most aggressive towards Cobra.
 function getMostHarmfulPlayer(chatEvent) {
 	var mostHarmful = 0;
- 	for(var x = 0; x < maxPlayers; ++x) {
- 		if((grudgeCount[x] > 0) && (grudgeCount[x] > grudgeCount[mostHarmful]))
- 			mostHarmful = x;
+	var enemies = findLivingEnemies();
+
+ 	for(var x = 0; x < enemies.length; ++x) {
+ 		if((grudgeCount[enemies[x]] >= 0) && (grudgeCount[enemies[x]] > grudgeCount[mostHarmful]))
+ 			mostHarmful = enemies[x];
  	}
  	if(isDefined(chatEvent)) {
 		sendChatMessage("Most harmful player: " + mostHarmful, ALLIES);
@@ -205,37 +247,55 @@ function findOldDroids(group) {
 }
 */
 
+//Target a random enemy at the start of the match. This is done by placing
+//random values into the grudge counter.
+function randomizeFirstEnemy() {
+	for(var i = 0; i < maxPlayers; ++i) {
+		if((!allianceExistsBetween(i, me)) && (i !== me)) {
+			grudgeCount[i] = random(30);
+		}
+		else {
+			grudgeCount[i] = -2; //Otherwise bad stuff (attacking itself and allies) happens.
+		}
+	}
+}
+
 //Called from eventStartLevel, this initializes the globals.
 function initiaizeRequiredGlobals() {
 	nexusWaveOn = false;
+	researchComplete = false;
 	grudgeCount = [];
-	turnOffCyborgs = false;
 	throttleTime = [];
-	thinkLonger = 0;
 
 	for(var i = 0; i < maxPlayers; ++i) { grudgeCount.push(0); }
 	for(var i = 0; i < 4; ++i) { throttleTime.push(0); }
 
-	checkForScavs();
 	diffPerks();
 
-	forceHover = checkIfSeaMap(); //TurnOffCyborgs can be assigned true here
+	forceHover = checkIfSeaMap();
+	turnOffCyborgs = (forceHover === true) ? true : false;
 	personality = choosePersonality();
 	turnOffMG = CheckStartingBases();
-	//Do not start with AM or AR if technology is good enough.
-	if(turnOffMG === true)
-		personality = choosePersonality();
+	randomizeFirstEnemy();
 	initializeResearchLists();
 }
 
 //Count how many Enemy VTOL units are on the map.
 function countEnemyVTOL() {
-	const ENEMIES = playerAlliance(false);
+	var enemies = findLivingEnemies();
 	var enemyVtolCount = 0;
 
-	for (var x = 0; x < ENEMIES.length; ++x) {
-		enemyVtolCount += enumDroid(ENEMIES[x]).filter(function(obj) { return isVTOL(obj) }).length;
+	for (var x = 0; x < enemies.length; ++x) {
+		enemyVtolCount += enumDroid(enemies[x]).filter(function(obj) { return isVTOL(obj); }).length;
 	}
 
 	return enemyVtolCount;
+}
+
+//Donate a droid from one of Cobra's groups.
+function donateFromGroup(group, from) {
+	const MIN_DROID_COUNT = 9;
+	var droids = enumGroup(group);
+	if(droids.length < MIN_DROID_COUNT) { return; }
+	donateObject(droids[random(droids.length)], from);
 }

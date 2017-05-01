@@ -1,18 +1,25 @@
 
 //Need to search for scavenger player number. Keep undefined if there are no scavengers.
-function checkForScavs() {
+function getScavengerNumber() {
+	var scavNumber;
+
 	for(var x = maxPlayers; x < 11; ++x) {
 		if(enumStruct(x).length > 0) {
-			scavengerNumber = x;
+			scavNumber = x;
 			break;
 		}
 	}
+
+	return scavNumber;
 }
 
-//Cobra's behavior will change dramatically if it is on a hover map. It will be more aggressive
-//than usual and have stronger units and research times.
+//Figure out if we are on a hover map. This is determined by checking if a
+//ground only propulsion fails to reach a target (checking if it is a vtol only player
+//or map spotter pits) and doing similar checks for hover propulsion.
+//Furthermore it can discover if it is sharing land with an enemy and disable/enable
+//unit production depending on the case until it reaches hover propulsion.
 function checkIfSeaMap() {
-	turnOffCyborgs = false;
+	var hoverMap = false;
 	seaMapWithLandEnemy = false;
 
 	for(var i = 0; i < maxPlayers; ++i) {
@@ -27,14 +34,14 @@ function checkIfSeaMap() {
 			}
 
 			if(temp !== maxPlayers - 1) {
-				turnOffCyborgs = true; //And thus forceHover = true
+				hoverMap = true; //And thus forceHover = true
 				break;
 			}
 		}
 	}
 
 	//Determine if we are sharing land on a hover map with an enemy that can reach us via non-hover propulsion.
-	if(turnOffCyborgs === true) {
+	if(hoverMap === true) {
 		for(var i = 0; i < maxPlayers; ++i) {
 			if(propulsionCanReach("wheeled01", startPositions[me].x, startPositions[me].y, startPositions[i].x, startPositions[i].y)
 			&& (i !== me) && !allianceExistsBetween(i, me)) {
@@ -49,11 +56,12 @@ function checkIfSeaMap() {
 		}
 	}
 
-	return turnOffCyborgs;
+	return hoverMap;
 }
 
 //If played on the team that won, then break alliance with everybody and try to conquer them.
 //Completely pointless feature, but makes everything a bit more fun.
+//chat: 'FFA'.
 function freeForAll() {
 	var won = true;
 
@@ -71,8 +79,8 @@ function freeForAll() {
 	if(won === true) {
 		var friends = playerAlliance(true);
 		if(friends.length > 0) {
-			if(isDefined(scavengerNumber) && allianceExistsBetween(scavengerNumber, me))
-				setAlliance(scavengerNumber, me, false);
+			if(isDefined(getScavengerNumber()) && allianceExistsBetween(getScavengerNumber(), me))
+				setAlliance(getScavengerNumber(), me, false);
 
 			for(var i = 0; i < friends.length; ++i) {
 				chat(friends[i], "FREE FOR ALL!");
@@ -86,8 +94,15 @@ function freeForAll() {
 //Turn off Machine-guns on T2 and T3
 //Very cheap analysis done here.
 function CheckStartingBases() {
-	for(var i = 0; i < subpersonalities[personality]["primaryWeapon"].weapons.length; ++i) {
-		if(isDesignable(subpersonalities[personality]["primaryWeapon"].weapons[i].stat)) { return true; }
+
+	if(personality === "AL") {
+		return true;
+	}
+
+	for(var i = 0; i < subpersonalities[personality].primaryWeapon.weapons.length; ++i) {
+		if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[i].stat)) {
+			return true;
+		}
 	}
 
 	return false;
@@ -99,16 +114,16 @@ function getDrumsAndArtifacts() {
 }
 */
 
-//All derricks and all oil resources to find the map total. --unused.
+//All derricks and all oil resources to find the map total.
 function countAllResources() {
 	var resources = enumFeature(-1, oilResources);
 	for(var i = 0; i < maxPlayers; ++i) {
-		var res = enumStruct(i, structures.derricks)
+		var res = enumStruct(i, structures.derricks);
 		for(var c = 0; c < res.length; ++c)
 			resources.push(res[c]);
 	}
-	if(isDefined(scavengerNumber)) {
-		var res = enumStruct(scavengerNumber, structures.derricks);
+	if(isDefined(getScavengerNumber())) {
+		var res = enumStruct(getScavengerNumber(), structures.derricks);
 		for(var c = 0; c < res.length; ++c)
 			resources.push(res[c]);
 	}

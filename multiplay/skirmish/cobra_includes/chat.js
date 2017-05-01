@@ -4,7 +4,7 @@ function sendChatMessage(msg, receiver) {
 	if(!isDefined(msg)) { return; }
 	if(!isDefined(receiver)) { receiver = ALLIES; }
 
-	if(lastMsg != msg) {
+	if(lastMsg !== msg) {
 		lastMsg = msg;
 		chat(receiver, msg);
 	}
@@ -14,7 +14,7 @@ function eventChat(from, to, message) {
 	if(to !== me) { return; }
 
 	//Here are all chat messages that can be executed by itself.
-	if((message === "AC") || (message === "AR") || (message === "AB") || (message === "AM")) {
+	if((message === "AC") || (message === "AR") || (message === "AB") || (message === "AM") || (message === "AL")) {
 		if(allianceExistsBetween(from, to) && (personality !== message)) {
 			choosePersonality(message);
 		}
@@ -42,28 +42,21 @@ function eventChat(from, to, message) {
 	if((message === "need truck") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_CONSTRUCT);
 		if(droids.length <= 3) { return; }
-
 		donateObject(droids[random(droids.length)], from);
 	}
 	else if((message === "need power") && allianceExistsBetween(from, to)) {
 		if(playerPower(me) - queuedPower(me) > 0) { donatePower(playerPower(me) / 2, from); }
 	}
 	else if((message === "need tank") && allianceExistsBetween(from, to)) {
-		var droids = enumDroid(me, DROID_WEAPON);
-		if(droids.length < 6) { return; }
-		donateObject(droids[random(droids.length)], from);
+		donateFromGroup(enumGroup(attackGroup), from);
 	}
 	else if((message === "need cyborg") && allianceExistsBetween(from, to)) {
-		var droids = enumDroid(me, DROID_CYBORG);
-		if(droids.length < 6) { return; }
-		donateObject(droids[random(droids.length)], from);
+		donateFromGroup(enumGroup(cyborgGroup), from);
 	}
 	else if((message === "need vtol") && allianceExistsBetween(from, to)) {
-		var droids = enumDroid(me).filter(function(obj){ return isVTOL(obj); });
-		if(droids.length < 6) { return; }
-		donateObject(droids[random(droids.length)], from);
+		donateFromGroup(enumGroup(vtolGroup), from);
 	}
-	else if(((message === "help me!") || (message == "help me!!")) && allianceExistsBetween(from, to)) {
+	else if(((message === "help me!") || (message === "help me!!")) && allianceExistsBetween(from, to)) {
 		var hq = enumStruct(from, structures.hqs);
 		if(hq.length === 1) {
 			sendChatMessage("Sending units to your command center!", from);
@@ -77,13 +70,19 @@ function eventChat(from, to, message) {
 	var tmp = message.slice(0, -1);
 	if(tmp === "attack") {
 		var num = message.slice(-1);
-		if(!allianceExistsBetween(num, me) && (num != me)) {
+		if(!allianceExistsBetween(num, me) && (num !== me)) {
+			if(!isDefined(getScavengerNumber()) || (isDefined(getScavengerNumber()) && (num !== getScavengerNumber()))) {
+				grudgeCount[num] = grudgeCount[num] + 20;
+			}
 			attackStuff(num);
 		}
 	}
 	else if(tmp === "oil") {
 		var num = message.slice(-1);
-		if(!allianceExistsBetween(num, me) && (num != me)) {
+		if(!allianceExistsBetween(num, me) && (num !== me)) {
+			if(!isDefined(getScavengerNumber()) || (isDefined(getScavengerNumber()) && (num !== getScavengerNumber()))) {
+				grudgeCount[num] = grudgeCount[num] + 20;
+			}
 			chatAttackOil(num);
 		}
 	}
