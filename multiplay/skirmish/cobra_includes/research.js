@@ -17,23 +17,23 @@ function updateResearchList(stat, len) {
 //Initialization of research lists when eventStartLevel is triggered.
 //Call this again when manually changing a personality.
 function initializeResearchLists() {
-	techlist = subpersonalities[personality]["res"];
+	techlist = subpersonalities[personality].res;
 	antiAirTech = updateResearchList(weaponStats.AA.defenses, 1);
 	antiAirExtras = updateResearchList(weaponStats.AA.extras);
 	extremeLaserTech = updateResearchList(weaponStats.AS.extras);
 	mgWeaponTech = updateResearchList(weaponStats.machineguns.weapons);
 	laserTech = updateResearchList(weaponStats.lasers.weapons);
 	laserExtra = updateResearchList(weaponStats.lasers.extras);
-	weaponTech = updateResearchList(subpersonalities[personality]["primaryWeapon"].weapons);
-	artilleryTech = updateResearchList(subpersonalities[personality]["artillery"].weapons);
-	artillExtra = updateResearchList(subpersonalities[personality]["artillery"].extras);
-	extraTech = updateResearchList(subpersonalities[personality]["primaryWeapon"].extras);
-	secondaryWeaponTech = updateResearchList(subpersonalities[personality]["secondaryWeapon"].weapons);
-	secondaryWeaponExtra = updateResearchList(subpersonalities[personality]["secondaryWeapon"].extras);
-	defenseTech = updateResearchList(subpersonalities[personality]["primaryWeapon"].defenses);
-	cyborgWeaps = updateResearchList(subpersonalities[personality]["primaryWeapon"].templates);
+	weaponTech = updateResearchList(subpersonalities[personality].primaryWeapon.weapons);
+	artilleryTech = updateResearchList(subpersonalities[personality].artillery.weapons);
+	artillExtra = updateResearchList(subpersonalities[personality].artillery.extras);
+	extraTech = updateResearchList(subpersonalities[personality].primaryWeapon.extras);
+	secondaryWeaponTech = updateResearchList(subpersonalities[personality].secondaryWeapon.weapons);
+	secondaryWeaponExtra = updateResearchList(subpersonalities[personality].secondaryWeapon.extras);
+	defenseTech = updateResearchList(subpersonalities[personality].primaryWeapon.defenses);
+	cyborgWeaps = updateResearchList(subpersonalities[personality].primaryWeapon.templates);
 	cyborgWeaps = appendListElements(cyborgWeaps, updateResearchList(weaponStats.lasers.templates));
-	cyborgWeaps = appendListElements(cyborgWeaps, updateResearchList(subpersonalities[personality]["secondaryWeapon"].templates));
+	cyborgWeaps = appendListElements(cyborgWeaps, updateResearchList(subpersonalities[personality].secondaryWeapon.templates));
 }
 
 //This function aims to more cleanly discover available research topics
@@ -142,8 +142,8 @@ function eventResearched() {
 				if(!found)
 					found = evalResearch(lab, defenseTech);
 
-				var len = subpersonalities[personality]["primaryWeapon"].weapons.length - 1;
-				if(isDesignable(subpersonalities[personality]["primaryWeapon"].weapons[len].stat)) {
+				var len = subpersonalities[personality].primaryWeapon.weapons.length - 1;
+				if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[len].stat)) {
 					if(!found)
 						found = evalResearch(lab, secondaryWeaponTech);
 					if(!found)

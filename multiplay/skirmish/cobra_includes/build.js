@@ -5,7 +5,7 @@ function unfinishedStructures() {
 		return (struct.status !== BUILT
 			&& struct.stattype !== RESOURCE_EXTRACTOR
 			&& struct.stattype !== DEFENSE
-		)
+		);
 	});
 }
 
@@ -27,10 +27,10 @@ function countAndBuild(stat, count) {
 	return false;
 }
 
-//Return the best available artillery weapon defense structure.
+//Return the best available weapon defense structure.
 function getDefenseStructure() {
 	var stats = [];
-	var templates = subpersonalities[personality]["primaryWeapon"].defenses;
+	var templates = subpersonalities[personality].primaryWeapon.defenses;
 	for(var i = templates.length - 1; i > 0; --i) {
 		if(isStructureAvailable(templates[i].stat)) {
 			return templates[i].stat;
@@ -158,8 +158,8 @@ function checkUnfinishedStructures() {
 
 	if(struct.length > 0) {
 		struct.sort(distanceToBase);
-		var trucks = enumDroid(me, DROID_CONSTRUCT).filter(function(obj){
-			return conCanHelp(obj, struct[0].x, struct[0].y) || obj.order === DORDER_HELPBUILD
+		var trucks = enumDroid(me, DROID_CONSTRUCT).filter(function(obj) {
+			return conCanHelp(obj, struct[0].x, struct[0].y) || (obj.order === DORDER_HELPBUILD);
 		});
 
 		if(trucks.length > 0) {
@@ -193,9 +193,7 @@ function lookForOil() {
 				break;
 
 			var safe = enumRange(oils[i + s].x, oils[i + s].y, SAFE_RANGE, ENEMIES, false);
-			safe.filter(function(obj) { return (obj.type === DROID)
-				|| ((obj.type === STRUCTURE) && ((obj.stattype !== WALL)))
-			});
+			safe.filter(isUnsafeEnemyObject);
 			if (!safe.length && conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)
 				&& droidCanReach(droids[j], oils[i + s].x, oils[i + s].y)) {
 				orderDroidBuild(droids[j], DORDER_BUILD, structures.derricks, oils[i + s].x, oils[i + s].y);
@@ -422,7 +420,7 @@ function maintenance() {
 	if(countStruct(structures.derricks) < 4) { return false; }
 
 	for (var i = 0; i < list.length; ++i) {
-		if (isStructureAvailable(list[i]) && (struct == null)) {
+		if (isStructureAvailable(list[i]) && (struct === null)) {
 			switch(i) {
 				case 0: { structList = enumStruct(me, structures.gens).sort(distanceToBase);  break; }
 				case 1: { structList = enumStruct(me, structures.labs).sort(distanceToBase);  break; }
@@ -458,7 +456,7 @@ function maintenance() {
 
 		//Force the closest truck to upgrade the structure.
 		var trucks = enumDroid(me, DROID_CONSTRUCT).filter(function(tr) {
-			return conCanHelp(tr, struct.x, struct.y)
+			return conCanHelp(tr, struct.x, struct.y);
 		});
 		trucks.sort(distanceToBase);
 

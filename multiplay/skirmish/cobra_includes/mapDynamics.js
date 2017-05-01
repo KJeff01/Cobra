@@ -99,8 +99,8 @@ function CheckStartingBases() {
 		return true;
 	}
 
-	for(var i = 0; i < subpersonalities[personality]["primaryWeapon"].weapons.length; ++i) {
-		if(isDesignable(subpersonalities[personality]["primaryWeapon"].weapons[i].stat)) {
+	for(var i = 0; i < subpersonalities[personality].primaryWeapon.weapons.length; ++i) {
+		if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[i].stat)) {
 			return true;
 		}
 	}
@@ -118,7 +118,7 @@ function getDrumsAndArtifacts() {
 function countAllResources() {
 	var resources = enumFeature(-1, oilResources);
 	for(var i = 0; i < maxPlayers; ++i) {
-		var res = enumStruct(i, structures.derricks)
+		var res = enumStruct(i, structures.derricks);
 		for(var c = 0; c < res.length; ++c)
 			resources.push(res[c]);
 	}

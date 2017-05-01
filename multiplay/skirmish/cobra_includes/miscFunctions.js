@@ -3,7 +3,7 @@
 
 // Random number between 0 and max-1.
 function random(max) {
-	return (max <= 0) ? 0 : Math.floor(Math.random() * max)
+	return (max <= 0) ? 0 : Math.floor(Math.random() * max);
 }
 
 // Returns true if something is defined
@@ -19,6 +19,11 @@ function sortArrayNumeric(a, b) {
 //Sort an array from smallest to largest in terms of droid health.
 function sortDroidsByHealth(a, b) {
 	return a.health - b.health;
+}
+
+//Used for deciding if a truck will capture oil.
+function isUnsafeEnemyObject(obj) {
+	return (obj.type === DROID) || ((obj.type === STRUCTURE) && ((obj.stattype !== WALL)));
 }
 
 //Sort by distance to base and reverse.
@@ -53,7 +58,7 @@ function rangeStep(obj, visibility, player, invert) {
 			temp = enumRange(obj.x, obj.y, i, player, visibility);
 		}
 		if(temp.length > 0) {
-			temp.filter(function(targ) { return droidCanReach(obj, targ.x, targ.y) });
+			temp.filter(function(targ) { return droidCanReach(obj, targ.x, targ.y); });
 			if(isDefined(invert)) {
 				temp = sortAndReverseDistance(temp);
 			}
@@ -135,7 +140,7 @@ function isDesignable(item, body, prop) {
 		prop = "wheeled01";
 
 	var virDroid = makeTemplate(me, "Virtual Droid", body, prop, null, null, item, item);
-	return (virDroid != null) ? true : false;
+	return (virDroid !== null) ? true : false;
 }
 
 //See if power levels are low. This takes account of only the power obtained from the generators.
@@ -281,7 +286,7 @@ function countEnemyVTOL() {
 	var enemyVtolCount = 0;
 
 	for (var x = 0; x < enemies.length; ++x) {
-		enemyVtolCount += enumDroid(enemies[x]).filter(function(obj) { return isVTOL(obj) }).length;
+		enemyVtolCount += enumDroid(enemies[x]).filter(function(obj) { return isVTOL(obj); }).length;
 	}
 
 	return enemyVtolCount;

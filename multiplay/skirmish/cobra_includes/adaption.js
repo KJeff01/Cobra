@@ -10,7 +10,7 @@ function switchOffMG() {
 		return;
 	}
 
-	if(isDesignable(subpersonalities[personality]["primaryWeapon"].weapons[0].stat)) {
+	if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[0].stat)) {
 		turnOffMG = true;
 		removeTimer("switchOffMG");
 	}

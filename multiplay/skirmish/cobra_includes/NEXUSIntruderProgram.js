@@ -124,7 +124,7 @@ function malfunctionDroid() {
 	var enemies = playerAlliance(false);
 	var enemy = enemies[random(enemies.length)];
 
-	var droids = enumDroid(enemy).filter(function(d) { return d.droidType !== DROID_SENSOR });
+	var droids = enumDroid(enemy).filter(function(d) { return d.droidType !== DROID_SENSOR; });
 	if(droids.length > 2) {
 		if(random(2)) {
 			var aDroid = droids[random(droids.length)];
@@ -138,7 +138,7 @@ function malfunctionDroid() {
 				if(!random(4) && isDefined(droids[j])) {
 					var dr = droids[j];
 					var rg = enumRange(dr.x, dr.y, 40, ALL_PLAYERS, false).filter(function(obj) {
-						return obj.type === DROID && allianceExistsBetween(enemy, obj) || obj.player === enemy
+						return (obj.type === DROID) && allianceExistsBetween(obj, enemy) || (obj.player === enemy);
 					});
 					if(rg.length > 0) {
 						var newDroid = rg[random(rg.length)];
@@ -158,7 +158,7 @@ function analyzeRandomEnemyDroid() {
 	var enemies = playerAlliance(false);
 	var enemy = enemies[random(enemies.length)];
 	var enemyDroids = enumDroid(enemy).filter(function(d) {
-		return isVTOL(d) || d.droidType === DROID_WEAPON || d.droidType === DROID_CYBORG || d.droidType === DROID_SENSOR
+		return isVTOL(d) || (d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG) || (d.droidType === DROID_SENSOR);
 	});
 
 	//Steal a randomly selected player technology.

@@ -159,7 +159,7 @@ function findNearestEnemyStructure(droid, enemy, targets) {
 		enemy = getMostHarmfulPlayer();
 	}
 
-	var s = (isDefined(targets)) ? targets : enumStruct(enemy).filter(function(obj) { return obj.stattype !== WALL });
+	var s = (isDefined(targets)) ? targets : enumStruct(enemy).filter(function(obj) { return obj.stattype !== WALL; });
 	if(s.length === 0) {
 		s = enumStruct(enemy);
 	}
@@ -311,7 +311,7 @@ function battleTactics() {
 	const MIN_DERRICKS = 8;
 	const MIN_ATTACK_DROIDS = 5;
 	var droids = enumRange(startPositions[me].x, startPositions[me].y, 35, ENEMIES, true);
-	droids.filter(function(obj) { return (obj.type === DROID) && !isVTOL(obj) });
+	droids.filter(function(obj) { return (obj.type === DROID) && !isVTOL(obj); });
 
 	//Go defend the base.
 	if(droids.length > MIN_ENEMY_DROIDS) {

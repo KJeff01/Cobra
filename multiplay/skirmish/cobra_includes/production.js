@@ -10,13 +10,13 @@ function choosePersonalityWeapon(type) {
 
 	if(type === "TANK") {
 		switch(random(6)) {
-			case 0: weaps = subpersonalities[personality]["primaryWeapon"]; break;
+			case 0: weaps = subpersonalities[personality].primaryWeapon; break;
 			case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
-			case 2: weaps = subpersonalities[personality]["artillery"]; break;
+			case 2: weaps = subpersonalities[personality].artillery; break;
 			case 3: weaps = weaponStats.lasers; break;
-			case 4: weaps = subpersonalities[personality]["secondaryWeapon"]; isSecondary = true; break;
+			case 4: weaps = subpersonalities[personality].secondaryWeapon; isSecondary = true; break;
 			case 5: weaps = weaponStats.AS; break;
-			default: weaps = subpersonalities[personality]["primaryWeapon"]; break;
+			default: weaps = subpersonalities[personality].primaryWeapon; break;
 		}
 
 		if(isDefined(weaps)) {
@@ -58,18 +58,18 @@ function choosePersonalityWeapon(type) {
 	}
 	else if(type === "CYBORG") {
 		switch(random(4)) {
-			case 0: weaps = subpersonalities[personality]["primaryWeapon"]; break;
+			case 0: weaps = subpersonalities[personality].primaryWeapon; break;
 			case 1: weaps = weaponStats.flamers; break;
 			case 2: weaps = weaponStats.lasers; break;
-			case 3: weaps = subpersonalities[personality]["secondaryWeapon"]; break;
-			default: weaps = subpersonalities[personality]["primaryWeapon"]; break;
+			case 3: weaps = subpersonalities[personality].secondaryWeapon; break;
+			default: weaps = subpersonalities[personality].primaryWeapon; break;
 		}
 	}
 	else if(type === "VTOL") {
 		switch(random(3)) {
-			case 0: if((personality !== "AM") && (personality !== "AR")) { weaps = subpersonalities[personality]["primaryWeapon"]; } break;
+			case 0: if((personality !== "AM") && (personality !== "AR")) { weaps = subpersonalities[personality].primaryWeapon; } break;
 			case 1: weaps = weaponStats.lasers; break;
-			case 2: weaps = subpersonalities[personality]["secondaryWeapon"]; break;
+			case 2: weaps = subpersonalities[personality].secondaryWeapon; break;
 			default: weaps = weaponStats.lasers; break;
 		}
 
@@ -222,7 +222,7 @@ function produce() {
 	var reps = 0;
 	for(var i = 0; i < fac.length; ++i) {
 		var virDroid = getDroidProduction(fac[i]);
-		if(virDroid != null) {
+		if(virDroid !== null) {
 			if(virDroid.droidType === DROID_CONSTRUCT)
 				trucks += 1;
 			if(virDroid.droidType === DROID_SENSOR)

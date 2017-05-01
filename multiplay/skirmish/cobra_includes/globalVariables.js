@@ -8,7 +8,7 @@ const kineticResearch = [
 	"R-Cyborg-Metals06",
 	"R-Vehicle-Metals09",
 	"R-Cyborg-Metals09",
-]
+];
 
 const thermalResearch = [
 	"R-Vehicle-Armor-Heat02",
@@ -19,7 +19,7 @@ const thermalResearch = [
 	"R-Cyborg-Armor-Heat06",
 	"R-Vehicle-Armor-Heat09",
 	"R-Cyborg-Armor-Heat09",
-]
+];
 
 const ESSENTIALS = [
 	"R-Wpn-MG1Mk1",
@@ -61,7 +61,7 @@ const bodyResearch = [
 //	"R-Vehicle-Body09",
 	"R-Vehicle-Body10",
 	"R-Vehicle-Body14",
-]
+];
 
 const tankBody = [
 	"Body14SUP", // Dragon
@@ -105,7 +105,7 @@ const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC", "AL"];
 const repairTurrets = [
 	"HeavyRepair",
 	"LightRepair1",
-]
+];
 
 
 //List of Cobra personalities:
@@ -178,7 +178,7 @@ const subpersonalities = {
 			"R-Wpn-Mortar-Acc03",
 		],
 	},
-}
+};
 
 // Groups
 //TODO: Put artillery units in a different group.

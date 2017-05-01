@@ -64,13 +64,13 @@ function eventStructureBuilt(structure, droid) {
 	if(isDefined(droid) && (structure.stattype === RESOURCE_EXTRACTOR)) {
 		var nearbyOils = enumRange(droid.x, droid.y, 6, ALL_PLAYERS, false);
 		nearbyOils = nearbyOils.filter(function(obj) {
-			return obj.type === FEATURE && obj.stattype === OIL_RESOURCE
+			return (obj.type === FEATURE) && (obj.stattype === OIL_RESOURCE);
 		});
 		nearbyOils.sort(distanceToBase);
 		if(nearbyOils.length && isDefined(nearbyOils[0])) {
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
 		}
-		else if(getRealPower() > -150) {
+		else if(getRealPower() > -80) {
 			var undef;
 			buildStuff(getDefenseStructure(), undef, structure);
 		}
@@ -128,7 +128,7 @@ function eventDroidBuilt(droid, struct) {
 }
 
 function eventAttacked(victim, attacker) {
-	if((victim.player !== me) || (attacker == null) || allianceExistsBetween(attacker.player, victim.player)) {
+	if((victim.player !== me) || (attacker === null) || allianceExistsBetween(attacker.player, victim.player)) {
 		return;
 	}
 
@@ -172,7 +172,7 @@ function eventAttacked(victim, attacker) {
 		}
 		else {
 			units = enumRange(victim.x, victim.y, 18, me, false).filter(function(d) {
-				return (d.type === DROID) && ((d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG))
+				return (d.type === DROID) && ((d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG));
 			});
 
 			if(units.length < 5) {
@@ -180,7 +180,7 @@ function eventAttacked(victim, attacker) {
 			}
 		}
 
-		units.filter(function(dr) { return (dr !== victim) && droidCanReach(dr, attacker.x, attacker.y)});
+		units.filter(function(dr) { return (dr !== victim) && droidCanReach(dr, attacker.x, attacker.y); });
 
 		for (var i = 0; i < units.length; i++) {
 			if(isDefined(units[i]) && droidReady(units[i]) && isDefined(attacker))
