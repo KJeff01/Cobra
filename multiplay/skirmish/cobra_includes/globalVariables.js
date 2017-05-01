@@ -21,6 +21,40 @@ const thermalResearch = [
 	"R-Cyborg-Armor-Heat09",
 ]
 
+const ESSENTIALS = [
+	"R-Wpn-MG1Mk1",
+	"R-Wpn-MG-Damage02",
+	"R-Struc-PowerModuleMk1"
+];
+
+const PROPULSION = [
+	"R-Vehicle-Prop-Hover",
+	"R-Vehicle-Prop-Tracks"
+];
+
+const START_BODY = [
+	"R-Vehicle-Body05",
+	"R-Vehicle-Body11"
+];
+
+const REPAIR_UPGRADES = [
+	"R-Struc-RprFac-Upgrade01",
+	"R-Sys-MobileRepairTurretHvy",
+	"R-Sys-Autorepair-General",
+	"R-Struc-RprFac-Upgrade06"
+];
+
+const FLAMER = [
+	"R-Wpn-Flame2",
+	"R-Wpn-Flamer-ROF03",
+	"R-Wpn-Flamer-Damage09"
+];
+
+const STRUCTURE_DEFENSE_UPGRADES = [
+	"R-Struc-Materials09"
+	//"R-Defense-WallUpgrade12"
+];
+
 const bodyResearch = [
 	"R-Vehicle-Body11",
 //	"R-Vehicle-Body12",
@@ -67,12 +101,12 @@ const vtolBody = [
 
 const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC", "AL"];
 
-/*
+
 const repairTurrets = [
 	"HeavyRepair",
 	"LightRepair1",
 ]
-*/
+
 
 //List of Cobra personalities:
 //AC: Cannon/gauss/howitzer.
@@ -128,7 +162,6 @@ const subpersonalities = {
 		"res": [
 			"R-Wpn-MG2Mk1",
 			"R-Defense-Tower01",
-			"R-Wpn-MG-Damage04",
 		],
 	},
 	AL: {
@@ -153,6 +186,7 @@ var attackGroup; //All tanks units.
 var vtolGroup; //All vtol units.
 var cyborgGroup; //All cyborg units.
 var sensorGroup; //All sensor units.
+var repairGroup; //All repair units.
 //var commanderGroup; //All commander units.
 
 

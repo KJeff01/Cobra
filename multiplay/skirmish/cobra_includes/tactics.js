@@ -24,6 +24,17 @@ function vtolArmed(obj, percent) {
 	return false;
 }
 
+function ProtectClosestStructure(droid) {
+	var nearest = rangeStep(droid, false, me, true);
+	if(isDefined(nearest) && isDefined(droid) && droidReady(droid)) {
+		orderDroidLoc(droid, DORDER_SCOUT, nearest.x, nearest.y);
+		return true;
+	}
+	else {
+		orderDroid(droid, DORDER_RTB);
+	}
+}
+
 //Should the vtol attack when ammo is high enough?
 function vtolReady(droid) {
 	const ARMED_PERCENT = 1;
@@ -66,7 +77,7 @@ function chooseGroup() {
 	var tanks  = enumGroup(attackGroup);
 	var borgs = enumGroup(cyborgGroup);
 
-	if((borgs.length > MIN_DROID_COUNT) && (borgs.length >= tanks.length)) {
+	if((borgs.length > MIN_DROID_COUNT) && (borgs.length >= tanks.length) && random(2)) {
 		return borgs;
 	}
 	else {
@@ -269,21 +280,17 @@ function spyRoutine() {
 
 //Attack enemy oil when tank group is large enough.
 function attackEnemyOil() {
-	//Attack most harmful player's derricks if they have been doing a lot of damage.
-	var mostHarmful = getMostHarmfulPlayer();
-	if(grudgeCount[mostHarmful] > 300) {
-		var derrs = findEnemyDerricks(mostHarmful);
-		attackWithGroup(chooseGroup(), mostHarmful, derrs);
+	const MIN_ATTACK_DROIDS = 5;
+	var who = chooseGroup();
+	var tmp = 0;
+	if(who.length < MIN_ATTACK_DROIDS) {
 		return;
 	}
 
-	//Else find whatever enemy derrick is closest.
-	var who = chooseGroup();
-	var tmp = 0;
-	if(who.length < 5) { return false; }
-
 	var derr = findEnemyDerricks();
-	if(!derr.length) { return false; }
+	if(!derr.length) {
+		return;
+	}
 	derr.sort(distanceToBase);
 
 	for(var i = 0; i < who.length; ++i) {
@@ -294,30 +301,48 @@ function attackEnemyOil() {
 			if(isDefined(derr[tmp]) && droidCanReach(who[i], derr[tmp].x, derr[tmp].y)) {
 				orderDroidObj(who[i], DORDER_ATTACK, derr[tmp]);
 			}
-			else {
-				break;
-			}
 		}
 	}
 }
 
 //Defend or attack.
 function battleTactics() {
-	const MIN_ENEMY_DROIDS = 4;
-	var droids = enumRange(startPositions[me].x, startPositions[me].y, 30, ENEMIES, true);
+	const MIN_ENEMY_DROIDS = 3;
+	const MIN_DERRICKS = 8;
+	const MIN_ATTACK_DROIDS = 5;
+	var droids = enumRange(startPositions[me].x, startPositions[me].y, 35, ENEMIES, true);
 	droids.filter(function(obj) { return (obj.type === DROID) && !isVTOL(obj) });
 
 	//Go defend the base.
 	if(droids.length > MIN_ENEMY_DROIDS) {
 		droids.sort(distanceToBase);
 		var myDroids = enumGroup(attackGroup);
+		myDroids = appendListElements(myDroids, enumGroup(cyborgGroup));
+		if(myDroids.length < MIN_ATTACK_DROIDS) {
+			return;
+		}
+
 		var player = droids[0].player;
 		for(var i = 0; i < myDroids.length; ++i) {
 			findNearestEnemyDroid(myDroids[i], player);
 		}
 	}
 	else {
-		attackEnemyOil();
+		if((countStruct(structures.derricks) < MIN_DERRICKS) || (getRealPower() < -200)) {
+			attackEnemyOil();
+		}
+		else {
+			var who = chooseGroup();
+			if(who.length < MIN_ATTACK_DROIDS) {
+				return;
+			}
+
+			for(var i = 0; i < who.length; ++i) {
+				if(isDefined(who[i]) && droidReady(who[i])) {
+					findNearestEnemyStructure(who[i]);
+				}
+			}
+		}
 	}
 }
 
@@ -325,7 +350,9 @@ function battleTactics() {
 function recycleObsoleteDroids() {
 	var tanks = enumGroup(attackGroup);
 	//var vtols = enumGroup(vtolGroup);
-	var systems = enumGroup(sensorGroup).concat(enumDroid(me, DROID_CONSTRUCT));
+	var systems = enumGroup(sensorGroup);
+	systems = appendListElements(systems, enumGroup(repairGroup));
+	systems = appendListElements(systems, enumDroid(me, DROID_CONSTRUCT));
 	var temp = false;
 
 	if(countStruct(structures.factories) > 1) {
@@ -388,3 +415,32 @@ function commandTactics() {
 	}
 }
 */
+
+//Tell the repair group to go repair other droids.
+function repairDamagedDroids() {
+	var reps = enumGroup(repairGroup);
+	if(!reps.length) {
+		return;
+	}
+
+	var myDroids = appendListElements(myDroids, enumGroup(attackGroup));
+	myDroids = appendListElements(myDroids, enumGroup(cyborgGroup));
+	if(!myDroids.length) {
+		return;
+	}
+
+	myDroids.sort(sortDroidsByHealth);
+
+	for(var i = 0; i < reps.length; ++i) {
+		for(var j = 0; j < myDroids.length; ++j) {
+			if(isDefined(reps[i]) && !repairDroid(reps[i], false) && isDefined(myDroids[j]) && (Math.ceil(myDroids[j].health) < 100)) {
+				orderDroidLoc(reps[i], DORDER_SCOUT, myDroids[j].x, myDroids[j].y);
+				if(distBetweenTwoPoints(reps[i].x, reps[i].y, myDroids[j].x, myDroids[j].y) > 6) {
+					orderDroidLoc(reps[i], DORDER_MOVE, myDroids[j].x, myDroids[j].y);
+					myDroids.shift(); //remove this one from the array.
+					break; //Go to next repair
+				}
+			}
+		}
+	}
+}

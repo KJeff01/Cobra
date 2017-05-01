@@ -7,6 +7,7 @@ function eventGameInit() {
 	vtolGroup = newGroup();
 	cyborgGroup = newGroup();
 	sensorGroup = newGroup();
+	repairGroup = newGroup();
 	//commanderGroup = newGroup();
 	lastMsg = "eventGameInit";
 
@@ -14,6 +15,7 @@ function eventGameInit() {
 	var cyborgs = enumDroid(me, DROID_CYBORG);
 	var vtols = enumDroid(me).filter(function(obj) { return isVTOL(obj) });
 	var sensors = enumDroid(me, DROID_SENSOR);
+	var repairs = enumDroid(me, DROID_REPAIR);
 	//var coms = enumDroid(me, DROID_COMMAND);
 
 	for(var i = 0; i < tanks.length; ++i) {
@@ -27,6 +29,9 @@ function eventGameInit() {
 	}
 	for(var i = 0; i < sensors.length; ++i) {
 		groupAdd(sensorGroup, sensors[i]);
+	}
+	for(var i = 0; i < repairs.length; ++i) {
+		groupAdd(repairGroup, repairs[i]);
 	}
 	/*
 	for(var i = 0; i < coms.length; ++i) {
@@ -43,16 +48,18 @@ function eventStartLevel() {
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
 
 	setTimer("buildOrder", THINK_LONGER + 320 + 3 * random(60));
-	setTimer("produce", THINK_LONGER + 700 + 3 * random(70));
-	//setTimer("commandTactics", THINK_LONGER + 2000 + 3 * random(60));
-	setTimer("switchOffMG", THINK_LONGER + 3000 + 5 * random(60));
-	setTimer("battleTactics", THINK_LONGER + 5000 + 5 * random(60));
+	setTimer("repairDamagedDroids", THINK_LONGER + 500 + 4 * random(60));
+	setTimer("produce", THINK_LONGER + 750 + 3 * random(70));
+	setTimer("battleTactics", THINK_LONGER + 2000 + 5 * random(60));
+	//setTimer("commandTactics", THINK_LONGER + 2800 + 3 * random(60));
+	setTimer("switchOffMG", THINK_LONGER + 3000 + 5 * random(60)); //May remove itself.
 	setTimer("spyRoutine", THINK_LONGER + 8000 + 4 * random(60));
-	setTimer("nexusWave", THINK_LONGER + 10000 + 3 * random(70));
+	setTimer("nexusWave", THINK_LONGER + 10000 + 3 * random(70)); //May remove itself.
 	setTimer("checkMood", THINK_LONGER + 20000 + 4 * random(70));
 }
 
-//This is meant to check for nearby oil resources next to the construct.
+//This is meant to check for nearby oil resources next to the construct. also
+//defend our derrick if possible.
 function eventStructureBuilt(structure, droid) {
 	if(isDefined(droid) && (structure.stattype === RESOURCE_EXTRACTOR)) {
 		var nearbyOils = enumRange(droid.x, droid.y, 6, ALL_PLAYERS, false);
@@ -60,33 +67,28 @@ function eventStructureBuilt(structure, droid) {
 			return obj.type === FEATURE && obj.stattype === OIL_RESOURCE
 		});
 		nearbyOils.sort(distanceToBase);
-		if(nearbyOils.length && isDefined(nearbyOils[0]))
+		if(nearbyOils.length && isDefined(nearbyOils[0])) {
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
+		}
+		else if(getRealPower() > -150) {
+			var undef;
+			buildStuff(getDefenseStructure(), undef, structure);
+		}
 	}
 	else {
-		if(checkUnfinishedStructures()) { return false; }
-		if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return false; }
+		if(checkUnfinishedStructures()) { return; }
+		if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return; }
 	}
 }
 
-//Make droids patrol around random oil derricks, else return to base if none.
+//Make droids attack hidden close by enemy object.
 function eventDroidIdle(droid) {
 	if(droid.player === me) {
 		if(isDefined(droid) && ((droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid))) {
-				var derr = enumStruct(me, structures.derricks);
-				if(derr.length > 0) {
-					var newDerrs = [];
-					for(var t = 0; t < derr.length; ++t)
-						if(distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, derr[t].x, derr[t].y) > 12)
-							newDerrs.push(derr[t]);
-
-					if(newDerrs.length > 0) {
-						derr = newDerrs[random(newDerrs.length)];
-						orderDroidLoc(droid, DORDER_SCOUT, derr.x, derr.y);
-					}
-				}
-				else {
-					orderDroid(droid, DORDER_RTB); //wait for death.
+				var enemyObjects = enumRange(droid.x, droid.y, 20, ENEMIES, false);
+				if(enemyObjects.length > 0) {
+					enemyObjects.sort(distanceToBase);
+					orderDroidObj(droid, DORDER_ATTACK, enemyObjects[0]);
 				}
 			}
 		}
@@ -100,6 +102,9 @@ function eventDroidBuilt(droid, struct) {
 		}
 		else if(droid.droidType === DROID_SENSOR) {
 			groupAdd(sensorGroup, droid);
+		}
+		else if(droid.droidType === DROID_REPAIR) {
+			groupAdd(repairGroup, droid);
 		}
 		else if(droid.droidType === DROID_CYBORG) {
 			groupAdd(cyborgGroup, droid);
@@ -127,8 +132,6 @@ function eventAttacked(victim, attacker) {
 		return;
 	}
 
-	if(stopExecution(0, 40) === true) { return; }
-
 	if(isDefined(getScavengerNumber()) && (attacker.player === getScavengerNumber())) {
 		if(isDefined(victim) && isDefined(attacker) && (victim.type === DROID) && !repairDroid(victim, false)) {
 			if((victim.droidType === DROID_WEAPON) || (victim.droidType === DROID_CYBORG))
@@ -142,7 +145,7 @@ function eventAttacked(victim, attacker) {
 
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player)) {
 		if(grudgeCount[attacker.player] < 50000)
-			grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 15 : 5;
+			grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 8;
 
 		//Check if a droid needs repair.
 		if((victim.type === DROID) && countStruct(structures.extras[0])) {
@@ -153,7 +156,6 @@ function eventAttacked(victim, attacker) {
 			else {
 				//Try to repair.
 				if(Math.floor(victim.health) < 34) {
-					orderDroidLoc(victim, DORDER_MOVE, startPositions[me].x, startPositions[me].y);
 					repairDroid(victim, true);
 				}
 				else {
@@ -161,6 +163,8 @@ function eventAttacked(victim, attacker) {
 				}
 			}
 		}
+
+		if(stopExecution(0, 110) === true) { return; }
 
 		var units;
 		if(victim.type === STRUCTURE) {
@@ -176,10 +180,10 @@ function eventAttacked(victim, attacker) {
 			}
 		}
 
-		units.filter(function(dr) { return dr !== victim });
+		units.filter(function(dr) { return (dr !== victim) && droidCanReach(dr, attacker.x, attacker.y)});
 
 		for (var i = 0; i < units.length; i++) {
-			if(isDefined(units[i]) && droidReady(units[i]) && isDefined(attacker) && droidCanReach(units[i], attacker.x, attacker.y))
+			if(isDefined(units[i]) && droidReady(units[i]) && isDefined(attacker))
 				orderDroidObj(units[i], DORDER_ATTACK, attacker);
 		}
 	}

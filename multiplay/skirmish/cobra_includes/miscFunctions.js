@@ -16,6 +16,11 @@ function sortArrayNumeric(a, b) {
 	return a - b;
 }
 
+//Sort an array from smallest to largest in terms of droid health.
+function sortDroidsByHealth(a, b) {
+	return a.health - b.health;
+}
+
 //Sort by distance to base and reverse.
 function sortAndReverseDistance(arr) {
 	return (arr.sort(distanceToBase)).reverse();
@@ -34,16 +39,27 @@ function appendListElements(list, items) {
 }
 
 //Control the amount of objects being put in memory so we do not create a large array of objects.
-//Returns the closest enemy object from Cobra base.
-function rangeStep(obj, visibility) {
-	const step = 2000;
+//Returns closest/farthest object, depending on parmeters supplied.
+function rangeStep(obj, visibility, player, invert) {
+	const STEP = 2000;
 	var target;
+	var temp;
 
-	for(var i = 0; i <= 30000; i += step) {
-		var temp = enumRange(obj.x, obj.y, i, ENEMIES, visibility);
+	for(var i = 0; i <= 30000; i += STEP) {
+		if(!isDefined(player)) {
+			temp = enumRange(obj.x, obj.y, i, ENEMIES, visibility);
+		}
+		else {
+			temp = enumRange(obj.x, obj.y, i, player, visibility);
+		}
 		if(temp.length > 0) {
 			temp.filter(function(targ) { return droidCanReach(obj, targ.x, targ.y) });
-			temp.sort(distanceToBase);
+			if(isDefined(invert)) {
+				temp = sortAndReverseDistance(temp);
+			}
+			else {
+				temp.sort(distanceToBase);
+			}
 			return temp[0];
 		}
 	}

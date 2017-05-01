@@ -30,9 +30,7 @@ function initializeResearchLists() {
 	extraTech = updateResearchList(subpersonalities[personality]["primaryWeapon"].extras);
 	secondaryWeaponTech = updateResearchList(subpersonalities[personality]["secondaryWeapon"].weapons);
 	secondaryWeaponExtra = updateResearchList(subpersonalities[personality]["secondaryWeapon"].extras);
-	defenseTech = updateResearchList(subpersonalities[personality]["artillery"].defenses);
-	defenseTech.push("R-Struc-Materials09");
-	defenseTech.push("R-Defense-WallUpgrade12");
+	defenseTech = updateResearchList(subpersonalities[personality]["primaryWeapon"].defenses);
 	cyborgWeaps = updateResearchList(subpersonalities[personality]["primaryWeapon"].templates);
 	cyborgWeaps = appendListElements(cyborgWeaps, updateResearchList(weaponStats.lasers.templates));
 	cyborgWeaps = appendListElements(cyborgWeaps, updateResearchList(subpersonalities[personality]["secondaryWeapon"].templates));
@@ -64,21 +62,23 @@ function evalResearch(lab, list) {
 //Lastly we get the plasma cannon and that allows uplink/laser sat and the emp cannon.
 
 function eventResearched() {
-	if(!isDefined(techlist) || !isDefined(turnOffMG) || !isDefined(turnOffCyborgs)) { return; }
-	if(getRealPower() < -400) { return; }
-
-	const ESSENTIALS = [ "R-Wpn-MG1Mk1", "R-Wpn-MG-Damage02", "R-Struc-PowerModuleMk1" ];
-	const PROPULSION = [ "R-Vehicle-Prop-Hover", "R-Vehicle-Prop-Tracks" ];
-	const START_BODY = [ "R-Vehicle-Body05", "R-Vehicle-Body11" ];
-	const REPAIR_UPGRADES = [ "R-Sys-Autorepair-General", "R-Struc-RprFac-Upgrade06" ]
-	const FLAMER = [ "R-Wpn-Flame2", "R-Wpn-Flamer-ROF03", "R-Wpn-Flamer-Damage09" ]
+	if(!isDefined(techlist) || !isDefined(turnOffMG) || !isDefined(turnOffCyborgs)) {
+		return;
+	}
+	if(getRealPower() < -400) {
+		return;
+	}
 
 	var lablist = enumStruct(me, structures.labs);
 	for (var i = 0; i < lablist.length; ++i) {
 		var lab = lablist[i];
+
 		var found = false;
 		if (lab.status === BUILT && structureIdle(lab)) {
 			found = pursueResearch(lab, ESSENTIALS);
+
+			if(!found && (personality === "AL"))
+				found = evalResearch(lab, techlist);
 
 			//To get all the good stuff as fast as possible.
 			if(!found)
@@ -89,13 +89,11 @@ function eventResearched() {
 			//Early research.
 			if(!found)
 				found = pursueResearch(lab, "R-Vehicle-Prop-Halftracks");
-			if(!found)
+			if(!found && (personality !== "AL"))
 				found = evalResearch(lab, techlist);
 
 			if(!found)
 				found = evalResearch(lab, START_BODY);
-			if(!found)
-				found = evalResearch(lab, REPAIR_UPGRADES);
 			if(!found)
 				found = evalResearch(lab, PROPULSION);
 
@@ -109,6 +107,9 @@ function eventResearched() {
 						found = pursueResearch(lab, "R-Vehicle-Metals09");
 				}
 			}
+
+			if(!found)
+				found = evalResearch(lab, REPAIR_UPGRADES);
 
 			if(!turnOffMG || (personality === "AM")) {
 				if(!found)
@@ -139,9 +140,15 @@ function eventResearched() {
 				if(!found)
 					found = evalResearch(lab, extraTech);
 				if(!found)
-					found = evalResearch(lab, secondaryWeaponTech);
-				if(!found)
-					found = evalResearch(lab, secondaryWeaponExtra);
+					found = evalResearch(lab, defenseTech);
+
+				var len = subpersonalities[personality]["primaryWeapon"].weapons.length - 1;
+				if(isDesignable(subpersonalities[personality]["primaryWeapon"].weapons[len].stat)) {
+					if(!found)
+						found = evalResearch(lab, secondaryWeaponTech);
+					if(!found)
+						found = evalResearch(lab, secondaryWeaponExtra);
+				}
 			}
 
 			if(random(4)) {
@@ -151,13 +158,11 @@ function eventResearched() {
 					found = evalResearch(lab, laserExtra);
 			}
 
-			if(random(2)) {
+			if(random(3)) {
 				if(!found)
 					found = evalResearch(lab, artilleryTech);
 				if(!found)
 					found = evalResearch(lab, artillExtra);
-				if(!found)
-					found = evalResearch(lab, defenseTech);
 			}
 
 			if(countEnemyVTOL()) {
@@ -170,13 +175,15 @@ function eventResearched() {
 			if(!found && random(2))
 				found = evalResearch(lab, bodyResearch);
 
-			if(random(2)) {
+			if(random(3)) {
 				if(!found)
 					found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade06");
 			}
 
 			if(!found)
 				found = pursueResearch(lab, "R-Sys-Sensor-WS");
+			if(!found)
+				found = evalResearch(lab, STRUCTURE_DEFENSE_UPGRADES);
 
 
 			if(!turnOffCyborgs) {

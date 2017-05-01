@@ -92,6 +92,10 @@ function useHover(weap) {
 		return false;
 	}
 
+	if(forceHover) {
+		return true;
+	}
+
 	var useHover = false;
 	for(var i = 0; i < weap.length; ++i) {
 		if((weap[i] === "Flame1Mk1") || (weap[i] === "Flame2") || (weap[i] === "PlasmiteFlamer")) {
@@ -110,7 +114,7 @@ function useHover(weap) {
 		}
 	}
 
-	return ((useHover === true) || (forceHover === true) || (random(101) <= 15));
+	return ((useHover === true) || (random(101) <= 15));
 }
 
 //Create a ground attacker tank with a heavy body when possible.
@@ -215,6 +219,7 @@ function produce() {
 	//Look what is being queued and consider unit production later.
 	var trucks = 0;
 	var sens = 0;
+	var reps = 0;
 	for(var i = 0; i < fac.length; ++i) {
 		var virDroid = getDroidProduction(fac[i]);
 		if(virDroid != null) {
@@ -222,6 +227,8 @@ function produce() {
 				trucks += 1;
 			if(virDroid.droidType === DROID_SENSOR)
 				sens += 1;
+			if(virDroid.droidType === DROID_REPAIR)
+				reps += 1;
 		}
 	}
 
@@ -235,6 +242,9 @@ function produce() {
 			}
 			else if((enumGroup(attackGroup).length > 10) && ((enumGroup(sensorGroup).length + sens) < 2)) {
 				buildSys(fac[x]);
+			}
+			else if((enumGroup(attackGroup).length > 6) && ((enumGroup(repairGroup).length + reps) < 3)) {
+				buildSys(fac[x], repairTurrets);
 			}
 			else {
 				//Do not produce weak body units if we can give this factory a module.

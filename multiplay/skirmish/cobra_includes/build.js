@@ -1,8 +1,11 @@
 
-//Returns all unfinished structures.
+//Returns unfinished structures that are not defenses or derricks.
 function unfinishedStructures() {
 	return enumStruct(me).filter(function(struct) {
-		return (struct.status !== BUILT) && (struct.stattype !== RESOURCE_EXTRACTOR)
+		return (struct.status !== BUILT
+			&& struct.stattype !== RESOURCE_EXTRACTOR
+			&& struct.stattype !== DEFENSE
+		)
 	});
 }
 
@@ -24,7 +27,7 @@ function countAndBuild(stat, count) {
 	return false;
 }
 
-//Return the best available primary weapon defense strcuture.
+//Return the best available artillery weapon defense structure.
 function getDefenseStructure() {
 	var stats = [];
 	var templates = subpersonalities[personality]["primaryWeapon"].defenses;
@@ -40,11 +43,15 @@ function getDefenseStructure() {
 
 //Find the closest derrick that is not guarded by a structure.
 function protectUnguardedDerricks() {
+	if(gameTime < 25000) {
+		return false;
+	}
+
 	var derrs = enumStruct(me, structures.derricks);
 
 	if(derrs.length) {
 		var undefended = [];
-		derrs.sort(distanceToBase);
+		derrs = sortAndReverseDistance(derrs);
 
 		for(var i = 0; i < derrs.length; ++i) {
 			var found = false;
@@ -148,11 +155,11 @@ function buildStuff(struc, module, defendThis) {
 //Check for unfinshed structures and help complete them.
 function checkUnfinishedStructures() {
 	var struct = unfinishedStructures();
-	var breakOut = enumFeature(-1, oilResources).length;
 
 	if(struct.length > 0) {
+		struct.sort(distanceToBase);
 		var trucks = enumDroid(me, DROID_CONSTRUCT).filter(function(obj){
-			return conCanHelp(obj, struct[0].x, struct[0].y)
+			return conCanHelp(obj, struct[0].x, struct[0].y) || obj.order === DORDER_HELPBUILD
 		});
 
 		if(trucks.length > 0) {
@@ -191,8 +198,8 @@ function lookForOil() {
 			});
 			if (!safe.length && conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)
 				&& droidCanReach(droids[j], oils[i + s].x, oils[i + s].y)) {
-				droids[j].busy = true;
 				orderDroidBuild(droids[j], DORDER_BUILD, structures.derricks, oils[i + s].x, oils[i + s].y);
+				droids[j].busy = true;
 				s += 1;
 			}
 		}
@@ -201,7 +208,7 @@ function lookForOil() {
 
 //Build either air defenses at the base or defend a derrick.
 function buildDefenses() {
-	if((playerPower(me) < 90)) {
+	if((playerPower(me) < 40)) {
 		return false;
 	}
 
@@ -221,7 +228,7 @@ function buildDefenses() {
 		}
 	}
 
-	if((getRealPower() > -80) && protectUnguardedDerricks()) {
+	if(protectUnguardedDerricks()) {
 		return true;
 	}
 
@@ -277,16 +284,19 @@ function buildPhase2() {
 			return true;
 		}
 
-		if(countAndBuild(structures.factories, 3)) {
+		if(countAndBuild(structures.factories, 2)) {
 			return true;
 		}
 
-		if(!researchComplete && (getRealPower() > -120) && countAndBuild(structures.labs, 5)) {
+		if(!researchComplete && (gameTime > 210000) && (getRealPower() > -450) && countAndBuild(structures.labs, 5)) {
+			return true;
+		}
+		if((getRealPower() > -80) && countAndBuild(structures.factories, 3)) {
 			return true;
 		}
 
 		if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
-			if (componentAvailable("Body11ABT") && countAndBuild(structures.templateFactories, 2)) {
+			if (componentAvailable("Body11ABT") && (countStruct(structures.derricks) > 5) && countAndBuild(structures.templateFactories, 2)) {
 				return true;
 			}
 		}
@@ -366,13 +376,13 @@ function buildPhase5() {
 
 //Build the minimum repairs and any vtol pads.
 function buildExtras() {
-	if(!isStructureAvailable("A0PowMod1")) {
+	if(!isStructureAvailable("A0PowMod1") || (gameTime < 80000)) {
 		return false;
 	}
 
 	//Build repair facilities based upon generator count.
 	if(isStructureAvailable(structures.extras[0])) {
-		var limit = countStruct(structures.gens);
+		var limit = (getRealPower() > -80) ? countStruct(structures.gens) : 1;
 		if(limit > 2) {
 			limit = 2;
 		}
@@ -389,18 +399,18 @@ function buildExtras() {
 
 //Cobra's unique build decisions
 function buildOrder() {
-	if(recycleObsoleteDroids()) { return false; }
-	if(checkUnfinishedStructures()) { return false; }
-	if(buildPhase1()) { return false; }
-	if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return false; }
+	if(recycleObsoleteDroids()) { return; }
+	if(checkUnfinishedStructures()) { return; }
+	if(buildPhase1()) { return; }
+	if(buildExtras()) { return; }
+	if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return; }
 	lookForOil();
-	if(getRealPower() < -600) { return false; }
-	if(buildExtras()) { return false; }
-	if(buildPhase2()) { return false; }
-	if(buildDefenses()) { return false; }
-	if(buildPhase3()) { return false; }
-	if(buildPhase4()) { return false; }
-	if(buildPhase5()) { return false; }
+	if(getRealPower() < -600) { return; }
+	if(buildPhase2()) { return; }
+	if(buildDefenses()) { return; }
+	if(buildPhase3()) { return; }
+	if(buildPhase4()) { return; }
+	if(buildPhase5()) { return; }
 }
 
 //Check if a building has modules to be built
@@ -425,7 +435,7 @@ function maintenance() {
 				if (structList[c].modules < mods[i]) {
 					//Only build the last factory module if we have a heavy body
 					if(structList[c].modules === 1) {
-						if((i === 2) && !componentAvailable("Body11ABT")) {
+						if((i === 2) && (getRealPower() < -150) && !componentAvailable("Body11ABT")) {
 							continue;
 						}
 						//Build last vtol factory module once Cobra gets retribution (or has good power levels)
