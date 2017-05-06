@@ -5,7 +5,7 @@
 function choosePersonalityWeapon(type) {
 	var weaps;
 	var weaponList = [];
-	var isSecondary = false;
+	var isSecondary = 0; //Prevent secondaryWeapon first element from being built.
 	if(!isDefined(type)) { type = "TANK"; }
 
 	if(type === "TANK") {
@@ -14,28 +14,15 @@ function choosePersonalityWeapon(type) {
 			case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
 			case 2: weaps = subpersonalities[personality].artillery; break;
 			case 3: weaps = weaponStats.lasers; break;
-			case 4: weaps = subpersonalities[personality].secondaryWeapon; isSecondary = true; break;
+			case 4: weaps = subpersonalities[personality].secondaryWeapon; isSecondary = 1; break;
 			case 5: weaps = weaponStats.AS; break;
 			default: weaps = subpersonalities[personality].primaryWeapon; break;
 		}
 
 		if(isDefined(weaps)) {
-			for(var i = weaps.weapons.length - 1; i >= 0; --i) {
+			for(var i = weaps.weapons.length - 1; i >= isSecondary; --i) {
 				weaponList.push(weaps.weapons[i].stat);
 			}
-
-			//Secondary weapons are late and should only be produced without the
-			//first weapon in its line.
-			if((isSecondary === true) && (weaponList.length > 1)) {
-				weaponList.shift();
-			}
-
-			/*
-			if((enumGroup(attackGroup).length > 30) && (enumGroup(commanderGroup).length < 2)
-				&& countStruct("A0ComDroidControl") && componentAvailable("CommandTurret1")) {
-					weaponList = ["CommandTurret1"];
-			}
-			*/
 
 			//on hard difficulty and above.
 			if(componentAvailable("tracked01") && (random(101) <= 1)) {
@@ -57,19 +44,21 @@ function choosePersonalityWeapon(type) {
 		}
 	}
 	else if(type === "CYBORG") {
-		switch(random(4)) {
+		switch(random(5)) {
 			case 0: weaps = subpersonalities[personality].primaryWeapon; break;
 			case 1: weaps = weaponStats.flamers; break;
 			case 2: weaps = weaponStats.lasers; break;
 			case 3: weaps = subpersonalities[personality].secondaryWeapon; break;
+			case 4: weaps = subpersonalities[personality].artillery; break;
 			default: weaps = subpersonalities[personality].primaryWeapon; break;
 		}
 	}
 	else if(type === "VTOL") {
-		switch(random(3)) {
+		switch(random(4)) {
 			case 0: if((personality !== "AM") && (personality !== "AR")) { weaps = subpersonalities[personality].primaryWeapon; } break;
 			case 1: weaps = weaponStats.lasers; break;
 			case 2: weaps = subpersonalities[personality].secondaryWeapon; break;
+			case 3: weaps = weaponStats.bombs; break;
 			default: weaps = weaponStats.lasers; break;
 		}
 
@@ -164,7 +153,7 @@ function buildSys(struct, weap) {
 	if(!isDefined(weap)) {
 		weap = ["Sensor-WideSpec", "SensorTurret1Mk1"];
 	}
-	if (buildDroid(struct, "System unit", sysBody, sysProp, "", "", weap)) {
+	if (buildDroid(struct, weap + " System unit", sysBody, sysProp, "", "", weap)) {
 		return true;
 	}
 	return false;
@@ -185,7 +174,9 @@ function buildCyborg(fac) {
 		body = weapon.templates[x].body;
 		prop = weapon.templates[x].prop;
 		weap = weapon.templates[x].weapons[0];
-		if(buildDroid(fac, "Cyborg", body, prop, "", "", weap, weap)) {
+
+		//skip weak flamer cyborg.
+		if((weap !== "CyborgFlamer01") && buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap, weap)) {
 			return true;
 		}
 	}
@@ -234,13 +225,13 @@ function produce() {
 
 	for(var x = 0; x < fac.length; ++x) {
 		if(isDefined(fac[x]) && structureIdle(fac[x])) {
-			if (((countDroid(DROID_CONSTRUCT, me) + trucks) < 4)) {
+			if ((countDroid(DROID_CONSTRUCT, me) + trucks) < 4) {
 				if(playerAlliance(true).length && (countDroid(DROID_CONSTRUCT, me) < 2) && (gameTime > 10000)) {
 					sendChatMessage("need truck", ALLIES);
 				}
 				buildSys(fac[x], "Spade1Mk1");
 			}
-			else if((enumGroup(attackGroup).length > 10) && ((enumGroup(sensorGroup).length + sens) < 2)) {
+			else if((enumGroup(sensorGroup).length + sens) < 2) {
 				buildSys(fac[x]);
 			}
 			else if((enumGroup(attackGroup).length > 6) && ((enumGroup(repairGroup).length + reps) < 3)) {

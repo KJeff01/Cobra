@@ -37,6 +37,7 @@ function adaptToMap() {
 	const ALLY_COUNT = playerAlliance(true).length;
 	const MAP_OIL_LEVEL = mapOilLevel();
 	const T3_MATCH = isDesignable("Howitzer03-Rot");
+	const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC", "AL"];
 
 	if(!T3_MATCH && ((MAP_OIL_LEVEL === "LOW") || (enumStruct(me).length <= 1))) {
 		choice = ADAPT_PERSONALITIES[random(2)]; // AM, AR.

@@ -8,36 +8,15 @@ function eventGameInit() {
 	cyborgGroup = newGroup();
 	sensorGroup = newGroup();
 	repairGroup = newGroup();
-	//commanderGroup = newGroup();
+	artilleryGroup = newGroup();
 	lastMsg = "eventGameInit";
 
-	var tanks = enumDroid(me, DROID_WEAPON);
-	var cyborgs = enumDroid(me, DROID_CYBORG);
-	var vtols = enumDroid(me).filter(function(obj) { return isVTOL(obj) });
-	var sensors = enumDroid(me, DROID_SENSOR);
-	var repairs = enumDroid(me, DROID_REPAIR);
-	//var coms = enumDroid(me, DROID_COMMAND);
-
-	for(var i = 0; i < tanks.length; ++i) {
-		groupAdd(attackGroup, tanks[i]);
-	}
-	for(var i = 0; i < cyborgs.length; ++i) {
-		groupAdd(cyborgGroup, cyborgs[i]);
-	}
-	for(var i = 0; i < vtols.length; ++i) {
-		groupAdd(vtolGroup, vtols[i]);
-	}
-	for(var i = 0; i < sensors.length; ++i) {
-		groupAdd(sensorGroup, sensors[i]);
-	}
-	for(var i = 0; i < repairs.length; ++i) {
-		groupAdd(repairGroup, repairs[i]);
-	}
-	/*
-	for(var i = 0; i < coms.length; ++i) {
-		groupAdd(commanderGroup, coms[i]);
-	}
-	*/
+	addDroidsToGroup(attackGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return !obj.isCB; }));
+	addDroidsToGroup(cyborgGroup, enumDroid(me, DROID_CYBORG));
+	addDroidsToGroup(vtolGroup, enumDroid(me).filter(function(obj) { return isVTOL(obj); }));
+	addDroidsToGroup(sensorGroup, enumDroid(me, DROID_SENSOR));
+	addDroidsToGroup(repairGroup, enumDroid(me, DROID_REPAIR));
+	addDroidsToGroup(artilleryGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return obj.isCB; }));
 }
 
 //Initialze global variables and setup timers.
@@ -48,12 +27,11 @@ function eventStartLevel() {
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
 
 	setTimer("buildOrder", THINK_LONGER + 320 + 3 * random(60));
-	setTimer("repairDamagedDroids", THINK_LONGER + 500 + 4 * random(60));
+	setTimer("repairDamagedDroids", THINK_LONGER + 400 + 4 * random(60));
 	setTimer("produce", THINK_LONGER + 750 + 3 * random(70));
 	setTimer("battleTactics", THINK_LONGER + 2000 + 5 * random(60));
-	//setTimer("commandTactics", THINK_LONGER + 2800 + 3 * random(60));
 	setTimer("switchOffMG", THINK_LONGER + 3000 + 5 * random(60)); //May remove itself.
-	setTimer("spyRoutine", THINK_LONGER + 8000 + 4 * random(60));
+	setTimer("spyRoutine", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("nexusWave", THINK_LONGER + 10000 + 3 * random(70)); //May remove itself.
 	setTimer("checkMood", THINK_LONGER + 20000 + 4 * random(70));
 }
@@ -62,12 +40,13 @@ function eventStartLevel() {
 //defend our derrick if possible.
 function eventStructureBuilt(structure, droid) {
 	if(isDefined(droid) && (structure.stattype === RESOURCE_EXTRACTOR)) {
-		var nearbyOils = enumRange(droid.x, droid.y, 6, ALL_PLAYERS, false);
+		var nearbyOils = enumRange(droid.x, droid.y, 8, ALL_PLAYERS, false);
 		nearbyOils = nearbyOils.filter(function(obj) {
 			return (obj.type === FEATURE) && (obj.stattype === OIL_RESOURCE);
 		});
 		nearbyOils.sort(distanceToBase);
 		if(nearbyOils.length && isDefined(nearbyOils[0])) {
+			droid.busy = false;
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
 		}
 		else if(getRealPower() > -80) {
@@ -88,7 +67,7 @@ function eventDroidIdle(droid) {
 				var enemyObjects = enumRange(droid.x, droid.y, 20, ENEMIES, false);
 				if(enemyObjects.length > 0) {
 					enemyObjects.sort(distanceToBase);
-					orderDroidObj(droid, DORDER_ATTACK, enemyObjects[0]);
+					orderDroidLoc(droid, DORDER_SCOUT, enemyObjects[0].x, enemyObjects[0].y);
 				}
 			}
 		}
@@ -109,20 +88,14 @@ function eventDroidBuilt(droid, struct) {
 		else if(droid.droidType === DROID_CYBORG) {
 			groupAdd(cyborgGroup, droid);
 		}
-		/*
-		else if(droid.droidType === DROID_COMMAND) {
-			groupAdd(commanderGroup, droid);
-		}
-		*/
-		else if((droid.droidType === DROID_WEAPON)) {
-			/*
-			var coms = enumGroup(commanderGroup);
-			for(var i = 0; i < coms.length; ++i) {
-				if(orderDroidObj(droid, DORDER_COMMANDERSUPPORT, coms[i]))
-					return;
+		else if(droid.droidType === DROID_WEAPON) {
+			//Anything with splash damage or CB abiliities go here.
+			if(droid.isCB || droid.hasIndirect) {
+				groupAdd(artilleryGroup, droid);
 			}
-			*/
-			groupAdd(attackGroup, droid);
+			else {
+				groupAdd(attackGroup, droid);
+			}
 		}
 	}
 }
@@ -144,8 +117,9 @@ function eventAttacked(victim, attacker) {
 	}
 
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player)) {
-		if(grudgeCount[attacker.player] < 50000)
-			grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 8;
+		if(grudgeCount[attacker.player] < 50000) {
+			grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 5;
+		}
 
 		//Check if a droid needs repair.
 		if((victim.type === DROID) && countStruct(structures.extras[0])) {
@@ -191,30 +165,23 @@ function eventAttacked(victim, attacker) {
 
 //Add a beacon and potentially request a unit.
 function eventGroupLoss(droid, group, size) {
-	if(droid.order === DORDER_RECYCLE) { return; }
+	const MIN_DROIDS = 5;
+	if(droid.order === DORDER_RECYCLE) {
+		return;
+	}
 
-	if(stopExecution(3, 8000) === false){
+	if(stopExecution(3, 3000) === false) {
 		addBeacon(droid.x, droid.y, ALLIES);
 	}
 
-	//Release the commander's droids to the attack group.
-	/*
-	if((droid.droidType === DROID_COMMAND) && (droid.player === me)) {
-		var comDroids = enumDroid(me).filter(function(dr) { return dr.group === null });
-		for(var i = 0; i < comDroids.length; ++i) {
-			groupAdd(attackGroup, comDroids[i]);
-		}
-	}
-	*/
-
 	if(playerAlliance(true).length > 0) {
-		if (enumGroup(attackGroup).length < 5) {
+		if (enumGroup(attackGroup).length < MIN_DROIDS) {
 			sendChatMessage("need tank", ALLIES);
 		}
-		if (countStruct(structures.templateFactories) && enumGroup(cyborgGroup).length < 5) {
+		if (countStruct(structures.templateFactories) && enumGroup(cyborgGroup).length < MIN_DROIDS) {
 			sendChatMessage("need cyborg", ALLIES);
 		}
-		if (countStruct(structures.vtolFactories) && enumGroup(vtolGroup).length < 5) {
+		if (countStruct(structures.vtolFactories) && enumGroup(vtolGroup).length < MIN_DROIDS) {
 			sendChatMessage("need vtol", ALLIES);
 		}
 	}
@@ -222,7 +189,9 @@ function eventGroupLoss(droid, group, size) {
 
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message) {
-	if(stopExecution(2, 3000) === true) { return; }
+	if(stopExecution(2, 2000) === true) {
+		return;
+	}
 
 	if(allianceExistsBetween(from, to) || (to === from)) {
 		var cyborgs = enumGroup(cyborgGroup);
@@ -255,14 +224,17 @@ function eventObjectTransfer(obj, from) {
 	}
 }
 
-//Mostly meant to reduce stress about enemies or tell if a structures is destroyed.
+//Increae grudge counter for closest enemy.
 function eventDestroyed(object) {
 	if(isDefined(getScavengerNumber()) && (object.player === getScavengerNumber()))
 		return;
 
-	if(!allianceExistsBetween(object.player, me)) {
-		if(grudgeCount[object.player] > 0)
-			grudgeCount[object.player] = Math.floor(grudgeCount[object.player] / 1.05);
+	if(object.player === me) {
+		var enemies = enumRange(object.x, object.y, 20, ENEMIES, false);
+		enemies.sort(distanceToBase);
+		if(enemies.length && grudgeCount[enemies[0].player] < 50000) {
+			grudgeCount[enemies[0].player] = grudgeCount[enemies[0].player] + 5;
+		}
 	}
 }
 

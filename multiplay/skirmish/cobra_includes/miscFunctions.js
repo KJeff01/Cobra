@@ -43,6 +43,12 @@ function appendListElements(list, items) {
 	return temp;
 }
 
+function addDroidsToGroup(group, droids) {
+	for(var i = 0; i < droids.length; ++i) {
+		groupAdd(group, droids[i]);
+	}
+}
+
 //Control the amount of objects being put in memory so we do not create a large array of objects.
 //Returns closest/farthest object, depending on parmeters supplied.
 function rangeStep(obj, visibility, player, invert) {
@@ -58,7 +64,10 @@ function rangeStep(obj, visibility, player, invert) {
 			temp = enumRange(obj.x, obj.y, i, player, visibility);
 		}
 		if(temp.length > 0) {
-			temp.filter(function(targ) { return droidCanReach(obj, targ.x, targ.y); });
+			temp.filter(function(obj) {
+				//Do not chase VTOLs with the sensor...
+				return ((obj.type === DROID) && !isVTOL(obj)) || (obj.type === STRUCTURE);
+			 })
 			if(isDefined(invert)) {
 				temp = sortAndReverseDistance(temp);
 			}

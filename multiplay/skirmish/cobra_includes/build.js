@@ -282,14 +282,13 @@ function buildPhase2() {
 			return true;
 		}
 
-		if(countAndBuild(structures.factories, 2)) {
+		var facNum = (getRealPower() > -50) ? 3 : 2;
+
+		if(countAndBuild(structures.factories, facNum)) {
 			return true;
 		}
 
 		if(!researchComplete && (gameTime > 210000) && (getRealPower() > -450) && countAndBuild(structures.labs, 5)) {
-			return true;
-		}
-		if((getRealPower() > -80) && countAndBuild(structures.factories, 3)) {
 			return true;
 		}
 
@@ -380,7 +379,7 @@ function buildExtras() {
 
 	//Build repair facilities based upon generator count.
 	if(isStructureAvailable(structures.extras[0])) {
-		var limit = (getRealPower() > -80) ? countStruct(structures.gens) : 1;
+		var limit = (getRealPower() > -50) ? countStruct(structures.gens) : 1;
 		if(limit > 2) {
 			limit = 2;
 		}
@@ -400,8 +399,8 @@ function buildOrder() {
 	if(recycleObsoleteDroids()) { return; }
 	if(checkUnfinishedStructures()) { return; }
 	if(buildPhase1()) { return; }
-	if(buildExtras()) { return; }
 	if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return; }
+	if(buildExtras()) { return; }
 	lookForOil();
 	if(getRealPower() < -600) { return; }
 	if(buildPhase2()) { return; }
@@ -433,7 +432,7 @@ function maintenance() {
 				if (structList[c].modules < mods[i]) {
 					//Only build the last factory module if we have a heavy body
 					if(structList[c].modules === 1) {
-						if((i === 2) && (getRealPower() < -150) && !componentAvailable("Body11ABT")) {
+						if((i === 2) && (getRealPower() < -50) && !componentAvailable("Body11ABT")) {
 							continue;
 						}
 						//Build last vtol factory module once Cobra gets retribution (or has good power levels)
@@ -453,17 +452,6 @@ function maintenance() {
 	}
 
 	if (struct && !checkLowPower(35) ) {
-
-		//Force the closest truck to upgrade the structure.
-		var trucks = enumDroid(me, DROID_CONSTRUCT).filter(function(tr) {
-			return conCanHelp(tr, struct.x, struct.y);
-		});
-		trucks.sort(distanceToBase);
-
-		if(isDefined(trucks[0])) {
-			trucks[0].busy = false;
-		}
-
 		if(buildStuff(struct, module)) {
 			return true;
 		}

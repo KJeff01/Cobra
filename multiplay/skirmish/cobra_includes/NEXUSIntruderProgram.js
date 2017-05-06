@@ -124,7 +124,7 @@ function malfunctionDroid() {
 	var enemies = playerAlliance(false);
 	var enemy = enemies[random(enemies.length)];
 
-	var droids = enumDroid(enemy).filter(function(d) { return d.droidType !== DROID_SENSOR; });
+	var droids = enumDroid(enemy).filter(function(d) { return ((d.droidType !== DROID_SENSOR) && (d.droidType !== DROID_CONSTRUCT)); });
 	if(droids.length > 2) {
 		if(random(2)) {
 			var aDroid = droids[random(droids.length)];

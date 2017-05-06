@@ -11,7 +11,9 @@ function sendChatMessage(msg, receiver) {
 }
 
 function eventChat(from, to, message) {
-	if(to !== me) { return; }
+	if(to !== me) {
+		return;
+	}
 
 	//Here are all chat messages that can be executed by itself.
 	if((message === "AC") || (message === "AR") || (message === "AB") || (message === "AM") || (message === "AL")) {
@@ -36,7 +38,9 @@ function eventChat(from, to, message) {
 	}
 
 	//Do not execute these statements if from is me.
-	if(to === from) { return; }
+	if(to === from) {
+		return;
+	}
 
 
 	if((message === "need truck") && allianceExistsBetween(from, to)) {
@@ -72,7 +76,9 @@ function eventChat(from, to, message) {
 		var num = message.slice(-1);
 		if(!allianceExistsBetween(num, me) && (num !== me)) {
 			if(!isDefined(getScavengerNumber()) || (isDefined(getScavengerNumber()) && (num !== getScavengerNumber()))) {
-				grudgeCount[num] = grudgeCount[num] + 20;
+				if(grudgeCount[num] < 50000) {
+					grudgeCount[num] = grudgeCount[num] + 15;
+				}
 			}
 			attackStuff(num);
 		}
@@ -81,7 +87,9 @@ function eventChat(from, to, message) {
 		var num = message.slice(-1);
 		if(!allianceExistsBetween(num, me) && (num !== me)) {
 			if(!isDefined(getScavengerNumber()) || (isDefined(getScavengerNumber()) && (num !== getScavengerNumber()))) {
-				grudgeCount[num] = grudgeCount[num] + 20;
+				if(grudgeCount[num] < 50000) {
+					grudgeCount[num] = grudgeCount[num] + 15;
+				}
 			}
 			chatAttackOil(num);
 		}

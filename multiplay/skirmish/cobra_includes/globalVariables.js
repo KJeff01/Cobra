@@ -99,8 +99,6 @@ const vtolBody = [
 	"Body5REC",  // Cobra
 ];
 
-const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC", "AL"];
-
 
 const repairTurrets = [
 	"HeavyRepair",
@@ -120,7 +118,7 @@ const subpersonalities = {
 	AC: {
 		"primaryWeapon": weaponStats.cannons,
 		"secondaryWeapon": weaponStats.gauss,
-		"artillery": weaponStats.howitzers,
+		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"res": [
 			"R-Struc-PowerModuleMk1",
@@ -133,7 +131,7 @@ const subpersonalities = {
 	AR: {
 		"primaryWeapon": weaponStats.flamers,
 		"secondaryWeapon": weaponStats.rockets_AT,
-		"artillery": weaponStats.howitzers,
+		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"res": [
 			"R-Wpn-Flamer-Damage02",
@@ -157,7 +155,7 @@ const subpersonalities = {
 	AM: {
 		"primaryWeapon": weaponStats.machineguns,
 		"secondaryWeapon": weaponStats.lasers,
-		"artillery": weaponStats.howitzers,
+		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"res": [
 			"R-Wpn-MG2Mk1",
@@ -181,13 +179,13 @@ const subpersonalities = {
 };
 
 // Groups
-//TODO: Put artillery units in a different group.
+//TODO: Put trucks into a group.
 var attackGroup; //All tanks units.
 var vtolGroup; //All vtol units.
 var cyborgGroup; //All cyborg units.
 var sensorGroup; //All sensor units.
 var repairGroup; //All repair units.
-//var commanderGroup; //All commander units.
+var artilleryGroup; //All artillery (CB) units.
 
 
 var grudgeCount; //See who bullies this bot the most and act on it. DO NOT let this use the scavenger player number.

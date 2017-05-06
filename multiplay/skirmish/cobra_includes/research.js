@@ -54,12 +54,6 @@ function evalResearch(lab, list) {
 	return found;
 }
 
-//The general research order:
-//Get early machinegun and power module.
-//Make a mad dash for both research speed and power upgrades.
-//Get our basics like a early research list/body/propulsions.
-//Kinetic armor/weapons/defenses/more bodies/Air stuff/factory production upgrades/sensors/thermal armor.
-//Lastly we get the plasma cannon and that allows uplink/laser sat and the emp cannon.
 
 function eventResearched() {
 	if(!isDefined(techlist) || !isDefined(turnOffMG) || !isDefined(turnOffCyborgs)) {
@@ -118,19 +112,6 @@ function eventResearched() {
 					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
 			}
 
-			//Just like the semperfi AI bots (which Cobra is derived from) it
-			//stays true to the use of those thermite cyborgs.
-			if(random(3) && !turnOffCyborgs) {
-				if(!found)
-					found = evalResearch(lab, FLAMER);
-				if(!found)
-					found = evalResearch(lab, cyborgWeaps);
-			}
-
-			/*
-			if(!found)
-				found = pursueResearch(lab, "R-Comp-CommandTurret01");
-			*/
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 
@@ -141,21 +122,15 @@ function eventResearched() {
 					found = evalResearch(lab, extraTech);
 				if(!found)
 					found = evalResearch(lab, defenseTech);
-
-				var len = subpersonalities[personality].primaryWeapon.weapons.length - 1;
-				if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[len].stat)) {
-					if(!found)
-						found = evalResearch(lab, secondaryWeaponTech);
-					if(!found)
-						found = evalResearch(lab, secondaryWeaponExtra);
-				}
 			}
 
-			if(random(4)) {
+			//Just like the semperfi AI bots (which Cobra is derived from) it
+			//stays true to the use of those thermite cyborgs.
+			if(!turnOffCyborgs) {
 				if(!found)
-					found = evalResearch(lab, laserTech);
+					found = evalResearch(lab, FLAMER);
 				if(!found)
-					found = evalResearch(lab, laserExtra);
+					found = evalResearch(lab, cyborgWeaps);
 			}
 
 			if(random(3)) {
@@ -165,6 +140,12 @@ function eventResearched() {
 					found = evalResearch(lab, artillExtra);
 			}
 
+			if(random(3)) {
+				const VTOL_RES = ["R-Struc-VTOLPad-Upgrade06", "R-Wpn-Bomb05", "R-Wpn-Bomb-Accuracy03"];
+				if(!found)
+					found = evalResearch(lab, VTOL_RES);
+			}
+
 			if(countEnemyVTOL()) {
 				if(!found)
 					found = evalResearch(lab, antiAirTech);
@@ -172,16 +153,18 @@ function eventResearched() {
 					found = evalResearch(lab, antiAirExtras);
 			}
 
-			if(!found && random(2))
-				found = evalResearch(lab, bodyResearch);
+			if(!found)
+				found = pursueResearch(lab, "R-Sys-Sensor-WS");
 
-			if(random(3)) {
+			if(random(4)) {
 				if(!found)
-					found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade06");
+					found = evalResearch(lab, laserTech);
+				if(!found)
+					found = evalResearch(lab, laserExtra);
 			}
 
 			if(!found)
-				found = pursueResearch(lab, "R-Sys-Sensor-WS");
+				found = evalResearch(lab, bodyResearch);
 			if(!found)
 				found = evalResearch(lab, STRUCTURE_DEFENSE_UPGRADES);
 
@@ -193,6 +176,17 @@ function eventResearched() {
 			else {
 				if(!found)
 					found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
+			}
+
+			//Late game weapon.
+			if(random(3)) {
+				var len = subpersonalities[personality].primaryWeapon.weapons.length - 1;
+				if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[len].stat)) {
+					if(!found)
+						found = evalResearch(lab, secondaryWeaponTech);
+					if(!found)
+						found = evalResearch(lab, secondaryWeaponExtra);
+				}
 			}
 
 			if(!found)

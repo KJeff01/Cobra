@@ -112,7 +112,7 @@ const weaponStats = {
 		],
 		templates: [
 			{ res: "R-Wpn-Flamer01Mk1", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "CyborgFlamer01", ] }, // flamer cyborg
-			{ res: "R-Wpn-Flame2", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "Cyb-Wpn-Thermite", ] }, // flamer cyborg
+			{ res: "R-Wpn-Flame2", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "Cyb-Wpn-Thermite", ] }, // thermite flamer cyborg
 		],
 		extras: [
 			"R-Wpn-Flamer-ROF03",
@@ -199,7 +199,7 @@ const weaponStats = {
 	},
 	mortars: {
 		weapons: [
-			{ res: "R-Wpn-Mortar01Lt", stat: "Mortar1Mk1" }, // duplicate stat!
+			//{ res: "R-Wpn-Mortar01Lt", stat: "Mortar1Mk1" }, do not use on tanks.
 			{ res: "R-Wpn-Mortar02Hvy", stat: "Mortar2Mk1" },
 			{ res: "R-Wpn-Mortar3", stat: "Mortar3ROTARYMk1" },
 			{ res: "R-Wpn-HowitzerMk1", stat: "Howitzer105Mk1" },
@@ -211,7 +211,7 @@ const weaponStats = {
 			{ res: "R-Wpn-Bomb02", stat: "Bomb2-VTOL-HvHE" },
 		],
 		defenses: [
-			{ res: "R-Defense-MortarPit", stat: "Emplacement-MortarPit01" },
+			//{ res: "R-Defense-MortarPit", stat: "Emplacement-MortarPit01" },
 			{ res: "R-Defense-HvyMor", stat: "Emplacement-MortarPit02" },
 			{ res: "R-Defense-RotMor", stat: "Emplacement-RotMor" },
 			{ res: "R-Defense-Howitzer", stat: "Emplacement-Howitzer105" },
@@ -270,6 +270,9 @@ const weaponStats = {
 		],
 		templates: [],
 		extras: [
+			"R-Wpn-Mortar-Damage06",
+			"R-Wpn-Mortar-ROF04",
+			"R-Wpn-Mortar-Acc03",
 			"R-Wpn-Howitzer-Damage06",
 			"R-Wpn-Howitzer-ROF04",
 			"R-Wpn-Howitzer-Accuracy03",
