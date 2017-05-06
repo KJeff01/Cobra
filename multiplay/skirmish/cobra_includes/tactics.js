@@ -5,6 +5,7 @@ function droidReady(droid) {
 	return (!repairDroid(droid, false)
 		&& (droid.order !== DORDER_ATTACK)
 		&& (droid.order !== DORDER_RTR)
+		&& (droid.order !== DORDER_REARM)
 	);
 }
 
@@ -37,35 +38,6 @@ function returnEnemyFactories(enemyNumber) {
 
 	return facs;
 }
-
-/*
-function groupUnitsNearObject(group, object) {
-	const MIN_DROIDS = 4;
-	var closestDroid = Infinity;
-	var closestDistance = Infinity;
-
-	//Find the droid of the group that is closest to the target.
-	for(var i = 0; i < group.length; ++i) {
-		var dist = distBetweenTwoPoints(group[i].x, group[i].y, object.x, object.y);
-		if(dist < closestDistance) {
-			closestDistance = dist;
-			closestDroid = i;
-		}
-	}
-
-	if(enumRange(group[closestDroid].x, group[closestDroid].y, 10, me, false) < MIN_DROIDS) {
-		for(var j = 0; j < group.length; ++j) {
-			if(isDefined(group[j]) && isDefined(group[closestDroid]) && !repairDroid(group[j])) {
-				orderDroidLoc(group[j], DORDER_SCOUT, group[closestDroid].x, group[closestDroid].y);
-			}
-		}
-
-		return false;
-	}
-
-	return true; //Enough droids are nearby.
-}
-*/
 
 //Should the vtol attack when ammo is high enough?
 function vtolReady(droid) {
@@ -103,21 +75,24 @@ function repairDroid(droid, force) {
 	return false;
 }
 
-//choose either cyborgs or tanks. prefer cyborgs if any.
+//choose either cyborgs/tanks/vtols.
 function chooseGroup() {
 	const MIN_DROID_COUNT = 5;
 	var tanks  = enumGroup(attackGroup);
 	var borgs = enumGroup(cyborgGroup);
+	var vtols = enumGroup(vtolGroup);
 
-	if((borgs.length > MIN_DROID_COUNT) && (borgs.length >= tanks.length) && random(2)) {
+	if((borgs.length > MIN_DROID_COUNT) && random(2)) {
 		return borgs;
 	}
-	else {
-		if(tanks.length > MIN_DROID_COUNT)
-			return tanks;
+	else if(tanks.length > MIN_DROID_COUNT && random(2)) {
+		return tanks;
+	}
+	else if(vtols.length > MIN_DROID_COUNT && random(2)) {
+		return vtols;
 	}
 
-	return tanks;
+	return tanks; //Fallback.
 }
 
 //Find the derricks of all enemy players, or just a specific one.
@@ -180,7 +155,7 @@ function findNearestEnemyStructure(droid, enemy, targets) {
 	if(s.length > 0) {
 		s.sort(distanceToBase);
 		if(droidReady(droid) && isDefined(s[0]) && droidCanReach(droid, s[0].x, s[0].y)) {
-			if(s[0].stattype !== WALL) {
+			if(s[0].type !== STRUCTURE) {
 				orderDroidLoc(droid, DORDER_SCOUT, s[0].x, s[0].y);
 			}
 			else {
