@@ -136,7 +136,8 @@ function eventResearched() {
 			if(random(3)) {
 				if(!found)
 					found = evalResearch(lab, artilleryTech);
-				if(!found)
+				//AB primaryweapon has all this...
+				if((personality !== "AB") && !found)
 					found = evalResearch(lab, artillExtra);
 			}
 
@@ -153,14 +154,25 @@ function eventResearched() {
 					found = evalResearch(lab, antiAirExtras);
 			}
 
-			if(!found)
-				found = pursueResearch(lab, "R-Sys-Sensor-WS");
-
 			if(random(4)) {
 				if(!found)
 					found = evalResearch(lab, laserTech);
 				if(!found)
 					found = evalResearch(lab, laserExtra);
+			}
+
+			if(!found)
+				found = pursueResearch(lab, "R-Sys-Sensor-WS");
+
+			//Late game weapon.
+			if(random(3)) {
+				var len = subpersonalities[personality].primaryWeapon.weapons.length - 1;
+				if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[len].stat)) {
+					if(!found)
+						found = evalResearch(lab, secondaryWeaponTech);
+					if(!found)
+						found = evalResearch(lab, secondaryWeaponExtra);
+				}
 			}
 
 			if(!found)
@@ -176,17 +188,6 @@ function eventResearched() {
 			else {
 				if(!found)
 					found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
-			}
-
-			//Late game weapon.
-			if(random(3)) {
-				var len = subpersonalities[personality].primaryWeapon.weapons.length - 1;
-				if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[len].stat)) {
-					if(!found)
-						found = evalResearch(lab, secondaryWeaponTech);
-					if(!found)
-						found = evalResearch(lab, secondaryWeaponExtra);
-				}
 			}
 
 			if(!found)

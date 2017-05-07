@@ -5,22 +5,26 @@ function droidReady(droid) {
 	return (!repairDroid(droid, false)
 		&& (droid.order !== DORDER_ATTACK)
 		&& (droid.order !== DORDER_RTR)
-		&& (droid.order !== DORDER_REARM)
+		&& vtolReady(droid) //True for non-VTOL units
 	);
 }
 
 //Taken from nullbot v3.06
 //Does the vtol weapons have ammo?
 function vtolArmed(obj, percent) {
-	if (obj.type !== DROID)
+	if (obj.type !== DROID) {
 		return;
+	}
 
-	if (!isVTOL(obj))
+	if (!isVTOL(obj)) {
 		return false;
+	}
 
-	for (var i = 0; i < obj.weapons.length; ++i)
-		if (obj.weapons[i].armed >= percent)
+	for (var i = 0; i < obj.weapons.length; ++i) {
+		if (obj.weapons[i].armed >= percent) {
 			return true;
+		}
+	}
 
 	return false;
 }
@@ -41,13 +45,19 @@ function returnEnemyFactories(enemyNumber) {
 
 //Should the vtol attack when ammo is high enough?
 function vtolReady(droid) {
+	if(!isVTOL(droid)) {
+		return true; //See droidReady(droid).
+	}
+
 	const ARMED_PERCENT = 1;
 
-	if (droid.order === DORDER_ATTACK)
+	if (droid.order === DORDER_ATTACK) {
 		return false;
+	}
 
-	if (vtolArmed(droid, ARMED_PERCENT))
+	if (vtolArmed(droid, ARMED_PERCENT)) {
 		return true;
+	}
 
 	if (droid.order !== DORDER_REARM) {
 		orderDroid(droid, DORDER_REARM);
@@ -62,10 +72,17 @@ function repairDroid(droid, force) {
 	const EXPERIENCE_DIVISOR = 22;
 	const HEALTH_TO_REPAIR = 58 + Math.floor(droid.experience / EXPERIENCE_DIVISOR);
 
-	if(!isDefined(force)) { force = false; }
-	if(Math.floor(droid.health) <= FORCE_REPAIR_PERCENT) { force = true; }
-	if((droid.order === DORDER_RTR) && ((Math.floor(droid.health) < 100) || force))
+	if(!isDefined(force)) {
+		force = false;
+	}
+
+	if(Math.floor(droid.health) <= FORCE_REPAIR_PERCENT) {
+		force = true;
+	}
+
+	if((droid.order === DORDER_RTR) && ((Math.floor(droid.health) < 100) || force)) {
 		return true;
+	}
 
 	if(countStruct(structures.extras[0]) && (force || (Math.floor(droid.health) <= HEALTH_TO_REPAIR))) {
 		orderDroid(droid, DORDER_RTR);
@@ -81,6 +98,11 @@ function chooseGroup() {
 	var tanks  = enumGroup(attackGroup);
 	var borgs = enumGroup(cyborgGroup);
 	var vtols = enumGroup(vtolGroup);
+
+	//return our vtols to the pads if needed.
+	for(var i = 0; i < vtols.length; ++i) {
+		vtolReady(vtols[i]);
+	}
 
 	if((borgs.length > MIN_DROID_COUNT) && random(2)) {
 		return borgs;
@@ -190,8 +212,8 @@ function attackWithGroup(droids, enemy, targets) {
 	}
 
 	for (var j = 0; j < droids.length; j++) {
-		if(isDefined(droids[j]) && droidReady(droids[j])) {
-			if(isDefined(target) && droidCanReach(droids[j], target.x, target.y)) {
+		if(isDefined(droids[j]) && isDefined(target) && droidReady(droids[j])) {
+			if((target.type !== STRUCTURE) || ((target.type === STRUCTURE) && (target.stattype !== WALL)) && droidCanReach(droids[j], target.x, target.y)) {
 				orderDroidLoc(droids[j], DORDER_SCOUT, target.x, target.y);
 			}
 			else {
@@ -230,27 +252,24 @@ function attackStuff(attacker) {
 		selectedEnemy = attacker;
 	}
 
-	if(isDefined(chatTactic(selectedEnemy)))
+	if(isDefined(chatTactic(selectedEnemy))) {
 		return;
+	}
 
 	attackWithGroup(enumGroup(attackGroup), selectedEnemy);
 	if(!turnOffCyborgs) {
 		attackWithGroup(enumGroup(cyborgGroup), selectedEnemy);
 	}
 
-	var vtols = enumGroup(vtolGroup);
-	for (var j = 0; j < vtols.length; j++) {
-		if (isDefined(vtols[j]) && vtolReady(vtols[j])) {
-			findNearestEnemyStructure(vtols[j], selectedEnemy, returnEnemyFactories());
-		}
-	}
+	attackWithGroup(enumGroup(vtolGroup), selectedEnemy);
 }
 
 //Sensors know all your secrets. They will observe what is close to them.
 function spyRoutine() {
 	var sensors = enumGroup(sensorGroup);
 	var artillery = enumGroup(artilleryGroup);
-	if(!sensors.length || !artillery.length) {
+
+	if(!(sensors.length * artillery.length)) {
 		return false;
 	}
 
@@ -272,6 +291,7 @@ function attackEnemyOil() {
 	const MIN_ATTACK_DROIDS = 5;
 	var who = chooseGroup();
 	var tmp = 0;
+
 	if(who.length < MIN_ATTACK_DROIDS) {
 		return;
 	}

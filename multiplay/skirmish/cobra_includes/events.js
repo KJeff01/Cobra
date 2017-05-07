@@ -107,8 +107,9 @@ function eventAttacked(victim, attacker) {
 
 	if(isDefined(getScavengerNumber()) && (attacker.player === getScavengerNumber())) {
 		if(isDefined(victim) && isDefined(attacker) && (victim.type === DROID) && !repairDroid(victim, false)) {
-			if((victim.droidType === DROID_WEAPON) || (victim.droidType === DROID_CYBORG))
+			if((victim.droidType === DROID_WEAPON) || (victim.droidType === DROID_CYBORG)) {
 				orderDroidObj(victim, DORDER_ATTACK, attacker);
+			}
 		}
 		if(stopExecution(0, 2000) === false) {
 			attackStuff(getScavengerNumber());
@@ -138,7 +139,9 @@ function eventAttacked(victim, attacker) {
 			}
 		}
 
-		if(stopExecution(0, 110) === true) { return; }
+		if(stopExecution(0, 110) === true) {
+			return;
+		}
 
 		var units;
 		if(victim.type === STRUCTURE) {
@@ -146,7 +149,7 @@ function eventAttacked(victim, attacker) {
 		}
 		else {
 			units = enumRange(victim.x, victim.y, 18, me, false).filter(function(d) {
-				return (d.type === DROID) && ((d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG));
+				return (d.type === DROID) && ((d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG) || isVTOL(d));
 			});
 
 			if(units.length < 5) {
@@ -154,7 +157,7 @@ function eventAttacked(victim, attacker) {
 			}
 		}
 
-		units.filter(function(dr) { return (dr !== victim) && droidCanReach(dr, attacker.x, attacker.y); });
+		units.filter(function(dr) { return droidCanReach(dr, attacker.x, attacker.y); });
 
 		for (var i = 0; i < units.length; i++) {
 			if(isDefined(units[i]) && droidReady(units[i]) && isDefined(attacker))
