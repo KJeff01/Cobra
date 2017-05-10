@@ -9,8 +9,8 @@ function droidReady(droid) {
 	);
 }
 
-//Taken from nullbot v3.06
-//Does the vtol weapons have ammo?
+//Modified from Nullbot.
+//Returns true if the VTOL has ammo. False if empty.
 function vtolArmed(obj, percent) {
 	if (obj.type !== DROID) {
 		return;
@@ -176,12 +176,14 @@ function findNearestEnemyStructure(droid, enemy, targets) {
 
 	if(s.length > 0) {
 		s.sort(distanceToBase);
-		if(droidReady(droid) && isDefined(s[0]) && droidCanReach(droid, s[0].x, s[0].y)) {
-			if(s[0].type !== STRUCTURE) {
-				orderDroidLoc(droid, DORDER_SCOUT, s[0].x, s[0].y);
+		var target = s[0];
+
+		if(droidReady(droid) && isDefined(target) && droidCanReach(droid, target.x, target.y)) {
+			if(target.type === STRUCTURE) {
+				orderDroidObj(droid, DORDER_ATTACK, target);
 			}
 			else {
-				orderDroidObj(droid, DORDER_ATTACK, s[0]);
+				orderDroidLoc(droid, DORDER_SCOUT, target.x, target.y);
 			}
 		}
 	}
@@ -212,8 +214,8 @@ function attackWithGroup(droids, enemy, targets) {
 	}
 
 	for (var j = 0; j < droids.length; j++) {
-		if(isDefined(droids[j]) && isDefined(target) && droidReady(droids[j])) {
-			if((target.type !== STRUCTURE) || ((target.type === STRUCTURE) && (target.stattype !== WALL)) && droidCanReach(droids[j], target.x, target.y)) {
+		if(isDefined(droids[j]) && droidReady(droids[j])) {
+			if(isDefined(target) && (target.type !== STRUCTURE) && droidCanReach(droids[j], target.x, target.y)) {
 				orderDroidLoc(droids[j], DORDER_SCOUT, target.x, target.y);
 			}
 			else {

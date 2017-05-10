@@ -32,8 +32,6 @@ function initializeResearchLists() {
 	secondaryWeaponExtra = updateResearchList(subpersonalities[personality].secondaryWeapon.extras);
 	defenseTech = updateResearchList(subpersonalities[personality].primaryWeapon.defenses);
 	cyborgWeaps = updateResearchList(subpersonalities[personality].primaryWeapon.templates);
-	cyborgWeaps = appendListElements(cyborgWeaps, updateResearchList(weaponStats.lasers.templates));
-	cyborgWeaps = appendListElements(cyborgWeaps, updateResearchList(subpersonalities[personality].secondaryWeapon.templates));
 }
 
 //This function aims to more cleanly discover available research topics
@@ -142,7 +140,7 @@ function eventResearched() {
 			}
 
 			if(random(3)) {
-				const VTOL_RES = ["R-Struc-VTOLPad-Upgrade06", "R-Wpn-Bomb05", "R-Wpn-Bomb-Accuracy03"];
+				const VTOL_RES = ["R-Wpn-Bomb-Accuracy03", "R-Wpn-Bomb05", "R-Struc-VTOLPad-Upgrade06"];
 				if(!found)
 					found = evalResearch(lab, VTOL_RES);
 			}
@@ -155,6 +153,8 @@ function eventResearched() {
 			}
 
 			if(random(4)) {
+				if(!found && !turnOffCyborgs)
+					found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
 				if(!found)
 					found = evalResearch(lab, laserTech);
 				if(!found)
@@ -166,8 +166,12 @@ function eventResearched() {
 
 			//Late game weapon.
 			if(random(3)) {
+				var cyborgSecondary = appendListElements(cyborgSecondary, updateResearchList(subpersonalities[personality].secondaryWeapon.templates));
 				var len = subpersonalities[personality].primaryWeapon.weapons.length - 1;
+
 				if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[len].stat)) {
+					if(!found && !turnOffCyborgs && cyborgSecondary.length)
+						found = pursueResearch(lab, cyborgSecondary);
 					if(!found)
 						found = evalResearch(lab, secondaryWeaponTech);
 					if(!found)
