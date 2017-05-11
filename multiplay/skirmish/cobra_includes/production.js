@@ -123,24 +123,24 @@ function buildAttacker(struct) {
 	if(useHover(weap) && componentAvailable("hover01")) {
 		if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
 			if(weap !== "MortarEMP") {
-				if(buildDroid(struct, "Hover EMP Droid", tankBody, "hover01", "", "", weap, "EMP-Cannon")) {
+				if(isDefined(struct) && buildDroid(struct, "Hover EMP Droid", tankBody, "hover01", "", "", weap, "EMP-Cannon")) {
 					return true;
 				}
 			}
 		}
-		else if(buildDroid(struct, "Hover Droid", tankBody, "hover01", "", "", weap, weap)) {
+		else if(isDefined(struct) && buildDroid(struct, "Hover Droid", tankBody, "hover01", "", "", weap, weap)) {
 			return true;
 		}
 	}
 	else {
 		if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
 			if((weap !== "MortarEMP")) {
-				if(buildDroid(struct, "EMP Droid", tankBody, tankProp, "", "", weap, "EMP-Cannon")) {
+				if(isDefined(struct) && buildDroid(struct, "EMP Droid", tankBody, tankProp, "", "", weap, "EMP-Cannon")) {
 					return true;
 				}
 			}
 		}
-		else if (buildDroid(struct, "Droid", tankBody, tankProp, "", "", weap, weap)) {
+		else if (isDefined(struct) && buildDroid(struct, "Droid", tankBody, tankProp, "", "", weap, weap)) {
 			return true;
 		}
 	}
@@ -153,7 +153,7 @@ function buildSys(struct, weap) {
 	if(!isDefined(weap)) {
 		weap = ["Sensor-WideSpec", "SensorTurret1Mk1"];
 	}
-	if (buildDroid(struct, weap + " System unit", sysBody, sysProp, "", "", weap)) {
+	if (isDefined(struct) && buildDroid(struct, weap + " System unit", sysBody, sysProp, "", "", weap)) {
 		return true;
 	}
 	return false;
@@ -176,7 +176,7 @@ function buildCyborg(fac) {
 		weap = weapon.templates[x].weapons[0];
 
 		//skip weak flamer cyborg.
-		if((weap !== "CyborgFlamer01") && buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap, weap)) {
+		if((weap !== "CyborgFlamer01") && isDefined(fac) && buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap, weap)) {
 			return true;
 		}
 	}
@@ -187,7 +187,7 @@ function buildCyborg(fac) {
 //Create a vtol fighter with a medium body.
 function buildVTOL(struct) {
 	var weap = choosePersonalityWeapon("VTOL");
-	if (buildDroid(struct, "VTOL unit", vtolBody, "V-Tol", "", "", weap, weap)) {
+	if (isDefined(struct) && buildDroid(struct, "VTOL unit", vtolBody, "V-Tol", "", "", weap, weap)) {
 		return true;
 	}
 
