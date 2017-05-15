@@ -154,7 +154,9 @@ function isDesignable(item, body, prop) {
 
 //See if power levels are low. This takes account of only the power obtained from the generators.
 function checkLowPower(pow) {
-	if(!isDefined(pow)) { pow = 25; }
+	if(!isDefined(pow)) {
+		pow = 25;
+	}
 
 	if(playerPower(me) < pow) {
 		if(playerAlliance(true).length > 0) {
@@ -169,6 +171,7 @@ function checkLowPower(pow) {
 //return real power levels.
 function getRealPower() {
 	var pow = playerPower(me) - queuedPower(me);
+
 	if((playerAlliance(true).length > 0) && (pow < 50)) {
 		sendChatMessage("need Power", ALLIES);
 	}
@@ -247,15 +250,6 @@ function removeDuplicateItems(temp) {
 	});
 }
 
-//Find droids that are obseleted by superior technology.
-/*
-function findOldDroids(group) {
-	return group.filter(function(dr) {
-		((dr.born + 800000) < gameTime) && (dr.cost <
-	}
-}
-*/
-
 //Target a random enemy at the start of the match. This is done by placing
 //random values into the grudge counter.
 function randomizeFirstEnemy() {
@@ -276,8 +270,13 @@ function initiaizeRequiredGlobals() {
 	grudgeCount = [];
 	throttleTime = [];
 
-	for(var i = 0; i < maxPlayers; ++i) { grudgeCount.push(0); }
-	for(var i = 0; i < 4; ++i) { throttleTime.push(0); }
+	for(var i = 0; i < maxPlayers; ++i) {
+		grudgeCount.push(0);
+	}
+
+	for(var i = 0; i < 4; ++i) {
+		throttleTime.push(0);
+	}
 
 	diffPerks();
 
@@ -305,6 +304,33 @@ function countEnemyVTOL() {
 function donateFromGroup(group, from) {
 	const MIN_DROID_COUNT = 9;
 	var droids = enumGroup(group);
-	if(droids.length < MIN_DROID_COUNT) { return; }
+
+	if(droids.length < MIN_DROID_COUNT) {
+		return;
+	}
 	donateObject(droids[random(droids.length)], from);
+}
+
+//Remove a single timer. May pass a string or an array of strings.
+function removeThisTimer(timer) {
+	if(timer instanceof Array) {
+		for(var i = 0; i < timer.length; ++i) {
+			removeTimer(timer[i]);
+		}
+	}
+	else {
+		removeTimer(timer);
+	}
+}
+
+//Stop the non auto-remove timers if Cobra died.
+function StopTimersIfDead() {
+	if(!enumDroid(me) && !enumStruct(me)) {
+		var timers = [
+			"buildOrder", "repairDamagedDroids", "produce", "battleTactics",
+			"spyRoutine", "checkMood", "StopTimersIfDead", "eventResearched"
+		];
+
+		removeThisTimer(timers);
+	}
 }

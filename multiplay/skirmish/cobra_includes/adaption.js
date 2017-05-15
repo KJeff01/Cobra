@@ -6,13 +6,13 @@
 //personality can design its primary weapon.
 function switchOffMG() {
 	if(personality === "AM") {
-		removeTimer("switchOffMG");
+		removeThisTimer("switchOffMG");
 		return;
 	}
 
 	if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[0].stat)) {
 		turnOffMG = true;
-		removeTimer("switchOffMG");
+		removeThisTimer("switchOffMG");
 	}
 }
 

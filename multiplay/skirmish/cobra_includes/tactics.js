@@ -372,14 +372,13 @@ function battleTactics() {
 //Recycle units when certain conditions are met.
 function recycleObsoleteDroids() {
 	var tanks = enumGroup(attackGroup);
-	//var vtols = enumGroup(vtolGroup);
 	var systems = enumGroup(sensorGroup);
 	systems = appendListElements(systems, enumGroup(repairGroup));
 	systems = appendListElements(systems, enumDroid(me, DROID_CONSTRUCT));
 	var temp = false;
 
-	if(countStruct(structures.factories) > 1) {
-		if(!unfinishedStructures().length && componentAvailable("hover01")) {
+	if((countStruct(structures.factories) > 1) && componentAvailable("hover01")) {
+		if(!unfinishedStructures().length) {
 			for(var i = 0; i < systems.length; ++i) {
 				if(systems[i].propulsion !== "hover01") {
 					temp = true;
@@ -388,22 +387,13 @@ function recycleObsoleteDroids() {
 			}
 		}
 
-		if(forceHover && componentAvailable("hover01")) {
+		if(forceHover) {
 			for(var i = 0; i < tanks.length; ++i) {
 				if((tanks[i].propulsion !== "hover01")) {
 					orderDroid(tanks[i], DORDER_RECYCLE);
 				}
 			}
 		}
-		/*
-		for(var i = 0; i < tanks.length; ++i) {
-			orderDroid(tanks[i], DORDER_RECYCLE);
-		}
-
-		for(var i = 0; i < vtols.length; ++i) {
-			orderDroid(vtols[i], DORDER_RECYCLE);
-		}
-		*/
 	}
 	return temp;
 }
@@ -448,7 +438,11 @@ function repairDamagedDroids() {
 				orderDroidLoc(reps[i], DORDER_SCOUT, myDroids[j].x, myDroids[j].y);
 				if(distBetweenTwoPoints(reps[i].x, reps[i].y, myDroids[j].x, myDroids[j].y) > 6) {
 					orderDroidLoc(reps[i], DORDER_MOVE, myDroids[j].x, myDroids[j].y);
-					myDroids.shift(); //remove this one from the array.
+
+					myDroids.shift();
+					reps.shift();
+					i = 0;
+
 					break; //Go to next repair
 				}
 			}

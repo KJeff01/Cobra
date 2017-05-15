@@ -153,7 +153,7 @@ function buildSys(struct, weap) {
 	if(!isDefined(weap)) {
 		weap = ["Sensor-WideSpec", "SensorTurret1Mk1"];
 	}
-	if (isDefined(struct) && buildDroid(struct, weap + " System unit", sysBody, sysProp, "", "", weap)) {
+	if (isDefined(struct) && buildDroid(struct, "System unit", sysBody, sysProp, "", "", weap)) {
 		return true;
 	}
 	return false;
@@ -197,11 +197,10 @@ function buildVTOL(struct) {
 
 //Produce a unit when factories allow it.
 function produce() {
-	if(!researchComplete)
-		eventResearched(); //check for idle research centers. TODO: Find a better place for this.
-
 	//Try not to produce more units.
-	if((getRealPower() < -400) || ((enumDroid(me).length - 1) === 150)) { return false; }
+	if((getRealPower() < -400) || ((enumDroid(me).length - 1) === 150)) {
+		return false;
+	}
 
 	var fac = enumStruct(me, structures.factories);
 	var cybFac = enumStruct(me, structures.templateFactories);
@@ -211,6 +210,7 @@ function produce() {
 	var trucks = 0;
 	var sens = 0;
 	var reps = 0;
+
 	for(var i = 0; i < fac.length; ++i) {
 		var virDroid = getDroidProduction(fac[i]);
 		if(virDroid !== null) {
@@ -226,7 +226,7 @@ function produce() {
 	for(var x = 0; x < fac.length; ++x) {
 		if(isDefined(fac[x]) && structureIdle(fac[x])) {
 			if ((countDroid(DROID_CONSTRUCT, me) + trucks) < 4) {
-				if(playerAlliance(true).length && (countDroid(DROID_CONSTRUCT, me) < 2) && (gameTime > 10000)) {
+				if(playerAlliance(true).length && (countDroid(DROID_CONSTRUCT, me) < 3) && (gameTime > 30000)) {
 					sendChatMessage("need truck", ALLIES);
 				}
 				buildSys(fac[x], "Spade1Mk1");

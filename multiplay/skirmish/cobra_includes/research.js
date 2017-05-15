@@ -89,7 +89,7 @@ function eventResearched() {
 			if(!found)
 				found = evalResearch(lab, PROPULSION);
 
-			if(!random(3)) {
+			if(!random(4)) {
 				if(!turnOffCyborgs && componentAvailable("Body11ABT")) {
 					if(!found)
 						found = evalResearch(lab, kineticResearch);
@@ -115,9 +115,9 @@ function eventResearched() {
 
 			if(random(2)) {
 				if(!found)
-					found = evalResearch(lab, weaponTech);
-				if(!found)
 					found = evalResearch(lab, extraTech);
+				if(!found)
+					found = evalResearch(lab, weaponTech);
 				if(!found)
 					found = evalResearch(lab, defenseTech);
 			}
@@ -173,9 +173,9 @@ function eventResearched() {
 					if(!found && !turnOffCyborgs && cyborgSecondary.length)
 						found = pursueResearch(lab, cyborgSecondary);
 					if(!found)
-						found = evalResearch(lab, secondaryWeaponTech);
-					if(!found)
 						found = evalResearch(lab, secondaryWeaponExtra);
+					if(!found)
+						found = evalResearch(lab, secondaryWeaponTech);
 				}
 			}
 
@@ -197,7 +197,7 @@ function eventResearched() {
 			if(!found)
 				found = pursueResearch(lab, "R-Wpn-PlasmaCannon");
 
-			if(isDesignable("Laser4-PlasmaCannon") && (gameTime > 350000)) {
+			if(gameTime > 350000) {
 				if(!found)
 					found = evalResearch(lab, extremeLaserTech);
 				if(!found)

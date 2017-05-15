@@ -177,7 +177,7 @@ function analyzeRandomEnemyDroid() {
 //This effect only occurs while the Cobra command center is not destroyed.
 function nexusWave() {
 	if(isDefined(nexusWaveOn) && !nexusWaveOn) {
-		removeTimer("nexusWave");
+		removeThisTimer("nexusWave");
 		return;
 	}
 

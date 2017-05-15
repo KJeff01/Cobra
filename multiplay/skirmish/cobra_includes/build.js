@@ -315,14 +315,6 @@ function buildPhase3() {
 			}
 		}
 
-		/*
-		if(isStructureAvailable("A0ComDroidControl")) {
-			if(countAndBuild("A0ComDroidControl", 1)) {
-				return true;
-			}
-		}
-		*/
-
 		if(countAndBuild(structures.factories, 5)) {
 			return true;
 		}

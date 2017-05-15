@@ -26,14 +26,16 @@ function eventStartLevel() {
 
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
 
-	setTimer("buildOrder", THINK_LONGER + 320 + 3 * random(60));
-	setTimer("repairDamagedDroids", THINK_LONGER + 400 + 4 * random(60));
-	setTimer("produce", THINK_LONGER + 750 + 3 * random(70));
+	setTimer("buildOrder", THINK_LONGER + 390 + 3 * random(60));
+	setTimer("repairDamagedDroids", THINK_LONGER + 480 + 4 * random(60));
+	setTimer("eventResearched", THINK_LONGER + 6500 + 3 * random(70));
+	setTimer("produce", THINK_LONGER + 900 + 3 * random(70));
 	setTimer("battleTactics", THINK_LONGER + 2000 + 5 * random(60));
 	setTimer("switchOffMG", THINK_LONGER + 3000 + 5 * random(60)); //May remove itself.
 	setTimer("spyRoutine", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("nexusWave", THINK_LONGER + 10000 + 3 * random(70)); //May remove itself.
 	setTimer("checkMood", THINK_LONGER + 20000 + 4 * random(70));
+	setTimer("StopTimersIfDead", THINK_LONGER + 40000 + 5 * random(70));
 }
 
 //This is meant to check for nearby oil resources next to the construct. also
@@ -55,7 +57,6 @@ function eventStructureBuilt(structure, droid) {
 		}
 	}
 	else {
-		if(checkUnfinishedStructures()) { return; }
 		if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return; }
 	}
 }
@@ -233,7 +234,7 @@ function eventDestroyed(object) {
 		return;
 
 	if(object.player === me) {
-		var enemies = enumRange(object.x, object.y, 20, ENEMIES, false);
+		var enemies = enumRange(object.x, object.y, 8, ENEMIES, false);
 		enemies.sort(distanceToBase);
 		if(enemies.length && grudgeCount[enemies[0].player] < 50000) {
 			grudgeCount[enemies[0].player] = grudgeCount[enemies[0].player] + 5;
