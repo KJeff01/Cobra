@@ -292,8 +292,6 @@ const weaponStats = {
 			{ res: "R-Wpn-Missile2A-T", stat: "Missile-VTOL-AT" }, // scourge
 		],
 		defenses: [
-			// rocket turtle AI needs early AT gateway towers, hence duplicate stat
-			{ res: "R-Defense-Tower06", stat: "GuardTower6" }, // pod tower
 			{ res: "R-Defense-Tower06", stat: "GuardTower6" }, // pod tower
 			{ res: "R-Defense-Pillbox06", stat: "GuardTower5" }, // lancer tower
 			{ res: "R-Defense-WallTower06", stat: "WallTower06" }, // lancer hardpoint

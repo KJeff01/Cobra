@@ -63,6 +63,7 @@ function rangeStep(obj, visibility, player, invert) {
 		else {
 			temp = enumRange(obj.x, obj.y, i, player, visibility);
 		}
+
 		if(temp.length > 0) {
 			temp.filter(function(obj) {
 				//Do not chase VTOLs with the sensor...
@@ -74,7 +75,8 @@ function rangeStep(obj, visibility, player, invert) {
 			else {
 				temp.sort(distanceToBase);
 			}
-			return temp[0];
+
+			target = temp[0];
 		}
 	}
 

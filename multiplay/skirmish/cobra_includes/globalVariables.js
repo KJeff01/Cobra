@@ -24,35 +24,43 @@ const thermalResearch = [
 const ESSENTIALS = [
 	"R-Wpn-MG1Mk1",
 	"R-Wpn-MG-Damage02",
-	"R-Struc-PowerModuleMk1"
+	"R-Struc-PowerModuleMk1",
 ];
 
 const PROPULSION = [
 	"R-Vehicle-Prop-Hover",
-	"R-Vehicle-Prop-Tracks"
+	"R-Vehicle-Prop-Tracks",
 ];
 
 const START_BODY = [
 	"R-Vehicle-Body05",
-	"R-Vehicle-Body11"
+	"R-Vehicle-Body11",
 ];
 
 const REPAIR_UPGRADES = [
 	"R-Struc-RprFac-Upgrade01",
 	"R-Sys-MobileRepairTurretHvy",
 	"R-Sys-Autorepair-General",
-	"R-Struc-RprFac-Upgrade06"
+	"R-Struc-RprFac-Upgrade06",
 ];
 
 const FLAMER = [
 	"R-Wpn-Flame2",
 	"R-Wpn-Flamer-ROF03",
-	"R-Wpn-Flamer-Damage09"
+	"R-Wpn-Flamer-Damage09",
 ];
 
+const SENSOR_TECH = [
+	"R-Sys-Sensor-Upgrade03",
+	"R-Sys-CBSensor-Tower01",
+	"R-Sys-RadarDetector01",
+	"R-Sys-ECM-Upgrade02",
+	"R-Sys-Sensor-WSTower",
+]
+
 const STRUCTURE_DEFENSE_UPGRADES = [
-	"R-Struc-Materials09"
-	//"R-Defense-WallUpgrade12"
+	"R-Struc-Materials09",
+	//"R-Defense-WallUpgrade12",
 ];
 
 const bodyResearch = [
@@ -104,6 +112,11 @@ const repairTurrets = [
 	"HeavyRepair",
 	"LightRepair1",
 ];
+
+const CB_TOWER = "Sys-CB-Tower01";
+const WS_TOWER = "Sys-SensoTowerWS";
+const RADAR_DETECTOR = "Sys-RadarDetector01";
+const ECM = "ECM1PylonMk1";
 
 
 //List of Cobra personalities:

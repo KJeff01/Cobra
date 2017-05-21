@@ -94,7 +94,7 @@ function repairDroid(droid, force) {
 
 //choose either cyborgs/tanks/vtols.
 function chooseGroup() {
-	const MIN_DROID_COUNT = 5;
+	const MIN_DROID_COUNT = 7;
 	var tanks  = enumGroup(attackGroup);
 	var borgs = enumGroup(cyborgGroup);
 	var vtols = enumGroup(vtolGroup);
@@ -202,7 +202,7 @@ function attackWithGroup(droids, enemy, targets) {
 		enemy = getMostHarmfulPlayer();
 	}
 
-	const MIN_DROID_COUNT = 6;
+	const MIN_DROID_COUNT = 7;
 	if(droids.length < MIN_DROID_COUNT) {
 		return false;
 	}
@@ -275,13 +275,20 @@ function spyRoutine() {
 		return false;
 	}
 
+	var object = rangeStep(startPositions[me], false);
+
+	if(!isDefined(object)) {
+		return;
+	}
+
 	for(var j = 0; j < sensors.length; ++j) {
-		var object = rangeStep(startPositions[me], false);
+		if(isDefined(object)) {
+			orderDroidObj(sensors[j], DORDER_OBSERVE, object);
+		}
 
 		//Redundant stability here.
 		for(var i = 0; i < artillery.length; ++i) {
-			if(isDefined(sensors[j]) && isDefined(object) && isDefined(artillery[i]) && droidReady(artillery[i]) && droidCanReach(artillery[i], object.x, object.y)) {
-				orderDroidObj(sensors[j], DORDER_OBSERVE, object);
+			if(random(2) && isDefined(sensors[j]) && isDefined(object) && isDefined(artillery[i]) && droidReady(artillery[i]) && droidCanReach(artillery[i], object.x, object.y)) {
 				orderDroidLoc(artillery[i], DORDER_SCOUT, object.x, object.y);
 			}
 		}
@@ -290,7 +297,7 @@ function spyRoutine() {
 
 //Attack enemy oil when tank group is large enough.
 function attackEnemyOil() {
-	const MIN_ATTACK_DROIDS = 5;
+	const MIN_ATTACK_DROIDS = 7;
 	var who = chooseGroup();
 	var tmp = 0;
 
@@ -320,7 +327,7 @@ function attackEnemyOil() {
 function battleTactics() {
 	const MIN_ENEMY_DROIDS = 3;
 	const MIN_DERRICKS = 8;
-	const MIN_ATTACK_DROIDS = 5;
+	const MIN_ATTACK_DROIDS = 6;
 	var droids = enumRange(startPositions[me].x, startPositions[me].y, 15, ENEMIES, true);
 	droids.filter(function(obj) { return (obj.type === DROID) && !isVTOL(obj); });
 
@@ -371,13 +378,14 @@ function battleTactics() {
 
 //Recycle units when certain conditions are met.
 function recycleObsoleteDroids() {
+	const MIN_FACTORY_COUNT = 1;
 	var tanks = enumGroup(attackGroup);
 	var systems = enumGroup(sensorGroup);
 	systems = appendListElements(systems, enumGroup(repairGroup));
 	systems = appendListElements(systems, enumDroid(me, DROID_CONSTRUCT));
 	var temp = false;
 
-	if((countStruct(structures.factories) > 1) && componentAvailable("hover01")) {
+	if((countStruct(structures.factories) > MIN_FACTORY_COUNT) && componentAvailable("hover01")) {
 		if(!unfinishedStructures().length) {
 			for(var i = 0; i < systems.length; ++i) {
 				if(systems[i].propulsion !== "hover01") {

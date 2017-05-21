@@ -54,10 +54,8 @@ function evalResearch(lab, list) {
 
 
 function eventResearched() {
+	const MIN_POWER = -200;
 	if(!isDefined(techlist) || !isDefined(turnOffMG) || !isDefined(turnOffCyborgs)) {
-		return;
-	}
-	if(getRealPower() < -400) {
 		return;
 	}
 
@@ -66,7 +64,7 @@ function eventResearched() {
 		var lab = lablist[i];
 
 		var found = false;
-		if (lab.status === BUILT && structureIdle(lab)) {
+		if ((lab.status === BUILT) && structureIdle(lab) && (getRealPower() > MIN_POWER)) {
 			found = pursueResearch(lab, ESSENTIALS);
 
 			if(!found && (personality === "AL"))
@@ -122,6 +120,24 @@ function eventResearched() {
 					found = evalResearch(lab, defenseTech);
 			}
 
+			if(random(3)) {
+				if(!found)
+					found = evalResearch(lab, artilleryTech);
+				//AB primaryweapon has all this...
+				if((personality !== "AB") && !found)
+					found = evalResearch(lab, artillExtra);
+			}
+
+			if(countEnemyVTOL()) {
+				if(!found)
+					found = evalResearch(lab, antiAirTech);
+				if(!found)
+					found = evalResearch(lab, antiAirExtras);
+			}
+
+			if(!found)
+				found = evalResearch(lab, SENSOR_TECH);
+
 			//Just like the semperfi AI bots (which Cobra is derived from) it
 			//stays true to the use of those thermite cyborgs.
 			if(!turnOffCyborgs) {
@@ -132,37 +148,19 @@ function eventResearched() {
 			}
 
 			if(random(3)) {
-				if(!found)
-					found = evalResearch(lab, artilleryTech);
-				//AB primaryweapon has all this...
-				if((personality !== "AB") && !found)
-					found = evalResearch(lab, artillExtra);
-			}
-
-			if(random(3)) {
 				const VTOL_RES = ["R-Wpn-Bomb-Accuracy03", "R-Wpn-Bomb05", "R-Struc-VTOLPad-Upgrade06"];
 				if(!found)
 					found = evalResearch(lab, VTOL_RES);
 			}
 
-			if(countEnemyVTOL()) {
-				if(!found)
-					found = evalResearch(lab, antiAirTech);
-				if(!found)
-					found = evalResearch(lab, antiAirExtras);
+			if(!turnOffCyborgs) {
+				if(!found && componentAvailable("Body11ABT"))
+					found = evalResearch(lab, thermalResearch);
 			}
-
-			if(random(4)) {
-				if(!found && !turnOffCyborgs)
-					found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
+			else {
 				if(!found)
-					found = evalResearch(lab, laserTech);
-				if(!found)
-					found = evalResearch(lab, laserExtra);
+					found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
 			}
-
-			if(!found)
-				found = pursueResearch(lab, "R-Sys-Sensor-WS");
 
 			//Late game weapon.
 			if(random(3)) {
@@ -181,18 +179,19 @@ function eventResearched() {
 
 			if(!found)
 				found = evalResearch(lab, bodyResearch);
+
+			if(random(4)) {
+				if(!found && !turnOffCyborgs)
+					found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
+				if(!found)
+					found = evalResearch(lab, laserTech);
+				if(!found)
+					found = evalResearch(lab, laserExtra);
+			}
+
 			if(!found)
 				found = evalResearch(lab, STRUCTURE_DEFENSE_UPGRADES);
 
-
-			if(!turnOffCyborgs) {
-				if(!found && componentAvailable("Body11ABT"))
-					found = evalResearch(lab, thermalResearch);
-			}
-			else {
-				if(!found)
-					found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
-			}
 
 			if(!found)
 				found = pursueResearch(lab, "R-Wpn-PlasmaCannon");

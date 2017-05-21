@@ -1,10 +1,10 @@
 
 //Returns unfinished structures that are not defenses or derricks.
-function unfinishedStructures() {
+function unfinishedStructures(countDefenses) {
 	return enumStruct(me).filter(function(struct) {
 		return (struct.status !== BUILT
 			&& struct.stattype !== RESOURCE_EXTRACTOR
-			&& struct.stattype !== DEFENSE
+			&& (isDefined(countDefenses) || (!isDefined(countDefenses) && struct.stattype !== DEFENSE))
 		);
 	});
 }
@@ -17,6 +17,39 @@ function conCanHelp(mydroid, bx, by) {
 		&& !repairDroid(mydroid)
 		&& droidCanReach(mydroid, bx, by)
 	);
+}
+
+//Return all idle trucks.
+function findIdleTrucks() {
+	var builders = enumDroid(me, DROID_CONSTRUCT);
+	var droidlist = [];
+
+	for (var i = 0; i < builders.length; i++)
+	{
+		if (conCanHelp(builders[i], startPositions[me].x, startPositions[me].y))
+		{
+			droidlist.push(builders[i]);
+		}
+	}
+
+	return droidlist;
+}
+
+// Demolish an object.
+function demolishThis(object)
+{
+	var success = false;
+	var droidList = findIdleTrucks();
+
+	for (var i = 0; i < droidList.length; i++)
+	{
+		if(orderDroidObj(droidList[i], DORDER_DEMOLISH, object))
+		{
+			success = true;
+		}
+	}
+
+	return success;
 }
 
 //Build a certain number of something
@@ -120,12 +153,7 @@ function buildStuff(struc, module, defendThis) {
 	var construct = enumDroid(me, DROID_CONSTRUCT);
 
 	if (construct.length > 0) {
-		var freeTrucks = [];
-		for(var x = 0; x < construct.length; x++) {
-			if (conCanHelp(construct[x], construct[x].x, construct[x].y)) {
-				freeTrucks.push(construct[x]);
-			}
-		}
+		var freeTrucks = findIdleTrucks();
 
 		if(freeTrucks.length > 0) {
 			freeTrucks.sort(distanceToBase);
@@ -152,15 +180,14 @@ function buildStuff(struc, module, defendThis) {
 	return false;
 }
 
-//Check for unfinshed structures and help complete them.
-function checkUnfinishedStructures() {
+//Check for unfinshed structures and help complete them. countDefense merely
+//needs to be defined to check on defense structure status.
+function checkUnfinishedStructures(countDefense) {
 	var struct = unfinishedStructures();
 
 	if(struct.length > 0) {
 		struct.sort(distanceToBase);
-		var trucks = enumDroid(me, DROID_CONSTRUCT).filter(function(obj) {
-			return conCanHelp(obj, struct[0].x, struct[0].y) || (obj.order === DORDER_HELPBUILD);
-		});
+		var trucks = findIdleTrucks(countDefense);
 
 		if(trucks.length > 0) {
 			trucks.sort(distanceToBase);
@@ -194,13 +221,46 @@ function lookForOil() {
 
 			var safe = enumRange(oils[i + s].x, oils[i + s].y, SAFE_RANGE, ENEMIES, false);
 			safe.filter(isUnsafeEnemyObject);
-			if (!safe.length && conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)
-				&& droidCanReach(droids[j], oils[i + s].x, oils[i + s].y)) {
+			if (!safe.length && conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)) {
 				orderDroidBuild(droids[j], DORDER_BUILD, structures.derricks, oils[i + s].x, oils[i + s].y);
 				droids[j].busy = true;
 				s += 1;
 			}
 		}
+	}
+}
+
+// Build CB, Wide-Spectrum, radar detector, or ECM
+function buildSensors() {
+	if (isStructureAvailable(CB_TOWER))
+	{
+		// Or try building wide spectrum towers.
+		if (isStructureAvailable(WS_TOWER))
+		{
+			if ((getRealPower() > -200) && countAndBuild(WS_TOWER, 3))
+			{
+				return true;
+			}
+		}
+		else
+		{
+			//Keep maxBlockingTile 0 since there is a possibility the trucks
+			//could block the path out of base.
+			if ((getRealPower() > -100) && countAndBuild(CB_TOWER, 2))
+			{
+				return true;
+			}
+		}
+	}
+
+	if (countAndBuild(RADAR_DETECTOR, 3))
+	{
+		return true;
+	}
+
+	if (countAndBuild(ECM, 3))
+	{
+		return true;
 	}
 }
 
@@ -227,6 +287,10 @@ function buildDefenses() {
 	}
 
 	if(protectUnguardedDerricks()) {
+		return true;
+	}
+
+	if(buildSensors()) {
 		return true;
 	}
 
@@ -347,7 +411,7 @@ function buildPhase4() {
 }
 
 //Laser satellite/uplink center
-function buildPhase5() {
+function buildSpecialStructures() {
 	if((playerPower(me) > 150) && isStructureAvailable(structures.extras[1])) {
 		if(!countStruct(structures.extras[1]) && countAndBuild(structures.extras[1], 1)) {
 			return true;
@@ -389,17 +453,17 @@ function buildExtras() {
 //Cobra's unique build decisions
 function buildOrder() {
 	if(recycleObsoleteDroids()) { return; }
-	if(checkUnfinishedStructures()) { return; }
+	if(checkUnfinishedStructures(true)) { return; }
 	if(buildPhase1()) { return; }
 	if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return; }
 	if(buildExtras()) { return; }
 	lookForOil();
-	if(getRealPower() < -600) { return; }
+	if(getRealPower() < -400) { return; }
 	if(buildPhase2()) { return; }
 	if(buildDefenses()) { return; }
+	if(buildSpecialStructures()) { return; }
 	if(buildPhase3()) { return; }
 	if(buildPhase4()) { return; }
-	if(buildPhase5()) { return; }
 }
 
 //Check if a building has modules to be built
@@ -408,7 +472,9 @@ function maintenance() {
 	const mods = [1, 1, 2, 2]; //Number of modules paired with list above
 	var struct = null, module = "", structList = [];
 
-	if(countStruct(structures.derricks) < 4) { return false; }
+	if(countStruct(structures.derricks) < 4) {
+		return false;
+	}
 
 	for (var i = 0; i < list.length; ++i) {
 		if (isStructureAvailable(list[i]) && (struct === null)) {

@@ -197,8 +197,12 @@ function buildVTOL(struct) {
 
 //Produce a unit when factories allow it.
 function produce() {
+	const MIN_POWER = -100;
+	const MIN_TRUCKS = 4;
+	const MIN_SENSORS = 2;
+	const MIN_REPAIRS = 3;
 	//Try not to produce more units.
-	if((getRealPower() < -400) || ((enumDroid(me).length - 1) === 150)) {
+	if((enumDroid(me).length - 1) === 150) {
 		return false;
 	}
 
@@ -224,22 +228,22 @@ function produce() {
 	}
 
 	for(var x = 0; x < fac.length; ++x) {
-		if(isDefined(fac[x]) && structureIdle(fac[x])) {
-			if ((countDroid(DROID_CONSTRUCT, me) + trucks) < 4) {
-				if(playerAlliance(true).length && (countDroid(DROID_CONSTRUCT, me) < 3) && (gameTime > 30000)) {
+		if(isDefined(fac[x]) && structureIdle(fac[x]) && (getRealPower() > MIN_POWER)) {
+			if ((countDroid(DROID_CONSTRUCT, me) + trucks) < MIN_TRUCKS) {
+				if(playerAlliance(true).length && (countDroid(DROID_CONSTRUCT, me) < MIN_TRUCKS) && (gameTime > 30000)) {
 					sendChatMessage("need truck", ALLIES);
 				}
 				buildSys(fac[x], "Spade1Mk1");
 			}
-			else if((enumGroup(sensorGroup).length + sens) < 2) {
+			else if((enumGroup(sensorGroup).length + sens) < MIN_SENSORS) {
 				buildSys(fac[x]);
 			}
-			else if((enumGroup(attackGroup).length > 6) && ((enumGroup(repairGroup).length + reps) < 3)) {
+			else if((enumGroup(attackGroup).length > 6) && ((enumGroup(repairGroup).length + reps) < MIN_REPAIRS)) {
 				buildSys(fac[x], repairTurrets);
 			}
 			else {
 				//Do not produce weak body units if we can give this factory a module.
-				if(fac[x].modules < 2 && componentAvailable("Body11ABT"))
+				if((fac[x].modules < 2) && componentAvailable("Body11ABT"))
 					continue;
 				buildAttacker(fac[x]);
 			}
@@ -248,14 +252,14 @@ function produce() {
 
 	if(isDefined(turnOffCyborgs) && !turnOffCyborgs) {
 		for(var x = 0; x < cybFac.length; ++x) {
-			if(isDefined(cybFac[x]) && structureIdle(cybFac[x])) {
+			if(isDefined(cybFac[x]) && structureIdle(cybFac[x]) && (getRealPower() > MIN_POWER)) {
 				buildCyborg(cybFac[x]);
 			}
 		}
 	}
 
 	for(var x = 0; x < vtolFac.length; ++x) {
-		if(isDefined(vtolFac[x]) && structureIdle(vtolFac[x])) {
+		if(isDefined(vtolFac[x]) && structureIdle(vtolFac[x]) && (getRealPower() > MIN_POWER)) {
 			buildVTOL(vtolFac[x]);
 		}
 	}

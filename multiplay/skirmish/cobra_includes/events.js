@@ -153,7 +153,7 @@ function eventAttacked(victim, attacker) {
 				return (d.type === DROID) && ((d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG) || isVTOL(d));
 			});
 
-			if(units.length < 5) {
+			if(units.length < 4) {
 				units = chooseGroup();
 			}
 		}
@@ -161,7 +161,7 @@ function eventAttacked(victim, attacker) {
 		units.filter(function(dr) { return droidCanReach(dr, attacker.x, attacker.y); });
 
 		for (var i = 0; i < units.length; i++) {
-			if(isDefined(units[i]) && droidReady(units[i]) && isDefined(attacker))
+			if(random(2) && isDefined(units[i]) && droidReady(units[i]) && isDefined(attacker))
 				orderDroidObj(units[i], DORDER_ATTACK, attacker);
 		}
 	}
@@ -201,16 +201,17 @@ function eventBeacon(x, y, from, to, message) {
 		var cyborgs = enumGroup(cyborgGroup);
 		var tanks = enumGroup(attackGroup);
 		var vtols = enumGroup(vtolGroup);
+
 		for (var i = 0; i < cyborgs.length; i++) {
-			if(!repairDroid(cyborgs[i]) && droidCanReach(cyborgs[i], x, y))
+			if(random(2) && !repairDroid(cyborgs[i]) && droidCanReach(cyborgs[i], x, y))
 				orderDroidLoc(cyborgs[i], DORDER_SCOUT, x, y);
 		}
 		for (var i = 0; i < tanks.length; i++) {
-			if(!repairDroid(tanks[i]) && droidCanReach(tanks[i], x, y))
+			if(random(2) && !repairDroid(tanks[i]) && droidCanReach(tanks[i], x, y))
 				orderDroidLoc(tanks[i], DORDER_SCOUT, x, y);
 		}
 		for (var i = 0; i < vtols.length; i++) {
-			if(vtolReady(vtols[i]))
+			if(vtolReady(vtols[i]) && random(2))
 				orderDroidLoc(vtols[i], DORDER_SCOUT, x, y);
 		}
 	}

@@ -45,11 +45,11 @@ function eventChat(from, to, message) {
 
 	if((message === "need truck") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_CONSTRUCT);
-		if(droids.length <= 3) { return; }
+		if(droids.length <= 2) { return; }
 		donateObject(droids[random(droids.length)], from);
 	}
 	else if((message === "need power") && allianceExistsBetween(from, to)) {
-		if(playerPower(me) - queuedPower(me) > 0) { donatePower(playerPower(me) / 2, from); }
+		if(playerPower(me) > 50) { donatePower(playerPower(me) / 2, from); }
 	}
 	else if((message === "need tank") && allianceExistsBetween(from, to)) {
 		donateFromGroup(enumGroup(attackGroup), from);
