@@ -3,7 +3,11 @@ A Skirmish AI for warzone2100 with a dynamic build and research order for all Te
 
 There are five personalities so far (all use lasers and plasma cannon when it can):
 
-AC: Focus on Cannon/Gauss/Howitzers technology. AR: Focus on Flamer/Rockets/Howitzers technology. AB: Focus on Rocket/Missile/Gauss technology. AM: Machine-guns/Howitzers/lasers. AL: Lasers/Fire mortars.
+1. AC: Focus on Cannon/Gauss/Howitzers technology.
+2. AR: Focus on Flamer/Rockets/Howitzers technology.
+3. AB: Focus on Rocket/Missile/Gauss technology.
+4. AM: Machine-guns/Howitzers/lasers.
+5. AL: Lasers/Fire mortars.
 
 Do note that AL is exclusive to T3 (with at least bases) and AM is exclusive to T1 (or if starting without a base).
 
@@ -13,19 +17,17 @@ This AI will try to emulate the the core functionality of the NEXUS Intruder Pro
 
 
 chat commands include: 
-need power/truck/tank/cyborg/vtol.
-attackX -- (X being a player number). 
-oilX -- to specifically attack nearby enemy oil. help me!/help me!! for calling for Cobra units to go to your hq (for compatibility with Nexus AI). 
-AC/AR/AB/AM/AL -- make it switch personalities.
-FFA -- after a team skirmish is won, break alliance and fight it.
-toggle mg -- disable/enable machinegun use.
-toggle cyborg -- disable/enable cyborg use.
-toggle hover -- disable/enable force Cobra to use hover propulsion.
+1. need power/truck/tank/cyborg/vtol.
+2. attackX -- (X being a player number). 
+3. oilX -- to specifically attack nearby enemy oil. help me!/help me!! for calling for Cobra units to go to your hq (for compatibility with Nexus AI). 
+4. AC/AR/AB/AM/AL -- make it switch personalities.
+5. FFA -- after a team skirmish is won, break alliance and fight it (does not count as win/loss either way).
+6. toggle mg -- disable/enable machinegun use.
+7. toggle cyborg -- disable/enable cyborg use.
+8. toggle hover -- disable/enable force Cobra to use hover propulsion.
+9. oil level -- Ask what the oil count is with a response of low, medium, or high.
 
 warzone2100 links:
-
-This AI uses a slimmed version of the NullBot3 standard file for research related information: https://github.com/haoNoQ/nullbot
-
-website https://wz2100.net/ github https://github.com/Warzone2100/warzone2100
-
-Official discussion forum thread: http://forums.wz2100.net/viewtopic.php?f=49&t=12676
+1. This AI uses a slimmed version of the NullBot3 standard file for research related information: https://github.com/haoNoQ/nullbot
+2. website https://wz2100.net/ github https://github.com/Warzone2100/warzone2100
+3. Official discussion forum thread: http://forums.wz2100.net/viewtopic.php?f=49&t=12676
