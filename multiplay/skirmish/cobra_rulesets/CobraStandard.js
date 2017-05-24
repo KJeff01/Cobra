@@ -132,6 +132,11 @@ const weaponStats = {
 			{ res: "R-Wpn-Cannon6TwinAslt", stat: "Cannon6TwinAslt" }, // tac
 			{ res: "R-Wpn-Cannon3Mk1", stat: "Cannon375mmMk1" }, // hc
 		],
+		fastFire: [
+			{ res: "R-Wpn-Cannon4AMk1", stat: "Cannon4AUTOMk1" }, // hpv
+			{ res: "R-Wpn-Cannon5", stat: "Cannon5VulcanMk1" }, // ac
+			{ res: "R-Wpn-Cannon6TwinAslt", stat: "Cannon6TwinAslt" }, // tac
+		],
 		vtols: [
 			{ res: "R-Wpn-Cannon1Mk1", stat: "Cannon1-VTOL" }, // lc
 			{ res: "R-Wpn-Cannon4AMk1", stat: "Cannon4AUTO-VTOL" }, // hpv
@@ -216,6 +221,10 @@ const weaponStats = {
 			{ res: "R-Wpn-Howitzer03-Rot", stat: "Howitzer03-Rot" },
 			{ res: "R-Wpn-HvyHowitzer", stat: "Howitzer150Mk1" },
 		],
+		fastFire: [
+			{ res: "R-Wpn-Mortar3", stat: "Mortar3ROTARYMk1" },
+			{ res: "R-Wpn-Howitzer03-Rot", stat: "Howitzer03-Rot" },
+		],
 		vtols: [
 			{ res: "R-Wpn-Bomb01", stat: "Bomb1-VTOL-LtHE" },
 			{ res: "R-Wpn-Bomb02", stat: "Bomb2-VTOL-HvHE" },
@@ -246,6 +255,9 @@ const weaponStats = {
 			{ res: "R-Wpn-HowitzerMk1", stat: "Howitzer105Mk1" },
 			{ res: "R-Wpn-Howitzer03-Rot", stat: "Howitzer03-Rot" },
 			{ res: "R-Wpn-HvyHowitzer", stat: "Howitzer150Mk1" },
+		],
+		fastFire: [
+			{ res: "R-Wpn-Howitzer03-Rot", stat: "Howitzer03-Rot" },
 		],
 		vtols: [
 			{ res: "R-Wpn-Bomb01", stat: "Bomb1-VTOL-LtHE" },
@@ -516,7 +528,9 @@ const weaponStats = {
 			{ res: "R-Wpn-Bomb03", stat: "Bomb3-VTOL-LtINC" }, // Phosphor bomb
 			{ res: "R-Wpn-Bomb04", stat: "Bomb4-VTOL-HvyINC" }, // Thermite bomb
 			{ res: "R-Wpn-Bomb05", stat: "Bomb5-VTOL-Plasmite" }, // Plasmite bomb
-			//{ res: "R-Wpn-Bomb06", stat: "Bomb6-VTOL-EMP" }, // EMP Missile Launcher
+		],
+		empBomb: [
+			{ res: "R-Wpn-Bomb06", stat: "Bomb6-VTOL-EMP" }, // EMP Missile Launcher
 		],
 		defenses: [],
 		templates: [],
@@ -578,6 +592,19 @@ const weaponStats = {
 			"R-Wpn-Energy-Damage03",
 			"R-Wpn-Energy-ROF03",
 			"R-Wpn-Energy-Accuracy01",
+		],
+	},
+	empBomb: {
+		alias: "empbomb",
+		weapons: [],
+		vtols: [
+			{ res: "R-Wpn-Bomb06", stat: "Bomb6-VTOL-EMP" }, // EMP Missile Launcher
+		],
+		defenses: [],
+		templates: [],
+		extras: [
+			"R-Wpn-Bomb-Accuracy03",
+			"R-Struc-VTOLPad-Upgrade06",
 		],
 	},
 };

@@ -6,22 +6,43 @@ function choosePersonalityWeapon(type) {
 	var weaps;
 	var weaponList = [];
 	var isSecondary = 0; //Prevent secondaryWeapon first element from being built.
-	if(!isDefined(type)) { type = "TANK"; }
+	if(!isDefined(type)) {
+		type = "TANK";
+	}
 
 	if(type === "TANK") {
 		switch(random(6)) {
-			case 0: weaps = subpersonalities[personality].primaryWeapon; break;
-			case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
-			case 2: weaps = subpersonalities[personality].artillery; break;
-			case 3: weaps = weaponStats.lasers; break;
-			case 4: weaps = subpersonalities[personality].secondaryWeapon; isSecondary = 1; break;
-			case 5: weaps = weaponStats.AS; break;
-			default: weaps = subpersonalities[personality].primaryWeapon; break;
+			case 0: {
+				if(random(2))
+					weaps = subpersonalities[personality].primaryWeapon.weapons;
+				else
+					weaps = subpersonalities[personality].primaryWeapon.fastFire;
+			}
+			break;
+			case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns.weapons; } break;
+			case 2: {
+				if(random(2))
+					weaps = subpersonalities[personality].artillery.weapons;
+				else
+					weaps = subpersonalities[personality].artillery.fastFire;
+			}
+			break;
+			case 3: weaps = weaponStats.lasers.weapons; break;
+			case 4: {
+				isSecondary = true;
+				if(random(2))
+					weaps = subpersonalities[personality].secondaryWeapon.weapons;
+				else
+					weaps = subpersonalities[personality].secondaryWeapon.fastFire;
+			}
+			break;
+			case 5: weaps = weaponStats.AS.weapons; break;
+			default: weaps = subpersonalities[personality].primaryWeapon.weapons; break;
 		}
 
 		if(isDefined(weaps)) {
-			for(var i = weaps.weapons.length - 1; i >= isSecondary; --i) {
-				weaponList.push(weaps.weapons[i].stat);
+			for(var i = weaps.length - 1; i >= isSecondary; --i) {
+				weaponList.push(weaps[i].stat);
 			}
 
 			//on hard difficulty and above.
@@ -54,16 +75,20 @@ function choosePersonalityWeapon(type) {
 		}
 	}
 	else if(type === "VTOL") {
-		switch(random(4)) {
-			case 0: if((personality !== "AM") && (personality !== "AR")) { weaps = subpersonalities[personality].primaryWeapon; } break;
+		var isEMP = false;
+
+		switch(random(5)) {
+			case 0: if((returnPrimaryAlias() !== "mg") && (returnPrimaryAlias() !== "fl")) { weaps = subpersonalities[personality].primaryWeapon; } break;
 			case 1: weaps = weaponStats.lasers; break;
 			case 2: weaps = subpersonalities[personality].secondaryWeapon; break;
 			case 3: weaps = weaponStats.bombs; break;
+			case 4: weaps = weaponStats.empBomb; isEMP = true; break;
 			default: weaps = weaponStats.lasers; break;
 		}
 
-		if(!isDefined(weaps) || (weaps.vtols.length - 1 <= 0))
+		if(!isDefined(weaps) || (!isEMP && (weaps.vtols.length - 1 <= 0))) {
 			weaps = weaponStats.lasers;
+		}
 
 		for(var i = weaps.vtols.length - 1; i >= 0; --i) {
 			weaponList.push(weaps.vtols[i].stat);

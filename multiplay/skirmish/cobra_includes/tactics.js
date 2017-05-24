@@ -309,7 +309,7 @@ function spyRoutine() {
 
 //Attack enemy oil when tank group is large enough.
 function attackEnemyOil() {
-	const MIN_ATTACK_DROIDS = 7;
+	const MIN_ATTACK_DROIDS = 6;
 	var who = chooseGroup();
 	var tmp = 0;
 

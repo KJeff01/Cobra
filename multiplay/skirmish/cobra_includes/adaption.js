@@ -5,7 +5,7 @@
 //If starting with a low tech level, then disable Machine-guns when the
 //personality can design its primary weapon.
 function switchOffMG() {
-	if(personality === "AM") {
+	if(returnPrimaryAlias() === "mg") {
 		removeThisTimer("switchOffMG");
 		return;
 	}

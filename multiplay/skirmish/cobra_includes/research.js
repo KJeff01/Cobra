@@ -147,7 +147,7 @@ function eventResearched() {
 				found = evalResearch(lab, FLAMER);
 
 			if(random(3)) {
-				const VTOL_RES = ["R-Struc-VTOLPad-Upgrade02", "R-Wpn-Bomb05", "R-Wpn-Bomb-Accuracy03", "R-Struc-VTOLPad-Upgrade06"];
+				const VTOL_RES = ["R-Struc-VTOLPad-Upgrade02", "R-Wpn-Bomb05", "R-Wpn-Bomb-Accuracy03", "R-Struc-VTOLPad-Upgrade06", "R-Wpn-Bomb06"];
 				if(!found)
 					found = evalResearch(lab, VTOL_RES);
 			}
