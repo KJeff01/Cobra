@@ -275,22 +275,34 @@ function spyRoutine() {
 		return false;
 	}
 
-	var object = rangeStep(startPositions[me], false);
+	sensors = sortAndReverseDistance(sensors);
+	var enemies = findLivingEnemies();
+	var target;
+	var objects = [];
 
-	if(!isDefined(object)) {
-		return;
+	for(var i = 0; i < enemies.length; ++i) {
+		var obj = rangeStep(enemies[i]);
+		if(isDefined(obj)) {
+			objects.push(obj);
+		}
 	}
 
-	for(var j = 0; j < sensors.length; ++j) {
-		if(isDefined(object)) {
-			orderDroidObj(sensors[j], DORDER_OBSERVE, object);
-		}
+	if(!objects.length) {
+		return;
+	}
+	else {
+		objects.sort(distanceToBase);
+		target = objects[0];
+	}
 
-		//Redundant stability here.
-		for(var i = 0; i < artillery.length; ++i) {
-			if(random(2) && isDefined(sensors[j]) && isDefined(object) && isDefined(artillery[i]) && droidReady(artillery[i]) && droidCanReach(artillery[i], object.x, object.y)) {
-				orderDroidLoc(artillery[i], DORDER_SCOUT, object.x, object.y);
-			}
+	if(isDefined(target)) {
+		orderDroidObj(sensors[0], DORDER_OBSERVE, target);
+	}
+
+	//Redundant stability here.
+	for(var i = 0; i < artillery.length; ++i) {
+		if(random(2) && isDefined(sensors[0]) && isDefined(target) && isDefined(artillery[i]) && droidReady(artillery[i]) && droidCanReach(artillery[i], target.x, target.y)) {
+			orderDroidLoc(artillery[i], DORDER_SCOUT, target.x, target.y);
 		}
 	}
 }
@@ -323,54 +335,75 @@ function attackEnemyOil() {
 	}
 }
 
+// Defend base if a droid is close by.
+function defendBase() {
+	const MIN_ATTACK_DROIDS = 6;
+	var enemies = findLivingEnemies();
+
+	for(var i = 0; i < enemies.length; ++i) {
+		var droid = enumDroid(enemies[i]).sort(distanceToBase);
+
+		if(droid.length > 0) {
+			droid = droid[0];
+		}
+		else {
+			continue;
+		}
+
+		//Go defend the base.
+		if(distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, droid.x, droid.y) < 8) {
+			var myDroids = enumGroup(attackGroup);
+			myDroids = appendListElements(myDroids, enumGroup(cyborgGroup));
+
+			if(myDroids.length < MIN_ATTACK_DROIDS) {
+				return true; //wait.
+			}
+
+			//They are being aggressive, so lets increase grudge.
+			if(grudgeCount[enemies[i]] < MAX_GRUDGE) {
+				grudgeCount[enemies[i]] = grudgeCount[enemies[i]] + 25;
+			}
+
+			for(var j = 0; j < myDroids.length; ++j) {
+				if(random(2) && isDefined(myDroids[j]) && droidReady(myDroids[j]) && isDefined(droid)) {
+					orderDroidLoc(myDroids[j], DORDER_SCOUT, droid.x, droid.y);
+				}
+			}
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 //Defend or attack.
 function battleTactics() {
-	const MIN_ENEMY_DROIDS = 3;
+	if(defendBase()) {
+		return;
+	}
+
 	const MIN_DERRICKS = 8;
 	const MIN_ATTACK_DROIDS = 6;
-	var droids = enumRange(startPositions[me].x, startPositions[me].y, 15, ENEMIES, true);
-	droids.filter(function(obj) { return (obj.type === DROID) && !isVTOL(obj); });
+	const ENEMY = getMostHarmfulPlayer();
+	const MIN_GRUDGE = 300;
+	const ENEMY_FACTORIES = returnEnemyFactories();
 
-	//Go defend the base.
-	if(droids.length > MIN_ENEMY_DROIDS) {
-		droids.sort(distanceToBase);
-		var myDroids = enumGroup(attackGroup);
-		myDroids = appendListElements(myDroids, enumGroup(cyborgGroup));
-		if(myDroids.length < MIN_ATTACK_DROIDS) {
+	if((grudgeCount[ENEMY] > MIN_GRUDGE) && ENEMY_FACTORIES) {
+		attackWithGroup(chooseGroup(), ENEMY, ENEMY_FACTORIES);
+	}
+	else if((countStruct(structures.derricks) < MIN_DERRICKS) || (getRealPower() < -200)) {
+		attackEnemyOil();
+	}
+	else {
+		var who = chooseGroup();
+		if(who.length < MIN_ATTACK_DROIDS) {
 			return;
 		}
 
-		var player = droids[0].player;
-
-		if((player < maxPlayers) && grudgeCount[player] < 50000) {
-			grudgeCount[player] = grudgeCount[player] + 15;
-		}
-
-		for(var i = 0; i < myDroids.length; ++i) {
-			findNearestEnemyDroid(myDroids[i], player);
-		}
-	}
-	else {
-		const ENEMY = getMostHarmfulPlayer();
-		const MIN_GRUDGE = 300;
-		const ENEMY_FACTORIES = returnEnemyFactories();
-
-		if((grudgeCount[ENEMY] > MIN_GRUDGE) && ENEMY_FACTORIES) {
-			attackWithGroup(chooseGroup(), ENEMY, ENEMY_FACTORIES);
-		}
-		else if((countStruct(structures.derricks) < MIN_DERRICKS) || (getRealPower() < -200)) {
-			attackEnemyOil();
-		}
-		else {
-			var who = chooseGroup();
-			if(who.length < MIN_ATTACK_DROIDS) {
-				return;
-			}
-
-			for(var i = 0; i < who.length; ++i) {
-				if(isDefined(who[i]) && droidReady(who[i])) {
-					findNearestEnemyStructure(who[i]);
-				}
+		for(var i = 0; i < who.length; ++i) {
+			if(!random(2) && isDefined(who[i]) && droidReady(who[i])) {
+				findNearestEnemyStructure(who[i]);
 			}
 		}
 	}

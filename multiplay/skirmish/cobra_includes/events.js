@@ -119,7 +119,7 @@ function eventAttacked(victim, attacker) {
 	}
 
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player)) {
-		if(grudgeCount[attacker.player] < 50000) {
+		if(grudgeCount[attacker.player] < MAX_GRUDGE) {
 			grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 5;
 		}
 
@@ -237,7 +237,7 @@ function eventDestroyed(object) {
 	if(object.player === me) {
 		var enemies = enumRange(object.x, object.y, 8, ENEMIES, false);
 		enemies.sort(distanceToBase);
-		if(enemies.length && grudgeCount[enemies[0].player] < 50000) {
+		if(enemies.length && grudgeCount[enemies[0].player] < MAX_GRUDGE) {
 			grudgeCount[enemies[0].player] = grudgeCount[enemies[0].player] + 5;
 		}
 	}

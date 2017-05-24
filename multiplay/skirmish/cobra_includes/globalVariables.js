@@ -113,14 +113,11 @@ const repairTurrets = [
 	"LightRepair1",
 ];
 
-const CB_TOWER = "Sys-CB-Tower01";
-const WS_TOWER = "Sys-SensoTowerWS";
-const RADAR_DETECTOR = "Sys-RadarDetector01";
-const ECM = "ECM1PylonMk1";
+const MAX_GRUDGE = 50000;
 
 
 //List of Cobra personalities:
-//AC: Cannon/gauss/howitzer.
+//AC: Cannon/Gauss/howitzer.
 //AR: Flamer/Rocket/howitzer.
 //AB: Rocket/Missle/gauss.
 //AM: Machine-gun/howitzer/Cannons.
@@ -132,7 +129,7 @@ const subpersonalities = {
 		"primaryWeapon": weaponStats.cannons,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.mortars,
-		"antiAir": weaponStats.AA,
+		"antiAir": weaponStats.AA, //cannons_AA is too weak.
 		"res": [
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-Cannon-Damage03",
@@ -156,7 +153,7 @@ const subpersonalities = {
 		"primaryWeapon": weaponStats.rockets_AT,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.rockets_Arty,
-		"antiAir": weaponStats.AA,
+		"antiAir": weaponStats.rockets_AA,
 		"res": [
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-Rocket02-MRL",
@@ -179,7 +176,7 @@ const subpersonalities = {
 		"primaryWeapon": weaponStats.lasers,
 		"secondaryWeapon": weaponStats.lasers,
 		"artillery": weaponStats.fireMortars,
-		"antiAir": weaponStats.AA,
+		"antiAir": weaponStats.lasers_AA,
 		"res": [
 			"R-Wpn-Mortar-Incenediary",
 			"R-Wpn-Laser01",

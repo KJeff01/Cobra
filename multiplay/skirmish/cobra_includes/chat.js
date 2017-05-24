@@ -76,7 +76,7 @@ function eventChat(from, to, message) {
 		var num = message.slice(-1);
 		if(!allianceExistsBetween(num, me) && (num !== me)) {
 			if(!isDefined(getScavengerNumber()) || (isDefined(getScavengerNumber()) && (num !== getScavengerNumber()))) {
-				if(grudgeCount[num] < 50000) {
+				if(grudgeCount[num] < MAX_GRUDGE) {
 					grudgeCount[num] = grudgeCount[num] + 15;
 				}
 			}
@@ -87,7 +87,7 @@ function eventChat(from, to, message) {
 		var num = message.slice(-1);
 		if(!allianceExistsBetween(num, me) && (num !== me)) {
 			if(!isDefined(getScavengerNumber()) || (isDefined(getScavengerNumber()) && (num !== getScavengerNumber()))) {
-				if(grudgeCount[num] < 50000) {
+				if(grudgeCount[num] < MAX_GRUDGE) {
 					grudgeCount[num] = grudgeCount[num] + 15;
 				}
 			}

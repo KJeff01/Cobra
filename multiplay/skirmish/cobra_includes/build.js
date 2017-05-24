@@ -232,12 +232,17 @@ function lookForOil() {
 
 // Build CB, Wide-Spectrum, radar detector, or ECM
 function buildSensors() {
+	const CB_TOWER = "Sys-CB-Tower01";
+	const WS_TOWER = "Sys-SensoTowerWS";
+	const RADAR_DETECTOR = "Sys-RadarDetector01";
+	const ECM = "ECM1PylonMk1";
+
 	if (isStructureAvailable(CB_TOWER))
 	{
 		// Or try building wide spectrum towers.
 		if (isStructureAvailable(WS_TOWER))
 		{
-			if ((getRealPower() > -200) && countAndBuild(WS_TOWER, 3))
+			if ((getRealPower() > -200) && countAndBuild(WS_TOWER, 2))
 			{
 				return true;
 			}
@@ -253,7 +258,7 @@ function buildSensors() {
 		}
 	}
 
-	if (countAndBuild(RADAR_DETECTOR, 3))
+	if (countAndBuild(RADAR_DETECTOR, 2))
 	{
 		return true;
 	}
@@ -264,26 +269,30 @@ function buildSensors() {
 	}
 }
 
-//Build either air defenses at the base or defend a derrick.
+//TODO: maybe call eventResearched with the res for the stat if it does not have it.
+function buildAAForPersonality() {
+	var aaType = subpersonalities[personality].antiAir.defenses;
+	var vtolCount = countEnemyVTOL();
+
+	for(var i = 0; i < aaType.length; ++i) {
+		if(isStructureAvailable(aaType[i].stat)) {
+			if(countAndBuild(aaType[i].stat, Math.floor(vtolCount / 2))) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+//Build defense systems.
 function buildDefenses() {
 	if((playerPower(me) < 40)) {
 		return false;
 	}
 
-	var enemyVtolCount = countEnemyVTOL();
-	if(enemyVtolCount) {
-		if(isStructureAvailable("AASite-QuadRotMg")) {
-			if(countAndBuild("AASite-QuadRotMg", Math.floor(enemyVtolCount / 2))) {
-				return true;
-			}
-		}
-		else {
-			if(isStructureAvailable("AASite-QuadMg1")) {
-				if(countAndBuild("AASite-QuadMg1", Math.floor(enemyVtolCount / 2))) {
-					return true;
-				}
-			}
-		}
+	if(buildAAForPersonality()) {
+		return true;
 	}
 
 	if(protectUnguardedDerricks()) {

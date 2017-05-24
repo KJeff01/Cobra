@@ -18,8 +18,8 @@ function updateResearchList(stat, len) {
 //Call this again when manually changing a personality.
 function initializeResearchLists() {
 	techlist = subpersonalities[personality].res;
-	antiAirTech = updateResearchList(weaponStats.AA.defenses, 1);
-	antiAirExtras = updateResearchList(weaponStats.AA.extras);
+	antiAirTech = updateResearchList(subpersonalities[personality].antiAir.defenses);
+	antiAirExtras = updateResearchList(subpersonalities[personality].antiAir.extras);
 	extremeLaserTech = updateResearchList(weaponStats.AS.extras);
 	mgWeaponTech = updateResearchList(weaponStats.machineguns.weapons);
 	laserTech = updateResearchList(weaponStats.lasers.weapons);
@@ -54,7 +54,7 @@ function evalResearch(lab, list) {
 
 
 function eventResearched() {
-	const MIN_POWER = -200;
+	const MIN_POWER = -230;
 	if(!isDefined(techlist) || !isDefined(turnOffMG) || !isDefined(turnOffCyborgs)) {
 		return;
 	}
@@ -101,34 +101,30 @@ function eventResearched() {
 			if(!found)
 				found = evalResearch(lab, REPAIR_UPGRADES);
 
-			if(!turnOffMG || (personality === "AM")) {
+			if(!turnOffMG || (returnPrimaryAlias() === "mg")) {
 				if(!found)
 					found = pursueResearch(lab, mgWeaponTech);
 				if(!found)
 					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
 			}
 
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
-
 			if(random(2)) {
 				if(!found)
 					found = evalResearch(lab, extraTech);
+				if(!found && !turnOffCyborgs)
+					found = evalResearch(lab, cyborgWeaps);
 				if(!found)
 					found = evalResearch(lab, weaponTech);
 				if(!found)
 					found = evalResearch(lab, defenseTech);
 			}
 
-			if(random(3)) {
-				if(!found)
-					found = evalResearch(lab, artilleryTech);
-				//AB primaryweapon has all this...
-				if((personality !== "AB") && !found)
-					found = evalResearch(lab, artillExtra);
-			}
+			if(!found)
+				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 
-			if(countEnemyVTOL()) {
+			//lasers AA needs stormbringer ASAP. Otherwise just research antiAir
+			//when enemy gets VTOLs.
+			if((returnAntiAirAlias() === "las") || countEnemyVTOL()) {
 				if(!found)
 					found = evalResearch(lab, antiAirTech);
 				if(!found)
@@ -138,23 +134,26 @@ function eventResearched() {
 			if(!found)
 				found = evalResearch(lab, SENSOR_TECH);
 
-			//Just like the semperfi AI bots (which Cobra is derived from) it
-			//stays true to the use of those thermite cyborgs.
-			if(!turnOffCyborgs) {
+			if(random(3)) {
 				if(!found)
-					found = evalResearch(lab, FLAMER);
+					found = evalResearch(lab, artilleryTech);
 				if(!found)
-					found = evalResearch(lab, cyborgWeaps);
+					found = evalResearch(lab, artillExtra);
 			}
 
+			//Just like the semperfi AI bots (which Cobra is derived from) it
+			//stays true to the use of those thermite cyborgs.
+			if(!found && !turnOffCyborgs)
+				found = evalResearch(lab, FLAMER);
+
 			if(random(3)) {
-				const VTOL_RES = ["R-Wpn-Bomb-Accuracy03", "R-Wpn-Bomb05", "R-Struc-VTOLPad-Upgrade06"];
+				const VTOL_RES = ["R-Struc-VTOLPad-Upgrade02", "R-Wpn-Bomb05", "R-Wpn-Bomb-Accuracy03", "R-Struc-VTOLPad-Upgrade06"];
 				if(!found)
 					found = evalResearch(lab, VTOL_RES);
 			}
 
 			if(!turnOffCyborgs) {
-				if(!found && componentAvailable("Body11ABT"))
+				if(!found)
 					found = evalResearch(lab, thermalResearch);
 			}
 			else {
@@ -190,29 +189,23 @@ function eventResearched() {
 			}
 
 			if(!found)
+				found = pursueResearch(lab, "R-Sys-Resistance-Circuits");
+			if(!found)
 				found = evalResearch(lab, STRUCTURE_DEFENSE_UPGRADES);
-
 
 			if(!found)
 				found = pursueResearch(lab, "R-Wpn-PlasmaCannon");
+			if(!found)
+				found = evalResearch(lab, extremeLaserTech);
 
-			if(gameTime > 350000) {
-				if(!found)
-					found = evalResearch(lab, extremeLaserTech);
-				if(!found)
-					found = pursueResearch(lab, "R-Wpn-LasSat");
-				if(!found)
-					found = pursueResearch(lab, "R-Wpn-EMPCannon");
-				if(!found)
-					found = pursueResearch(lab, "R-Sys-Resistance-Circuits");
+			if(!found)
+				found = pursueResearch(lab, "R-Wpn-LasSat");
+			if(!found)
+				found = pursueResearch(lab, "R-Wpn-EMPCannon");
 
-				//Very likely going to be done with research by now.
-				if(!found && componentAvailable("Body14SUP")
-					&& isDesignable("EMP-Cannon")
-					&& isStructureAvailable(structures.extras[2])
-				) {
-					researchComplete = true;
-				}
+			//Very likely going to be done with research by now.
+			if(!found && componentAvailable("Body14SUP") && isDesignable("EMP-Cannon") && isStructureAvailable(structures.extras[2])) {
+				researchComplete = true;
 			}
 		}
 	}

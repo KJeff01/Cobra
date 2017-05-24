@@ -31,6 +31,21 @@ function sortAndReverseDistance(arr) {
 	return (arr.sort(distanceToBase)).reverse();
 }
 
+//Return the alias of the primary weapon.
+function returnPrimaryAlias() {
+	return subpersonalities[personality].primaryWeapon.alias;
+}
+
+//Return the alias of the secondary weapon.
+function returnSecondaryAlias() {
+	return subpersonalities[personality].secondaryWeapon.alias;
+}
+
+//Return the alias of the anti-air weaponry.
+function returnAntiAirAlias() {
+	return subpersonalities[personality].antiAir.alias;
+}
+
 //Push list elements into another.
 function appendListElements(list, items) {
 	if(!isDefined(list))
@@ -49,35 +64,24 @@ function addDroidsToGroup(group, droids) {
 	}
 }
 
-//Control the amount of objects being put in memory so we do not create a large array of objects.
-//Returns closest/farthest object, depending on parmeters supplied.
-function rangeStep(obj, visibility, player, invert) {
+//Returns closest enemy object.
+function rangeStep(player) {
 	const STEP = 2000;
 	var target;
-	var temp;
+	var targets = [];
+	var closestStructure = enumStruct(player).sort(distanceToBase);
+	var closestDroid = enumDroid(player).sort(distanceToBase);
 
-	for(var i = 0; i <= 30000; i += STEP) {
-		if(!isDefined(player)) {
-			temp = enumRange(obj.x, obj.y, i, ENEMIES, visibility);
-		}
-		else {
-			temp = enumRange(obj.x, obj.y, i, player, visibility);
-		}
+	if (closestStructure.length > 0) {
+		targets.push(closestStructure[0]);
+	}
+	if(closestDroid.length > 0) {
+		targets.push(closestDroid[0]);
+	}
 
-		if(temp.length > 0) {
-			temp.filter(function(obj) {
-				//Do not chase VTOLs with the sensor...
-				return ((obj.type === DROID) && !isVTOL(obj)) || (obj.type === STRUCTURE);
-			 })
-			if(isDefined(invert)) {
-				temp = sortAndReverseDistance(temp);
-			}
-			else {
-				temp.sort(distanceToBase);
-			}
-
-			target = temp[0];
-		}
+	if(targets.length > 0) {
+		targets.sort(distanceToBase);
+		target = targets[0];
 	}
 
 	return target;
