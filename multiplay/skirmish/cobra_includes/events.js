@@ -247,22 +247,21 @@ function eventDestroyed(object) {
 function eventStructureReady(structure) {
 	if(!isDefined(structure)) {
 		var las = enumStruct(me, structures.extras[2]);
-		if(las.length > 0)
+		if(las.length) {
 			structure = las[0];
+		}
 		else {
-			queue("eventStructureReady", 20000);
+			queue("eventStructureReady", 10000);
 			return;
 		}
 	}
 
-	var enemy = getMostHarmfulPlayer();
-	var facs = enumStruct(enemy, structures.factories);
-	var tempFacs = enumStruct(enemy, structures.templateFactories);
+	const ENEMY_FACTORIES = returnEnemyFactories();
 
-	if(facs.length > 0)
+	if(ENEMY_FACTORIES.length) {
 		activateStructure(structure, facs[random(facs.length)]);
-	else if(tempFacs.length > 0)
-		activateStructure(structure, tempFacs[random(tempFacs.length)]);
-	else
-		queue("eventStructureReady", 20000);
+	}
+	else {
+		queue("eventStructureReady", 10000);
+	}
 }

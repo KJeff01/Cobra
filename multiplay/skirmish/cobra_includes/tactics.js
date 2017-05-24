@@ -1,3 +1,6 @@
+//README: Most of the attack code has random() in it to prevent too many droid
+//orders being executed at once. Helps reduce performance issues.
+
 
 //Droids that are attacking should not be pulled away until
 //they destroy whatever thay are attacking or need repair.
@@ -7,6 +10,10 @@ function droidReady(droid) {
 		&& (droid.order !== DORDER_RTR)
 		&& vtolReady(droid) //True for non-VTOL units
 	);
+}
+
+function isPlasmaCannon(droid) {
+	return droid.weapons[0].name === "Laser4-PlasmaCannon";
 }
 
 //Modified from Nullbot.
@@ -144,7 +151,7 @@ function checkMood() {
 	const GRUDGE_LEVEL = 300;
 	var mostHarmful = getMostHarmfulPlayer();
 
-	if((grudgeCount[mostHarmful] >= GRUDGE_LEVEL) || (random(101) <= 2)) {
+	if((grudgeCount[mostHarmful] >= GRUDGE_LEVEL) || (random(101) <= 1)) {
 		attackStuff(mostHarmful);
 	}
 }
@@ -158,7 +165,12 @@ function findNearestEnemyDroid(droid, enemy) {
 	if(badDroids.length) {
 		badDroids.sort(distanceToBase);
 		if(droidReady(droid) && isDefined(badDroids[0]) && droidCanReach(droid, badDroids[0].x, badDroids[0].y)) {
-			orderDroidLoc(droid, DORDER_SCOUT, badDroids[0].x, badDroids[0].y);
+			if(!isPlasmaCannon(droid)) {
+				orderDroidLoc(droid, DORDER_SCOUT, badDroids[0].x, badDroids[0].y);
+			}
+			else {
+				orderDroidObj(droid, DORDER_ATTACK, badDroids[0]);
+			}
 		}
 	}
 }
@@ -179,12 +191,7 @@ function findNearestEnemyStructure(droid, enemy, targets) {
 		var target = s[0];
 
 		if(droidReady(droid) && isDefined(target) && droidCanReach(droid, target.x, target.y)) {
-			if(target.type === STRUCTURE) {
-				orderDroidObj(droid, DORDER_ATTACK, target);
-			}
-			else {
-				orderDroidLoc(droid, DORDER_SCOUT, target.x, target.y);
-			}
+			orderDroidObj(droid, DORDER_ATTACK, target);
 		}
 	}
 	else {
@@ -214,9 +221,14 @@ function attackWithGroup(droids, enemy, targets) {
 	}
 
 	for (var j = 0; j < droids.length; j++) {
-		if(isDefined(droids[j]) && droidReady(droids[j])) {
+		if(isDefined(droids[j]) && droidReady(droids[j]) && random(8)) {
 			if(isDefined(target) && (target.type !== STRUCTURE) && droidCanReach(droids[j], target.x, target.y)) {
-				orderDroidLoc(droids[j], DORDER_SCOUT, target.x, target.y);
+				if(!isPlasmaCannon(droids[j])) {
+					orderDroidLoc(droids[j], DORDER_SCOUT, target.x, target.y);
+				}
+				else {
+					orderDroidObj(droids[j], DORDER_ATTACK, target);
+				}
 			}
 			else {
 				findNearestEnemyStructure(droids[j], enemy);
@@ -301,7 +313,7 @@ function spyRoutine() {
 
 	//Redundant stability here.
 	for(var i = 0; i < artillery.length; ++i) {
-		if(random(2) && isDefined(sensors[0]) && isDefined(target) && isDefined(artillery[i]) && droidReady(artillery[i]) && droidCanReach(artillery[i], target.x, target.y)) {
+		if(random(5) && isDefined(sensors[0]) && isDefined(target) && isDefined(artillery[i]) && droidReady(artillery[i]) && droidCanReach(artillery[i], target.x, target.y)) {
 			orderDroidLoc(artillery[i], DORDER_SCOUT, target.x, target.y);
 		}
 	}
@@ -329,7 +341,12 @@ function attackEnemyOil() {
 				tmp += 1;
 			}
 			if(isDefined(derr[tmp]) && droidCanReach(who[i], derr[tmp].x, derr[tmp].y)) {
-				orderDroidLoc(who[i], DORDER_SCOUT, derr[tmp].x, derr[tmp].y);
+				if(!isPlasmaCannon(who[i])) {
+					orderDroidLoc(who[i], DORDER_SCOUT, derr[tmp].x, derr[tmp].y);
+				}
+				else {
+					orderDroidObj(who[i], DORDER_ATTACK, derr[tmp]);
+				}
 			}
 		}
 	}
@@ -365,8 +382,13 @@ function defendBase() {
 			}
 
 			for(var j = 0; j < myDroids.length; ++j) {
-				if(random(2) && isDefined(myDroids[j]) && droidReady(myDroids[j]) && isDefined(droid)) {
-					orderDroidLoc(myDroids[j], DORDER_SCOUT, droid.x, droid.y);
+				if(random(5) && isDefined(myDroids[j]) && droidReady(myDroids[j]) && isDefined(droid)) {
+					if(!isPlasmaCannon(myDroids[j])) {
+						orderDroidLoc(myDroids[j], DORDER_SCOUT, droid.x, droid.y);
+					}
+					else {
+						orderDroidObj(myDroids[j], DORDER_ATTACK, droid);
+					}
 				}
 			}
 
@@ -402,7 +424,7 @@ function battleTactics() {
 		}
 
 		for(var i = 0; i < who.length; ++i) {
-			if(!random(2) && isDefined(who[i]) && droidReady(who[i])) {
+			if(random(5) && isDefined(who[i]) && droidReady(who[i])) {
 				findNearestEnemyStructure(who[i]);
 			}
 		}

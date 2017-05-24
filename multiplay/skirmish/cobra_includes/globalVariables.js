@@ -66,16 +66,16 @@ const STRUCTURE_DEFENSE_UPGRADES = [
 const bodyResearch = [
 	"R-Vehicle-Body11",
 //	"R-Vehicle-Body12",
-//	"R-Vehicle-Body09",
+	"R-Vehicle-Body09",
 	"R-Vehicle-Body10",
 	"R-Vehicle-Body14",
 ];
 
 const tankBody = [
 	"Body14SUP", // Dragon
-//	"Body13SUP", // Wyvern
+	"Body13SUP", // Wyvern
 	"Body10MBT", // Vengeance
-//	"Body9REC",  // Tiger
+	"Body9REC",  // Tiger
 //	"Body12SUP", // Mantis
 	"Body11ABT", // Python
 	"Body5REC",  // Cobra
@@ -102,7 +102,7 @@ const sysProp = [
 
 const vtolBody = [
 	"Body7ABT",  // Retribution
-//	"Body6SUPP", // Panther
+	"Body6SUPP", // Panther
 	"Body8MBT",  // Scorpion
 	"Body5REC",  // Cobra
 ];

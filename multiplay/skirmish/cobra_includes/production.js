@@ -65,12 +65,14 @@ function choosePersonalityWeapon(type) {
 		}
 	}
 	else if(type === "CYBORG") {
+		//grenadier cybirgs can only be built as long as Cobra does not Have
+		//access to pepperpot. They are too weak agter that.
 		switch(random(5)) {
 			case 0: weaps = subpersonalities[personality].primaryWeapon; break;
 			case 1: weaps = weaponStats.flamers; break;
 			case 2: weaps = weaponStats.lasers; break;
 			case 3: weaps = subpersonalities[personality].secondaryWeapon; break;
-			case 4: weaps = subpersonalities[personality].artillery; break;
+			case 4: if(!componentAvailable("Mortar3ROTARYMk1")) { weaps = subpersonalities[personality].artillery; } break;
 			default: weaps = subpersonalities[personality].primaryWeapon; break;
 		}
 	}

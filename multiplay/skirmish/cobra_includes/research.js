@@ -108,6 +108,9 @@ function eventResearched() {
 					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
 			}
 
+			if(!found)
+				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
+
 			if(random(2)) {
 				if(!found)
 					found = evalResearch(lab, extraTech);
@@ -118,9 +121,6 @@ function eventResearched() {
 				if(!found)
 					found = evalResearch(lab, defenseTech);
 			}
-
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 
 			//lasers AA needs stormbringer ASAP. Otherwise just research antiAir
 			//when enemy gets VTOLs.
