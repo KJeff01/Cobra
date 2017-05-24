@@ -274,7 +274,7 @@ function buildAAForPersonality() {
 	var aaType = subpersonalities[personality].antiAir.defenses;
 	var vtolCount = countEnemyVTOL();
 
-	for(var i = 0; i < aaType.length; ++i) {
+	for(var i = aaType.length - 1; i >= 0; --i) {
 		if(isStructureAvailable(aaType[i].stat)) {
 			if(countAndBuild(aaType[i].stat, Math.floor(vtolCount / 2))) {
 				return true;

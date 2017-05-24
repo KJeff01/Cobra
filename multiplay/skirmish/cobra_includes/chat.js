@@ -1,8 +1,12 @@
 
 //A way to control chat messages sent to Cobra AI.
 function sendChatMessage(msg, receiver) {
-	if(!isDefined(msg)) { return; }
-	if(!isDefined(receiver)) { receiver = ALLIES; }
+	if(!isDefined(msg)) {
+		return;
+	}
+	if(!isDefined(receiver)) {
+		receiver = ALLIES;
+	}
 
 	if(lastMsg !== msg) {
 		lastMsg = msg;
@@ -35,6 +39,9 @@ function eventChat(from, to, message) {
 	}
 	else if((message === "toggle hover") && allianceExistsBetween(from, to)) {
 		forceHover = !forceHover;
+	}
+	else if((message === "oil level") && allianceExistsBetween(from, to)) {
+		sendChatMessage("Map oil count is: " + mapOilLevel(), ALLIES);
 	}
 
 	//Do not execute these statements if from is me.

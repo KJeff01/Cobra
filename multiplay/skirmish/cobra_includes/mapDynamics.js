@@ -119,13 +119,15 @@ function countAllResources() {
 	var resources = enumFeature(-1, oilResources);
 	for(var i = 0; i < maxPlayers; ++i) {
 		var res = enumStruct(i, structures.derricks);
-		for(var c = 0; c < res.length; ++c)
+		for(var c = 0; c < res.length; ++c) {
 			resources.push(res[c]);
+		}
 	}
 	if(isDefined(getScavengerNumber())) {
 		var res = enumStruct(getScavengerNumber(), structures.derricks);
-		for(var c = 0; c < res.length; ++c)
+		for(var c = 0; c < res.length; ++c) {
 			resources.push(res[c]);
+		}
 	}
 
 	return resources.length;
@@ -136,9 +138,15 @@ function mapOilLevel() {
 	var perPlayer = countAllResources() / maxPlayers;
 	var str = "";
 
-	if(perPlayer <= 8) { str = "LOW"; }
-	else if((perPlayer > 8) && (perPlayer <= 16)) { str = "MEDIUM"; }
-	else { str = "HIGH"; }
+	if(perPlayer <= 8) {
+		str = "LOW";
+	}
+	else if((perPlayer > 8) && (perPlayer <= 16)) {
+		str = "MEDIUM";
+	}
+	else {
+		str = "HIGH";
+	}
 
 	return str;
 }
