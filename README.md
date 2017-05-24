@@ -19,13 +19,15 @@ This AI will try to emulate the the core functionality of the NEXUS Intruder Pro
 chat commands include: 
 1. need power/truck/tank/cyborg/vtol.
 2. attackX -- (X being a player number). 
-3. oilX -- to specifically attack nearby enemy oil. help me!/help me!! for calling for Cobra units to go to your hq (for compatibility with Nexus AI). 
+3. oilX -- to specifically attack nearby enemy oil. 
 4. AC/AR/AB/AM/AL -- make it switch personalities.
 5. FFA -- after a team skirmish is won, break alliance and fight it (does not count as win/loss either way).
 6. toggle mg -- disable/enable machinegun use.
 7. toggle cyborg -- disable/enable cyborg use.
 8. toggle hover -- disable/enable force Cobra to use hover propulsion.
 9. oil level -- Ask what the oil count is with a response of low, medium, or high.
+
+Press alt+h to drop a beacon and Cobra units will try making their way over to it if possible.
 
 warzone2100 links:
 1. This AI uses a slimmed version of the NullBot3 standard file for research related information: https://github.com/haoNoQ/nullbot
