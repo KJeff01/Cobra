@@ -88,7 +88,7 @@ function eventResearched() {
 				found = evalResearch(lab, PROPULSION);
 
 			if(!random(4)) {
-				if(!turnOffCyborgs && componentAvailable("Body11ABT")) {
+				if(!turnOffCyborgs && componentAvailable("Cyb-Wpn-Thermite")) {
 					if(!found)
 						found = evalResearch(lab, kineticResearch);
 				}
@@ -107,6 +107,11 @@ function eventResearched() {
 				if(!found)
 					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
 			}
+
+			//Just like the semperfi AI bots (which Cobra is derived from) it
+			//stays true to the use of those thermite cyborgs.
+			if(!found && (!turnOffCyborgs || (returnPrimaryAlias() === "fl")))
+				found = evalResearch(lab, FLAMER);
 
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
@@ -131,9 +136,6 @@ function eventResearched() {
 					found = evalResearch(lab, antiAirExtras);
 			}
 
-			if(!found)
-				found = evalResearch(lab, SENSOR_TECH);
-
 			if(random(3)) {
 				if(!found)
 					found = evalResearch(lab, artilleryTech);
@@ -141,24 +143,27 @@ function eventResearched() {
 					found = evalResearch(lab, artillExtra);
 			}
 
-			//Just like the semperfi AI bots (which Cobra is derived from) it
-			//stays true to the use of those thermite cyborgs.
-			if(!found && !turnOffCyborgs)
-				found = evalResearch(lab, FLAMER);
-
-			if(random(3)) {
-				const VTOL_RES = ["R-Struc-VTOLPad-Upgrade02", "R-Wpn-Bomb05", "R-Wpn-Bomb-Accuracy03", "R-Struc-VTOLPad-Upgrade06", "R-Wpn-Bomb06"];
-				if(!found)
-					found = evalResearch(lab, VTOL_RES);
-			}
+			if(!found)
+				found = evalResearch(lab, SENSOR_TECH);
 
 			if(!turnOffCyborgs) {
-				if(!found)
+				if(!found && componentAvailable("Cyb-Wpn-Thermite"))
 					found = evalResearch(lab, thermalResearch);
 			}
 			else {
 				if(!found)
 					found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
+			}
+
+			if(random(3)) {
+				const VTOL_RES = [
+					"R-Struc-VTOLPad-Upgrade02", "R-Wpn-Bomb05",
+					"R-Wpn-Bomb-Accuracy03", "R-Struc-VTOLPad-Upgrade06",
+					"R-Wpn-Bomb06"
+				];
+
+				if(!found)
+					found = evalResearch(lab, VTOL_RES);
 			}
 
 			//Late game weapon.

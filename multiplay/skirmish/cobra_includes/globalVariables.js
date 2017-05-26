@@ -133,6 +133,7 @@ const subpersonalities = {
 		"res": [
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-Cannon-Damage03",
+			"R-Vehicle-Body05",
 			"R-Wpn-Cannon2Mk1",
 			"R-Wpn-Cannon-ROF03",
 			"R-Wpn-Cannon4AMk1",
@@ -140,7 +141,7 @@ const subpersonalities = {
 	},
 	AR: {
 		"primaryWeapon": weaponStats.flamers,
-		"secondaryWeapon": weaponStats.rockets_AT,
+		"secondaryWeapon": weaponStats.missile_AT,
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"res": [

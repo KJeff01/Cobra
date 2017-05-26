@@ -15,7 +15,7 @@ function choosePersonalityWeapon(type) {
 			case 0: {
 				if(random(2))
 					weaps = subpersonalities[personality].primaryWeapon.weapons;
-				else
+				else if(isDefined(subpersonalities[personality].primaryWeapon.fastFire))
 					weaps = subpersonalities[personality].primaryWeapon.fastFire;
 			}
 			break;
@@ -23,7 +23,7 @@ function choosePersonalityWeapon(type) {
 			case 2: {
 				if(random(2))
 					weaps = subpersonalities[personality].artillery.weapons;
-				else
+				else if(isDefined(subpersonalities[personality].artillery.fastFire))
 					weaps = subpersonalities[personality].artillery.fastFire;
 			}
 			break;
@@ -32,7 +32,7 @@ function choosePersonalityWeapon(type) {
 				isSecondary = true;
 				if(random(2))
 					weaps = subpersonalities[personality].secondaryWeapon.weapons;
-				else
+				else if(isDefined(subpersonalities[personality].secondaryWeapon.fastFire))
 					weaps = subpersonalities[personality].secondaryWeapon.fastFire;
 			}
 			break;

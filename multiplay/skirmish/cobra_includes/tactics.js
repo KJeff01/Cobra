@@ -101,7 +101,7 @@ function repairDroid(droid, force) {
 
 //choose either cyborgs/tanks/vtols.
 function chooseGroup() {
-	const MIN_DROID_COUNT = 7;
+	const MIN_DROID_COUNT = 6;
 	var tanks  = enumGroup(attackGroup);
 	var borgs = enumGroup(cyborgGroup);
 	var vtols = enumGroup(vtolGroup);
@@ -209,7 +209,7 @@ function attackWithGroup(droids, enemy, targets) {
 		enemy = getMostHarmfulPlayer();
 	}
 
-	const MIN_DROID_COUNT = 7;
+	const MIN_DROID_COUNT = 6;
 	if(droids.length < MIN_DROID_COUNT) {
 		return false;
 	}
@@ -221,7 +221,7 @@ function attackWithGroup(droids, enemy, targets) {
 	}
 
 	for (var j = 0; j < droids.length; j++) {
-		if(isDefined(droids[j]) && droidReady(droids[j]) && random(8)) {
+		if(isDefined(droids[j]) && droidReady(droids[j])) {
 			if(isDefined(target) && (target.type !== STRUCTURE) && droidCanReach(droids[j], target.x, target.y)) {
 				if(!isPlasmaCannon(droids[j])) {
 					orderDroidLoc(droids[j], DORDER_SCOUT, target.x, target.y);
@@ -313,7 +313,7 @@ function spyRoutine() {
 
 	//Redundant stability here.
 	for(var i = 0; i < artillery.length; ++i) {
-		if(random(5) && isDefined(sensors[0]) && isDefined(target) && isDefined(artillery[i]) && droidReady(artillery[i]) && droidCanReach(artillery[i], target.x, target.y)) {
+		if(isDefined(sensors[0]) && isDefined(target) && isDefined(artillery[i]) && droidReady(artillery[i]) && droidCanReach(artillery[i], target.x, target.y)) {
 			orderDroidLoc(artillery[i], DORDER_SCOUT, target.x, target.y);
 		}
 	}
@@ -354,7 +354,7 @@ function attackEnemyOil() {
 
 // Defend base if a droid is close by.
 function defendBase() {
-	const MIN_ATTACK_DROIDS = 6;
+	const MIN_ATTACK_DROIDS = 4;
 	var enemies = findLivingEnemies();
 
 	for(var i = 0; i < enemies.length; ++i) {
@@ -406,7 +406,7 @@ function battleTactics() {
 	}
 
 	const MIN_DERRICKS = 8;
-	const MIN_ATTACK_DROIDS = 6;
+	const MIN_ATTACK_DROIDS = 5;
 	const ENEMY = getMostHarmfulPlayer();
 	const MIN_GRUDGE = 300;
 	const ENEMY_FACTORIES = returnEnemyFactories();
@@ -424,8 +424,8 @@ function battleTactics() {
 		}
 
 		for(var i = 0; i < who.length; ++i) {
-			if(random(5) && isDefined(who[i]) && droidReady(who[i])) {
-				findNearestEnemyStructure(who[i]);
+			if(isDefined(who[i]) && droidReady(who[i])) {
+				findNearestEnemyStructure(who[i], ENEMY);
 			}
 		}
 	}

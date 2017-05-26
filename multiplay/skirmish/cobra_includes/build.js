@@ -315,7 +315,9 @@ function buildPhase1() {
 			return true;
 		}
 
-		if(!researchComplete && countAndBuild(structures.labs, 1)) {
+		var res = (enumStruct(me).length > 2) ? 2 : 1;
+
+		if(!researchComplete && countAndBuild(structures.labs, res)) {
 			return true;
 		}
 
@@ -350,12 +352,12 @@ function buildPhase2() {
 		return true;
 	}
 
-	if(playerPower(me) > 80) {
+	if(playerPower(me) > 40) {
 		if(!researchComplete && countAndBuild(structures.labs, 3)) {
 			return true;
 		}
 
-		var facNum = (getRealPower() > -50) ? 3 : 2;
+		var facNum = (getRealPower() > -100) ? 3 : 2;
 
 		if(countAndBuild(structures.factories, facNum)) {
 			return true;
@@ -467,8 +469,8 @@ function buildOrder() {
 	if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return; }
 	if(buildExtras()) { return; }
 	lookForOil();
-	if(getRealPower() < -400) { return; }
 	if(buildPhase2()) { return; }
+	if(getRealPower() < -300) { return; }
 	if(buildDefenses()) { return; }
 	if(buildSpecialStructures()) { return; }
 	if(buildPhase3()) { return; }

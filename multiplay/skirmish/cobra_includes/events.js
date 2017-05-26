@@ -65,13 +65,13 @@ function eventStructureBuilt(structure, droid) {
 function eventDroidIdle(droid) {
 	if(droid.player === me) {
 		if(isDefined(droid) && ((droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid))) {
-				var enemyObjects = enumRange(droid.x, droid.y, 20, ENEMIES, false);
-				if(enemyObjects.length > 0) {
-					enemyObjects.sort(distanceToBase);
-					orderDroidLoc(droid, DORDER_SCOUT, enemyObjects[0].x, enemyObjects[0].y);
-				}
+			var enemyObjects = enumRange(droid.x, droid.y, 10, ENEMIES, false);
+			if(enemyObjects.length > 0) {
+				enemyObjects.sort(distanceToBase);
+				orderDroidLoc(droid, DORDER_SCOUT, enemyObjects[0].x, enemyObjects[0].y);
 			}
 		}
+	}
 }
 
 //Groups droid types.
@@ -161,7 +161,7 @@ function eventAttacked(victim, attacker) {
 		units.filter(function(dr) { return droidCanReach(dr, attacker.x, attacker.y); });
 
 		for (var i = 0; i < units.length; i++) {
-			if(random(2) && isDefined(units[i]) && droidReady(units[i]) && isDefined(attacker))
+			if(random(4) && isDefined(units[i]) && droidReady(units[i]) && isDefined(attacker))
 				orderDroidObj(units[i], DORDER_ATTACK, attacker);
 		}
 	}
@@ -203,15 +203,15 @@ function eventBeacon(x, y, from, to, message) {
 		var vtols = enumGroup(vtolGroup);
 
 		for (var i = 0; i < cyborgs.length; i++) {
-			if(random(2) && !repairDroid(cyborgs[i]) && droidCanReach(cyborgs[i], x, y))
+			if(random(4) && !repairDroid(cyborgs[i]) && droidCanReach(cyborgs[i], x, y))
 				orderDroidLoc(cyborgs[i], DORDER_SCOUT, x, y);
 		}
 		for (var i = 0; i < tanks.length; i++) {
-			if(random(2) && !repairDroid(tanks[i]) && droidCanReach(tanks[i], x, y))
+			if(random(4) && !repairDroid(tanks[i]) && droidCanReach(tanks[i], x, y))
 				orderDroidLoc(tanks[i], DORDER_SCOUT, x, y);
 		}
 		for (var i = 0; i < vtols.length; i++) {
-			if(vtolReady(vtols[i]) && random(2))
+			if(vtolReady(vtols[i]))
 				orderDroidLoc(vtols[i], DORDER_SCOUT, x, y);
 		}
 	}
