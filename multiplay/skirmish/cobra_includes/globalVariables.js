@@ -82,12 +82,6 @@ const tankBody = [
 	"Body1REC",  // Viper
 ];
 
-const tankProp = [
-	"tracked01", // tracked01
-	"HalfTrack", // half-track
-	"wheeled01", // wheels
-];
-
 const sysBody = [
 	"Body3MBT",  // Retaliation
 //	"Body2SUP",  // Leopard

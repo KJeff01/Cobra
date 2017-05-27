@@ -39,15 +39,15 @@ function adaptToMap() {
 	const T3_MATCH = isDesignable("Howitzer03-Rot");
 	const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC", "AL"];
 
-	if(!T3_MATCH && (((maxPlayers - 1) === 1) || (MAP_OIL_LEVEL === "LOW") || (enumStruct(me).length <= 1))) {
+	if(!T3_MATCH && (((maxPlayers - 1) === 1) || (MAP_OIL_LEVEL === "LOW") || (baseType === CAMP_CLEAN))) {
 		choice = ADAPT_PERSONALITIES[random(2)]; // AM, AR.
 	}
 	else if ((MAP_OIL_LEVEL === "MEDIUM") || ((ALLY_COUNT !== 0) && (ALLY_COUNT < ENEMY_COUNT))) {
-		var offset = (T3_MATCH && (enumStruct(me).length > 1)) ? 4 : 3;
+		var offset = (T3_MATCH && (baseType !== CAMP_CLEAN)) ? 4 : 3;
 		choice = ADAPT_PERSONALITIES[random(offset) + 1]; //AR, AB, AC, AL.
 	}
 	else {
-		var offset = (T3_MATCH && (enumStruct(me).length > 1)) ? 3 : 2;
+		var offset = (T3_MATCH && (baseType !== CAMP_CLEAN)) ? 3 : 2;
 		choice = ADAPT_PERSONALITIES[random(offset) + 2]; //AB, AC, AL.
 	}
 

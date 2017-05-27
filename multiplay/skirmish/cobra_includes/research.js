@@ -108,9 +108,7 @@ function eventResearched() {
 					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
 			}
 
-			//Just like the semperfi AI bots (which Cobra is derived from) it
-			//stays true to the use of those thermite cyborgs.
-			if(!found && (!turnOffCyborgs || (returnPrimaryAlias() === "fl")))
+			if(!found && (returnPrimaryAlias() === "fl"))
 				found = evalResearch(lab, FLAMER);
 
 			if(!found)
@@ -136,23 +134,14 @@ function eventResearched() {
 					found = evalResearch(lab, antiAirExtras);
 			}
 
+			if(!found)
+				found = evalResearch(lab, SENSOR_TECH);
+
 			if(random(3)) {
 				if(!found)
 					found = evalResearch(lab, artilleryTech);
 				if(!found)
 					found = evalResearch(lab, artillExtra);
-			}
-
-			if(!found)
-				found = evalResearch(lab, SENSOR_TECH);
-
-			if(!turnOffCyborgs) {
-				if(!found && componentAvailable("Cyb-Wpn-Thermite"))
-					found = evalResearch(lab, thermalResearch);
-			}
-			else {
-				if(!found)
-					found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
 			}
 
 			if(random(3)) {
@@ -165,6 +154,20 @@ function eventResearched() {
 				if(!found)
 					found = evalResearch(lab, VTOL_RES);
 			}
+
+			if(!turnOffCyborgs) {
+				if(!found && componentAvailable("Cyb-Wpn-Thermite"))
+					found = evalResearch(lab, thermalResearch);
+			}
+			else {
+				if(!found)
+					found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
+			}
+
+			//Just like the semperfi AI bots (which Cobra is derived from) it
+			//stays true to the use of those thermite cyborgs.
+			if(!found && (!turnOffCyborgs || (returnPrimaryAlias() === "fl")))
+				found = evalResearch(lab, FLAMER);
 
 			//Late game weapon.
 			if(random(3)) {

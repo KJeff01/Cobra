@@ -5,68 +5,62 @@
 function choosePersonalityWeapon(type) {
 	var weaps;
 	var weaponList = [];
-	var isSecondary = 0; //Prevent secondaryWeapon first element from being built.
+	var isSecondary = false;
 	if(!isDefined(type)) {
 		type = "TANK";
 	}
 
 	if(type === "TANK") {
 		switch(random(6)) {
-			case 0: {
-				if(random(2))
-					weaps = subpersonalities[personality].primaryWeapon.weapons;
-				else if(isDefined(subpersonalities[personality].primaryWeapon.fastFire))
-					weaps = subpersonalities[personality].primaryWeapon.fastFire;
-			}
-			break;
-			case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns.weapons; } break;
-			case 2: {
-				if(random(2))
-					weaps = subpersonalities[personality].artillery.weapons;
-				else if(isDefined(subpersonalities[personality].artillery.fastFire))
-					weaps = subpersonalities[personality].artillery.fastFire;
-			}
-			break;
-			case 3: weaps = weaponStats.lasers.weapons; break;
-			case 4: {
-				isSecondary = true;
-				if(random(2))
-					weaps = subpersonalities[personality].secondaryWeapon.weapons;
-				else if(isDefined(subpersonalities[personality].secondaryWeapon.fastFire))
-					weaps = subpersonalities[personality].secondaryWeapon.fastFire;
-			}
-			break;
-			case 5: weaps = weaponStats.AS.weapons; break;
-			default: weaps = subpersonalities[personality].primaryWeapon.weapons; break;
+			case 0: weaps = subpersonalities[personality].primaryWeapon; break;
+			case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
+			case 2: weaps = subpersonalities[personality].artillery; break;
+			case 3: weaps = weaponStats.lasers; break;
+			case 4: weaps = subpersonalities[personality].secondaryWeapon; isSecondary = true; break;
+			case 5: weaps = weaponStats.AS; break;
+			default: weaps = subpersonalities[personality].primaryWeapon; break;
 		}
 
-		if(isDefined(weaps)) {
-			for(var i = weaps.length - 1; i >= isSecondary; --i) {
-				weaponList.push(weaps[i].stat);
+		//Return either normal or fastFire weapon.
+		if(isDefined(weaps) && isDefined(weaps.fastFire) && random(2)) {
+			weaps = weaps.fastFire;
+		}
+		else {
+			if(!isDefined(weaps)) {
+				weaps = subpersonalities[personality].primaryWeapon;
 			}
+			weaps = weaps.weapons;
+		}
 
-			//on hard difficulty and above.
-			if(componentAvailable("tracked01") && (random(101) <= 1)) {
-				if(componentAvailable("MortarEMP")) {
-					weaponList = ["MortarEMP"];
-				}
-				else if(componentAvailable("PlasmaHeavy")) {
-					weaponList = ["PlasmaHeavy"];
-				}
+		for(var i = 0; i < weaps.length; ++i) {
+			weaponList.push(weaps[i].stat);
+		}
+		if(isSecondary === true) {
+			weaponList.shift(); //remove first weapon.
+		}
+		weaponList.reverse();
+
+		//on hard difficulty and above.
+		if(componentAvailable("tracked01") && (random(101) <= 1)) {
+			if(componentAvailable("MortarEMP")) {
+				weaponList = ["MortarEMP"];
 			}
+			else if(componentAvailable("PlasmaHeavy")) {
+				weaponList = ["PlasmaHeavy"];
+			}
+		}
 
-			//Try defaulting to machine-guns then.
-			if(!turnOffMG && !isDesignable(weaponList, tankBody, tankProp)) {
-				weaponList = [];
-				for(var i = weaponStats.machineguns.weapons.length - 1; i >= 0; --i) {
-					weaponList.push(weaponStats.machineguns.weapons[i].stat);
-				}
+		//Try defaulting to machine-guns then.
+		if(!turnOffMG && !isDesignable(weaponList)) {
+			weaponList = [];
+			for(var i = weaponStats.machineguns.weapons.length - 1; i >= 0; --i) {
+				weaponList.push(weaponStats.machineguns.weapons[i].stat);
 			}
 		}
 	}
 	else if(type === "CYBORG") {
-		//grenadier cybirgs can only be built as long as Cobra does not Have
-		//access to pepperpot. They are too weak agter that.
+		//grenadier cyborgs can only be built as long as Cobra does not Have
+		//access to pepperpot. They are too weak after that.
 		switch(random(5)) {
 			case 0: weaps = subpersonalities[personality].primaryWeapon; break;
 			case 1: weaps = weaponStats.flamers; break;
@@ -133,6 +127,21 @@ function useHover(weap) {
 	return ((useHover === true) || (random(101) <= 15));
 }
 
+//Randomly use tracks or half-tracks.
+function pickGroundPropulsion() {
+	var tankProp = [
+		"tracked01", // tracked01
+		"HalfTrack", // half-track
+		"wheeled01", // wheels
+	];
+
+	if(random(101) < 50) {
+		tankProp.shift();
+	}
+
+	return tankProp;
+}
+
 //Create a ground attacker tank with a heavy body when possible.
 //Personality AR uses hover when posssible. All personalities may use special weapons on Hard/Insane.
 //Also when Cobra has Dragon body, the EMP Cannon may be selected as the second weapon if it is researched.
@@ -162,12 +171,12 @@ function buildAttacker(struct) {
 	else {
 		if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
 			if((weap !== "MortarEMP")) {
-				if(isDefined(struct) && buildDroid(struct, "EMP Droid", tankBody, tankProp, "", "", weap, "EMP-Cannon")) {
+				if(isDefined(struct) && buildDroid(struct, "EMP Droid", tankBody, pickGroundPropulsion(), "", "", weap, "EMP-Cannon")) {
 					return true;
 				}
 			}
 		}
-		else if (isDefined(struct) && buildDroid(struct, "Droid", tankBody, tankProp, "", "", weap, weap)) {
+		else if (isDefined(struct) && buildDroid(struct, "Droid", tankBody, pickGroundPropulsion(), "", "", weap, weap)) {
 			return true;
 		}
 	}

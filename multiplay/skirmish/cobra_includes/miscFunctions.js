@@ -23,7 +23,7 @@ function sortDroidsByHealth(a, b) {
 
 //Used for deciding if a truck will capture oil.
 function isUnsafeEnemyObject(obj) {
-	return (obj.type === DROID) || ((obj.type === STRUCTURE) && ((obj.stattype !== WALL)));
+	return (obj.type === DROID) || ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
 }
 
 //Sort by distance to base and reverse.
@@ -154,7 +154,7 @@ function isDesignable(item, body, prop) {
 	if(!isDefined(prop))
 		prop = "wheeled01";
 
-	var virDroid = makeTemplate(me, "Virtual Droid", body, prop, null, null, item, item);
+	var virDroid = makeTemplate(me, "Virtual Droid", body, prop, "", "", item, item);
 	return (virDroid !== null) ? true : false;
 }
 

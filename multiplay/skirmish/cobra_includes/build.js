@@ -2,10 +2,7 @@
 //Returns unfinished structures that are not defenses or derricks.
 function unfinishedStructures(countDefenses) {
 	return enumStruct(me).filter(function(struct) {
-		return (struct.status !== BUILT
-			&& struct.stattype !== RESOURCE_EXTRACTOR
-			&& (isDefined(countDefenses) || (!isDefined(countDefenses) && struct.stattype !== DEFENSE))
-		);
+		return (struct.status !== BUILT && struct.stattype !== RESOURCE_EXTRACTOR);
 	});
 }
 
@@ -182,12 +179,12 @@ function buildStuff(struc, module, defendThis) {
 
 //Check for unfinshed structures and help complete them. countDefense merely
 //needs to be defined to check on defense structure status.
-function checkUnfinishedStructures(countDefense) {
+function checkUnfinishedStructures() {
 	var struct = unfinishedStructures();
 
 	if(struct.length > 0) {
 		struct.sort(distanceToBase);
-		var trucks = findIdleTrucks(countDefense);
+		var trucks = findIdleTrucks();
 
 		if(trucks.length > 0) {
 			trucks.sort(distanceToBase);
@@ -205,7 +202,7 @@ function lookForOil() {
 	var droids = enumDroid(me, DROID_CONSTRUCT);
 	var oils = enumFeature(-1, oilResources);
 	var s = 0;
-	const SAFE_RANGE = (gameTime < 210000) ? 10 : 5;
+	const SAFE_RANGE = (gameTime < 210000) ? 10 : 6;
 
 	if ((droids.length <= 1) || !oils.length) {
 		return;
@@ -237,34 +234,23 @@ function buildSensors() {
 	const RADAR_DETECTOR = "Sys-RadarDetector01";
 	const ECM = "ECM1PylonMk1";
 
-	if (isStructureAvailable(CB_TOWER))
-	{
+	if (isStructureAvailable(CB_TOWER)) {
 		// Or try building wide spectrum towers.
-		if (isStructureAvailable(WS_TOWER))
-		{
-			if ((getRealPower() > -200) && countAndBuild(WS_TOWER, 2))
-			{
-				return true;
-			}
+		if (isStructureAvailable(WS_TOWER) && countAndBuild(WS_TOWER, 2)) {
+			return true;
 		}
-		else
-		{
-			//Keep maxBlockingTile 0 since there is a possibility the trucks
-			//could block the path out of base.
-			if ((getRealPower() > -100) && countAndBuild(CB_TOWER, 2))
-			{
+		else {
+			if (countAndBuild(CB_TOWER, 2)) {
 				return true;
 			}
 		}
 	}
 
-	if (countAndBuild(RADAR_DETECTOR, 2))
-	{
+	if (countAndBuild(RADAR_DETECTOR, 2)) {
 		return true;
 	}
 
-	if (countAndBuild(ECM, 3))
-	{
+	if (countAndBuild(ECM, 3)) {
 		return true;
 	}
 }
@@ -282,12 +268,20 @@ function buildAAForPersonality() {
 		}
 	}
 
+	//Laser AA needs this.
+	if((returnAntiAirAlias() === "las") && !isStructureAvailable("P0-AASite-Laser")) {
+		if(isStructureAvailable("QuadRotAAGun") && countAndBuild("QuadRotAAGun", Math.floor(vtolCount / 2))) {
+			return true;
+		}
+	}
+
 	return false;
 }
 
 //Build defense systems.
 function buildDefenses() {
-	if((playerPower(me) < 40)) {
+	const MIN_POWER = 40;
+	if((playerPower(me) < MIN_POWER)) {
 		return false;
 	}
 
@@ -306,6 +300,11 @@ function buildDefenses() {
 	return false;
 }
 
+//Determine if we need a generator.
+function needPowerGenerator() {
+	return ((countStruct(structures.derricks) - (countStruct(structures.gens) * 4)) > 0);
+}
+
 //Build the basics when available.
 function buildPhase1() {
 
@@ -315,8 +314,7 @@ function buildPhase1() {
 			return true;
 		}
 
-		var res = (enumStruct(me).length > 2) ? 2 : 1;
-
+		var res = (baseType !== CAMP_CLEAN) ? 2 : 1;
 		if(!researchComplete && countAndBuild(structures.labs, res)) {
 			return true;
 		}
@@ -335,9 +333,7 @@ function buildPhase1() {
 		}
 	}
 
-	if (((countStruct(structures.derricks) - (countStruct(structures.gens) * 4)) > 0)
-		&& isStructureAvailable(structures.gens))
-	{
+	if (needPowerGenerator() && isStructureAvailable(structures.gens)) {
 		if(countAndBuild(structures.gens, countStruct(structures.gens) + 1)) {
 			return true;
 		}
@@ -348,29 +344,28 @@ function buildPhase1() {
 
 //Build five research labs and three tank factories.
 function buildPhase2() {
-	if(!countStruct(structures.gens)) {
+	const MIN_POWER = -200;
+	if(!countStruct(structures.gens) || (getRealPower() < MIN_POWER)) {
 		return true;
 	}
 
-	if(playerPower(me) > 40) {
-		if(!researchComplete && countAndBuild(structures.labs, 3)) {
+	if(!researchComplete && countAndBuild(structures.labs, 3)) {
+		return true;
+	}
+
+	var facNum = (getRealPower() > MIN_POWER) ? 3 : 2;
+
+	if(countAndBuild(structures.factories, facNum)) {
+		return true;
+	}
+
+	if(!researchComplete && (gameTime > 210000) && (getRealPower() > -450) && countAndBuild(structures.labs, 5)) {
+		return true;
+	}
+
+	if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
+		if (componentAvailable("Body11ABT") && (countStruct(structures.derricks) > 5) && countAndBuild(structures.templateFactories, 2)) {
 			return true;
-		}
-
-		var facNum = (getRealPower() > -100) ? 3 : 2;
-
-		if(countAndBuild(structures.factories, facNum)) {
-			return true;
-		}
-
-		if(!researchComplete && (gameTime > 210000) && (getRealPower() > -450) && countAndBuild(structures.labs, 5)) {
-			return true;
-		}
-
-		if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
-			if (componentAvailable("Body11ABT") && (countStruct(structures.derricks) > 5) && countAndBuild(structures.templateFactories, 2)) {
-				return true;
-			}
 		}
 	}
 
@@ -379,25 +374,25 @@ function buildPhase2() {
 
 //Build the minimum vtol factories and maximum ground/cyborg factories.
 function buildPhase3() {
-	if(!componentAvailable("Body11ABT") || (getRealPower() < -200) || (countStruct(structures.derricks) <= 7)) {
+	const MIN_POWER = -80;
+
+	if(!componentAvailable("Body11ABT") || (getRealPower() < MIN_POWER)) {
 		return true;
 	}
 
-	if(playerPower(me) > 100) {
-		if (isStructureAvailable(structures.vtolFactories)) {
-			if (countAndBuild(structures.vtolFactories, 2)) {
-				return true;
-			}
-		}
-
-		if(countAndBuild(structures.factories, 5)) {
+	if (isStructureAvailable(structures.vtolFactories)) {
+		if (countAndBuild(structures.vtolFactories, 2)) {
 			return true;
 		}
+	}
 
-		if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
-			if (countAndBuild(structures.templateFactories, 5)) {
-				return true;
-			}
+	if(countAndBuild(structures.factories, 5)) {
+		return true;
+	}
+
+	if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
+		if (countAndBuild(structures.templateFactories, 5)) {
+			return true;
 		}
 	}
 
@@ -406,7 +401,8 @@ function buildPhase3() {
 
 //Finish building all vtol factories and repairs.
 function buildPhase4() {
-	if ((countStruct(structures.derricks) >= 10) && (getRealPower() > -200) && isStructureAvailable(structures.vtolFactories))
+	const MIN_POWER = -50;
+	if ((getRealPower() > MIN_POWER) && isStructureAvailable(structures.vtolFactories))
 	{
 		if(isStructureAvailable(structures.extras[0])) {
 			if(countAndBuild(structures.extras[0], 5)) {
@@ -423,15 +419,13 @@ function buildPhase4() {
 
 //Laser satellite/uplink center
 function buildSpecialStructures() {
-	if((playerPower(me) > 150) && isStructureAvailable(structures.extras[1])) {
-		if(!countStruct(structures.extras[1]) && countAndBuild(structures.extras[1], 1)) {
-			return true;
-		}
-	}
+	const MIN_POWER = 150;
 
-	if((playerPower(me) > 150) && isStructureAvailable(structures.extras[2])) {
-		if(!countStruct(structures.extras[2]) && countAndBuild(structures.extras[2], 1)) {
-			return true;
+	for(var i = 1; i < structures.extras.length; ++i) {
+		if((playerPower(me) > MIN_POWER) && isStructureAvailable(structures.extras[i])) {
+			if(!countStruct(structures.extras[i]) && countAndBuild(structures.extras[i], 1)) {
+				return true;
+			}
 		}
 	}
 
@@ -464,7 +458,7 @@ function buildExtras() {
 //Cobra's unique build decisions
 function buildOrder() {
 	if(recycleObsoleteDroids()) { return; }
-	if(checkUnfinishedStructures(true)) { return; }
+	if(checkUnfinishedStructures()) { return; }
 	if(buildPhase1()) { return; }
 	if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return; }
 	if(buildExtras()) { return; }

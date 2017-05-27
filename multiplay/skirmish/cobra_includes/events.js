@@ -51,7 +51,7 @@ function eventStructureBuilt(structure, droid) {
 			droid.busy = false;
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
 		}
-		else if(getRealPower() > -80) {
+		else if(getRealPower() > -120) {
 			var undef;
 			buildStuff(getDefenseStructure(), undef, structure);
 		}
