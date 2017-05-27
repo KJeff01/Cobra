@@ -1,4 +1,98 @@
 
+//Pick a random weapon line. May return undefined for machineguns.
+//Returns an object containing weapon line and whether to skip the first element.
+function chooseRandomWeapon() {
+	var weaps;
+	var isSecondary = false;
+
+	switch(random(6)) {
+		case 0: weaps = subpersonalities[personality].primaryWeapon; break;
+		case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
+		case 2: weaps = subpersonalities[personality].artillery; break;
+		case 3: weaps = weaponStats.lasers; break;
+		case 4: weaps = subpersonalities[personality].secondaryWeapon; isSecondary = true; break;
+		case 5: weaps = weaponStats.AS; break;
+		default: weaps = subpersonalities[personality].primaryWeapon; break;
+	}
+
+	return {"weaponLine": weaps, "shift": isSecondary};
+}
+
+//Prepare the weapon list.
+function shuffleWeaponList(weaps, shiftIt) {
+	var weaponList = [];
+
+	for(var i = 0; i < weaps.length; ++i) {
+		weaponList.push(weaps[i].stat);
+	}
+
+	if(shiftIt === true) {
+		weaponList.shift(); //remove first weapon.
+	}
+
+	weaponList.reverse();
+
+	return weaponList;
+}
+
+//Either fastFire or normal.
+function chooseWeaponType(weaps) {
+	var weaponType;
+
+	if(isDefined(weaps.weaponLine) && isDefined(weaps.weaponLine.fastFire) && random(2)) {
+		weaponType = weaps.weaponLine.fastFire;
+	}
+	else {
+		if(!isDefined(weaps.weaponLine)) {
+			return subpersonalities[personality].primaryWeapon.weapons;
+		}
+
+		weaponType = weaps.weaponLine.weapons;
+	}
+
+	return weaponType;
+}
+
+//Choose a random cyborg weapon line. May return undefined.
+function chooseRandomCyborgWeapon() {
+	var weaps;
+
+	//grenadier cyborgs can only be built as long as Cobra does not Have
+	//access to pepperpot. They are too weak after that.
+	switch(random(5)) {
+		case 0: weaps = subpersonalities[personality].primaryWeapon; break;
+		case 1: weaps = weaponStats.flamers; break;
+		case 2: weaps = weaponStats.lasers; break;
+		case 3: weaps = subpersonalities[personality].secondaryWeapon; break;
+		case 4: if(!componentAvailable("Mortar3ROTARYMk1")) { weaps = subpersonalities[personality].artillery; } break;
+		default: weaps = subpersonalities[personality].primaryWeapon; break;
+	}
+
+	return weaps;
+}
+
+//Choose random VTOL weapon line. Defaults to laser if undefined.
+function chooseRandomVTOLWeapon() {
+	var weaps;
+	var isEMP = false;
+
+	switch(random(5)) {
+		case 0: if((returnPrimaryAlias() !== "mg") && (returnPrimaryAlias() !== "fl")) { weaps = subpersonalities[personality].primaryWeapon; } break;
+		case 1: weaps = weaponStats.lasers; break;
+		case 2: weaps = subpersonalities[personality].secondaryWeapon; break;
+		case 3: weaps = weaponStats.bombs; break;
+		case 4: weaps = weaponStats.empBomb; isEMP = true; break;
+		default: weaps = weaponStats.lasers; break;
+	}
+
+	if(!isDefined(weaps) || (!isEMP && (weaps.vtols.length - 1 <= 0))) {
+		weaps = weaponStats.lasers;
+	}
+
+	return weaps;
+}
+
+
 //Randomly choose the best weapon with current technology.
 //Defaults to machine-guns when other choices are unavailable (if allowed). May return undefined.
 //Also cyborgs will not return the actual stat list with this function due to how they are built.
@@ -11,42 +105,18 @@ function choosePersonalityWeapon(type) {
 	}
 
 	if(type === "TANK") {
-		switch(random(6)) {
-			case 0: weaps = subpersonalities[personality].primaryWeapon; break;
-			case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
-			case 2: weaps = subpersonalities[personality].artillery; break;
-			case 3: weaps = weaponStats.lasers; break;
-			case 4: weaps = subpersonalities[personality].secondaryWeapon; isSecondary = true; break;
-			case 5: weaps = weaponStats.AS; break;
-			default: weaps = subpersonalities[personality].primaryWeapon; break;
-		}
+		const SPECIAL_WEAPONS = ["PlasmaHeavy", "MortarEMP"];
 
-		//Return either normal or fastFire weapon.
-		if(isDefined(weaps) && isDefined(weaps.fastFire) && random(2)) {
-			weaps = weaps.fastFire;
-		}
-		else {
-			if(!isDefined(weaps)) {
-				weaps = subpersonalities[personality].primaryWeapon;
-			}
-			weaps = weaps.weapons;
-		}
-
-		for(var i = 0; i < weaps.length; ++i) {
-			weaponList.push(weaps[i].stat);
-		}
-		if(isSecondary === true) {
-			weaponList.shift(); //remove first weapon.
-		}
-		weaponList.reverse();
+		//TODO: Figure out why weaponList is sometimes empty with personality AR.
+		do {
+			weaps = chooseRandomWeapon();
+			weaponList = shuffleWeaponList(chooseWeaponType(weaps), weaps.shift);
+		} while (weaponList.length === 0);
 
 		//on hard difficulty and above.
 		if(componentAvailable("tracked01") && (random(101) <= 1)) {
-			if(componentAvailable("MortarEMP")) {
-				weaponList = ["MortarEMP"];
-			}
-			else if(componentAvailable("PlasmaHeavy")) {
-				weaponList = ["PlasmaHeavy"];
+			if((difficulty === HARD) || (difficulty === INSANE)) {
+				weaponList.push(SPECIAL_WEAPONS[random(SPECIAL_WEAPONS.length)]);
 			}
 		}
 
@@ -59,32 +129,10 @@ function choosePersonalityWeapon(type) {
 		}
 	}
 	else if(type === "CYBORG") {
-		//grenadier cyborgs can only be built as long as Cobra does not Have
-		//access to pepperpot. They are too weak after that.
-		switch(random(5)) {
-			case 0: weaps = subpersonalities[personality].primaryWeapon; break;
-			case 1: weaps = weaponStats.flamers; break;
-			case 2: weaps = weaponStats.lasers; break;
-			case 3: weaps = subpersonalities[personality].secondaryWeapon; break;
-			case 4: if(!componentAvailable("Mortar3ROTARYMk1")) { weaps = subpersonalities[personality].artillery; } break;
-			default: weaps = subpersonalities[personality].primaryWeapon; break;
-		}
+		weaps = chooseRandomCyborgWeapon();
 	}
 	else if(type === "VTOL") {
-		var isEMP = false;
-
-		switch(random(5)) {
-			case 0: if((returnPrimaryAlias() !== "mg") && (returnPrimaryAlias() !== "fl")) { weaps = subpersonalities[personality].primaryWeapon; } break;
-			case 1: weaps = weaponStats.lasers; break;
-			case 2: weaps = subpersonalities[personality].secondaryWeapon; break;
-			case 3: weaps = weaponStats.bombs; break;
-			case 4: weaps = weaponStats.empBomb; isEMP = true; break;
-			default: weaps = weaponStats.lasers; break;
-		}
-
-		if(!isDefined(weaps) || (!isEMP && (weaps.vtols.length - 1 <= 0))) {
-			weaps = weaponStats.lasers;
-		}
+		weaps = chooseRandomVTOLWeapon();
 
 		for(var i = weaps.vtols.length - 1; i >= 0; --i) {
 			weaponList.push(weaps.vtols[i].stat);

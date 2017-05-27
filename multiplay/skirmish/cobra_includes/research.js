@@ -138,21 +138,16 @@ function eventResearched() {
 				found = evalResearch(lab, SENSOR_TECH);
 
 			if(random(3)) {
+				const VTOL_RES = ["R-Struc-VTOLPad-Upgrade02", "R-Wpn-Bomb05", "R-Wpn-Bomb-Accuracy03", "R-Struc-VTOLPad-Upgrade06" ];
+				if(!found)
+					found = evalResearch(lab, VTOL_RES);
+			}
+
+			if(random(3)) {
 				if(!found)
 					found = evalResearch(lab, artilleryTech);
 				if(!found)
 					found = evalResearch(lab, artillExtra);
-			}
-
-			if(random(3)) {
-				const VTOL_RES = [
-					"R-Struc-VTOLPad-Upgrade02", "R-Wpn-Bomb05",
-					"R-Wpn-Bomb-Accuracy03", "R-Struc-VTOLPad-Upgrade06",
-					"R-Wpn-Bomb06"
-				];
-
-				if(!found)
-					found = evalResearch(lab, VTOL_RES);
 			}
 
 			if(!turnOffCyborgs) {
@@ -207,9 +202,9 @@ function eventResearched() {
 				found = evalResearch(lab, extremeLaserTech);
 
 			if(!found)
-				found = pursueResearch(lab, "R-Wpn-LasSat");
+				found = pursueResearch(lab, "R-Wpn-Bomb06");
 			if(!found)
-				found = pursueResearch(lab, "R-Wpn-EMPCannon");
+				found = pursueResearch(lab, "R-Wpn-LasSat");
 
 			//Very likely going to be done with research by now.
 			if(!found && componentAvailable("Body14SUP") && isDesignable("EMP-Cannon") && isStructureAvailable(structures.extras[2])) {

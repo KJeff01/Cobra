@@ -1,8 +1,11 @@
 
 //Returns unfinished structures that are not defenses or derricks.
-function unfinishedStructures(countDefenses) {
+function unfinishedStructures() {
 	return enumStruct(me).filter(function(struct) {
-		return (struct.status !== BUILT && struct.stattype !== RESOURCE_EXTRACTOR);
+		return (struct.status !== BUILT
+			&& struct.stattype !== RESOURCE_EXTRACTOR
+			&& struct.stattype !== DEFENSE
+		);
 	});
 }
 
