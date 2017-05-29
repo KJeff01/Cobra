@@ -42,8 +42,13 @@ function returnSecondaryAlias() {
 }
 
 //Return the alias of the anti-air weaponry.
-function returnAntiAirAlias() {
+function returnArtilleryAlias() {
 	return subpersonalities[personality].antiAir.alias;
+}
+
+//Return the alias of the artillery weapon.
+function returnAntiAirAlias() {
+	return subpersonalities[personality].artillery.alias;
 }
 
 //Push list elements into another.
@@ -290,7 +295,7 @@ function initiaizeRequiredGlobals() {
 	diffPerks();
 
 	forceHover = checkIfSeaMap();
-	turnOffCyborgs = (forceHover === true) ? true : false;
+	turnOffCyborgs = (forceHover || random(2)) ? true : false;
 	personality = choosePersonality();
 	turnOffMG = CheckStartingBases();
 	randomizeFirstEnemy();

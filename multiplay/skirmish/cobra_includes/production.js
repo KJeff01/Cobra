@@ -15,6 +15,10 @@ function chooseRandomWeapon() {
 		default: weaps = subpersonalities[personality].primaryWeapon; break;
 	}
 
+	if(!isDefined(weaps)) {
+		weaps = subpersonalities[personality].primaryWeapon;
+	}
+
 	return {"weaponLine": weaps, "shift": isSecondary};
 }
 
@@ -26,7 +30,7 @@ function shuffleWeaponList(weaps, shiftIt) {
 		weaponList.push(weaps[i].stat);
 	}
 
-	if(shiftIt === true) {
+	if(shiftIt && (weaponList.length > 1)) {
 		weaponList.shift(); //remove first weapon.
 	}
 
@@ -37,17 +41,13 @@ function shuffleWeaponList(weaps, shiftIt) {
 
 //Either fastFire or normal.
 function chooseWeaponType(weaps) {
-	var weaponType;
+	var weaponType = weaps;
 
-	if(isDefined(weaps.weaponLine) && isDefined(weaps.weaponLine.fastFire) && random(2)) {
-		weaponType = weaps.weaponLine.fastFire;
+	if(isDefined(weaps.fastFire) && (random(101) < 50)) {
+		weaponType = weaps.fastFire;
 	}
 	else {
-		if(!isDefined(weaps.weaponLine)) {
-			return subpersonalities[personality].primaryWeapon.weapons;
-		}
-
-		weaponType = weaps.weaponLine.weapons;
+		weaponType = weaps.weapons;
 	}
 
 	return weaponType;
@@ -59,12 +59,11 @@ function chooseRandomCyborgWeapon() {
 
 	//grenadier cyborgs can only be built as long as Cobra does not Have
 	//access to pepperpot. They are too weak after that.
-	switch(random(5)) {
+	switch(random(4)) {
 		case 0: weaps = subpersonalities[personality].primaryWeapon; break;
-		case 1: weaps = weaponStats.flamers; break;
-		case 2: weaps = weaponStats.lasers; break;
-		case 3: weaps = subpersonalities[personality].secondaryWeapon; break;
-		case 4: if(!componentAvailable("Mortar3ROTARYMk1")) { weaps = subpersonalities[personality].artillery; } break;
+		case 1: weaps = weaponStats.lasers; break;
+		case 2: weaps = subpersonalities[personality].secondaryWeapon; break;
+		case 3: if(!componentAvailable("Mortar3ROTARYMk1")) { weaps = subpersonalities[personality].artillery; } break;
 		default: weaps = subpersonalities[personality].primaryWeapon; break;
 	}
 
@@ -107,11 +106,9 @@ function choosePersonalityWeapon(type) {
 	if(type === "TANK") {
 		const SPECIAL_WEAPONS = ["PlasmaHeavy", "MortarEMP"];
 
-		//TODO: Figure out why weaponList is sometimes empty with personality AR.
-		do {
-			weaps = chooseRandomWeapon();
-			weaponList = shuffleWeaponList(chooseWeaponType(weaps), weaps.shift);
-		} while (weaponList.length === 0);
+		weaps = chooseRandomWeapon();
+		weaponList = shuffleWeaponList(chooseWeaponType(weaps.weaponLine), weaps.shift);
+		weaps = weaps.weaponLine;
 
 		//on hard difficulty and above.
 		if(componentAvailable("tracked01") && (random(101) <= 1)) {

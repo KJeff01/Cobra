@@ -1,23 +1,11 @@
 
-const kineticResearch = [
-	"R-Vehicle-Metals02",
-	"R-Cyborg-Metals02",
-	"R-Vehicle-Metals04",
-	"R-Cyborg-Metals04",
-	"R-Vehicle-Metals06",
-	"R-Cyborg-Metals06",
+const tankArmorResearch = [
 	"R-Vehicle-Metals09",
-	"R-Cyborg-Metals09",
+	"R-Vehicle-Armor-Heat09",
 ];
 
-const thermalResearch = [
-	"R-Vehicle-Armor-Heat02",
-	"R-Cyborg-Armor-Heat02",
-	"R-Vehicle-Armor-Heat04",
-	"R-Cyborg-Armor-Heat05",
-	"R-Vehicle-Armor-Heat06",
-	"R-Cyborg-Armor-Heat06",
-	"R-Vehicle-Armor-Heat09",
+const cyborgArmorResearch = [
+	"R-Cyborg-Metals09",
 	"R-Cyborg-Armor-Heat09",
 ];
 

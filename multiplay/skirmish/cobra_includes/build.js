@@ -137,7 +137,7 @@ function buildStructure(droid, stat, defendThis) {
 		return false;
 	}
 
-	if (isDefined(droid) && !safeDest(me, loc.x, loc.y)) {
+	if (isDefined(droid) && (droid.order !== DORDER_RTB) && !safeDest(me, loc.x, loc.y)) {
 		orderDroid(droid, DORDER_RTB);
 		return false;
 	}
@@ -284,6 +284,8 @@ function buildAAForPersonality() {
 //Build defense systems.
 function buildDefenses() {
 	const MIN_POWER = 40;
+	const MIN_GAME_TIME = 600000;
+
 	if((playerPower(me) < MIN_POWER)) {
 		return false;
 	}
@@ -296,7 +298,7 @@ function buildDefenses() {
 		return true;
 	}
 
-	if(buildSensors()) {
+	if((gameTime > MIN_GAME_TIME) && buildSensors()) {
 		return true;
 	}
 

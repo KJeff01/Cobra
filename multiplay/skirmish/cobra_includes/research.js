@@ -87,17 +87,8 @@ function eventResearched() {
 			if(!found)
 				found = evalResearch(lab, PROPULSION);
 
-			if(!random(4)) {
-				if(!turnOffCyborgs && componentAvailable("Cyb-Wpn-Thermite")) {
-					if(!found)
-						found = evalResearch(lab, kineticResearch);
-				}
-				else {
-					if(!found)
-						found = pursueResearch(lab, "R-Vehicle-Metals09");
-				}
-			}
-
+			if(!found && !random(4))
+				found = evalResearch(lab, tankArmorResearch);
 			if(!found)
 				found = evalResearch(lab, REPAIR_UPGRADES);
 
@@ -108,7 +99,7 @@ function eventResearched() {
 					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
 			}
 
-			if(!found && (returnPrimaryAlias() === "fl"))
+			if(!found && (returnPrimaryAlias() === "fl" || returnArtilleryAlias() === "fmor"))
 				found = evalResearch(lab, FLAMER);
 
 			if(!found)
@@ -121,8 +112,6 @@ function eventResearched() {
 					found = evalResearch(lab, cyborgWeaps);
 				if(!found)
 					found = evalResearch(lab, weaponTech);
-				if(!found)
-					found = evalResearch(lab, defenseTech);
 			}
 
 			//lasers AA needs stormbringer ASAP. Otherwise just research antiAir
@@ -136,6 +125,8 @@ function eventResearched() {
 
 			if(!found)
 				found = evalResearch(lab, SENSOR_TECH);
+			if(!found && !turnOffCyborgs && random(2))
+				found = evalResearch(lab, cyborgArmorResearch);
 
 			if(random(3)) {
 				const VTOL_RES = ["R-Struc-VTOLPad-Upgrade02", "R-Wpn-Bomb05", "R-Wpn-Bomb-Accuracy03", "R-Struc-VTOLPad-Upgrade06" ];
@@ -150,19 +141,19 @@ function eventResearched() {
 					found = evalResearch(lab, artillExtra);
 			}
 
-			if(!turnOffCyborgs) {
-				if(!found && componentAvailable("Cyb-Wpn-Thermite"))
-					found = evalResearch(lab, thermalResearch);
-			}
-			else {
-				if(!found)
-					found = pursueResearch(lab, "R-Vehicle-Armor-Heat09");
-			}
+			if(!found)
+				found = evalResearch(lab, defenseTech);
+			if(!found && random(2))
+				found = evalResearch(lab, STRUCTURE_DEFENSE_UPGRADES);
 
-			//Just like the semperfi AI bots (which Cobra is derived from) it
-			//stays true to the use of those thermite cyborgs.
-			if(!found && (!turnOffCyborgs || (returnPrimaryAlias() === "fl")))
-				found = evalResearch(lab, FLAMER);
+			if(random(4)) {
+				if(!found && !turnOffCyborgs)
+					found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
+				if(!found)
+					found = evalResearch(lab, laserTech);
+				if(!found)
+					found = evalResearch(lab, laserExtra);
+				}
 
 			//Late game weapon.
 			if(random(3)) {
@@ -182,24 +173,15 @@ function eventResearched() {
 			if(!found)
 				found = evalResearch(lab, bodyResearch);
 
-			if(random(4)) {
-				if(!found && !turnOffCyborgs)
-					found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
-				if(!found)
-					found = evalResearch(lab, laserTech);
-				if(!found)
-					found = evalResearch(lab, laserExtra);
-			}
-
 			if(!found)
 				found = pursueResearch(lab, "R-Sys-Resistance-Circuits");
-			if(!found)
-				found = evalResearch(lab, STRUCTURE_DEFENSE_UPGRADES);
 
 			if(!found)
 				found = pursueResearch(lab, "R-Wpn-PlasmaCannon");
 			if(!found)
 				found = evalResearch(lab, extremeLaserTech);
+			if(!found)
+				found = evalResearch(lab, FLAMER);
 
 			if(!found)
 				found = pursueResearch(lab, "R-Wpn-Bomb06");
