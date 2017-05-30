@@ -172,7 +172,7 @@ function useHover(weap) {
 	return ((useHover === true) || (random(101) <= 15));
 }
 
-//Randomly use tracks or half-tracks.
+//Choose either tracks or half-tracks. Has a preference for half-tracks.
 function pickGroundPropulsion() {
 	var tankProp = [
 		"tracked01", // tracked01
@@ -180,7 +180,7 @@ function pickGroundPropulsion() {
 		"wheeled01", // wheels
 	];
 
-	if(random(101) < 50) {
+	if(random(101) < 67) {
 		tankProp.shift();
 	}
 

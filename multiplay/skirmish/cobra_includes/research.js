@@ -112,6 +112,8 @@ function eventResearched() {
 					found = evalResearch(lab, cyborgWeaps);
 				if(!found)
 					found = evalResearch(lab, weaponTech);
+				if(!found)
+					found = evalResearch(lab, defenseTech);
 			}
 
 			//lasers AA needs stormbringer ASAP. Otherwise just research antiAir
@@ -123,16 +125,14 @@ function eventResearched() {
 					found = evalResearch(lab, antiAirExtras);
 			}
 
-			if(!found)
-				found = evalResearch(lab, SENSOR_TECH);
-			if(!found && !turnOffCyborgs && random(2))
-				found = evalResearch(lab, cyborgArmorResearch);
-
 			if(random(3)) {
 				const VTOL_RES = ["R-Struc-VTOLPad-Upgrade02", "R-Wpn-Bomb05", "R-Wpn-Bomb-Accuracy03", "R-Struc-VTOLPad-Upgrade06" ];
 				if(!found)
 					found = evalResearch(lab, VTOL_RES);
 			}
+
+			if(!found)
+				found = evalResearch(lab, SENSOR_TECH);
 
 			if(random(3)) {
 				if(!found)
@@ -141,8 +141,8 @@ function eventResearched() {
 					found = evalResearch(lab, artillExtra);
 			}
 
-			if(!found)
-				found = evalResearch(lab, defenseTech);
+			if(!found && !turnOffCyborgs && random(2))
+				found = evalResearch(lab, cyborgArmorResearch);
 			if(!found && random(2))
 				found = evalResearch(lab, STRUCTURE_DEFENSE_UPGRADES);
 

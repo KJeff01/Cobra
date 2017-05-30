@@ -9,6 +9,7 @@ function unfinishedStructures() {
 	});
 }
 
+
 //Can a construction droid do something right now.
 function conCanHelp(mydroid, bx, by) {
 	return (mydroid.order !== DORDER_BUILD
@@ -205,7 +206,7 @@ function lookForOil() {
 	var droids = enumDroid(me, DROID_CONSTRUCT);
 	var oils = enumFeature(-1, oilResources);
 	var s = 0;
-	const SAFE_RANGE = (gameTime < 210000) ? 10 : 6;
+	const SAFE_RANGE = (gameTime < 210000) ? 10 : 5;
 
 	if ((droids.length <= 1) || !oils.length) {
 		return;
@@ -239,8 +240,10 @@ function buildSensors() {
 
 	if (isStructureAvailable(CB_TOWER)) {
 		// Or try building wide spectrum towers.
-		if (isStructureAvailable(WS_TOWER) && countAndBuild(WS_TOWER, 2)) {
-			return true;
+		if (isStructureAvailable(WS_TOWER)) {
+			if (countAndBuild(WS_TOWER, 2)) {
+				return true;
+			}
 		}
 		else {
 			if (countAndBuild(CB_TOWER, 2)) {
@@ -283,12 +286,7 @@ function buildAAForPersonality() {
 
 //Build defense systems.
 function buildDefenses() {
-	const MIN_POWER = 40;
 	const MIN_GAME_TIME = 600000;
-
-	if((playerPower(me) < MIN_POWER)) {
-		return false;
-	}
 
 	if(buildAAForPersonality()) {
 		return true;
@@ -364,12 +362,16 @@ function buildPhase2() {
 		return true;
 	}
 
-	if(!researchComplete && (gameTime > 210000) && (getRealPower() > -450) && countAndBuild(structures.labs, 5)) {
+	if(gameTime < 210000) {
+		return true;
+	}
+
+	if(!researchComplete && (getRealPower() > -450) && countAndBuild(structures.labs, 5)) {
 		return true;
 	}
 
 	if (!turnOffCyborgs && isStructureAvailable(structures.templateFactories)) {
-		if (componentAvailable("Body11ABT") && (countStruct(structures.derricks) > 5) && countAndBuild(structures.templateFactories, 2)) {
+		if (componentAvailable("Body11ABT") && countAndBuild(structures.templateFactories, 2)) {
 			return true;
 		}
 	}
@@ -379,9 +381,9 @@ function buildPhase2() {
 
 //Build the minimum vtol factories and maximum ground/cyborg factories.
 function buildPhase3() {
-	const MIN_POWER = -80;
+	const MIN_POWER = -180;
 
-	if(!componentAvailable("Body11ABT") || (getRealPower() < MIN_POWER)) {
+	if(!componentAvailable("Body11ABT") || (getRealPower() < MIN_POWER) || (gameTime < 210000)) {
 		return true;
 	}
 

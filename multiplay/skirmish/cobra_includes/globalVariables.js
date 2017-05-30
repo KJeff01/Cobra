@@ -54,7 +54,7 @@ const STRUCTURE_DEFENSE_UPGRADES = [
 const bodyResearch = [
 	"R-Vehicle-Body11",
 //	"R-Vehicle-Body12",
-	"R-Vehicle-Body09",
+//	"R-Vehicle-Body09",
 	"R-Vehicle-Body10",
 	"R-Vehicle-Body14",
 ];
@@ -63,7 +63,7 @@ const tankBody = [
 	"Body14SUP", // Dragon
 	"Body13SUP", // Wyvern
 	"Body10MBT", // Vengeance
-	"Body9REC",  // Tiger
+//	"Body9REC",  // Tiger
 //	"Body12SUP", // Mantis
 	"Body11ABT", // Python
 	"Body5REC",  // Cobra
