@@ -96,6 +96,7 @@ const repairTurrets = [
 ];
 
 const MAX_GRUDGE = 50000;
+const DEVELOPMENT = false; //Change between release code and development code.
 
 
 //List of Cobra personalities:
