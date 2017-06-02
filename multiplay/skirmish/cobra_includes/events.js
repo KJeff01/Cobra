@@ -185,7 +185,7 @@ if(DEVELOPMENT) {
 			if (enumGroup(attackGroup).length < MIN_DROIDS) {
 				sendChatMessage("need tank", ALLIES);
 			}
-			if (!turnoffCyborgs && countStruct(structures.templateFactories) && enumGroup(cyborgGroup).length < MIN_DROIDS) {
+			if (!turnOffCyborgs && countStruct(structures.templateFactories) && enumGroup(cyborgGroup).length < MIN_DROIDS) {
 				sendChatMessage("need cyborg", ALLIES);
 			}
 			if (countStruct(structures.vtolFactories) && enumGroup(vtolGroup).length < MIN_DROIDS) {
@@ -340,7 +340,7 @@ else {
 
 	function eventGroupLoss(e, r, t) {
 	    const o = 5;
-	    e.order !== DORDER_RECYCLE && (stopExecution(3, 3e3) === !1 && addBeacon(e.x, e.y, ALLIES), playerAlliance(!0).length > 0 && (enumGroup(attackGroup).length < o && sendChatMessage("need tank", ALLIES), !turnoffCyborgs && countStruct(structures.templateFactories) && enumGroup(cyborgGroup).length < o && sendChatMessage("need cyborg", ALLIES), countStruct(structures.vtolFactories) && enumGroup(vtolGroup).length < o && sendChatMessage("need vtol", ALLIES)))
+	    e.order !== DORDER_RECYCLE && (stopExecution(3, 3e3) === !1 && addBeacon(e.x, e.y, ALLIES), playerAlliance(!0).length > 0 && (enumGroup(attackGroup).length < o && sendChatMessage("need tank", ALLIES), !turnOffCyborgs && countStruct(structures.templateFactories) && enumGroup(cyborgGroup).length < o && sendChatMessage("need cyborg", ALLIES), countStruct(structures.vtolFactories) && enumGroup(vtolGroup).length < o && sendChatMessage("need vtol", ALLIES)))
 	}
 
 	function eventBeacon(e, r, t, o, n) {
@@ -371,4 +371,5 @@ else {
 	    const t = returnEnemyFactories();
 	    var o = t.length;
 	    o ? activateStructure(e, t[random(o)]) : queue("eventStructureReady", 1e4, e)
+	}
 }
