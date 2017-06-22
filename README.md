@@ -1,13 +1,15 @@
 # Cobra-AI
-A Skirmish AI for warzone2100 with a dynamic build and research order for all Technology levels and bases (Supports hover maps like Sk-Manhattan). This AI is meant to be played (and tested the most) on normal difficulty. Hard and insane difficulty are for serious play only (early research bonus and access to hidden weapons). Originally based off of the semperfi-js AI that comes with the game (https://github.com/Warzone2100/warzone2100/blob/master/data/mp/multiplay/skirmish/semperfi.js).
+A Skirmish AI for warzone2100 with a dynamic build and research order for all Technology levels and bases (Supports hover maps like Sk-Manhattan). This AI is meant to be played (and tested the most) on normal difficulty. Hard and insane difficulty are for serious play only (early research bonus and access to hidden weapons). Originally based off of the pre-rewrite SemperFi-js AI that comes with the game (https://github.com/Warzone2100/warzone2100/blob/master/data/mp/multiplay/skirmish/semperfi.js).
+
+Cobra uses a "grudge counter" to determine who it attacks. It is an array of numbers --of which each player has a value assigned to it-- that increments with each aggresive act an enemy player makes towards it. The enemy with the highest number assigned to it is the one it attacks. The specific number for each enemy can easily be influenced by allied Cobra AI and, under the right circumstance, allows allied Cobra to take action against a specific player. This feature is very helpful in determining who is the biggest theat on the map and more or less balances the skirmish by keeping pressure on the most aggressive player (that it has encountered) until one of them is defeated.
 
 There are five personalities so far (all use lasers and plasma cannon when it can):
 
-1. AC: Focus on Cannon/Gauss/Howitzers technology.
-2. AR: Focus on Flamer/Rockets/Howitzers technology.
-3. AB: Focus on Rocket/Missile/Gauss technology.
-4. AM: Machine-guns/Howitzers/lasers.
-5. AL: Lasers/Fire mortars.
+1. AC: Focus on Cannon/Gauss/Howitzer technology.
+2. AR: Focus on Flamer/Gauss/Howitzer technology.
+3. AB: Focus on Rocket/Gauss/Missile technology.
+4. AM: Machine-guns/Lasers/Howitzer technology.
+5. AL: Lasers/Gauss/Fire mortars technology.
 
 Do note that AL is exclusive to T3 (with at least bases) and AM is exclusive to T1 (or if starting without a base).
 
@@ -26,10 +28,12 @@ chat commands include:
 7. toggle cyborg -- disable/enable cyborg use.
 8. toggle hover -- disable/enable force Cobra to use hover propulsion.
 9. oil level -- Ask what the oil count is with a response of low, medium, or high.
+10. targetX -- Ask Cobra to focus on enemy player X.
 
 Press alt+h to drop a beacon and Cobra units will try making their way over to it if possible.
 
 warzone2100 links:
 1. This AI uses a slimmed version of the NullBot3 standard file for research related information: https://github.com/haoNoQ/nullbot
-2. website https://wz2100.net/ github https://github.com/Warzone2100/warzone2100
-3. Official discussion forum thread: http://forums.wz2100.net/viewtopic.php?f=49&t=12676
+2. website https://wz2100.net/
+3. github https://github.com/Warzone2100/warzone2100
+4. Official discussion forum thread: http://forums.wz2100.net/viewtopic.php?f=49&t=12676
