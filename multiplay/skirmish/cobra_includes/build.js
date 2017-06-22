@@ -165,7 +165,7 @@ function buildStuff(struc, module, defendThis) {
 		var cacheTrucks = freeTrucks.length;
 
 		if(cacheTrucks) {
-			freeTrucks.sort(distanceToBase);
+			freeTrucks = freeTrucks.sort(distanceToBase);
 			var truck = freeTrucks[random(cacheTrucks)];
 
 			if(isDefined(struc) && isDefined(module) && isDefined(truck)) {
@@ -195,11 +195,11 @@ function checkUnfinishedStructures() {
 	var struct = unfinishedStructures();
 
 	if(struct.length > 0) {
-		struct.sort(distanceToBase);
+		struct = struct.sort(distanceToBase);
 		var trucks = findIdleTrucks();
 
 		if(trucks.length > 0) {
-			trucks.sort(distanceToBase);
+			trucks = trucks.sort(distanceToBase);
 			if (orderDroidObj(trucks[0], DORDER_HELPBUILD, struct[0])) {
 				return true;
 			}
@@ -222,8 +222,8 @@ function lookForOil() {
 		return;
 	}
 
-	oils.sort(distanceToBase); // grab closer oils first
-	droids.sort(distanceToBase);
+	oils = oils.sort(distanceToBase); // grab closer oils first
+	droids = droids.sort(distanceToBase);
 
 	for (var i = 0; i < cacheOils; i++) {
 		for (var j = 0; j < cacheDroids - (1 * (gameTime > 110000)); j++) {
@@ -231,7 +231,7 @@ function lookForOil() {
 				break;
 
 			var safe = enumRange(oils[i + s].x, oils[i + s].y, SAFE_RANGE, ENEMIES, false);
-			safe.filter(isUnsafeEnemyObject);
+			safe = safe.filter(isUnsafeEnemyObject);
 			if (!safe.length && conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)) {
 				orderDroidBuild(droids[j], DORDER_BUILD, structures.derricks, oils[i + s].x, oils[i + s].y);
 				droids[j].busy = true;
@@ -499,7 +499,10 @@ function maintenance() {
 	}
 
 	for (var i = 0; i < cacheList; ++i) {
-		if (isStructureAvailable(list[i]) && (struct === null)) {
+		if (isStructureAvailable(list[i])) {
+			if(struct !== null) {
+				break;
+			}
 			switch(i) {
 				case 0: { structList = enumStruct(me, structures.gens).sort(distanceToBase);  break; }
 				case 1: { structList = enumStruct(me, structures.labs).sort(distanceToBase);  break; }
@@ -525,9 +528,6 @@ function maintenance() {
 					break;
 				}
 			}
-		}
-		else {
-			break;
 		}
 	}
 

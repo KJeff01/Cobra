@@ -1,7 +1,4 @@
 
-//Experimental code to be later used in the campaign scripts. This code
-//only is used on insane difficulty.
-
 //Sometimes the required research list has duplicate strings. So lets remove them.
 function cleanResearchItem(res, player) {
 	var temp = findResearch(res, player).reverse();

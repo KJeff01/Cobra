@@ -47,7 +47,7 @@ function eventStructureBuilt(structure, droid) {
 		nearbyOils = nearbyOils.filter(function(obj) {
 			return (obj.type === FEATURE) && (obj.stattype === OIL_RESOURCE);
 		});
-		nearbyOils.sort(distanceToBase);
+		nearbyOils = nearbyOils.sort(distanceToBase);
 		if(nearbyOils.length && isDefined(nearbyOils[0])) {
 			droid.busy = false;
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
@@ -68,7 +68,7 @@ function eventDroidIdle(droid) {
 		if(isDefined(droid) && ((droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid))) {
 			var enemyObjects = enumRange(droid.x, droid.y, 10, ENEMIES, false);
 			if(enemyObjects.length > 0) {
-				enemyObjects.sort(distanceToBase);
+				enemyObjects = enemyObjects.sort(distanceToBase);
 				orderDroidLoc(droid, DORDER_SCOUT, enemyObjects[0].x, enemyObjects[0].y);
 			}
 		}
@@ -159,7 +159,7 @@ function eventAttacked(victim, attacker) {
 			}
 		}
 
-		units.filter(function(dr) { return droidCanReach(dr, attacker.x, attacker.y); });
+		units = units.filter(function(dr) { return droidCanReach(dr, attacker.x, attacker.y); });
 		var cacheUnits = units.length;
 
 		if(cacheUnits < MIN_ATTACK_DROIDS) {
@@ -169,7 +169,7 @@ function eventAttacked(victim, attacker) {
 		var defend = (distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, attacker.x, attacker.y) < 18) ? true : false;
 
 		for (var i = 0; i < cacheUnits; i++) {
-			if(isDefined(units[i]) && isDefined(attacker) && (random(3) || defend)) {
+			if((random(3) || defend) && isDefined(units[i]) && isDefined(attacker)) {
 				if(defend && !repairDroid(units[i])) {
 					orderDroidObj(units[i], DORDER_ATTACK, attacker);
 				}
@@ -257,7 +257,7 @@ function eventDestroyed(object) {
 
 	if(object.player === me) {
 		var enemies = enumRange(object.x, object.y, 8, ENEMIES, false);
-		enemies.sort(distanceToBase);
+		enemies = enemies.sort(distanceToBase);
 		if(enemies.length && grudgeCount[enemies[0].player] < MAX_GRUDGE) {
 			grudgeCount[enemies[0].player] = grudgeCount[enemies[0].player] + 5;
 		}

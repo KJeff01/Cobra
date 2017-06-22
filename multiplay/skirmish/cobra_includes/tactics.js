@@ -43,7 +43,7 @@ function returnEnemyFactories(enemyNumber) {
 	facs = appendListElements(facs, enumStruct(enemyNumber, structures.templateFactories));
 	facs = appendListElements(facs, enumStruct(enemyNumber, structures.vtolFactories));
 
-	facs.sort(distanceToBase);
+	facs = facs.sort(distanceToBase);
 
 	return facs;
 }
@@ -152,7 +152,7 @@ function findNearestEnemyDroid(droid, enemy) {
 
 	var badDroids = enumDroid(enemy);
 	if(badDroids.length) {
-		badDroids.sort(distanceToBase);
+		badDroids = badDroids.sort(distanceToBase);
 		if(droidReady(droid) && isDefined(badDroids[0]) && droidCanReach(droid, badDroids[0].x, badDroids[0].y)) {
 			if(!isPlasmaCannon(droid)) {
 				orderDroidLoc(droid, DORDER_SCOUT, badDroids[0].x, badDroids[0].y);
@@ -176,7 +176,7 @@ function findNearestEnemyStructure(droid, enemy, targets) {
 	}
 
 	if(s.length > 0) {
-		s.sort(distanceToBase);
+		s = s.sort(distanceToBase);
 		var target = s[0];
 
 		if(droidReady(droid) && isDefined(target) && droidCanReach(droid, target.x, target.y)) {
@@ -205,7 +205,7 @@ function attackWithGroup(droids, enemy, targets) {
 
 	var target;
 	if(isDefined(targets) && targets.length) {
-		targets.sort(distanceToBase);
+		targets = targets.sort(distanceToBase);
 		target = targets[0];
 	}
 
@@ -293,7 +293,7 @@ function spyRoutine() {
 		return;
 	}
 	else {
-		objects.sort(distanceToBase);
+		objects = objects.sort(distanceToBase);
 		target = objects[0];
 	}
 
@@ -325,7 +325,7 @@ function attackEnemyOil() {
 	if(!derr.length) {
 		return;
 	}
-	derr.sort(distanceToBase);
+	derr = derr.sort(distanceToBase);
 
 	for(var i = 0; i < cacheWho; ++i) {
 		if(isDefined(who[i]) && droidReady(who[i])) {
@@ -384,7 +384,7 @@ function recycleDroidsForHover() {
 	var systems = enumDroid(me, DROID_CONSTRUCT);
 	systems = appendListElements(systems, enumDroid(me, DROID_SENSOR));
 	systems = appendListElements(systems, enumDroid(me, DROID_REPAIR));
-	systems.filter(function(dr) { return (dr.propulsion !== "hover01"); });
+	systems = systems.filter(function(dr) { return (dr.propulsion !== "hover01"); });
 	var unfinished = unfinishedStructures();
 	const NON_HOVER_SYSTEMS = systems.length;
 
@@ -424,7 +424,7 @@ function chatAttackOil(playerNumber) {
 		return false;
 	}
 
-	derr.sort(distanceToBase);
+	derr = derr.sort(distanceToBase);
 
 	for(var i = 0; i < cacheWho; ++i) {
 		if(isDefined(who[i]) && droidReady(who[i]) && isDefined(derr[0])) {
@@ -450,7 +450,7 @@ function repairDamagedDroids() {
 		return;
 	}
 
-	myDroids.sort(sortDroidsByHealth);
+	myDroids = myDroids.sort(sortDroidsByHealth);
 
 	for(var i = 0; i < cacheRepair; ++i) {
 		for(var j = 0; j < cacheMyDroids; ++j) {

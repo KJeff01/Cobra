@@ -86,7 +86,7 @@ function rangeStep(player) {
 	}
 
 	if(targets.length > 0) {
-		targets.sort(distanceToBase);
+		targets = targets.sort(distanceToBase);
 		target = targets[0];
 	}
 

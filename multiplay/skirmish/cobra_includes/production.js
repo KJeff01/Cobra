@@ -66,12 +66,14 @@ function shuffleWeaponList(weaps, shiftIt) {
 		weaponList.push(weaps[i].stat);
 	}
 
+	//FIXME: Remove this and the "shift" property later.
+	/*
 	if(shiftIt && (weaponList.length > 1)) {
 		weaponList.shift(); //remove first weapon.
 	}
+	*/
 
 	weaponList.reverse();
-
 	return weaponList;
 }
 
