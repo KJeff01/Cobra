@@ -570,7 +570,7 @@ const weaponStats = {
 		vtols: [],
 		defenses: [
 		    { res: "R-Sys-SpyTurret", stat: "Sys-SpyTower" },
-		    { res: "R-Wpn-EMPCannon", stat: "WallTower-EMP" },
+		    { res: "R-Defense-EMPCannon", stat: "WallTower-EMP" },
 		    { res: "R-Defense-EMPMortar", stat: "Emplacement-MortarEMP" },
 		],
 		templates: [],

@@ -1,110 +1,12 @@
-
-const tankArmorResearch = [
-	"R-Vehicle-Metals09",
-	"R-Vehicle-Armor-Heat09",
-];
-
-const cyborgArmorResearch = [
-	"R-Cyborg-Metals09",
-	"R-Cyborg-Armor-Heat09",
-];
-
-const ESSENTIALS = [
-	"R-Wpn-MG1Mk1",
-	"R-Wpn-MG-Damage02",
-	"R-Struc-PowerModuleMk1",
-];
-
-const PROPULSION = [
-	"R-Vehicle-Prop-Hover",
-	"R-Vehicle-Prop-Tracks",
-];
-
-const START_BODY = [
-	"R-Vehicle-Body05",
-	"R-Vehicle-Body11",
-];
-
-const REPAIR_UPGRADES = [
-	"R-Struc-RprFac-Upgrade01",
-	"R-Sys-MobileRepairTurretHvy",
-	"R-Sys-Autorepair-General",
-	"R-Struc-RprFac-Upgrade06",
-];
-
-const FLAMER = [
-	"R-Wpn-Flame2",
-	"R-Wpn-Flamer-ROF03",
-	"R-Wpn-Flamer-Damage09",
-];
-
-const SENSOR_TECH = [
-	"R-Sys-Sensor-Upgrade03",
-	"R-Sys-CBSensor-Tower01",
-	"R-Sys-RadarDetector01",
-	"R-Sys-ECM-Upgrade02",
-	"R-Sys-Sensor-WSTower",
-]
-
-const STRUCTURE_DEFENSE_UPGRADES = [
-	"R-Struc-Materials09",
-	//"R-Defense-WallUpgrade12",
-];
-
-const bodyResearch = [
-	"R-Vehicle-Body11",
-//	"R-Vehicle-Body12",
-//	"R-Vehicle-Body09",
-	"R-Vehicle-Body10",
-	"R-Vehicle-Body14",
-];
-
-const tankBody = [
-	"Body14SUP", // Dragon
-	"Body13SUP", // Wyvern
-	"Body10MBT", // Vengeance
-//	"Body9REC",  // Tiger
-//	"Body12SUP", // Mantis
-	"Body11ABT", // Python
-	"Body5REC",  // Cobra
-	"Body1REC",  // Viper
-];
-
-const sysBody = [
-	"Body3MBT",  // Retaliation
-//	"Body2SUP",  // Leopard
-	"Body4ABT",  // Bug
-	"Body1REC",  // Viper
-];
-
-const sysProp = [
-	"hover01", // hover
-	"wheeled01", // wheels
-];
-
-const vtolBody = [
-	"Body7ABT",  // Retribution
-	"Body6SUPP", // Panther
-	"Body8MBT",  // Scorpion
-	"Body5REC",  // Cobra
-];
-
-
-const repairTurrets = [
-	"HeavyRepair",
-	"LightRepair1",
-];
-
 const MAX_GRUDGE = 50000;
-const DEVELOPMENT = false; //Change between release code and development code.
-
+const MIN_ATTACK_DROIDS = 6;
 
 //List of Cobra personalities:
 //AC: Cannon/Gauss/howitzer.
-//AR: Flamer/Rocket/howitzer.
+//AR: Flamer/Gauss/howitzer.
 //AB: Rocket/Missle/gauss.
-//AM: Machine-gun/howitzer/Cannons.
-//AL: Lasers/Lasers/fireMortars. *Strictly a T3 personality.
+//AM: Machine-gun/howitzer/lasers.
+//AL: Lasers/Gauss/fireMortars. *Strictly a T3 personality.
 //All personalities use laser technology. This includes the plasma cannon.
 //The secondary weapon has low priority.
 const subpersonalities = {
@@ -124,7 +26,7 @@ const subpersonalities = {
 	},
 	AR: {
 		"primaryWeapon": weaponStats.flamers,
-		"secondaryWeapon": weaponStats.missile_AT,
+		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"res": [
@@ -137,7 +39,7 @@ const subpersonalities = {
 		"primaryWeapon": weaponStats.rockets_AT,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.rockets_Arty,
-		"antiAir": weaponStats.rockets_AA,
+		"antiAir": weaponStats.AA,
 		"res": [
 			"R-Struc-PowerModuleMk1",
 			"R-Wpn-Rocket02-MRL",
@@ -158,7 +60,7 @@ const subpersonalities = {
 	},
 	AL: {
 		"primaryWeapon": weaponStats.lasers,
-		"secondaryWeapon": weaponStats.lasers,
+		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.fireMortars,
 		"antiAir": weaponStats.lasers_AA,
 		"res": [
@@ -173,14 +75,12 @@ const subpersonalities = {
 };
 
 // Groups
-//TODO: Put trucks into a group.
 var attackGroup; //All tanks units.
 var vtolGroup; //All vtol units.
 var cyborgGroup; //All cyborg units.
 var sensorGroup; //All sensor units.
 var repairGroup; //All repair units.
 var artilleryGroup; //All artillery (CB) units.
-
 
 var grudgeCount; //See who bullies this bot the most and act on it. DO NOT let this use the scavenger player number.
 var personality; //What personality is this instance of Cobra using.
@@ -192,20 +92,3 @@ var nexusWaveOn; //Determine if the 'NEXUS Intruder Program' feature is on.
 var turnOffMG; //Turn off machine-gun related stuff.
 var throttleTime; //For events so that some do not trigger their code too fast. More details in stopExecution() in miscFunctions.
 var researchComplete; //Check if done with research.
-
-// -- Weapon research list (initializeResearchLists).
-var techlist;
-var weaponTech;
-var mgWeaponTech;
-var laserTech;
-var artilleryTech;
-var artillExtra;
-var laserExtra;
-var extraTech;
-var cyborgWeaps;
-var antiAirTech;
-var antiAirExtras;
-var extremeLaserTech;
-var secondaryWeaponTech;
-var secondaryWeaponExtra;
-var defenseTech;
