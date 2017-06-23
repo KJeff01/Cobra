@@ -34,7 +34,7 @@ function eventStartLevel() {
 	setTimer("spyRoutine", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("eventResearched", THINK_LONGER + 6500 + 3 * random(70));
 	setTimer("battleTactics", THINK_LONGER + 7000 + 5 * random(60));
-	setTimer("nexusWave", THINK_LONGER + 10000 + 3 * random(70)); //May remove itself.
+	setTimer("nexusWave", THINK_LONGER + 12000 + 3 * random(70)); //May remove itself.
 	setTimer("recycleDroidsForHover", THINK_LONGER + 15000 + 2 * random(60)); // May remove itself.
 	setTimer("StopTimersIfDead", THINK_LONGER + 100000 + 5 * random(70));
 }

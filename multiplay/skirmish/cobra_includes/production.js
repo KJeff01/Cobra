@@ -29,6 +29,12 @@ const vtolBody = [
 	"Body5REC",  // Cobra
 ];
 
+const earlyTankBody = [
+	"Body6SUPP", // Panther
+	"Body8MBT",  // Scorpion
+	"Body5REC",  // Cobra
+	"Body1REC",  // Viper
+];
 
 const repairTurrets = [
 	"HeavyRepair",
@@ -214,13 +220,14 @@ function useHover(weap) {
 
 //Choose either tracks or half-tracks. Has a preference for half-tracks.
 function pickGroundPropulsion() {
+	const TIME_FOR_HALF_TRACKS = 1200000;
 	var tankProp = [
 		"tracked01", // tracked01
 		"HalfTrack", // half-track
 		"wheeled01", // wheels
 	];
 
-	if(random(101) < 67) {
+	if((random(101) < 67) || (gameTime < TIME_FOR_HALF_TRACKS)) {
 		tankProp.shift();
 	}
 
@@ -234,10 +241,13 @@ function buildAttacker(struct) {
 	if(!isDefined(forceHover) || !isDefined(seaMapWithLandEnemy) || !isDefined(turnOffMG)) {
 		return false;
 	}
-
 	if(forceHover && !seaMapWithLandEnemy && !componentAvailable("hover01")) {
 		return false;
 	}
+
+	//Only use Medium body for early game so power can be saved.
+	const TIME_FOR_MEDIUM_BODY = 1200000;
+	var body = (gameTime < TIME_FOR_MEDIUM_BODY) ? earlyTankBody : tankBody;
 
 	var weap = choosePersonalityWeapon("TANK");
 	if(!isDefined(weap)) {
@@ -247,24 +257,24 @@ function buildAttacker(struct) {
 	if(useHover(weap) && componentAvailable("hover01")) {
 		if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
 			if(weap !== "MortarEMP") {
-				if(isDefined(struct) && buildDroid(struct, "Hover EMP Droid", tankBody, "hover01", "", "", weap, "EMP-Cannon")) {
+				if(isDefined(struct) && buildDroid(struct, "Hover EMP Droid", body, "hover01", "", "", weap, "EMP-Cannon")) {
 					return true;
 				}
 			}
 		}
-		else if(isDefined(struct) && buildDroid(struct, "Hover Droid", tankBody, "hover01", "", "", weap, weap)) {
+		else if(isDefined(struct) && buildDroid(struct, "Hover Droid", body, "hover01", "", "", weap, weap)) {
 			return true;
 		}
 	}
 	else {
 		if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
 			if((weap !== "MortarEMP")) {
-				if(isDefined(struct) && buildDroid(struct, "EMP Droid", tankBody, pickGroundPropulsion(), "", "", weap, "EMP-Cannon")) {
+				if(isDefined(struct) && buildDroid(struct, "EMP Droid", body, pickGroundPropulsion(), "", "", weap, "EMP-Cannon")) {
 					return true;
 				}
 			}
 		}
-		else if (isDefined(struct) && buildDroid(struct, "Droid", tankBody, pickGroundPropulsion(), "", "", weap, weap)) {
+		else if (isDefined(struct) && buildDroid(struct, "Droid", body, pickGroundPropulsion(), "", "", weap, weap)) {
 			return true;
 		}
 	}

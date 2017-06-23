@@ -40,10 +40,9 @@ const FLAMER = [
 
 const SENSOR_TECH = [
 	"R-Sys-Sensor-Upgrade03",
-	"R-Sys-CBSensor-Tower01",
+	"R-Sys-Sensor-WS",
 	"R-Sys-RadarDetector01",
 	"R-Sys-ECM-Upgrade02",
-	"R-Sys-Sensor-WSTower",
 ]
 
 const STRUCTURE_DEFENSE_UPGRADES = [
@@ -57,6 +56,15 @@ const BODY_RESEARCH = [
 //	"R-Vehicle-Body09",
 	"R-Vehicle-Body10",
 	"R-Vehicle-Body14",
+];
+
+const VTOL_RES = [
+	"R-Struc-VTOLPad-Upgrade02",
+	"R-Wpn-Bomb-Accuracy03",
+	"R-Wpn-Bomb02",
+	"R-Wpn-Bomb05",
+	"R-Struc-VTOLPad-Upgrade06",
+	"R-Wpn-Bomb06",
 ];
 
 // -- Weapon research list (initializeResearchLists).
@@ -168,11 +176,6 @@ function eventResearched() {
 			if(!found)
 				found = evalResearch(lab, PROPULSION);
 
-			if(!found && !random(4))
-				found = evalResearch(lab, TANK_ARMOR);
-			if(!found)
-				found = evalResearch(lab, REPAIR_UPGRADES);
-
 			if(!turnOffMG || (returnPrimaryAlias() === "mg")) {
 				if(!found)
 					found = pursueResearch(lab, mgWeaponTech);
@@ -180,21 +183,25 @@ function eventResearched() {
 					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
 			}
 
+			if(!found)
+				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
+			if(!found)
+				found = evalResearch(lab, REPAIR_UPGRADES);
+			if(!found && !random(4))
+				found = evalResearch(lab, TANK_ARMOR);
+
 			if(!found && (returnPrimaryAlias() === "fl" || returnArtilleryAlias() === "fmor"))
 				found = evalResearch(lab, FLAMER);
 
-			if(!found)
-				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
-
 			if(random(2)) {
-				if(!found)
-					found = evalResearch(lab, extraTech);
 				if(!found && !turnOffCyborgs)
 					found = evalResearch(lab, cyborgWeaps);
 				if(!found)
 					found = evalResearch(lab, weaponTech);
 				if(!found && random(3))
 					found = evalResearch(lab, defenseTech);
+				if(!found)
+					found = evalResearch(lab, extraTech);
 			}
 
 			if(!found)
@@ -232,27 +239,19 @@ function eventResearched() {
 					found = evalResearch(lab, laserExtra);
 			}
 
-			if(random(4)) {
-				const VTOL_RES = [
-					"R-Struc-VTOLPad-Upgrade02", "R-Wpn-Bomb02", "R-Wpn-Bomb05",
-					"R-Wpn-Bomb-Accuracy03", "R-Struc-VTOLPad-Upgrade06",
-					"R-Wpn-Bomb06"
-				];
-
-				if(!found)
-					found = evalResearch(lab, VTOL_RES);
-			}
-
-
 			if(!found && !turnOffCyborgs && random(2))
 				found = evalResearch(lab, CYBORG_ARMOR);
+			if(!found && random(4))
+				found = evalResearch(lab, VTOL_RES);
+
+
 			if(!found && random(2))
 				found = pursueResearch(lab, STRUCTURE_DEFENSE_UPGRADES);
-			if(!found)
-				found = pursueResearch(lab, "R-Sys-Resistance-Circuits");
 
 			if(!found)
 				found = evalResearch(lab, BODY_RESEARCH);
+			if(!found)
+				found = pursueResearch(lab, "R-Sys-Resistance-Circuits");
 
 			//Late game weapon.
 			if(random(3)) {
