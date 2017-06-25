@@ -62,7 +62,7 @@ const subpersonalities = {
 		"primaryWeapon": weaponStats.lasers,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.fireMortars,
-		"antiAir": weaponStats.lasers_AA,
+		"antiAir": weaponStats.AA,
 		"res": [
 			"R-Wpn-Mortar-Incenediary",
 			"R-Wpn-Laser01",

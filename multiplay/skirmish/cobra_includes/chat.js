@@ -95,5 +95,4 @@ function eventChat(from, to, message) {
 			targetPlayer(num);
 		}
 	}
-
 }

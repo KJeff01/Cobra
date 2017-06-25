@@ -3,6 +3,7 @@
 
 //Make this false to reduce performance average/worst times.
 const DEVELOPMENT = true;
+
 const COBRA_INCLUDES = "/multiplay/skirmish/cobra_includes/";
 const COBRA_RULESETS = "/multiplay/skirmish/cobra_rulesets/";
 

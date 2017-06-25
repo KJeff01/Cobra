@@ -271,23 +271,25 @@ function buildSensors() {
 	}
 }
 
+//Builds an AA site for the personality. It will always use strombringer AA
+//once available.
 function buildAAForPersonality() {
-	var aaType = subpersonalities[personality].antiAir.defenses;
 	var vtolCount = countEnemyVTOL();
 
-	//Laser AA needs this.
-	if((returnAntiAirAlias() === "lasaa") && !isStructureAvailable("P0-AASite-Laser")) {
-		if(isStructureAvailable("AASite-QuadRotMg")) {
-			if(countAndBuild("AASite-QuadRotMg", Math.floor(vtolCount / 2))) {
-				return true;
-			}
+	//Use stormbringer if we have it.
+	if(isStructureAvailable("P0-AASite-Laser")) {
+		if(countAndBuild("P0-AASite-Laser", Math.floor(vtolCount / 2))) {
+			return true;
 		}
 	}
+	else {
+		var aaType = subpersonalities[personality].antiAir.defenses;
 
-	for(var i = aaType.length - 1; i >= 0; --i) {
-		if(isStructureAvailable(aaType[i].stat)) {
-			if(countAndBuild(aaType[i].stat, Math.floor(vtolCount / 2))) {
-				return true;
+		for(var i = aaType.length - 1; i >= 0; --i) {
+			if(isStructureAvailable(aaType[i].stat)) {
+				if(countAndBuild(aaType[i].stat, Math.floor(vtolCount / 2))) {
+					return true;
+				}
 			}
 		}
 	}
@@ -411,10 +413,9 @@ function buildPhase3() {
 
 //Finish building all vtol factories and repairs.
 function buildPhase4() {
-	const MIN_POWER = -180;
+	const MIN_POWER = -50;
 
-	if ((getRealPower() > MIN_POWER) && isStructureAvailable(structures.vtolFactories))
-	{
+	if ((getRealPower() > MIN_POWER) && isStructureAvailable(structures.vtolFactories)) {
 		if (countAndBuild(structures.vtolFactories, 5)) {
 			return true;
 		}
@@ -483,8 +484,8 @@ function buildOrder() {
 	if((getRealPower() < -300) || (countStruct(structures.derricks) < averageOilPerPlayer())) { return; }
 	if(buildSpecialStructures()) { return; }
 	if(buildPhase3()) { return; }
-	if(buildDefenses()) { return; }
 	if(buildPhase4()) { return; }
+	if(buildDefenses()) { return; }
 }
 
 //Check if a building has modules to be built

@@ -67,6 +67,14 @@ const VTOL_RES = [
 	"R-Wpn-Bomb06",
 ];
 
+const MID_GAME_TECH = [
+	"R-Cyborg-Metals04",
+	"R-Cyborg-Armor-Heat02",
+	"R-Wpn-Bomb04",
+	"R-Struc-VTOLPad-Upgrade04",
+	"R-Struc-Materials06",
+];
+
 // -- Weapon research list (initializeResearchLists).
 var techlist;
 var weaponTech;
@@ -176,19 +184,19 @@ function eventResearched() {
 			if(!found)
 				found = evalResearch(lab, PROPULSION);
 
-			if(!turnOffMG || (returnPrimaryAlias() === "mg")) {
-				if(!found)
-					found = pursueResearch(lab, mgWeaponTech);
-				if(!found)
-					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
-			}
-
 			if(!found)
 				found = pursueResearch(lab, "R-Struc-Factory-Upgrade09");
 			if(!found)
 				found = evalResearch(lab, REPAIR_UPGRADES);
 			if(!found && !random(4))
 				found = evalResearch(lab, TANK_ARMOR);
+
+			if(!turnOffMG || (returnPrimaryAlias() === "mg")) {
+				if(!found)
+					found = pursueResearch(lab, mgWeaponTech);
+				if(!found)
+					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
+			}
 
 			if(!found && (returnPrimaryAlias() === "fl" || returnArtilleryAlias() === "fmor"))
 				found = evalResearch(lab, FLAMER);
@@ -221,18 +229,25 @@ function eventResearched() {
 				}
 			}
 
-			//lasers AA needs stormbringer ASAP. Otherwise just research antiAir
-			//when enemy gets VTOLs.
-			if((returnAntiAirAlias() === "las") || countEnemyVTOL()) {
+			if(!found)
+				found = evalResearch(lab, MID_GAME_TECH);
+
+			//Use default AA until stormbringer.
+			if(!isStructureAvailable("P0-AASite-Laser") && countEnemyVTOL()) {
 				if(!found)
 					found = evalResearch(lab, antiAirTech);
 				if(!found)
 					found = evalResearch(lab, antiAirExtras);
 			}
 
+			if(!found)
+				found = evalResearch(lab, BODY_RESEARCH);
+
 			if(random(4)) {
 				if(!found && !turnOffCyborgs)
 					found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
+				if(!found && countEnemyVTOL())
+					found = pursueResearch(lab, "R-Defense-AA-Laser");
 				if(!found)
 					found = evalResearch(lab, laserTech);
 				if(!found)
@@ -241,15 +256,11 @@ function eventResearched() {
 
 			if(!found && !turnOffCyborgs && random(2))
 				found = evalResearch(lab, CYBORG_ARMOR);
-			if(!found && random(4))
+			if(!found)
 				found = evalResearch(lab, VTOL_RES);
-
 
 			if(!found && random(2))
 				found = pursueResearch(lab, STRUCTURE_DEFENSE_UPGRADES);
-
-			if(!found)
-				found = evalResearch(lab, BODY_RESEARCH);
 			if(!found)
 				found = pursueResearch(lab, "R-Sys-Resistance-Circuits");
 
