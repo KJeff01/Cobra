@@ -126,33 +126,28 @@ function protectUnguardedDerricks() {
 //the parameter defendThis is used to build something (idealy a defensive strcuture)
 //around what is passed to it.
 function buildStructure(droid, stat, defendThis) {
-	if (!isStructureAvailable(stat, me)) {
-		return false;
-	}
-
-	var loc;
-
-	if(isDefined(droid)) {
-		if(isDefined(defendThis)) {
-			loc = pickStructLocation(droid, stat, defendThis.x, defendThis.y, 1);
+	if(isStructureAvailable(stat, me)) {
+		var loc;
+		if(isDefined(droid)) {
+			if(isDefined(defendThis)) {
+				loc = pickStructLocation(droid, stat, defendThis.x, defendThis.y, 1);
+			}
+			else {
+				loc = pickStructLocation(droid, stat, startPositions[me].x, startPositions[me].y, 0);
+			}
 		}
-		else {
-			loc = pickStructLocation(droid, stat, startPositions[me].x, startPositions[me].y, 0);
+
+		if(isDefined(loc)) {
+			if(isDefined(droid) && (droid.order !== DORDER_RTB) && !safeDest(me, loc.x, loc.y)) {
+				orderDroid(droid, DORDER_RTB);
+				return false;
+			}
+			if(isDefined(droid) && orderDroidBuild(droid, DORDER_BUILD, stat, loc.x, loc.y)) {
+				return true;
+			}
 		}
 	}
 
-	if(!isDefined(loc)) {
-		return false;
-	}
-
-	if (isDefined(droid) && (droid.order !== DORDER_RTB) && !safeDest(me, loc.x, loc.y)) {
-		orderDroid(droid, DORDER_RTB);
-		return false;
-	}
-
-	if(isDefined(droid) && orderDroidBuild(droid, DORDER_BUILD, stat, loc.x, loc.y)) {
-		return true;
-	}
 	return false;
 }
 
@@ -160,7 +155,7 @@ function buildStructure(droid, stat, defendThis) {
 function buildStuff(struc, module, defendThis) {
 	var construct = enumDroid(me, DROID_CONSTRUCT);
 
-	if (construct.length > 0) {
+	if (construct.length) {
 		var freeTrucks = findIdleTrucks();
 		var cacheTrucks = freeTrucks.length;
 
@@ -169,8 +164,9 @@ function buildStuff(struc, module, defendThis) {
 			var truck = freeTrucks[random(cacheTrucks)];
 
 			if(isDefined(struc) && isDefined(module) && isDefined(truck)) {
-				if(orderDroidBuild(truck, DORDER_BUILD, module, struc.x, struc.y))
+				if(orderDroidBuild(truck, DORDER_BUILD, module, struc.x, struc.y)) {
 					return true;
+				}
 			}
 			if(isDefined(truck) && isDefined(struc)) {
 				if(isDefined(defendThis)) {
@@ -194,11 +190,11 @@ function buildStuff(struc, module, defendThis) {
 function checkUnfinishedStructures() {
 	var struct = unfinishedStructures();
 
-	if(struct.length > 0) {
+	if(struct.length) {
 		struct = struct.sort(distanceToBase);
 		var trucks = findIdleTrucks();
 
-		if(trucks.length > 0) {
+		if(trucks.length) {
 			trucks = trucks.sort(distanceToBase);
 			if (orderDroidObj(trucks[0], DORDER_HELPBUILD, struct[0])) {
 				return true;
@@ -218,24 +214,22 @@ function lookForOil() {
 	var s = 0;
 	const SAFE_RANGE = (gameTime < 210000) ? 10 : 5;
 
-	if ((cacheDroids <= 1) || !cacheOils) {
-		return;
-	}
+	if ((cacheDroids > 1) && cacheOils) {
+		oils = oils.sort(distanceToBase); // grab closer oils first
+		droids = droids.sort(distanceToBase);
 
-	oils = oils.sort(distanceToBase); // grab closer oils first
-	droids = droids.sort(distanceToBase);
+		for (var i = 0; i < cacheOils; i++) {
+			for (var j = 0; j < cacheDroids - (1 * (gameTime > 110000)); j++) {
+				if(i + s >= cacheOils)
+					break;
 
-	for (var i = 0; i < cacheOils; i++) {
-		for (var j = 0; j < cacheDroids - (1 * (gameTime > 110000)); j++) {
-			if(i + s >= cacheOils)
-				break;
-
-			var safe = enumRange(oils[i + s].x, oils[i + s].y, SAFE_RANGE, ENEMIES, false);
-			safe = safe.filter(isUnsafeEnemyObject);
-			if (!safe.length && conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)) {
-				orderDroidBuild(droids[j], DORDER_BUILD, structures.derricks, oils[i + s].x, oils[i + s].y);
-				droids[j].busy = true;
-				s += 1;
+				var safe = enumRange(oils[i + s].x, oils[i + s].y, SAFE_RANGE, ENEMIES, false);
+				safe = safe.filter(isUnsafeEnemyObject);
+				if (!safe.length && conCanHelp(droids[j], oils[i + s].x, oils[i + s].y)) {
+					orderDroidBuild(droids[j], DORDER_BUILD, structures.derricks, oils[i + s].x, oils[i + s].y);
+					droids[j].busy = true;
+					s += 1;
+				}
 			}
 		}
 	}
@@ -319,7 +313,6 @@ function needPowerGenerator() {
 
 //Build the basics when available.
 function buildPhase1() {
-
 	//if a hover map without land enemies, then build research labs first to get to hover propulsion even faster
 	if(!forceHover || seaMapWithLandEnemy) {
 		if(countAndBuild(structures.factories, 1)) {
@@ -345,10 +338,8 @@ function buildPhase1() {
 		}
 	}
 
-	if (needPowerGenerator() && isStructureAvailable(structures.gens)) {
-		if(countAndBuild(structures.gens, countStruct(structures.gens) + 1)) {
-			return true;
-		}
+	if(needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1)) {
+		return true;
 	}
 
 	return false;
@@ -366,7 +357,6 @@ function buildPhase2() {
 	}
 
 	var facNum = (getRealPower() > MIN_POWER) ? 3 : 2;
-
 	if(countAndBuild(structures.factories, facNum)) {
 		return true;
 	}

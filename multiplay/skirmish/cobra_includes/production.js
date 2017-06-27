@@ -205,17 +205,17 @@ function useHover(weap) {
 		}
 
 		if((weap[i] === "Rocket-LtA-T") || (weap[i] === "Rocket-HvyA-T") || (weap[i] === "Missile-A-T")) {
-			useHover = (random(101) <= 20) ? true : false;
+			useHover = (random(101) <= 60);
 			break;
 		}
 
 		if((weap[i] === "Laser3BEAMMk1") || (weap[i] === "Laser2PULSEMk1") || (weap[i] === "HeavyLaser")) {
-			useHover = (random(101) <= 35) ? true : false;
+			useHover = (random(101) <= 45);
 			break;
 		}
 	}
 
-	return (((useHover === true) || (random(101) <= 15)) && weap[0] !== "Laser4-PlasmaCannon");
+	return (((useHover === true) || (random(101) <= 15)) && (weap[0] !== "Laser4-PlasmaCannon"));
 }
 
 //Choose either tracks or half-tracks. Has a preference for half-tracks.
@@ -287,10 +287,8 @@ function buildSys(struct, weap) {
 	if(!isDefined(weap)) {
 		weap = ["Sensor-WideSpec", "SensorTurret1Mk1"];
 	}
-	if (isDefined(struct) && buildDroid(struct, "System unit", sysBody, sysProp, "", "", weap)) {
-		return true;
-	}
-	return false;
+
+	return (isDefined(struct) && buildDroid(struct, "System unit", sysBody, sysProp, "", "", weap));
 }
 
 //Create a cyborg with available research.
@@ -321,11 +319,7 @@ function buildCyborg(fac) {
 //Create a vtol fighter with a medium body.
 function buildVTOL(struct) {
 	var weap = choosePersonalityWeapon("VTOL");
-	if (isDefined(struct) && isDefined(weap) && buildDroid(struct, "VTOL unit", vtolBody, "V-Tol", "", "", weap, weap)) {
-		return true;
-	}
-
-	return false;
+	return (isDefined(struct) && isDefined(weap) && buildDroid(struct, "VTOL unit", vtolBody, "V-Tol", "", "", weap, weap));
 }
 
 

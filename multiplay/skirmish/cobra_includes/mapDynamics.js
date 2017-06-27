@@ -116,7 +116,6 @@ function countAllResources() {
 
 	for(var i = 0; i < maxPlayers; ++i) {
 		var res = enumStruct(i, structures.derricks);
-
 		for(var c = 0, r = res.length; c < r; ++c) {
 			resources.push(res[c]);
 		}

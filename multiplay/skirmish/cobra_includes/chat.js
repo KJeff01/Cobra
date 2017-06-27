@@ -1,16 +1,14 @@
 
 //A way to control chat messages sent to Cobra AI.
 function sendChatMessage(msg, receiver) {
-	if(!isDefined(msg)) {
-		return;
-	}
-	if(!isDefined(receiver)) {
-		receiver = ALLIES;
-	}
-
-	if(lastMsg !== msg) {
-		lastMsg = msg;
-		chat(receiver, msg);
+	if(isDefined(msg)) {
+		if(!isDefined(receiver)) {
+			receiver = ALLIES;
+		}
+		if(lastMsg !== msg) {
+			lastMsg = msg;
+			chat(receiver, msg);
+		}
 	}
 }
 
@@ -52,7 +50,7 @@ function eventChat(from, to, message) {
 
 	if((message === "need truck") && allianceExistsBetween(from, to)) {
 		var droids = enumDroid(me, DROID_CONSTRUCT).filter(function(dr) {
-			return (dr.health > 60);
+			return (dr.health > 90);
 		});
 		var cacheDroids = droids.length;
 
@@ -66,13 +64,13 @@ function eventChat(from, to, message) {
 		}
 	}
 	else if((message === "need tank") && allianceExistsBetween(from, to)) {
-		donateFromGroup(enumGroup(attackGroup), from);
+		donateFromGroup(from, "ATTACK");
 	}
 	else if((message === "need cyborg") && allianceExistsBetween(from, to)) {
-		donateFromGroup(enumGroup(cyborgGroup), from);
+		donateFromGroup(from, "CYBORG");
 	}
 	else if((message === "need vtol") && allianceExistsBetween(from, to)) {
-		donateFromGroup(enumGroup(vtolGroup), from);
+		donateFromGroup(from, "VTOL");
 	}
 
 	//Here be commands that do something to a specific enemy.

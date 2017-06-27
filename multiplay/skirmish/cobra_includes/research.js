@@ -99,7 +99,6 @@ function updateResearchList(stat, len) {
 	}
 
 	var list = [];
-
 	for(var x = 0, d = stat.length - len; x < d; ++x) {
 		if(isDefined(stat[x].res))
 			list.push(stat[x].res); //weapon
@@ -145,6 +144,7 @@ function evalResearch(lab, list) {
 			}
 		}
 	}
+	
 	return found;
 }
 

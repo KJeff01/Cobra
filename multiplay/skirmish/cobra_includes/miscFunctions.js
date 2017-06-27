@@ -96,9 +96,11 @@ function rangeStep(player) {
 //Ally is false for checking for enemy players
 //Ally is true for allies.
 function playerAlliance(ally) {
-	if(!isDefined(ally)) { ally = false; }
+	if(!isDefined(ally)) {
+		ally = false;
+	}
+	
 	var players = [];
-
 	for(var i = 0; i < maxPlayers; ++i) {
 		if(!ally) {
 			if(!allianceExistsBetween(i, me) && (i !== me)) {
@@ -111,6 +113,7 @@ function playerAlliance(ally) {
 			}
 		}
 	}
+
 	return players;
 }
 
@@ -215,9 +218,8 @@ function stopExecution(throttleNumber, ms) {
 		throttleTime[throttleNumber] = gameTime + (4 * random(500));
 		return false;
 	}
-	else {
-		return true;
-	}
+
+	return true;
 }
 
 //Find enemies that are still alive.
@@ -275,9 +277,15 @@ function removeDuplicateItems(temp) {
 	});
 }
 
-//Target a random enemy at the start of the match. This is done by placing
-//random values into the grudge counter.
-function randomizeFirstEnemy() {
+//Set the initial grudge counter to target a random enemy.
+function initializeGrudgeCounter() {
+	grudgeCount = [];
+	var pos = [];
+
+	for(var i = 0; i < maxPlayers; ++i) {
+		grudgeCount.push(0);
+	}
+
 	for(var i = 0; i < maxPlayers; ++i) {
 		if((!allianceExistsBetween(i, me)) && (i !== me)) {
 			grudgeCount[i] = random(30);
@@ -292,12 +300,8 @@ function randomizeFirstEnemy() {
 function initiaizeRequiredGlobals() {
 	nexusWaveOn = false;
 	researchComplete = false;
-	grudgeCount = [];
 	throttleTime = [];
-
-	for(var i = 0; i < maxPlayers; ++i) {
-		grudgeCount.push(0);
-	}
+	initializeGrudgeCounter();
 
 	for(var i = 0; i < 4; ++i) {
 		throttleTime.push(0);
@@ -309,7 +313,6 @@ function initiaizeRequiredGlobals() {
 	turnOffCyborgs = (forceHover) ? true : false;
 	personality = choosePersonality();
 	turnOffMG = CheckStartingBases();
-	randomizeFirstEnemy();
 	initializeResearchLists();
 }
 
@@ -326,18 +329,27 @@ function countEnemyVTOL() {
 }
 
 //Donate a droid from one of Cobra's groups.
-function donateFromGroup(group, from) {
-	const MIN_HEALTH = 70;
-	var droids = enumGroup(group);
-	var cacheDroids = droids.length;
+function donateFromGroup(from, group) {
+	if(isDefined(group)) {
+		const MIN_HEALTH = 80;
+		var chosenGroup;
 
-	if(cacheDroids < MIN_ATTACK_DROIDS) {
-		return;
-	}
+		switch(group) {
+			case "ATTACK": chosenGroup = enumGroup(attackGroup); break;
+			case "CYBORG": chosenGroup = enumGroup(cyborgGroup); break;
+			case "VTOL": chosenGroup = enumGroup(vtolGroup); break;
+			default: chosenGroup = enumGroup(attackGroup); break;
+		}
 
-	var droid = droids[random(cacheDroids)];
-	if(isDefined(droid) && (droid.health >= MIN_HEALTH)) {
-		donateObject(droid, from);
+		var droids = chosenGroup.filter(function(dr) { return (dr.health > MIN_HEALTH); });
+		var cacheDroids = droids.length;
+
+		if(cacheDroids >= MIN_ATTACK_DROIDS) {
+			var droid = droids[random(cacheDroids)];
+			if(isDefined(droid)) {
+				donateObject(droid, from);
+			}
+		}
 	}
 }
 

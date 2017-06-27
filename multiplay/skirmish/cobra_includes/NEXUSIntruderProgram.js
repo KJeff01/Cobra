@@ -2,7 +2,7 @@
 //Sometimes the required research list has duplicate strings. So lets remove them.
 function cleanResearchItem(res, player) {
 	var temp = findResearch(res, player).reverse();
-	if(temp.length === 0) {
+	if(!temp.length) {
 		return temp;
 	}
 
@@ -144,8 +144,9 @@ function malfunctionDroid() {
 					var rg = enumRange(dr.x, dr.y, 40, ALL_PLAYERS, false).filter(function(obj) {
 						return (obj.type === DROID) && allianceExistsBetween(obj, enemy) || (obj.player === enemy);
 					});
-					if(rg.length > 0) {
-						var newDroid = rg[random(rg.length)];
+					var cacheRg = rg.length;
+					if(cacheRg) {
+						var newDroid = rg[random(cacheRg)];
 						if(isDefined(dr) && isDefined(newDroid)) {
 							orderDroidObj(dr, DORDER_ATTACK, newDroid);
 						}
