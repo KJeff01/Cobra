@@ -7,9 +7,8 @@ There are five personalities so far (all use lasers and plasma cannon when it ca
 
 1. AC: Focus on Cannon/Gauss/Howitzer.
 2. AR: Focus on Flamer/Gauss/Howitzer.
-3. AB: Focus on Rocket/Gauss/Missile.
-4. AM: Machine-guns/Lasers/Howitzer.
-5. AL: Lasers/Gauss/Fire mortar.
+3. AM: Machine-guns/Lasers/Howitzer.
+4. AL: Lasers/Gauss/Fire mortar.
 
 Do note that AL is exclusive to T3 (with at least bases) and AM is exclusive to T1 (or if starting without a base). This only affects the initial personality and you can change the personality with a chat command later.
 
@@ -22,7 +21,7 @@ chat commands include:
 1. need power/truck/tank/cyborg/vtol.
 2. attackX -- (X being a player number). Does not imply Cobra will keep attacking that player at the moment.
 3. oilX -- to specifically attack nearby enemy oil. 
-4. AC/AR/AB/AM/AL -- make it switch personalities.
+4. AC/AR/AM/AL -- make it switch personalities.
 5. FFA -- after a team skirmish is won, break alliance and fight it (does not count as win/loss either way).
 6. toggle mg -- disable/enable machinegun use.
 7. toggle cyborg -- disable/enable cyborg use.
