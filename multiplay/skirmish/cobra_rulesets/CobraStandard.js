@@ -35,10 +35,6 @@ const sensorTurrets = [
 	"Sensor-WideSpec", // wide spectrum sensor
 ];
 
-const fastestResearch = [
-	"R-Struc-Research-Upgrade09",
-];
-
 // body and propulsion arrays don't affect fixed template droids
 const bodyStats = [
 	{ res: "R-Vehicle-Body01", stat: "Body1REC"  }, // viper
@@ -160,10 +156,9 @@ const weaponStats = {
 			{ res: "R-Cyborg-Hvywpn-Acannon", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-Acannon", ] }, // ac super
 		],
 		extras: [
-			"R-Wpn-Cannon-Accuracy02",
 			"R-Wpn-Cannon-Damage09",
 			"R-Wpn-Cannon-ROF06",
-			"R-Vehicle-Engine09", // cannons are heeeeavy
+			"R-Wpn-Cannon-Accuracy02",
 		],
 	},
 	gauss: {
@@ -206,9 +201,9 @@ const weaponStats = {
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-Cannon-Accuracy02",
 			"R-Wpn-Cannon-Damage09",
 			"R-Wpn-Cannon-ROF06",
+			"R-Wpn-Cannon-Accuracy02",
 		],
 	},
 	mortars: {
@@ -334,8 +329,8 @@ const weaponStats = {
 			{ res: "R-Cyborg-Hvywpn-A-T", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-A-T", ] }, // scourge super
 		],
 		extras: [
-			"R-Wpn-Rocket-ROF03",
 			"R-Wpn-Rocket-Damage09",
+			"R-Wpn-Rocket-ROF03",
 			"R-Wpn-Missile-Damage03",
 			"R-Wpn-Missile-ROF03",
 			"R-Wpn-Missile-Accuracy02",
@@ -384,8 +379,8 @@ const weaponStats = {
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-Rocket-ROF03",
 			"R-Wpn-Rocket-Damage09",
+			"R-Wpn-Rocket-ROF03",
 			"R-Wpn-Missile-Damage03",
 			"R-Wpn-Missile-ROF03",
 			"R-Wpn-Missile-Accuracy02",
@@ -440,8 +435,8 @@ const weaponStats = {
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-Rocket-ROF03",
 			"R-Wpn-Rocket-Damage09",
+			"R-Wpn-Rocket-ROF03",
 			"R-Wpn-Missile-Damage03",
 			"R-Wpn-Missile-ROF03",
 			"R-Wpn-Missile-Accuracy02",
@@ -485,20 +480,6 @@ const weaponStats = {
 		  { res: "R-Defense-Super-Missile", stat: "X-Super-Missile" },
 		  { res: "R-Defense-MassDriver", stat: "X-Super-MassDriver" },
 		],
-		templates: [],
-		extras: [],
-	},
-	useless_AP: {
-		alias: "ap",
-		weapons: [
-			{ stat: "MG1-Pillbox" }, // imaginary invisible single mg, may be found on some maps
-			{ stat: "MG2-Pillbox" }, // imaginary invisible twin mg, may be found on some maps
-			{ stat: "MG3-Pillbox" }, // mg bunker dedicated weapon
-			{ stat: "NEXUSlink" }, // nexus link (still unused)
-			{ stat: "MG4ROTARY-Pillbox" }, // ag bunker dedicated weapon
-		],
-		vtols: [],
-		defenses: [],
 		templates: [],
 		extras: [],
 	},

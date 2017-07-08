@@ -58,8 +58,7 @@ function appendListElements(list, items) {
 	}
 
 	var temp = list;
-	var cacheItems = items.length;
-	for(var i = 0; i < cacheItems; ++i) {
+	for(var i = 0, c = items.length; i < c; ++i) {
 		temp.push(items[i]);
 	}
 	return temp;
@@ -73,19 +72,23 @@ function addDroidsToGroup(group, droids) {
 
 //Returns closest enemy object.
 function rangeStep(player) {
+	if(!isDefined(player)) {
+		player = getMostHarmfulPlayer();
+	}
+
 	var target;
 	var targets = [];
-	var closestStructure = enumStruct(player).sort(distanceToBase);
-	var closestDroid = enumDroid(player).sort(distanceToBase);
+	var closestStructure = findNearestEnemyStructure(player);
+	var closestDroid = findNearestEnemyDroid(player);
 
-	if (closestStructure.length > 0) {
-		targets.push(closestStructure[0]);
+	if (isDefined(closestStructure)) {
+		targets.push(closestStructure);
 	}
-	if(closestDroid.length > 0) {
-		targets.push(closestDroid[0]);
+	if(isDefined(closestDroid)) {
+		targets.push(closestDroid);
 	}
 
-	if(targets.length > 0) {
+	if(isDefined(targets[0])) {
 		targets = targets.sort(distanceToBase);
 		target = targets[0];
 	}
@@ -99,7 +102,7 @@ function playerAlliance(ally) {
 	if(!isDefined(ally)) {
 		ally = false;
 	}
-	
+
 	var players = [];
 	for(var i = 0; i < maxPlayers; ++i) {
 		if(!ally) {
@@ -169,7 +172,7 @@ function isDesignable(item, body, prop) {
 	}
 
 	var virDroid = makeTemplate(me, "Virtual Droid", body, prop, "", "", item, item);
-	return (virDroid !== null) ? true : false;
+	return (virDroid !== null);
 }
 
 //See if power levels are low. This takes account of only the power obtained from the generators.
@@ -179,7 +182,7 @@ function checkLowPower(pow) {
 	}
 
 	if(playerPower(me) < pow) {
-		if(playerAlliance(true).length > 0) {
+		if(playerAlliance(true).length) {
 			sendChatMessage("need Power", ALLIES);
 		}
 		return true;
@@ -192,7 +195,7 @@ function checkLowPower(pow) {
 function getRealPower() {
 	var pow = playerPower(me) - queuedPower(me);
 
-	if((playerAlliance(true).length > 0) && (pow < 50)) {
+	if(playerAlliance(true).length && (pow < 50)) {
 		sendChatMessage("need Power", ALLIES);
 	}
 	return playerPower(me) - queuedPower(me);
@@ -310,7 +313,7 @@ function initiaizeRequiredGlobals() {
 	diffPerks();
 
 	forceHover = checkIfSeaMap();
-	turnOffCyborgs = (forceHover) ? true : false;
+	turnOffCyborgs = forceHover;
 	personality = choosePersonality();
 	turnOffMG = CheckStartingBases();
 	initializeResearchLists();
@@ -367,12 +370,24 @@ function removeThisTimer(timer) {
 
 //Stop the non auto-remove timers if Cobra died.
 function StopTimersIfDead() {
-	if(!enumDroid(me) && !enumStruct(me)) {
+	if(!(countDroid(DROID_CONSTRUCT, me) || enumStruct(me, structures.factories).length)) {
 		var timers = [
 			"buildOrder", "repairDamagedDroids", "produce", "battleTactics",
 			"spyRoutine", "StopTimersIfDead", "eventResearched"
 		];
 
 		removeThisTimer(timers);
+		donateAllPower();
+	}
+}
+
+//Give a player all of Cobra's power. one use is if it dies, then it gives
+//all of its power to an ally.
+function donateAllPower() {
+	var allies = playerAlliance(true);
+	var len = allies.length;
+
+	if(len) {
+		donatePower(playerPower(me), allies[random(len)]);
 	}
 }

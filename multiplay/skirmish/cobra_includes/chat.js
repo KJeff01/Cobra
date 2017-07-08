@@ -18,7 +18,7 @@ function eventChat(from, to, message) {
 	}
 
 	//Here are all chat messages that can be executed by itself.
-	if((message === "AC") || (message === "AR") || (message === "AB") || (message === "AM") || (message === "AL")) {
+	if((message === "AC") || (message === "AR") || (message === "AM") || (message === "AL")) {
 		if(allianceExistsBetween(from, to) && (personality !== message)) {
 			choosePersonality(message);
 		}

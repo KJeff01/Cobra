@@ -1,10 +1,9 @@
 const MAX_GRUDGE = 50000;
-const MIN_ATTACK_DROIDS = 6;
+const MIN_ATTACK_DROIDS = 5;
 
 //List of Cobra personalities:
 //AC: Cannon/Gauss/howitzer.
 //AR: Flamer/Gauss/howitzer.
-//AB: Rocket/Missle/gauss.
 //AM: Machine-gun/howitzer/lasers.
 //AL: Lasers/Gauss/fireMortars. *Strictly a T3 personality.
 //All personalities use laser technology. This includes the plasma cannon.
@@ -30,22 +29,9 @@ const subpersonalities = {
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"res": [
-			"R-Wpn-Flamer-Damage02",
-			"R-Wpn-Flamer-ROF01",
 			"R-Defense-Tower01",
-		],
-	},
-	AB: {
-		"primaryWeapon": weaponStats.rockets_AT,
-		"secondaryWeapon": weaponStats.gauss,
-		"artillery": weaponStats.rockets_Arty,
-		"antiAir": weaponStats.AA,
-		"res": [
-			"R-Struc-PowerModuleMk1",
-			"R-Wpn-Rocket02-MRL",
-			"R-Wpn-Rocket07-Tank-Killer",
-			"R-Wpn-Rocket06-IDF",
-			"R-Wpn-Rocket-ROF03",
+			"R-Wpn-Flamer-Damage03",
+			"R-Wpn-Flamer-ROF01",
 		],
 	},
 	AM: {
@@ -54,8 +40,8 @@ const subpersonalities = {
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"res": [
-			"R-Wpn-MG2Mk1",
 			"R-Defense-Tower01",
+			"R-Wpn-MG2Mk1",
 		],
 	},
 	AL: {

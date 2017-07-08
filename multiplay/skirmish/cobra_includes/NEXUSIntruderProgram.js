@@ -2,7 +2,7 @@
 //Sometimes the required research list has duplicate strings. So lets remove them.
 function cleanResearchItem(res, player) {
 	var temp = findResearch(res, player).reverse();
-	if(!temp.length) {
+	if(!isDefined(temp[0])) {
 		return temp;
 	}
 
@@ -32,9 +32,9 @@ function analyzeDroidAlloys(droid) {
 			var temp = (t === 0) ? kinetic : thermal;
 			var reqRes = cleanResearchItem((temp + i), droid.player);
 
-			if(reqRes.length === 0) {
+			if(isDefined(reqRes[0])) {
 				var armorAlloy = temp + i;
-				if(findResearch(armorAlloy).length > 0) {
+				if(findResearch(armorAlloy).length) {
 					completeRequiredResearch(armorAlloy);
 					break;
 				}

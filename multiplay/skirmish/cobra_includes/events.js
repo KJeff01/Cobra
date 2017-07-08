@@ -49,17 +49,11 @@ function eventStructureBuilt(structure, droid) {
 			return (obj.type === FEATURE) && (obj.stattype === OIL_RESOURCE);
 		});
 		nearbyOils = nearbyOils.sort(distanceToBase);
-		if(nearbyOils.length && isDefined(nearbyOils[0])) {
-			droid.busy = false;
+		droid.busy = false;
+
+		if(isDefined(nearbyOils[0])) {
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
 		}
-		else if(getRealPower() > -120 && (countStruct(structures.derricks) > averageOilPerPlayer())) {
-			var undef;
-			buildStuff(getDefenseStructure(), undef, structure);
-		}
-	}
-	else {
-		if(((!turnOffMG && (gameTime > 80000)) || turnOffMG) && maintenance()) { return; }
 	}
 }
 
@@ -67,8 +61,8 @@ function eventStructureBuilt(structure, droid) {
 function eventDroidIdle(droid) {
 	if(droid.player === me) {
 		if(isDefined(droid) && ((droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid))) {
-			var enemyObjects = enumRange(droid.x, droid.y, 10, ENEMIES, false);
-			if(enemyObjects.length) {
+			var enemyObjects = enumRange(droid.x, droid.y, 14, ENEMIES, false);
+			if(isDefined(enemyObjects[0])) {
 				enemyObjects = enemyObjects.sort(distanceToBase);
 				orderDroidLoc(droid, DORDER_SCOUT, enemyObjects[0].x, enemyObjects[0].y);
 			}
@@ -104,7 +98,7 @@ function eventDroidBuilt(droid, struct) {
 }
 
 function eventAttacked(victim, attacker) {
-	if((victim.player !== me) || (attacker === null) || allianceExistsBetween(attacker.player, victim.player)) {
+	if((attacker === null) || (victim.player !== me) || allianceExistsBetween(attacker.player, victim.player)) {
 		return;
 	}
 
@@ -155,22 +149,22 @@ function eventAttacked(victim, attacker) {
 				return (d.type === DROID) && ((d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG) || isVTOL(d));
 			});
 
-			if(units.length < 4) {
+			if(!isDefined(units[3])) {
 				units = chooseGroup();
 			}
 		}
 
-		units = units.filter(function(dr) { return droidCanReach(dr, attacker.x, attacker.y); });
+		units = units.filter(function(dr) { return (!repairDroid(dr) && droidCanReach(dr, attacker.x, attacker.y)); });
 		var cacheUnits = units.length;
 
 		if(cacheUnits >= MIN_ATTACK_DROIDS) {
 			var defend = (distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, attacker.x, attacker.y) < 18);
 			for (var i = 0; i < cacheUnits; i++) {
 				if((random(3) || defend) && isDefined(units[i]) && isDefined(attacker)) {
-					if(defend && !repairDroid(units[i])) {
+					if(defend) {
 						orderDroidObj(units[i], DORDER_ATTACK, attacker);
 					}
-					else if (droidReady(units[i])) {
+					else {
 						orderDroidLoc(units[i], DORDER_SCOUT, attacker.x, attacker.y);
 					}
 				}
@@ -184,18 +178,6 @@ function eventGroupLoss(droid, group, size) {
 	if(droid.order !== DORDER_RECYCLE) {
 		if(stopExecution(3, 3000) === false) {
 			addBeacon(droid.x, droid.y, ALLIES);
-		}
-
-		if(playerAlliance(true).length) {
-			if (enumGroup(attackGroup).length < MIN_ATTACK_DROIDS) {
-				sendChatMessage("need tank", ALLIES);
-			}
-			if (!turnOffCyborgs && countStruct(structures.templateFactories) && enumGroup(cyborgGroup).length < MIN_ATTACK_DROIDS) {
-				sendChatMessage("need cyborg", ALLIES);
-			}
-			if (countStruct(structures.vtolFactories) && enumGroup(vtolGroup).length < MIN_ATTACK_DROIDS) {
-				sendChatMessage("need vtol", ALLIES);
-			}
 		}
 	}
 }
@@ -230,32 +212,24 @@ function eventBeacon(x, y, from, to, message) {
 }
 
 function eventObjectTransfer(obj, from) {
-	logObj(obj, "eventObjectTransfer event. from: " + from + " to: " + obj.player + ". health: " + obj.health);
-
-	if((from !== me) && allianceExistsBetween(from, me)) {
-		if(obj.type === DROID) {
-			eventDroidBuilt(obj, null);
-		}
-	}
-
-	if((from !== me) && (from === obj.player) && !allianceExistsBetween(obj.player, me)) {
-		if(obj.type === DROID) {
-			eventDroidBuilt(obj, null);
+	if(from !== me) {
+		if(allianceExistsBetween(from, me) || ((from === obj.player) && !allianceExistsBetween(obj.player, me))) {
+			if(obj.type === DROID) {
+				eventDroidBuilt(obj, null);
+			}
 		}
 	}
 }
 
 //Increase grudge counter for closest enemy.
 function eventDestroyed(object) {
-	if(isDefined(getScavengerNumber()) && (object.player === getScavengerNumber())) {
-		return;
-	}
-
-	if(object.player === me) {
-		var enemies = enumRange(object.x, object.y, 8, ENEMIES, false);
-		enemies = enemies.sort(distanceToBase);
-		if(enemies.length && grudgeCount[enemies[0].player] < MAX_GRUDGE) {
-			grudgeCount[enemies[0].player] = grudgeCount[enemies[0].player] + 5;
+	if(!(isDefined(getScavengerNumber()) && (object.player === getScavengerNumber()))) {
+		if(object.player === me) {
+			var enemies = enumRange(object.x, object.y, 8, ENEMIES, false);
+			enemies = enemies.sort(distanceToBase);
+			if(isDefined(enemies[0]) && grudgeCount[enemies[0].player] < MAX_GRUDGE) {
+				grudgeCount[enemies[0].player] = grudgeCount[enemies[0].player] + 5;
+			}
 		}
 	}
 }
@@ -264,7 +238,7 @@ function eventDestroyed(object) {
 function eventStructureReady(structure) {
 	if(!isDefined(structure)) {
 		var las = enumStruct(me, structures.extras[2]);
-		if(las.length) {
+		if(isDefined(las[0])) {
 			structure = las[0];
 		}
 		else {
@@ -273,11 +247,9 @@ function eventStructureReady(structure) {
 		}
 	}
 
-	const ENEMY_FACTORIES = returnEnemyFactories();
-	var cacheFacs = ENEMY_FACTORIES.length;
-
-	if(cacheFacs) {
-		activateStructure(structure, ENEMY_FACTORIES[random(cacheFacs)]);
+	const ENEMY_FACTORY = returnClosestEnemyFactory();
+	if(isDefined(ENEMY_FACTORY)) {
+		activateStructure(structure, ENEMY_FACTORY);
 	}
 	else {
 		queue("eventStructureReady", 10000, structure);

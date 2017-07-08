@@ -3,6 +3,7 @@ const tankBody = [
 	"Body14SUP", // Dragon
 	"Body13SUP", // Wyvern
 	"Body10MBT", // Vengeance
+	"Body7ABT",  // Retribution
 //	"Body9REC",  // Tiger
 //	"Body12SUP", // Mantis
 	"Body11ABT", // Python
@@ -24,12 +25,6 @@ const sysProp = [
 
 const vtolBody = [
 	"Body7ABT",  // Retribution
-	"Body6SUPP", // Panther
-	"Body8MBT",  // Scorpion
-	"Body5REC",  // Cobra
-];
-
-const earlyTankBody = [
 	"Body6SUPP", // Panther
 	"Body8MBT",  // Scorpion
 	"Body5REC",  // Cobra
@@ -227,7 +222,7 @@ function pickGroundPropulsion() {
 		"wheeled01", // wheels
 	];
 
-	if((random(101) < 67) || (gameTime < TIME_FOR_HALF_TRACKS)) {
+	if((random(101) < 67) || (getRealPower() < -400) || (gameTime < TIME_FOR_HALF_TRACKS)) {
 		tankProp.shift();
 	}
 
@@ -245,9 +240,9 @@ function buildAttacker(struct) {
 		return false;
 	}
 
-	//Only use Medium body for early game so power can be saved.
+	//Use Medium body when low on power or the first twenty minutes into a skirmish,
 	const TIME_FOR_MEDIUM_BODY = 1200000;
-	var body = (gameTime < TIME_FOR_MEDIUM_BODY) ? earlyTankBody : tankBody;
+	var body = ((gameTime < TIME_FOR_MEDIUM_BODY) || (getRealPower() < -400)) ? vtolBody : tankBody;
 
 	var weap = choosePersonalityWeapon("TANK");
 	if(!isDefined(weap)) {
@@ -325,7 +320,7 @@ function buildVTOL(struct) {
 
 //Produce a unit when factories allow it.
 function produce() {
-	const MIN_POWER = -100;
+	const MIN_POWER = -70;
 	const MIN_TRUCKS = 4;
 	const MIN_SENSORS = 2;
 	const MIN_REPAIRS = 3;
