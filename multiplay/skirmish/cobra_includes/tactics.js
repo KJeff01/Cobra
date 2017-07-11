@@ -149,7 +149,8 @@ function findEnemyDerricks(playerNumber) {
 	return derr;
 }
 
-//Find closest enemy droid. Returns undefined otherwise.
+//Find closest enemy droid. Returns undefined otherwise. Do not target VTOLs
+//unless they are the only remaining droids.
 function findNearestEnemyDroid(enemy) {
 	if(!isDefined(enemy)) {
 		enemy = getMostHarmfulPlayer();
@@ -157,9 +158,16 @@ function findNearestEnemyDroid(enemy) {
 
 	var badDroids = enumDroid(enemy);
 	var undef;
+
 	if(isDefined(badDroids[0])) {
-		badDroids = badDroids.sort(distanceToBase);
-		return badDroids[0];
+		var temp = badDroids.filter(function(dr) { return !isVTOL(dr); });
+		
+		if(!isDefined(temp[0])) {
+			temp = badDroids;
+		}
+
+		temp = temp.sort(distanceToBase);
+		return temp[0];
 	}
 
 	return undef;
@@ -439,7 +447,7 @@ function attackThisObject(droid, target) {
 
 	if(isDefined(droid) && isDefined(target) && droidReady(droid) && droidCanReach(droid, target.x, target.y)) {
 		if(!((target.type === DROID) && isVTOL(target) && (isVTOL(droid) && !droid.weapons[0].canHitAir))) {
-			if(!isPlasmaCannon(droid) && (target.type !== STRUCTURE)) {
+			if(!isPlasmaCannon(droid) && (target.type === DROID)) {
 				orderDroidLoc(droid, DORDER_SCOUT, target.x, target.y);
 			}
 			else {

@@ -263,7 +263,7 @@ function getMostHarmfulPlayer(chatEvent) {
 	//In case Cobra is player zero (jsload or automation), return an enemy
 	//so that it does not attack itself if it wins.
 	var enemy_dummy = playerAlliance(false);
-	return (mostHarmful !== me) ? mostHarmful : enemy_dummy[0];
+	return ((mostHarmful !== me) && !allianceExistsBetween(mostHarmful, me)) ? mostHarmful : enemy_dummy[0];
 }
 
 //Removes duplicate items from something.

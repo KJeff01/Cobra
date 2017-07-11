@@ -173,7 +173,7 @@ function eventAttacked(victim, attacker) {
 	}
 }
 
-//Add a beacon and potentially request a unit.
+//Add a beacon.
 function eventGroupLoss(droid, group, size) {
 	if(droid.order !== DORDER_RECYCLE) {
 		if(stopExecution(3, 3000) === false) {

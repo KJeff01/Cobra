@@ -200,7 +200,7 @@ function eventResearched() {
 					found = evalResearch(lab, defenseTech);
 			}
 
-			if(!found && (returnPrimaryAlias() === "fl" || returnArtilleryAlias() === "fmor"))
+			if(!found && (returnPrimaryAlias() === "fl"))
 				found = evalResearch(lab, FLAMER);
 			if(!found)
 				found = evalResearch(lab, artilleryTech);
@@ -233,25 +233,6 @@ function eventResearched() {
 			if(!found)
 				found = evalResearch(lab, BODY_RESEARCH);
 
-			if(random(4)) {
-				if(!found && !turnOffCyborgs)
-					found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
-				if(!found && countEnemyVTOL())
-					found = pursueResearch(lab, "R-Defense-AA-Laser");
-				if(!found)
-					found = evalResearch(lab, laserTech);
-				if(!found)
-					found = evalResearch(lab, laserExtra);
-			}
-
-			if(!found && !turnOffCyborgs)
-				found = evalResearch(lab, CYBORG_ARMOR);
-			if(!found)
-				found = evalResearch(lab, VTOL_RES);
-
-			if(!found)
-				found = evalResearch(lab, DEFENSE_UPGRADES);
-
 			//Late game weapon.
 			if(random(3)) {
 				var cyborgSecondary = appendListElements(cyborgSecondary, updateResearchList(subpersonalities[personality].secondaryWeapon.templates));
@@ -266,6 +247,25 @@ function eventResearched() {
 						found = evalResearch(lab, secondaryWeaponTech);
 				}
 			}
+
+			if(!found && !turnOffCyborgs)
+				found = evalResearch(lab, CYBORG_ARMOR);
+			if(!found)
+				found = evalResearch(lab, VTOL_RES);
+
+			if(!found)
+				found = evalResearch(lab, DEFENSE_UPGRADES);
+
+				if(random(4)) {
+					if(!found && !turnOffCyborgs)
+						found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
+					if(!found && countEnemyVTOL())
+						found = pursueResearch(lab, "R-Defense-AA-Laser");
+					if(!found)
+						found = evalResearch(lab, laserTech);
+					if(!found)
+						found = evalResearch(lab, laserExtra);
+				}
 
 			if(!found)
 				found = evalResearch(lab, FLAMER);

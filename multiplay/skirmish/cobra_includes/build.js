@@ -155,7 +155,7 @@ function buildStuff(struc, module, defendThis) {
 
 	if(cacheTrucks) {
 		freeTrucks = freeTrucks.sort(distanceToBase);
-		var truck = freeTrucks[random(cacheTrucks)];
+		var truck = freeTrucks[0];
 
 		if(isDefined(struc) && isDefined(module) && isDefined(truck)) {
 			if(orderDroidBuild(truck, DORDER_BUILD, module, struc.x, struc.y)) {
