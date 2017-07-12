@@ -64,7 +64,7 @@ function eventDroidIdle(droid) {
 			var enemyObjects = enumRange(droid.x, droid.y, 14, ENEMIES, false);
 			if(isDefined(enemyObjects[0])) {
 				enemyObjects = enemyObjects.sort(distanceToBase);
-				orderDroidLoc(droid, DORDER_SCOUT, enemyObjects[0].x, enemyObjects[0].y);
+				attackThisObject(droid, enemyObjects[0]);
 			}
 		}
 	}
@@ -154,7 +154,7 @@ function eventAttacked(victim, attacker) {
 			}
 		}
 
-		units = units.filter(function(dr) { return (!repairDroid(dr) && droidCanReach(dr, attacker.x, attacker.y)); });
+		units = units.filter(function(dr) { return ((isVTOL(dr) && droidReady(dr)) || (!repairDroid(dr)) && droidCanReach(dr, attacker.x, attacker.y)); });
 		var cacheUnits = units.length;
 
 		if(cacheUnits >= MIN_ATTACK_DROIDS) {

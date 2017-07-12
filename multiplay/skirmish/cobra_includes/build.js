@@ -260,14 +260,14 @@ function buildSensors() {
 	}
 }
 
-//Builds an AA site for the personality. It will always use strombringer AA
+//Builds an AA site for the personality. It will always use stormbringer AA
 //once available.
 function buildAAForPersonality() {
 	var vtolCount = countEnemyVTOL();
 
 	//Use stormbringer if we have it.
 	if(isStructureAvailable("P0-AASite-Laser")) {
-		if(countAndBuild("P0-AASite-Laser", Math.floor(vtolCount / 2))) {
+		if(countAndBuild("P0-AASite-Laser", Math.floor(vtolCount / 3))) {
 			return true;
 		}
 	}
@@ -276,7 +276,7 @@ function buildAAForPersonality() {
 
 		for(var i = aaType.length - 1; i >= 0; --i) {
 			if(isStructureAvailable(aaType[i].stat)) {
-				if(countAndBuild(aaType[i].stat, Math.floor(vtolCount / 2))) {
+				if(countAndBuild(aaType[i].stat, Math.floor(vtolCount / 3))) {
 					return true;
 				}
 			}
@@ -288,13 +288,7 @@ function buildAAForPersonality() {
 
 //Build defense systems.
 function buildDefenses() {
-	const MIN_GAME_TIME = 600000;
-
 	if(protectUnguardedDerricks()) {
-		return true;
-	}
-
-	if((gameTime > MIN_GAME_TIME) && buildSensors()) {
 		return true;
 	}
 
@@ -408,9 +402,13 @@ function buildPhase3() {
 	return false;
 }
 
-//Laser satellite/uplink center
+//AA sites and Laser satellite/uplink center
 function buildSpecialStructures() {
 	const MIN_POWER = 80;
+
+	if(buildAAForPersonality()) {
+		return true;
+	}
 
 	for(var i = 1, l = structures.extras.length; i < l; ++i) {
 		if((playerPower(me) > MIN_POWER) && isStructureAvailable(structures.extras[i])) {
@@ -456,7 +454,7 @@ function buildOrder() {
 	if(buildSpecialStructures()) { return; }
 	lookForOil();
 	if(buildPhase2()) { return; }
-	if(buildAAForPersonality()) { return; }
+	if((gameTime > 600000) && buildSensors()) { return; }
 	if((getRealPower() < -300) || (countStruct(structures.derricks) < averageOilPerPlayer())) { return; }
 	if(buildPhase3()) { return; }
 	if(buildDefenses()) { return; }

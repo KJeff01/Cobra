@@ -152,10 +152,9 @@ function evalResearch(lab, list) {
 	return found;
 }
 
-
 function eventResearched() {
 	const MIN_POWER = -130;
-	if((getRealPower() < MIN_POWER) || !isDefined(techlist) || !isDefined(turnOffMG) || !isDefined(turnOffCyborgs)) {
+	if((getRealPower() < MIN_POWER) || !(isDefined(techlist) && isDefined(turnOffMG) && isDefined(turnOffCyborgs))) {
 		return;
 	}
 
