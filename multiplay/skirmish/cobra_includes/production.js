@@ -37,17 +37,15 @@ const repairTurrets = [
 ];
 
 //Pick a random weapon line. May return undefined for machineguns.
-//Returns an object containing weapon line and whether to skip the first element.
 function chooseRandomWeapon() {
 	var weaps;
-	var isSecondary = false;
 
 	switch(random(6)) {
 		case 0: weaps = subpersonalities[personality].primaryWeapon; break;
 		case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
 		case 2: weaps = subpersonalities[personality].artillery; break;
 		case 3: weaps = weaponStats.lasers; break;
-		case 4: weaps = subpersonalities[personality].secondaryWeapon; isSecondary = true; break;
+		case 4: weaps = subpersonalities[personality].secondaryWeapon; break;
 		case 5: weaps = weaponStats.AS; break;
 		default: weaps = subpersonalities[personality].primaryWeapon; break;
 	}
@@ -56,23 +54,16 @@ function chooseRandomWeapon() {
 		weaps = subpersonalities[personality].primaryWeapon;
 	}
 
-	return {"weaponLine": weaps, "shift": isSecondary};
+	return weaps;
 }
 
 //Prepare the weapon list.
-function shuffleWeaponList(weaps, shiftIt) {
+function shuffleWeaponList(weaps) {
 	var weaponList = [];
 
 	for(var i = 0, w = weaps.length; i < w; ++i) {
 		weaponList.push(weaps[i].stat);
 	}
-
-	//FIXME: Remove this and the "shift" property later.
-	/*
-	if(shiftIt && (weaponList.length > 1)) {
-		weaponList.shift(); //remove first weapon.
-	}
-	*/
 
 	weaponList.reverse();
 	return weaponList;
@@ -143,16 +134,15 @@ function choosePersonalityWeapon(type) {
 	}
 
 	if(type === "TANK") {
-		const SPECIAL_WEAPONS = ["PlasmaHeavy", "MortarEMP"];
+		const PLASMA_LAUNCHER = "PlasmaHeavy";
 
 		weaps = chooseRandomWeapon();
-		weaponList = shuffleWeaponList(chooseWeaponType(weaps.weaponLine), weaps.shift);
-		weaps = weaps.weaponLine;
+		weaponList = shuffleWeaponList(chooseWeaponType(weaps));
 
 		//on hard difficulty and above.
 		if(componentAvailable("tracked01") && (random(101) <= 1)) {
 			if((difficulty === HARD) || (difficulty === INSANE)) {
-				weaponList.push(SPECIAL_WEAPONS[random(SPECIAL_WEAPONS.length)]);
+				weaponList.push(PLASMA_LAUNCHER);
 			}
 		}
 
@@ -179,8 +169,7 @@ function choosePersonalityWeapon(type) {
 	return ((type === "CYBORG") || !isDefined(weaps)) ? weaps : weaponList;
 }
 
-//What conditions will allow hover use. Flamers always use hover, rockets/missile
-//Have a 20% chance of using hover and a 35% chance for laser. Also there is a 15% chance regardless of weapon.
+//What conditions will allow hover use. There is a 15% chance regardless of weapon.
 //Expects an array of weapons.
 function useHover(weap) {
 	if(!isDefined(weap)) {
@@ -200,12 +189,12 @@ function useHover(weap) {
 		}
 
 		if((weap[i] === "Rocket-LtA-T") || (weap[i] === "Rocket-HvyA-T") || (weap[i] === "Missile-A-T")) {
-			useHover = (random(101) <= 60);
+			useHover = (random(101) <= 75);
 			break;
 		}
 
 		if((weap[i] === "Laser3BEAMMk1") || (weap[i] === "Laser2PULSEMk1") || (weap[i] === "HeavyLaser")) {
-			useHover = (random(101) <= 45);
+			useHover = (random(101) <= 55);
 			break;
 		}
 	}
@@ -213,8 +202,12 @@ function useHover(weap) {
 	return (((useHover === true) || (random(101) <= 15)) && (weap[0] !== "Laser4-PlasmaCannon"));
 }
 
-//Choose either tracks or half-tracks. Has a preference for half-tracks.
-function pickGroundPropulsion() {
+//Choose our ground propulsion. Non-hover units will have a preference for half-tracks.
+function pickPropulsion(weap) {
+	if(useHover(weap)) {
+		return "hover01";
+	}
+
 	const TIME_FOR_HALF_TRACKS = 1200000;
 	var tankProp = [
 		"tracked01", // tracked01
@@ -222,7 +215,7 @@ function pickGroundPropulsion() {
 		"wheeled01", // wheels
 	];
 
-	if((random(101) < 67) || (getRealPower() < -400) || (gameTime < TIME_FOR_HALF_TRACKS)) {
+	if((random(101) < 67) || (gameTime < TIME_FOR_HALF_TRACKS)) {
 		tankProp.shift();
 	}
 
@@ -230,10 +223,10 @@ function pickGroundPropulsion() {
 }
 
 //Create a ground attacker tank with a heavy body when possible.
-//Personality AR uses hover when posssible. All personalities may use special weapons on Hard/Insane.
+//Personality AR uses hover when possible. All personalities may use special weapons on Hard/Insane.
 //Also when Cobra has Dragon body, the EMP Cannon may be selected as the second weapon if it is researched.
 function buildAttacker(struct) {
-	if(!isDefined(forceHover) || !isDefined(seaMapWithLandEnemy) || !isDefined(turnOffMG)) {
+	if(!(isDefined(forceHover) && isDefined(seaMapWithLandEnemy) && isDefined(turnOffMG))) {
 		return false;
 	}
 	if(forceHover && !seaMapWithLandEnemy && !componentAvailable("hover01")) {
@@ -242,35 +235,18 @@ function buildAttacker(struct) {
 
 	//Use Medium body when low on power or the first twenty minutes into a skirmish,
 	const TIME_FOR_MEDIUM_BODY = 1200000;
-	var body = ((gameTime < TIME_FOR_MEDIUM_BODY) || (getRealPower() < -400)) ? vtolBody : tankBody;
-
+	var body = (gameTime < TIME_FOR_MEDIUM_BODY) ? vtolBody : tankBody;
 	var weap = choosePersonalityWeapon("TANK");
-	if(!isDefined(weap)) {
-		return false;
-	}
 
-	if(useHover(weap) && componentAvailable("hover01")) {
-		if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
-			if(weap !== "MortarEMP") {
-				if(isDefined(struct) && buildDroid(struct, "Hover EMP Droid", body, "hover01", "", "", weap, "EMP-Cannon")) {
-					return true;
-				}
+	if(isDefined(weap)) {
+		var secondary = weap;
+
+		if(isDefined(struct)) {
+			if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
+				secondary = "EMP-Cannon";
 			}
-		}
-		else if(isDefined(struct) && buildDroid(struct, "Hover Droid", body, "hover01", "", "", weap, weap)) {
-			return true;
-		}
-	}
-	else {
-		if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
-			if((weap !== "MortarEMP")) {
-				if(isDefined(struct) && buildDroid(struct, "EMP Droid", body, pickGroundPropulsion(), "", "", weap, "EMP-Cannon")) {
-					return true;
-				}
-			}
-		}
-		else if (isDefined(struct) && buildDroid(struct, "Droid", body, pickGroundPropulsion(), "", "", weap, weap)) {
-			return true;
+
+			return buildDroid(struct, "Droid", body, pickPropulsion(weap), "", "", weap, secondary);
 		}
 	}
 
@@ -293,18 +269,16 @@ function buildCyborg(fac) {
 	var prop;
 	var weapon = choosePersonalityWeapon("CYBORG");
 
-	if(!isDefined(weapon)) {
-		return false;
-	}
+	if(isDefined(weapon) && isDefined(fac)) {
+		for(var x = weapon.templates.length - 1; x >= 0; --x) {
+			body = weapon.templates[x].body;
+			prop = weapon.templates[x].prop;
+			weap = weapon.templates[x].weapons[0];
 
-	for(var x = weapon.templates.length - 1; x >= 0; --x) {
-		body = weapon.templates[x].body;
-		prop = weapon.templates[x].prop;
-		weap = weapon.templates[x].weapons[0];
-
-		//skip weak flamer cyborg.
-		if((weap !== "CyborgFlamer01") && isDefined(fac) && buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap, weap)) {
-			return true;
+			//skip weak flamer cyborg.
+			if((weap !== "CyborgFlamer01") && buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap, weap)) {
+				return true;
+			}
 		}
 	}
 
@@ -350,6 +324,11 @@ function produce() {
 		}
 	}
 
+	var attackers = enumGroup(attackGroup);
+	var allowSpecialSystems = isDefined(attackers[7]);
+	var buildSensors = ((enumGroup(sensorGroup).length + sens) < MIN_SENSORS);
+	var buildRepairs = ((enumGroup(repairGroup).length + reps) < MIN_REPAIRS);
+
 	for(var x = 0; x < cacheFacs; ++x) {
 		if(isDefined(fac[x]) && structureIdle(fac[x]) && (getRealPower() > MIN_POWER)) {
 			if ((countDroid(DROID_CONSTRUCT, me) + trucks) < MIN_TRUCKS) {
@@ -358,10 +337,10 @@ function produce() {
 				}
 				buildSys(fac[x], "Spade1Mk1");
 			}
-			else if((enumGroup(sensorGroup).length + sens) < MIN_SENSORS) {
+			else if(buildSensors) {
 				buildSys(fac[x]);
 			}
-			else if((enumGroup(attackGroup).length > 6) && ((enumGroup(repairGroup).length + reps) < MIN_REPAIRS)) {
+			else if(allowSpecialSystems && buildRepairs) {
 				buildSys(fac[x], repairTurrets);
 			}
 			else {
