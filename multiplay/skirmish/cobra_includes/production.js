@@ -172,7 +172,7 @@ function choosePersonalityWeapon(type) {
 //What conditions will allow hover use. There is a 15% chance regardless of weapon.
 //Expects an array of weapons.
 function useHover(weap) {
-	if(!isDefined(weap)) {
+	if(!(isDefined(weap) && componentAvailable("hover01"))) {
 		return false;
 	}
 
