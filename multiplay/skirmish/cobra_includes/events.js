@@ -9,6 +9,7 @@ function eventGameInit() {
 	sensorGroup = newGroup();
 	repairGroup = newGroup();
 	artilleryGroup = newGroup();
+	constructGroup = newGroup();
 	lastMsg = "eventGameInit";
 
 	addDroidsToGroup(attackGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return !obj.isCB; }));
@@ -17,6 +18,7 @@ function eventGameInit() {
 	addDroidsToGroup(sensorGroup, enumDroid(me, DROID_SENSOR));
 	addDroidsToGroup(repairGroup, enumDroid(me, DROID_REPAIR));
 	addDroidsToGroup(artilleryGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return obj.isCB; }));
+	addDroidsToGroup(constructGroup, enumDroid(me, DROID_CONSTRUCT));
 }
 
 //Initialze global variables and setup timers.
@@ -54,6 +56,17 @@ function eventStructureBuilt(structure, droid) {
 		if(isDefined(nearbyOils[0])) {
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
 		}
+		else {
+			var numDefenses = enumRange(droid.x, droid.y, 10, me, false);
+			numDefenses = numDefenses.filter(function(obj) {
+				return ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
+			});
+
+			//Make the defend object the truck itself!
+			if((gameTime > 60000) && !isDefined(numDefenses[0])) {
+				buildStructure(droid, getDefenseStructure(), droid);
+			}
+		}
 	}
 }
 
@@ -72,15 +85,18 @@ function eventDroidIdle(droid) {
 
 //Groups droid types.
 function eventDroidBuilt(droid, struct) {
-	if (droid && (droid.droidType !== DROID_CONSTRUCT)) {
-		if(isVTOL(droid)) {
-			groupAdd(vtolGroup, droid);
+	if (droid) {
+		if(isConstruct(droid)) {
+			groupAdd(constructGroup, droid);
 		}
 		else if(droid.droidType === DROID_SENSOR) {
 			groupAdd(sensorGroup, droid);
 		}
 		else if(droid.droidType === DROID_REPAIR) {
 			groupAdd(repairGroup, droid);
+		}
+		else if(isVTOL(droid)) {
+			groupAdd(vtolGroup, droid);
 		}
 		else if(droid.droidType === DROID_CYBORG) {
 			groupAdd(cyborgGroup, droid);
@@ -108,13 +124,17 @@ function eventAttacked(victim, attacker) {
 				orderDroidObj(victim, DORDER_ATTACK, attacker);
 			}
 		}
+
 		if(stopExecution(0, 12000) === false) {
 			attackStuff(getScavengerNumber());
 		}
+
 		return;
 	}
 
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player)) {
+		peacefulTime = false;
+
 		if(grudgeCount[attacker.player] < MAX_GRUDGE) {
 			grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 5;
 		}
@@ -122,7 +142,7 @@ function eventAttacked(victim, attacker) {
 		//Check if a droid needs repair.
 		if((victim.type === DROID) && countStruct(structures.extras[0])) {
 			//System units are timid.
-			if ((victim.droidType === DROID_SENSOR) || (victim.droidType === DROID_CONSTRUCT) || (victim.droidType === DROID_REPAIR)) {
+			if ((victim.droidType === DROID_SENSOR) || isConstruct(victim) || (victim.droidType === DROID_REPAIR)) {
 				orderDroid(victim, DORDER_RTR);
 			}
 			else {

@@ -1,10 +1,4 @@
 
-
-// a factor for figuring out how large things are in this ruleset,
-// or simply a typical radius of a player's base
-const baseScale = 20;
-const lassatSplash = 4;
-
 const structures = {
 	factories: [ "A0LightFactory", ],
 	templateFactories: [ "A0CyborgFactory", ],
@@ -19,13 +13,6 @@ const structures = {
 
 const oilResources = [ "OilResource", ];
 const powerUps = [ "OilDrum", "Crate" ];
-
-const modules = [
-	{ base: POWER_GEN, module: "A0PowMod1", count: 1 },
-	{ base: FACTORY, module: "A0FacMod1", count: 2 },
-	{ base: RESEARCH_LAB, module: "A0ResearchModule1", count: 1 },
-	{ base: VTOL_FACTORY, module: "A0FacMod1", count: 2 },
-];
 
 const sensorTurrets = [
 	"SensorTurret1Mk1", // sensor
@@ -61,7 +48,6 @@ const propulsionStats = [
 	{ res: "R-Vehicle-Prop-VTOL", stat: "V-Tol" },
 ];
 
-const fallbackWeapon = 'machineguns';
 const weaponStats = {
 	machineguns: {
 		alias: "mg",

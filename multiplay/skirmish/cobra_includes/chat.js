@@ -13,43 +13,46 @@ function sendChatMessage(msg, receiver) {
 }
 
 function eventChat(from, to, message) {
-	if(to !== me) {
+	if((to !== me) || !allianceExistsBetween(from, to)) {
 		return;
 	}
 
 	//Here are all chat messages that can be executed by itself.
-	if((message === "AC") || (message === "AR") || (message === "AM") || (message === "AL")) {
-		if(allianceExistsBetween(from, to) && (personality !== message)) {
+	if((message === "AC") || (message === "AR") || (message === "AB") || (message === "AM") || (message === "AL")) {
+		if(personality !== message) {
 			choosePersonality(message);
 		}
 	}
-	else if((message === "toggle cyborg") && allianceExistsBetween(from, to)) {
+	else if(message === "toggle cyborg") {
 		turnOffCyborgs = !turnOffCyborgs;
 	}
-	else if((message === "toggle mg") && allianceExistsBetween(from, to)) {
+	else if(message === "toggle mg") {
 		turnOffMG = !turnOffMG;
 	}
-	else if((message === "stats") && allianceExistsBetween(from, to)) {
-		getMostHarmfulPlayer("chatEvent");
+	else if(message === "stats") {
+		getMostHarmfulPlayer("stat");
 	}
-	else if((message === "FFA") && allianceExistsBetween(from, to)) {
+	else if(message === "FFA") {
 		freeForAll();
 	}
-	else if((message === "toggle hover") && allianceExistsBetween(from, to)) {
+	else if(message === "toggle hover") {
 		forceHover = !forceHover;
 	}
-	else if((message === "oil level") && allianceExistsBetween(from, to)) {
+	else if(message === "oil level") {
 		sendChatMessage("Map oil count is: " + mapOilLevel(), ALLIES);
 	}
+	else if(message === "toggle passive") {
+		peacefulTime = !peacefulTime;
+	}
 
-	//Do not execute these statements if from is me.
+
+	//Do not execute these statements if from is me or enemy.
 	if(to === from) {
 		return;
 	}
 
-
-	if((message === "need truck") && allianceExistsBetween(from, to)) {
-		var droids = enumDroid(me, DROID_CONSTRUCT).filter(function(dr) {
+	if(message === "need truck") {
+		var droids = enumGroup(constructGroup).filter(function(dr) {
 			return (dr.health > 90);
 		});
 		var cacheDroids = droids.length;
@@ -58,18 +61,18 @@ function eventChat(from, to, message) {
 			donateObject(droids[random(cacheDroids)], from);
 		}
 	}
-	else if((message === "need power") && allianceExistsBetween(from, to)) {
+	else if(message === "need power") {
 		if(playerPower(me) > 50) {
 			donatePower(playerPower(me) / 2, from);
 		}
 	}
-	else if((message === "need tank") && allianceExistsBetween(from, to)) {
+	else if(message === "need tank") {
 		donateFromGroup(from, "ATTACK");
 	}
-	else if((message === "need cyborg") && allianceExistsBetween(from, to)) {
+	else if(message === "need cyborg") {
 		donateFromGroup(from, "CYBORG");
 	}
-	else if((message === "need vtol") && allianceExistsBetween(from, to)) {
+	else if(message === "need vtol") {
 		donateFromGroup(from, "VTOL");
 	}
 

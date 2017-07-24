@@ -11,18 +11,21 @@ const CYBORG_ARMOR = [
 
 const ESSENTIALS = [
 	"R-Wpn-MG1Mk1",
-	"R-Wpn-MG-Damage02",
+	"R-Wpn-MG-Damage01",
 	"R-Struc-PowerModuleMk1",
+	"R-Defense-Tower01",
+	"R-Wpn-MG2Mk1",
 	"R-Struc-Research-Upgrade09",
 	"R-Struc-Power-Upgrade03a",
 	"R-Vehicle-Prop-Halftracks",
 	"R-Vehicle-Body05",
+	"R-Vehicle-Body04",
 ];
 
 const SYSTEM_UPGRADES = [
 	"R-Struc-RprFac-Upgrade01",
-	"R-Struc-Factory-Upgrade09",
 	"R-Vehicle-Prop-Hover",
+	"R-Struc-Factory-Upgrade09",
 	"R-Sys-MobileRepairTurretHvy",
 	"R-Sys-Autorepair-General",
 	"R-Struc-RprFac-Upgrade06",
@@ -64,19 +67,18 @@ const VTOL_RES = [
 
 const MID_GAME_TECH = [
 	"R-Cyborg-Metals05",
-	"R-Cyborg-Armor-Heat03",
+	"R-Vehicle-Metals05",
 	"R-Wpn-Bomb04",
 	"R-Wpn-Bomb-Accuracy02",
 	"R-Struc-VTOLPad-Upgrade04",
-	"R-Defense-WallUpgrade06",
+	"R-Defense-WallUpgrade04",
 	"R-Sys-ECM-Upgrade02",
 ];
 
 const LATE_EARLY_GAME_TECH = [
 	"R-Vehicle-Body11",
-	"R-Vehicle-Body04",
 	"R-Vehicle-Prop-Tracks",
-	"R-Vehicle-Prop-VTOL",
+	"R-Cyborg-Metals03",
 ];
 
 // -- Weapon research list (initializeResearchLists).
@@ -138,14 +140,12 @@ function initializeResearchLists() {
 //acknowledge the availability of an item further into the list if a previous
 //one is not completed... so lets help it a bit.
 function evalResearch(lab, list) {
-	var found = pursueResearch(lab, list);
-	//Try going a bit deeper.
-	if(!found) {
-		for(var i = 0, a = list.length; i < a; ++i) {
-			found = pursueResearch(lab, list[i]);
-			if(found) {
-				break;
-			}
+	var found = false;
+
+	for(var i = 0, a = list.length; i < a; ++i) {
+		found = pursueResearch(lab, list[i]);
+		if(found) {
+			break;
 		}
 	}
 
@@ -153,30 +153,52 @@ function evalResearch(lab, list) {
 }
 
 function eventResearched() {
-	const MIN_POWER = -130;
-	if((getRealPower() < MIN_POWER) || !(isDefined(techlist) && isDefined(turnOffMG) && isDefined(turnOffCyborgs))) {
+	const MIN_POWER = -60;
+	if((gameTime < 2000) || (getRealPower() < MIN_POWER) || !(isDefined(techlist) && isDefined(turnOffMG) && isDefined(turnOffCyborgs))) {
 		return;
 	}
 
-	var lablist = enumStruct(me, structures.labs).filter(function(lb) {
+	var labList = enumStruct(me, structures.labs).filter(function(lb) {
 		return ((lb.status === BUILT) && structureIdle(lb));
 	});
 
-	for (var i = 0, a = lablist.length; i < a; ++i) {
-		var lab = lablist[i];
+	for (var i = 0, a = labList.length; i < a; ++i) {
+		var lab = labList[i];
 		var found = false;
 
 		if(getRealPower() > MIN_POWER) {
 			found = pursueResearch(lab, ESSENTIALS);
-
-			//Early research.
 			if(!found)
 				found = evalResearch(lab, techlist);
 
 			if(!found)
 				found = evalResearch(lab, SYSTEM_UPGRADES);
-			if(!found && !random(4))
-				found = evalResearch(lab, TANK_ARMOR);
+			if((random(101) < subpersonalities[personality].systemPriority)) {
+				if(!found)
+					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
+				if(!found)
+					found = evalResearch(lab, SENSOR_TECH);
+			}
+
+			if(!found && (random(101) < subpersonalities[personality].alloyPriority)) {
+				var foundPrime = false;
+				if(turnOffCyborgs || (droidPreference(false) === "TANK")) {
+					found = evalResearch(lab, TANK_ARMOR);
+				}
+				else {
+					found = evalResearch(lab, CYBORG_ARMOR);
+				}
+
+				//Research the lesser preferred alloys now.
+				if(!found && !random(4)) {
+					if(droidPreference(true) === "TANK") {
+						found = evalResearch(lab, TANK_ARMOR);
+					}
+					else {
+						found = evalResearch(lab, CYBORG_ARMOR);
+					}
+				}
+			}
 
 			if(!turnOffMG || (returnPrimaryAlias() === "mg")) {
 				if(!found)
@@ -185,41 +207,42 @@ function eventResearched() {
 					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
 			}
 
+			if(!found && !turnOffCyborgs)
+				found = evalResearch(lab, cyborgWeaps);
 			if(!found)
-				found = evalResearch(lab, LATE_EARLY_GAME_TECH);
+				found = evalResearch(lab, weaponTech);
+			//Rocket/missile personalities NEED to seriously commit
+			//to their rocket upgrades to be even remotely successful.
+			if((returnPrimaryAlias() === "rkt") || (returnPrimaryAlias() === "miss") && !found)
+				found = evalResearch(lab, extraTech);
 
-			if(random(2)) {
-				if(!found && !turnOffCyborgs)
-					found = evalResearch(lab, cyborgWeaps);
+			//Defense related tech.
+			if(random(101) < subpersonalities[personality].defensePriority) {
 				if(!found)
-					found = evalResearch(lab, weaponTech);
-				if(!found)
-					found = evalResearch(lab, extraTech);
-				if(!found && random(2))
 					found = evalResearch(lab, defenseTech);
+				if(!found)
+					found = evalResearch(lab, DEFENSE_UPGRADES);
 			}
 
-			if(!found && (returnPrimaryAlias() === "fl"))
-				found = evalResearch(lab, FLAMER);
 			if(!found)
 				found = evalResearch(lab, artilleryTech);
 			if(!found)
-				found = evalResearch(lab, SENSOR_TECH);
+				found = evalResearch(lab, extraTech);
+			if(!found)
+				found = evalResearch(lab, artillExtra);
 
-			if(random(3)) {
+
+			if(!random(3) && (gameTime > 600000)) {
 				if(!found)
-					found = evalResearch(lab, artillExtra);
+					found = pursueResearch(lab, "R-Wpn-PlasmaCannon");
 
-				if(!random(3) && (gameTime > 1200000)) {
+				if(componentAvailable("Laser4-PlasmaCannon")) {
 					if(!found)
-						found = pursueResearch(lab, "R-Wpn-PlasmaCannon");
-					if(!found && componentAvailable("Laser4-PlasmaCannon"))
 						found = evalResearch(lab, extremeLaserTech);
+					if(!found)
+						found = evalResearch(lab, FLAMER);
 				}
 			}
-
-			if(!found)
-				found = evalResearch(lab, MID_GAME_TECH);
 
 			//Use default AA until stormbringer.
 			if(!isStructureAvailable("P0-AASite-Laser") && countEnemyVTOL()) {
@@ -230,7 +253,11 @@ function eventResearched() {
 			}
 
 			if(!found)
-				found = evalResearch(lab, BODY_RESEARCH);
+				found = evalResearch(lab, MID_GAME_TECH);
+
+			if(!found && (random(101) < subpersonalities[personality].vtolPriority))
+				found = evalResearch(lab, VTOL_RES);
+
 
 			//Late game weapon.
 			if(random(3)) {
@@ -247,27 +274,18 @@ function eventResearched() {
 				}
 			}
 
+			if(!found)
+				found = evalResearch(lab, BODY_RESEARCH);
+
+			// Lasers
 			if(!found && !turnOffCyborgs)
-				found = evalResearch(lab, CYBORG_ARMOR);
+				found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
 			if(!found)
-				found = evalResearch(lab, VTOL_RES);
-
+				found = evalResearch(lab, laserTech);
 			if(!found)
-				found = evalResearch(lab, DEFENSE_UPGRADES);
-
-				if(random(4)) {
-					if(!found && !turnOffCyborgs)
-						found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
-					if(!found && countEnemyVTOL())
-						found = pursueResearch(lab, "R-Defense-AA-Laser");
-					if(!found)
-						found = evalResearch(lab, laserTech);
-					if(!found)
-						found = evalResearch(lab, laserExtra);
-				}
-
+				found = evalResearch(lab, laserExtra);
 			if(!found)
-				found = evalResearch(lab, FLAMER);
+				found = pursueResearch(lab, "R-Defense-AA-Laser");
 
 			//Very likely going to be done with research by now.
 			if(!found && componentAvailable("Body14SUP") && isDesignable("EMP-Cannon") && isStructureAvailable(structures.extras[2])) {

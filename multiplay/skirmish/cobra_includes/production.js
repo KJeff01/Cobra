@@ -233,11 +233,17 @@ function buildAttacker(struct) {
 		return false;
 	}
 
-	//Use Medium body when low on power or the first twenty minutes into a skirmish,
+	//Use Medium body for the first twenty minutes into a skirmish.
 	const TIME_FOR_MEDIUM_BODY = 1200000;
-	var body = (gameTime < TIME_FOR_MEDIUM_BODY) ? vtolBody : tankBody;
-	var weap = choosePersonalityWeapon("TANK");
+	var useLighterBodies = (gameTime < TIME_FOR_MEDIUM_BODY);
+	var body = (useLighterBodies) ? vtolBody : tankBody;
 
+	//Use light body sometimes if on a T1 match, excluding primary MG personalities.
+	if(useLighterBodies && ((returnPrimaryAlias() !== "mg") && !turnOffMG) && random(3)) {
+		body = sysBody;
+	}
+
+	var weap = choosePersonalityWeapon("TANK");
 	if(isDefined(weap)) {
 		var secondary = weap;
 
@@ -262,21 +268,29 @@ function buildSys(struct, weap) {
 	return (isDefined(struct) && buildDroid(struct, "System unit", sysBody, sysProp, "", "", weap));
 }
 
-//Create a cyborg with available research.
-function buildCyborg(fac) {
-	var weap;
-	var body;
-	var prop;
-	var weapon = choosePersonalityWeapon("CYBORG");
+//Create a cyborg with available research. Expects a boolean for useEngineer or can undefined.
+function buildCyborg(fac, useEngineer) {
+	var weap = "CyborgSpade";
+	var body = "CyborgLightBody";
+	var prop = "CyborgLegs";
 
-	if(isDefined(weapon) && isDefined(fac)) {
-		for(var x = weapon.templates.length - 1; x >= 0; --x) {
-			body = weapon.templates[x].body;
-			prop = weapon.templates[x].prop;
-			weap = weapon.templates[x].weapons[0];
+	//Build combat engineer if requested.
+	if(isDefined(useEngineer) && (useEngineer === true)) {
+		if(buildDroid(fac, "Combat Engineer", body, prop, "", "", weap)) {
+			return true;
+		}
 
-			//skip weak flamer cyborg.
-			if((weap !== "CyborgFlamer01") && buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap, weap)) {
+		return false;
+	}
+
+	var weaponLine = choosePersonalityWeapon("CYBORG");
+	if(isDefined(weaponLine) && isDefined(fac)) {
+		for(var x = weaponLine.templates.length - 1; x >= 0; --x) {
+			body = weaponLine.templates[x].body;
+			prop = weaponLine.templates[x].prop;
+			weap = weaponLine.templates[x].weapons[0];
+
+			if(buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap)) {
 				return true;
 			}
 		}
@@ -291,26 +305,17 @@ function buildVTOL(struct) {
 	return (isDefined(struct) && isDefined(weap) && buildDroid(struct, "VTOL unit", vtolBody, "V-Tol", "", "", weap, weap));
 }
 
-
-//Produce a unit when factories allow it.
-function produce() {
-	const MIN_POWER = -70;
-	const MIN_TRUCKS = 4;
-	const MIN_SENSORS = 2;
-	const MIN_REPAIRS = 3;
-
-	var fac = enumStruct(me, structures.factories);
-	var cybFac = enumStruct(me, structures.templateFactories);
-	var vtolFac = enumStruct(me, structures.vtolFactories);
-	var cacheFacs = fac.length;
-
-	//Look what is being queued and consider unit production later.
+//Check what system units are queued in a regular factory. Returns an object
+//containing the number or trucks/sensors/repairs queued.
+function analyzeQueuedSystems() {
+	var fac = enumStruct(me, FACTORY);
 	var trucks = 0;
 	var sens = 0;
 	var reps = 0;
 
-	for(var i = 0; i < cacheFacs; ++i) {
+	for(var i = 0, l = fac.length; i < l; ++i) {
 		var virDroid = getDroidProduction(fac[i]);
+
 		if(virDroid !== null) {
 			if(virDroid.droidType === DROID_CONSTRUCT) {
 				trucks += 1;
@@ -324,45 +329,64 @@ function produce() {
 		}
 	}
 
+	return { "truck": trucks, "sensor": sens, "repair": reps };
+}
+
+
+//Produce a unit when factories allow it.
+function produce() {
+	if(isDefined(enumDroid(me)[149])) {
+		return;
+	}
+
+	const MIN_POWER = -60;
+	const MIN_TRUCKS = 4;
+	const MIN_COM_ENG = 3;
+	const MIN_SENSORS = 2;
+	const MIN_REPAIRS = 3;
+	var useCybEngineer = false; //countStruct(CYBORG_FACTORY) && !componentAvailable("hover01");
+	var systems = analyzeQueuedSystems();
+
 	var attackers = enumGroup(attackGroup);
 	var allowSpecialSystems = isDefined(attackers[7]);
-	var buildSensors = ((enumGroup(sensorGroup).length + sens) < MIN_SENSORS);
-	var buildRepairs = ((enumGroup(repairGroup).length + reps) < MIN_REPAIRS);
+	var buildSensors = ((enumGroup(sensorGroup).length + systems.sensor) < MIN_SENSORS);
+	var buildRepairs = ((enumGroup(repairGroup).length + systems.repair) < MIN_REPAIRS);
+	var buildTrucks = ((enumGroup(constructGroup).length + systems.truck) < MIN_TRUCKS);
 
-	for(var x = 0; x < cacheFacs; ++x) {
-		if(isDefined(fac[x]) && structureIdle(fac[x]) && (getRealPower() > MIN_POWER)) {
-			if ((countDroid(DROID_CONSTRUCT, me) + trucks) < MIN_TRUCKS) {
-				if(playerAlliance(true).length && (countDroid(DROID_CONSTRUCT, me) < MIN_TRUCKS) && (gameTime > 30000)) {
-					sendChatMessage("need truck", ALLIES);
+	//Loop through factories in the order the personality likes.
+	for(var i = 0; i < 3; ++i) {
+		var facType = subpersonalities[personality].factoryOrder[i];
+		var fac = enumStruct(me, facType);
+
+		if(!((facType === CYBORG_FACTORY) && !forceHover && turnOffCyborgs)) {
+
+			for(var x = 0, l = fac.length; x < l; ++x) {
+				if(isDefined(fac[x]) && structureIdle(fac[x]) && (getRealPower() > MIN_POWER)) {
+
+					if(facType === FACTORY) {
+						if(buildTrucks) {
+							buildSys(fac[x], "Spade1Mk1");
+						}
+						else if(buildSensors) {
+							buildSys(fac[x]);
+						}
+						else if(allowSpecialSystems && buildRepairs) {
+							buildSys(fac[x], repairTurrets);
+						}
+						else {
+							//Do not produce weak body units if we can give this factory a module.
+							if((fac[x].modules < 2) && componentAvailable("Body11ABT"))
+								continue;
+
+							buildAttacker(fac[x]);
+						}
+					}
+					else {
+						(facType === CYBORG_FACTORY) ? buildCyborg(fac[x], useCybEngineer) : buildVTOL(fac[x]);
+					}
 				}
-				buildSys(fac[x], "Spade1Mk1");
-			}
-			else if(buildSensors) {
-				buildSys(fac[x]);
-			}
-			else if(allowSpecialSystems && buildRepairs) {
-				buildSys(fac[x], repairTurrets);
-			}
-			else {
-				//Do not produce weak body units if we can give this factory a module.
-				if((fac[x].modules < 2) && componentAvailable("Body11ABT"))
-					continue;
-				buildAttacker(fac[x]);
 			}
 		}
 	}
 
-	if(!turnOffCyborgs) {
-		for(var x = 0, f = cybFac.length; x < f; ++x) {
-			if(isDefined(cybFac[x]) && structureIdle(cybFac[x]) && (getRealPower() > MIN_POWER)) {
-				buildCyborg(cybFac[x]);
-			}
-		}
-	}
-
-	for(var x = 0, v = vtolFac.length; x < v; ++x) {
-		if(isDefined(vtolFac[x]) && structureIdle(vtolFac[x]) && (getRealPower() > MIN_POWER)) {
-			buildVTOL(vtolFac[x]);
-		}
-	}
 }

@@ -12,6 +12,10 @@ function droidReady(droid) {
 
 //Check if this droid has a plasma cannon primary.
 function isPlasmaCannon(droid) {
+	if(!isDefined(droid.weapons[0])) {
+		return false;
+	}
+
 	return droid.weapons[0].name === "Laser4-PlasmaCannon";
 }
 
@@ -34,9 +38,9 @@ function returnClosestEnemyFactory(enemyNumber) {
 	}
 
 	var target;
-	var facs = enumStruct(enemyNumber, structures.factories);
-	facs = appendListElements(facs, enumStruct(enemyNumber, structures.templateFactories));
-	facs = appendListElements(facs, enumStruct(enemyNumber, structures.vtolFactories));
+	var facs = enumStruct(enemyNumber, FACTORY);
+	facs = appendListElements(facs, enumStruct(enemyNumber, CYBORG_FACTORY));
+	facs = appendListElements(facs, enumStruct(enemyNumber, VTOL_FACTORY));
 
 	if(isDefined(facs[0])) {
 		facs = facs.sort(distanceToBase);
@@ -161,7 +165,7 @@ function findNearestEnemyDroid(enemy) {
 
 	if(isDefined(badDroids[0])) {
 		var temp = badDroids.filter(function(dr) { return !isVTOL(dr); });
-		
+
 		if(!isDefined(temp[0])) {
 			temp = badDroids;
 		}
@@ -245,6 +249,10 @@ function chatTactic(enemy) {
 
 //attacker is a player number. Attack a specific player.
 function attackStuff(attacker) {
+	if(peacefulTime) {
+		return;
+	}
+
 	var selectedEnemy = getMostHarmfulPlayer();
 
 	if(isDefined(attacker) && !allianceExistsBetween(attacker, me) && (attacker !== me)) {
@@ -258,6 +266,10 @@ function attackStuff(attacker) {
 
 //Sensors know all your secrets. They will observe what is closest to Cobra base.
 function spyRoutine() {
+	if(peacefulTime) {
+		return;
+	}
+
 	var sensors = enumGroup(sensorGroup);
 	var artillery = enumGroup(artilleryGroup);
 	var cacheArti = artillery.length;
@@ -298,6 +310,10 @@ function attackEnemyOil() {
 
 //Defend or attack.
 function battleTactics() {
+	if(peacefulTime) {
+		return;
+	}
+
 	const MIN_DERRICKS = averageOilPerPlayer();
 	const ENEMY = getMostHarmfulPlayer();
 	const MIN_GRUDGE = 300;
@@ -341,14 +357,14 @@ function battleTactics() {
 //Recycle units when certain conditions are met.
 function recycleDroidsForHover() {
 	const MIN_FACTORY = 1;
-	var systems = enumDroid(me, DROID_CONSTRUCT);
+	var systems = enumDroid(me).filter(function(dr) { return isConstruct(dr); });
 	systems = appendListElements(systems, enumDroid(me, DROID_SENSOR));
 	systems = appendListElements(systems, enumDroid(me, DROID_REPAIR));
 	systems = systems.filter(function(dr) { return (dr.propulsion !== "hover01"); });
 	var unfinished = unfinishedStructures();
 	const NON_HOVER_SYSTEMS = systems.length;
 
-	if((countStruct(structures.factories) > MIN_FACTORY) && componentAvailable("hover01")) {
+	if((countStruct(FACTORY) > MIN_FACTORY) && componentAvailable("hover01")) {
 		if(!isDefined(unfinished[0]) && NON_HOVER_SYSTEMS) {
 			for(var i = 0; i < NON_HOVER_SYSTEMS; ++i) {
 				orderDroid(systems[i], DORDER_RECYCLE);
@@ -427,6 +443,10 @@ function targetPlayer(playerNumber) {
 //VTOL units do there own form of tactics.
 //DORDER_CIRCLE = 36.
 function vtolTactics() {
+	if(peacefulTime) {
+		return;
+	}
+
 	const MIN_VTOLS = 5;
 	var vtols = enumGroup(vtolGroup);
 	var cacheVtols = vtols.length;
@@ -441,6 +461,10 @@ function vtolTactics() {
 
 //Decide how to attack this target.
 function attackThisObject(droid, target) {
+	if(!isDefined(droid.weapons[0])) {
+		return;
+	}
+
 	if(!isDefined(target)) {
 		target = getCloseEnemyObject();
 	}

@@ -1,10 +1,10 @@
-
 //Need to search for scavenger player number. Keep undefined if there are no scavengers.
 function getScavengerNumber() {
 	var scavNumber;
 
 	for(var x = maxPlayers; x < 11; ++x) {
-		if(enumStruct(x).length > 0) {
+		var structs = enumStruct(x);
+		if(isDefined(structs[0])) {
 			scavNumber = x;
 			break;
 		}
@@ -100,10 +100,12 @@ function CheckStartingBases() {
 		return true;
 	}
 
-	var cacheWeaps = subpersonalities[personality].primaryWeapon.weapons.length;
-	for(var i = 0; i < cacheWeaps; ++i) {
-		if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[i].stat)) {
-			return true;
+	if(componentAvailable("Body11ABT")) {
+		var cacheWeaps = subpersonalities[personality].primaryWeapon.weapons.length;
+		for(var i = 0; i < cacheWeaps; ++i) {
+			if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[i].stat)) {
+				return true;
+			}
 		}
 	}
 
@@ -148,4 +150,42 @@ function mapOilLevel() {
 	}
 
 	return str;
+}
+
+//Determine the base area that Cobra claims. Pass an object to see if it is in it.
+function initialTerritory(object) {
+	var xAverage = 2 * Math.ceil(mapWidth / maxPlayers);
+	var yAverage = 2 * Math.ceil(mapHeight / maxPlayers);
+	var locAlias = startPositions[me];
+
+	var area = {
+		"x1": locAlias.x - xAverage, "y1": locAlias.y - yAverage,
+		"x2": locAlias.x + xAverage, "y2": locAlias.y + yAverage,
+	};
+
+	if(area.x1 < 0) {
+		area.x1 = 0;
+	}
+	if(area.y1 < 0) {
+		area.y1 = 0;
+	}
+	if(area.x2 > mapWidth) {
+		area.x2 = mapWidth;
+	}
+	if(area.y2 > mapHeight) {
+		area.y2 = mapHeight;
+	}
+
+	if(isDefined(object)) {
+		var stuff = enumArea(area.x1, area.y1, area.x2, area.y2);
+		for(var i = 0, l = stuff.length; i < l; ++i) {
+			if(object.id === stuff[i].id) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	return area;
 }

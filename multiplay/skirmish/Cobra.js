@@ -5,6 +5,7 @@ const COBRA_INCLUDES = "/multiplay/skirmish/cobra_includes/";
 const COBRA_RULESETS = "/multiplay/skirmish/cobra_rulesets/";
 
 include(COBRA_RULESETS + "CobraStandard.js");
+include(COBRA_INCLUDES + "performance.js");
 include(COBRA_INCLUDES + "globalVariables.js");
 include(COBRA_INCLUDES + "miscFunctions.js");
 include(COBRA_INCLUDES + "build.js");

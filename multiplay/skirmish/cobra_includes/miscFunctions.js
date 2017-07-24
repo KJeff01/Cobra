@@ -51,6 +51,23 @@ function returnArtilleryAlias() {
 	return subpersonalities[personality].artillery.alias;
 }
 
+//Dump some text.
+function log(message) {
+	dump(gameTime + " : " + message);
+}
+
+//Dump information about an object and some text.
+function logObj(obj, message) {
+	dump(gameTime + " : [" + obj.name + " id=" + obj.id + "] > " + message);
+}
+
+//Distance between an object and the Cobra base.
+function distanceToBase(obj1, obj2) {
+	var dist1 = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, obj1.x, obj1.y);
+	var dist2 = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, obj2.x, obj2.y);
+	return (dist1 - dist2);
+}
+
 //Push list elements into another.
 function appendListElements(list, items) {
 	if(!isDefined(list)) {
@@ -140,23 +157,6 @@ function diffPerks() {
 	}
 }
 
-//Dump some text.
-function log(message) {
-	dump(gameTime + " : " + message);
-}
-
-//Dump information about an object and some text.
-function logObj(obj, message) {
-	dump(gameTime + " : [" + obj.name + " id=" + obj.id + "] > " + message);
-}
-
-//Distance between an object and the Cobra base.
-function distanceToBase(obj1, obj2) {
-	var dist1 = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, obj1.x, obj1.y);
-	var dist2 = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, obj2.x, obj2.y);
-	return (dist1 - dist2);
-}
-
 //See if we can design this droid. Mostly used for checking for new weapons with the NIP.
 function isDesignable(item, body, prop) {
 	if(!isDefined(item)) {
@@ -199,30 +199,6 @@ function getRealPower() {
 		sendChatMessage("need Power", ALLIES);
 	}
 	return playerPower(me) - queuedPower(me);
-}
-
-//Determine if something (namely events) should be skipped momentarily.
-//0 - eventAttacked().
-//1 - eventChat().
-//2 - eventBeacon().
-//3 - eventGroupLoss(). (the addBeacon call).
-//ms is a delay value.
-//Defaults to checking eventAttacked timer.
-function stopExecution(throttleNumber, ms) {
-	if(!isDefined(throttleNumber)) {
-		throttleNumber = 0;
-	}
-
-	if(!isDefined(ms)) {
-		ms = 1000;
-	}
-
-	if(gameTime > (throttleTime[throttleNumber] + ms)) {
-		throttleTime[throttleNumber] = gameTime + (4 * random(500));
-		return false;
-	}
-
-	return true;
 }
 
 //Find enemies that are still alive.
@@ -317,6 +293,7 @@ function initiaizeRequiredGlobals() {
 	personality = choosePersonality();
 	turnOffMG = CheckStartingBases();
 	initializeResearchLists();
+	peacefulTime = (random(101) < subpersonalities[personality].peaceChance);
 }
 
 //Count how many Enemy VTOL units are on the map.
@@ -325,7 +302,9 @@ function countEnemyVTOL() {
 	var enemyVtolCount = 0;
 
 	for (var x = 0, e = enemies.length; x < e; ++x) {
-		enemyVtolCount += enumDroid(enemies[x]).filter(function(obj) { return isVTOL(obj); }).length;
+		enemyVtolCount += enumDroid(enemies[x]).filter(function(obj) {
+			return isVTOL(obj);
+		}).length;
 	}
 
 	return enemyVtolCount;
@@ -356,7 +335,7 @@ function donateFromGroup(from, group) {
 	}
 }
 
-//Remove a single timer. May pass a string or an array of strings.
+//Remove timers. May pass a string or an array of strings.
 function removeThisTimer(timer) {
 	if(timer instanceof Array) {
 		for(var i = 0, l = timer.length; i < l; ++i) {
@@ -370,7 +349,7 @@ function removeThisTimer(timer) {
 
 //Stop the non auto-remove timers if Cobra died.
 function StopTimersIfDead() {
-	if(!(countDroid(DROID_CONSTRUCT, me) || enumStruct(me, structures.factories).length)) {
+	if(!(enumGroup(constructGroup).length || enumStruct(me, FACTORY).length)) {
 		var timers = [
 			"buildOrder", "repairDamagedDroids", "produce", "battleTactics",
 			"spyRoutine", "StopTimersIfDead", "eventResearched"
@@ -390,4 +369,32 @@ function donateAllPower() {
 	if(len) {
 		donatePower(playerPower(me), allies[random(len)]);
 	}
+}
+
+//Tell if the personality likes cyborg or tank production.
+function droidPreference(swap) {
+	var preference;
+	if(!isDefined(swap)) {
+		swap = false;
+	}
+
+	for(var i = 0; i < 2; ++i) {
+		var fac = subpersonalities[personality].factoryOrder[i];
+
+		if(fac !== VTOL_FACTORY) {
+			preference = (fac === CYBORG_FACTORY) ? "CYBORG" : "TANK";
+			break;
+		}
+	}
+
+	if(swap === true) {
+		if(preference === "CYBORG") {
+			preference = "TANK";
+		}
+		else {
+			preference = "CYBORG";
+		}
+	}
+
+	return preference;
 }

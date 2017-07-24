@@ -125,9 +125,13 @@ function malfunctionDroid() {
 	var enemies = playerAlliance(false);
 	var enemy = enemies[random(enemies.length)];
 
-	var droids = enumDroid(enemy).filter(function(d) { return ((d.droidType !== DROID_SENSOR) && (d.droidType !== DROID_CONSTRUCT) && (d.droidType !== DROID_REPAIR)); });
-	var cacheDroids = droids.length;
+	var droids = enumDroid(enemy).filter(function(d) {
+		return ((d.droidType !== DROID_SENSOR)
+			&& !isConstruct(d)
+			&& (d.droidType !== DROID_REPAIR));
+	});
 
+	var cacheDroids = droids.length;
 	if(cacheDroids > 2) {
 		if(random(2)) {
 			var aDroid = droids[random(cacheDroids)];
