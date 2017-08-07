@@ -10,13 +10,13 @@ function droidReady(droid) {
 	);
 }
 
-//Check if this droid has a plasma cannon primary.
-function isPlasmaCannon(droid) {
-	if(!isDefined(droid.weapons[0])) {
+//Check if a passed in weapon name is a plasma cannon.
+function isPlasmaCannon(weaponName) {
+	if(!isDefined(weaponName)) {
 		return false;
 	}
 
-	return droid.weapons[0].name === "Laser4-PlasmaCannon";
+	return (weaponName.name === "Laser4-PlasmaCannon");
 }
 
 //Modified from Nullbot.
@@ -92,7 +92,7 @@ function vtolReady(droid) {
 
 //Repair a droid with the option of forcing it to.
 function repairDroid(droid, force) {
-	const FORCE_REPAIR_PERCENT = 33;
+	const FORCE_REPAIR_PERCENT = 40;
 	const EXPERIENCE_DIVISOR = 22;
 	const HEALTH_TO_REPAIR = 58 + Math.floor(droid.experience / EXPERIENCE_DIVISOR);
 
@@ -161,7 +161,6 @@ function findNearestEnemyDroid(enemy) {
 	}
 
 	var badDroids = enumDroid(enemy);
-	var undef;
 
 	if(isDefined(badDroids[0])) {
 		var temp = badDroids.filter(function(dr) { return !isVTOL(dr); });
@@ -174,7 +173,7 @@ function findNearestEnemyDroid(enemy) {
 		return temp[0];
 	}
 
-	return undef;
+	return undefined;
 }
 
 //Return the closest structure of an enemy. Returns undefined otherwise.
@@ -183,7 +182,6 @@ function findNearestEnemyStructure(enemy) {
 		enemy = getMostHarmfulPlayer();
 	}
 
-	var undef;
 	var s = enumStruct(enemy).filter(function(obj) { return (obj.stattype !== WALL); });
 	if(!isDefined(s[0])) {
 		s = enumStruct(enemy);
@@ -194,7 +192,7 @@ function findNearestEnemyStructure(enemy) {
 		return s[0];
 	}
 
-	return undef;
+	return undefined;
 }
 
 //Attack something.
@@ -277,7 +275,6 @@ function spyRoutine() {
 
 	if(cacheSensors * cacheArti) {
 		sensors = sortAndReverseDistance(sensors);
-		var enemies = findLivingEnemies();
 		var obj = rangeStep();
 
 		if(isDefined(obj)) {
@@ -332,7 +329,7 @@ function battleTactics() {
 			attackWithGroup(ENEMY, ENEMY_FACTORY);
 		}
 		else {
-			const ENEMY_TRUCK = getClosestEnemyTruck(ENEMY);
+			const ENEMY_TRUCK = getClosestEnemyTruck();
 			if(isDefined(ENEMY_TRUCK)) {
 				attackWithGroup(ENEMY, ENEMY_TRUCK);
 			}
@@ -346,7 +343,7 @@ function battleTactics() {
 		var cacheWho = who.length;
 
 		if(cacheWho >= MIN_ATTACK_DROIDS) {
-			var nearestTarget = getCloseEnemyObject(ENEMY);
+			var nearestTarget = getCloseEnemyObject();
 			for(var i = 0; i < cacheWho; ++i) {
 				attackThisObject(who[i], nearestTarget);
 			}
@@ -452,7 +449,7 @@ function vtolTactics() {
 	var cacheVtols = vtols.length;
 
 	if(cacheVtols >= MIN_VTOLS) {
-		var target = getCloseEnemyObject(getMostHarmfulPlayer());
+		var target = getCloseEnemyObject();
 		for(var i = 0; i < cacheVtols; ++i) {
 			attackThisObject(vtols[i], target);
 		}
@@ -471,7 +468,7 @@ function attackThisObject(droid, target) {
 
 	if(isDefined(droid) && isDefined(target) && droidReady(droid) && droidCanReach(droid, target.x, target.y)) {
 		if(!((target.type === DROID) && isVTOL(target) && (isVTOL(droid) && !droid.weapons[0].canHitAir))) {
-			if(!isPlasmaCannon(droid) && (target.type === DROID)) {
+			if(!isPlasmaCannon(droid.weapons[0].name) && (target.type === DROID)) {
 				orderDroidLoc(droid, DORDER_SCOUT, target.x, target.y);
 			}
 			else {
@@ -487,13 +484,12 @@ function getCloseEnemyObject(enemy) {
 		enemy = getMostHarmfulPlayer();
 	}
 	var target = findNearestEnemyStructure(enemy);
-	var undef;
 
 	if(!isDefined(target)) {
 		target = findNearestEnemyDroid(enemy);
 
 		if(!isDefined(target)) {
-			return undef;
+			return undefined;
 		}
 	}
 

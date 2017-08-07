@@ -51,11 +51,11 @@ const subpersonalities = {
 		"artillery": weaponStats.rockets_Arty,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [CYBORG_FACTORY, VTOL_FACTORY, FACTORY],
-		"peaceChance": 90,
+		"peaceChance": 100,
 		"defensePriority": 60,
 		"vtolPriority": 90,
-		"systemPriority": 20,
-		"alloyPriority": 65,
+		"systemPriority": 15,
+		"alloyPriority": 35,
 		"res": [
 			"R-Wpn-MG2Mk1",
 		],
@@ -105,6 +105,7 @@ var sensorGroup;
 var repairGroup;
 var artilleryGroup;
 var constructGroup;
+var oilGrabberGroup;
 
 var grudgeCount; //See who bullies this bot the most and act on it. DO NOT let this use the scavenger player number.
 var personality; //What personality is this instance of Cobra using.

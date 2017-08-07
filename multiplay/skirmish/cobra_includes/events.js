@@ -10,6 +10,7 @@ function eventGameInit() {
 	repairGroup = newGroup();
 	artilleryGroup = newGroup();
 	constructGroup = newGroup();
+	oilGrabberGroup = newGroup();
 	lastMsg = "eventGameInit";
 
 	addDroidsToGroup(attackGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return !obj.isCB; }));
@@ -45,7 +46,7 @@ function eventStartLevel() {
 //This is meant to check for nearby oil resources next to the construct. also
 //defend our derrick if possible.
 function eventStructureBuilt(structure, droid) {
-	if(isDefined(droid) && (structure.stattype === RESOURCE_EXTRACTOR)) {
+	if(structure.stattype === RESOURCE_EXTRACTOR) {
 		var nearbyOils = enumRange(droid.x, droid.y, 8, ALL_PLAYERS, false);
 		nearbyOils = nearbyOils.filter(function(obj) {
 			return (obj.type === FEATURE) && (obj.stattype === OIL_RESOURCE);
@@ -62,9 +63,8 @@ function eventStructureBuilt(structure, droid) {
 				return ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
 			});
 
-			//Make the defend object the truck itself!
-			if((gameTime > 60000) && !isDefined(numDefenses[0])) {
-				buildStructure(droid, getDefenseStructure(), droid);
+			if(!isDefined(numDefenses[0])) {
+				protectUnguardedDerricks(droid);
 			}
 		}
 	}
@@ -72,13 +72,11 @@ function eventStructureBuilt(structure, droid) {
 
 //Make droids attack hidden close by enemy object.
 function eventDroidIdle(droid) {
-	if(droid.player === me) {
-		if(isDefined(droid) && ((droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid))) {
-			var enemyObjects = enumRange(droid.x, droid.y, 14, ENEMIES, false);
-			if(isDefined(enemyObjects[0])) {
-				enemyObjects = enemyObjects.sort(distanceToBase);
-				attackThisObject(droid, enemyObjects[0]);
-			}
+	if(isDefined(droid) && ((droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid))) {
+		var enemyObjects = enumRange(droid.x, droid.y, 14, ENEMIES, false);
+		if(isDefined(enemyObjects[0])) {
+			enemyObjects = enemyObjects.sort(distanceToBase);
+			attackThisObject(droid, enemyObjects[0]);
 		}
 	}
 }
@@ -87,7 +85,13 @@ function eventDroidIdle(droid) {
 function eventDroidBuilt(droid, struct) {
 	if (droid) {
 		if(isConstruct(droid)) {
-			groupAdd(constructGroup, droid);
+			if(!isDefined(enumGroup(constructGroup)[3])) {
+				groupAdd(constructGroup, droid);
+				queue("checkUnfinishedStructures", 2500);
+			}
+			else {
+				groupAdd(oilGrabberGroup, droid);
+			}
 		}
 		else if(droid.droidType === DROID_SENSOR) {
 			groupAdd(sensorGroup, droid);
@@ -207,6 +211,7 @@ function eventBeacon(x, y, from, to, message) {
 	if(stopExecution(2, 2000) === true) {
 		return;
 	}
+
 
 	if(allianceExistsBetween(from, to) || (to === from)) {
 		var cyborgs = enumGroup(cyborgGroup);

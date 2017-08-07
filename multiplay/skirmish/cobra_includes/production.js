@@ -4,8 +4,10 @@ const tankBody = [
 	"Body13SUP", // Wyvern
 	"Body10MBT", // Vengeance
 	"Body7ABT",  // Retribution
-//	"Body9REC",  // Tiger
-//	"Body12SUP", // Mantis
+	"Body9REC",  // Tiger
+	"Body6SUPP", // Panther
+	"Body12SUP", // Mantis
+	"Body8MBT",  // Scorpion
 	"Body11ABT", // Python
 	"Body5REC",  // Cobra
 	"Body1REC",  // Viper
@@ -50,7 +52,7 @@ function chooseRandomWeapon() {
 		default: weaps = subpersonalities[personality].primaryWeapon; break;
 	}
 
-	if(!isDefined(weaps)) {
+	if(!isDefined(weaps) || (returnPrimaryAlias() !== "las")) {
 		weaps = subpersonalities[personality].primaryWeapon;
 	}
 
@@ -202,7 +204,7 @@ function useHover(weap) {
 	return (((useHover === true) || (random(101) <= 15)) && (weap[0] !== "Laser4-PlasmaCannon"));
 }
 
-//Choose our ground propulsion. Non-hover units will have a preference for half-tracks.
+//Choose our ground propulsion. Non-hover units will have a preference for tracks.
 function pickPropulsion(weap) {
 	if(useHover(weap)) {
 		return "hover01";
@@ -215,7 +217,7 @@ function pickPropulsion(weap) {
 		"wheeled01", // wheels
 	];
 
-	if((random(101) < 67) || (gameTime < TIME_FOR_HALF_TRACKS)) {
+	if((random(101) < 33) || (gameTime < TIME_FOR_HALF_TRACKS)) {
 		tankProp.shift();
 	}
 
@@ -339,8 +341,8 @@ function produce() {
 		return;
 	}
 
-	const MIN_POWER = -60;
-	const MIN_TRUCKS = 4;
+	const MIN_POWER = -20;
+	const MIN_TRUCKS = 5;
 	const MIN_COM_ENG = 3;
 	const MIN_SENSORS = 2;
 	const MIN_REPAIRS = 3;
@@ -351,7 +353,7 @@ function produce() {
 	var allowSpecialSystems = isDefined(attackers[7]);
 	var buildSensors = ((enumGroup(sensorGroup).length + systems.sensor) < MIN_SENSORS);
 	var buildRepairs = ((enumGroup(repairGroup).length + systems.repair) < MIN_REPAIRS);
-	var buildTrucks = ((enumGroup(constructGroup).length + systems.truck) < MIN_TRUCKS);
+	var buildTrucks = ((enumGroup(constructGroup).length + enumGroup(oilGrabberGroup).length + systems.truck) < MIN_TRUCKS);
 
 	//Loop through factories in the order the personality likes.
 	for(var i = 0; i < 3; ++i) {
@@ -375,7 +377,7 @@ function produce() {
 						}
 						else {
 							//Do not produce weak body units if we can give this factory a module.
-							if((fac[x].modules < 2) && componentAvailable("Body11ABT"))
+							if((fac[x].modules < 1) && componentAvailable("Body11ABT"))
 								continue;
 
 							buildAttacker(fac[x]);

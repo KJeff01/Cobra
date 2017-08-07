@@ -5,22 +5,28 @@ function callFuncWithArgs(func, parameters) {
     return func.apply(this, parameters);
 }
 
-function cacheThis(func, funcParameters, cachedItem) {
-     const REFRESH_TIME = 40000;
+//cacheThis(FUNCTION_NAME, FUNCTION_PARAMETERS, CACHED_NAME, [TIME])
+//Pass in Infinity for time to never recalculate it again.
+function cacheThis(func, funcParameters, cachedItem, time) {
+     const REFRESH_TIME = isDefined(time) ? time : 10000;
 
-     if (!isDefined(func.caller.cachedTimes)) {
-		func.caller.cachedTimes = {};
-		func.caller.cachedValues = {};
+     if(isDefined(arguments.callee.caller.cachedValues) && (time === Infinity)) {
+          return arguments.callee.caller.cachedValues[cachedItem];
+     }
+
+     if (!isDefined(arguments.callee.caller.cachedTimes)) {
+		arguments.callee.caller.cachedTimes = {};
+		arguments.callee.caller.cachedValues = {};
 	}
 
-	var t = func.caller.cachedTimes[cachedItem];
-
-	if (!isDefined(t) || ((gameTime - t) >= REFRESH_TIME)) {
-		func.caller.cachedValues[cachedItem] = callFuncWithArgs(func, funcParameters);
-		func.caller.cachedTimes[cachedItem] = gameTime;
+	var t = arguments.callee.caller.cachedTimes[cachedItem];
+	if (!isDefined(t) || ((gameTime - t) >= REFRESH_TIME))
+     {
+		arguments.callee.caller.cachedValues[cachedItem] = callFuncWithArgs(func, funcParameters);
+		arguments.callee.caller.cachedTimes[cachedItem] = gameTime;
 	}
 
-     return func.caller.cachedValues[cachedItem];
+     return arguments.callee.caller.cachedValues[cachedItem];
 }
 
 //TODO: Implement this better

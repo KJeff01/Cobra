@@ -8,22 +8,26 @@ function random(max) {
 
 // Returns true if something is defined
 function isDefined(data) {
-	return typeof(data) !== "undefined";
+	return (typeof(data) !== "undefined");
 }
 
 //Sort an array from smallest to largest in value.
 function sortArrayNumeric(a, b) {
-	return a - b;
+	return (a - b);
 }
 
 //Sort an array from smallest to largest in terms of droid health.
 function sortDroidsByHealth(a, b) {
-	return a.health - b.health;
+	return (a.health - b.health);
 }
 
 //Used for deciding if a truck will capture oil.
 function isUnsafeEnemyObject(obj) {
-	return ((obj.type === DROID) || ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE)));
+	return ((obj.type === DROID)
+		|| ((obj.type === STRUCTURE)
+		&& (obj.stattype === DEFENSE)
+		&& (obj.status === BUILT))
+	);
 }
 
 //Sort by distance to base and reverse.
@@ -78,6 +82,7 @@ function appendListElements(list, items) {
 	for(var i = 0, c = items.length; i < c; ++i) {
 		temp.push(items[i]);
 	}
+
 	return temp;
 }
 
@@ -198,6 +203,7 @@ function getRealPower() {
 	if(playerAlliance(true).length && (pow < 50)) {
 		sendChatMessage("need Power", ALLIES);
 	}
+
 	return playerPower(me) - queuedPower(me);
 }
 
