@@ -11,6 +11,11 @@ function isDefined(data) {
 	return (typeof(data) !== "undefined");
 }
 
+//Determine if a game object is destroyed or not.
+function isObjectAlive(object) {
+	return (isDefined(object) && object && (object.id !== 0));
+}
+
 //Sort an array from smallest to largest in value.
 function sortArrayNumeric(a, b) {
 	return (a - b);
@@ -162,24 +167,6 @@ function diffPerks() {
 	}
 }
 
-//See if we can design this droid. Mostly used for checking for new weapons with the NIP.
-function isDesignable(item, body, prop) {
-	if(!isDefined(item)) {
-		return false;
-	}
-
-	if(!isDefined(body)) {
-		body = "Body1REC";
-	}
-
-	if(!isDefined(prop)) {
-		prop = "wheeled01";
-	}
-
-	var virDroid = makeTemplate(me, "Virtual Droid", body, prop, "", "", item, item);
-	return (virDroid !== null);
-}
-
 //See if power levels are low. This takes account of only the power obtained from the generators.
 function checkLowPower(pow) {
 	if(!isDefined(pow)) {
@@ -307,7 +294,7 @@ function countEnemyVTOL() {
 	var enemies = findLivingEnemies();
 	var enemyVtolCount = 0;
 
-	for (var x = 0, e = enemies.length; x < e; ++x) {
+	for(var x = 0, e = enemies.length; x < e; ++x) {
 		enemyVtolCount += enumDroid(enemies[x]).filter(function(obj) {
 			return isVTOL(obj);
 		}).length;

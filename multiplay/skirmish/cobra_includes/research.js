@@ -19,15 +19,15 @@ const ESSENTIALS = [
 	"R-Struc-Power-Upgrade03a",
 	"R-Vehicle-Prop-Halftracks",
 	"R-Vehicle-Body05",
-	"R-Vehicle-Body04",
+	"R-Struc-RprFac-Upgrade01",
 	"R-Vehicle-Prop-Hover",
+	"R-Vehicle-Body04",
 ];
 
 const SYSTEM_UPGRADES = [
-	"R-Struc-RprFac-Upgrade01",
 	"R-Sys-Sensor-Upgrade03",
-	"R-Struc-Factory-Upgrade09",
 	"R-Sys-MobileRepairTurretHvy",
+	"R-Struc-Factory-Upgrade09",
 	"R-Sys-Autorepair-General",
 	"R-Struc-RprFac-Upgrade06",
 ];
@@ -72,7 +72,7 @@ const MID_GAME_TECH = [
 	"R-Wpn-Bomb04",
 	"R-Wpn-Bomb-Accuracy02",
 	"R-Struc-VTOLPad-Upgrade04",
-	"R-Defense-WallUpgrade05",
+	"R-Defense-WallUpgrade03",
 ];
 
 const LATE_EARLY_GAME_TECH = [
@@ -153,7 +153,7 @@ function evalResearch(lab, list) {
 }
 
 function eventResearched() {
-	const MIN_POWER = -30;
+	const MIN_POWER = -10;
 	if((gameTime < 2000) || (getRealPower() < MIN_POWER) || !(isDefined(techlist) && isDefined(turnOffMG) && isDefined(turnOffCyborgs))) {
 		return;
 	}
@@ -170,13 +170,6 @@ function eventResearched() {
 			found = evalResearch(lab, ESSENTIALS);
 			if(!found)
 				found = evalResearch(lab, techlist);
-
-			if(!turnOffMG || (returnPrimaryAlias() === "mg")) {
-				if(!found)
-					found = pursueResearch(lab, mgWeaponTech);
-				if(!found)
-					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
-			}
 
 			if(!found)
 				found = evalResearch(lab, SYSTEM_UPGRADES);
@@ -207,6 +200,13 @@ function eventResearched() {
 				}
 			}
 
+			if(!turnOffMG || (returnPrimaryAlias() === "mg")) {
+				if(!found)
+					found = pursueResearch(lab, mgWeaponTech);
+				if(!found)
+					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
+			}
+
 			if(!found && !turnOffCyborgs)
 				found = evalResearch(lab, cyborgWeaps);
 			if(!found)
@@ -225,11 +225,12 @@ function eventResearched() {
 			}
 
 			if(!found)
+				found = evalResearch(lab, MID_GAME_TECH);
+
+			if(!found)
 				found = evalResearch(lab, artilleryTech);
 			if(!found)
 				found = evalResearch(lab, extraTech);
-			if(!found)
-				found = evalResearch(lab, MID_GAME_TECH);
 			if(!found)
 				found = evalResearch(lab, BODY_RESEARCH);
 

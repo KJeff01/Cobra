@@ -233,7 +233,7 @@ function checkUnfinishedStructures() {
 
 //Look for oil.
 function lookForOil() {
-	var droids = (gameTime < 10000) ? enumGroup(constructGroup) : enumGroup(oilGrabberGroup);
+	var droids = (gameTime < 15000) ? enumDroid(me, DROID_CONSTRUCT) : enumGroup(oilGrabberGroup);
 	var oils = enumFeature(-1, oilResources).sort(distanceToBase); // grab closer oils first
 	var s = 0;
 	var success = false;
@@ -319,7 +319,7 @@ function buildAAForPersonality() {
 
 //Build defense systems.
 function buildDefenses() {
-	const MIN_POWER = 30;
+	const MIN_POWER = 90;
 
 	if((gameTime > 120000) && (getRealPower() > MIN_POWER)) {
 		if(buildSensors()) {
@@ -338,12 +338,11 @@ function buildDefenses() {
 function buildPhase1() {
 	//if a hover map without land enemies, then build research labs first to get to hover propulsion even faster
 	if(!forceHover || seaMapWithLandEnemy) {
-		if(countAndBuild(FACTORY, 1)) {
+		if(countAndBuild(FACTORY, 2)) {
 			return true;
 		}
 
-		var res = (baseType !== CAMP_CLEAN) ? 2 : 1;
-		if(!researchComplete && countAndBuild(structures.labs, res)) {
+		if(!researchComplete && countAndBuild(structures.labs, 1)) {
 			return true;
 		}
 
@@ -365,16 +364,12 @@ function buildPhase1() {
 		return true;
 	}
 
-	if(countAndBuild(FACTORY, 2)) {
-		return true;
-	}
-
 	return false;
 }
 
 //Build at least one of each factory and then pursue the favorite factory.
 function factoryBuildOrder() {
-	const MIN_POWER = 80;
+	const MIN_POWER = 200;
 	if(getRealPower() < MIN_POWER) {
 		return false;
 	}
@@ -399,26 +394,26 @@ function factoryBuildOrder() {
 //Build all research labs and one of each factory and pursue the decided factory order.
 //Build repair bays when possible.
 function buildPhase2() {
-	const MIN_POWER = 30;
-	const MIN_TIME = 150000;
+	const MIN_POWER = 250;
+	const MIN_TIME = 180000;
 	if(!countStruct(structures.gens) || (getRealPower() < MIN_POWER)) {
 		return true;
 	}
 
+	if(!researchComplete && countAndBuild(structures.labs, 2)) {
+		return true;
+	}
+
 	if(gameTime > MIN_TIME) {
+		if(random(3) && countAndBuild(structures.extras[0], 5)) {
+			return true;
+		}
+
 		if(!researchComplete && countAndBuild(structures.labs, 5)) {
 			return true;
 		}
 
-		if(countAndBuild(FACTORY, 2)) {
-			return true;
-		}
-
 		if (factoryBuildOrder()) {
-			return true;
-		}
-
-		if(countAndBuild(structures.extras[0], 5)) {
 			return true;
 		}
 	}
@@ -443,7 +438,7 @@ function buildSpecialStructures() {
 
 //Build the minimum repairs and any vtol pads.
 function buildExtras() {
-	const MIN_POWER = 30;
+	const MIN_POWER = 70;
 	if(!isStructureAvailable("A0PowMod1") || (gameTime < 80000) || (getRealPower() < MIN_POWER)) {
 		return false;
 	}
@@ -467,39 +462,39 @@ function buildOrder() {
 	if(enemyUnitsInBase()) { return; }
 	if(buildSpecialStructures()) { return; }
 	if(buildExtras()) { return; }
-	if(!lookForOil()) { buildDefenses(); }
+	lookForOil();
 	if(buildPhase2()) { return; }
+	buildDefenses();
 }
 
 //Check if a building has modules to be built
 function maintenance() {
-	const list = ["A0PowMod1", "A0ResearchModule1", "A0FacMod1", "A0FacMod1"];
-	const mods = [1, 1, 2, 2]; //Number of modules paired with list above
-	var cacheList = list.length;
+	const LIST = ["A0PowMod1", "A0FacMod1", "A0ResearchModule1", "A0FacMod1"];
+	const MODS = [1, 2, 1, 2]; //Number of modules paired with list above
 	var struct = null, module = "", structList = [];
 
 	if(countStruct(structures.derricks) < 4) {
 		return false;
 	}
 
-	for (var i = 0; i < cacheList; ++i) {
-		if (isStructureAvailable(list[i])) {
+	for (var i = 0, l = LIST.length; i < l; ++i) {
+		if (isStructureAvailable(LIST[i])) {
 			if(struct !== null) {
 				break;
 			}
 			switch(i) {
 				case 0: { structList = enumStruct(me, structures.gens).sort(distanceToBase);  break; }
-				case 1: { structList = enumStruct(me, structures.labs).sort(distanceToBase);  break; }
-				case 2: { structList = enumStruct(me, FACTORY).sort(distanceToBase);  break; }
+				case 1: { structList = enumStruct(me, FACTORY).sort(distanceToBase);  break; }
+				case 2: { structList = enumStruct(me, structures.labs).sort(distanceToBase);  break; }
 				case 3: { structList = enumStruct(me, VTOL_FACTORY).sort(distanceToBase);  break; }
 				default: { break; }
 			}
 
 			for (var c = 0, s = structList.length; c < s; ++c) {
-				if (structList[c].modules < mods[i]) {
+				if (structList[c].modules < MODS[i]) {
 					//Only build the last factory module if we have a heavy body
 					if(structList[c].modules === 1) {
-						if((i === 2) && !componentAvailable("Body11ABT")) {
+						if((i === 1) && !componentAvailable("Body11ABT")) {
 							continue;
 						}
 						//Build last vtol factory module once Cobra gets retribution (or has good power levels)
@@ -508,7 +503,7 @@ function maintenance() {
 						}
 					}
 					struct = structList[c];
-					module = list[i];
+					module = LIST[i];
 					break;
 				}
 			}

@@ -8,7 +8,7 @@ function switchOffMG() {
 	}
 
 	var len = subpersonalities[personality].primaryWeapon.weapons.length;
-	if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[len - 1].stat)) {
+	if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[len - 1].stat) || (playerAlliance(true).length > 0)) {
 		turnOffMG = true;
 		removeThisTimer("switchOffMG");
 	}
@@ -42,10 +42,10 @@ function adaptToMap() {
 	const T3_MATCH = isDesignable("Howitzer03-Rot");
 	const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC", "AL"];
 
-	if(!T3_MATCH && (((maxPlayers - 1) === 1) || (MAP_OIL_LEVEL === "LOW") || (baseType === CAMP_CLEAN))) {
+	if(!T3_MATCH && (((maxPlayers - 1) === 1) || ((MAP_OIL_LEVEL === "LOW") && !ALLY_COUNT))) {
 		choice = ADAPT_PERSONALITIES[random(3)]; // AM, AR, AB.
 	}
-	else if ((MAP_OIL_LEVEL === "MEDIUM") || ((ALLY_COUNT !== 0) && (ALLY_COUNT < ENEMY_COUNT))) {
+	else if ((MAP_OIL_LEVEL === "MEDIUM") || ALLY_COUNT) {
 		var offset = (T3_MATCH && (baseType !== CAMP_CLEAN)) ? 4 : 3;
 		choice = ADAPT_PERSONALITIES[random(offset) + 1]; // AR, AB, AC, AL.
 	}

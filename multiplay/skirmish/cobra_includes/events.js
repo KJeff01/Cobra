@@ -85,7 +85,7 @@ function eventDroidIdle(droid) {
 function eventDroidBuilt(droid, struct) {
 	if (droid) {
 		if(isConstruct(droid)) {
-			if(!isDefined(enumGroup(constructGroup)[3])) {
+			if(enumGroup(constructGroup).length < 3) {
 				groupAdd(constructGroup, droid);
 				queue("checkUnfinishedStructures", 2500);
 			}
@@ -211,7 +211,6 @@ function eventBeacon(x, y, from, to, message) {
 	if(stopExecution(2, 2000) === true) {
 		return;
 	}
-
 
 	if(allianceExistsBetween(from, to) || (to === from)) {
 		var cyborgs = enumGroup(cyborgGroup);

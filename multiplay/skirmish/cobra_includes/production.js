@@ -38,6 +38,24 @@ const repairTurrets = [
 	"LightRepair1",
 ];
 
+//See if we can design this droid. Mostly used for checking for new weapons with the NIP.
+function isDesignable(item, body, prop) {
+	if(!isDefined(item)) {
+		return false;
+	}
+
+	if(!isDefined(body)) {
+		body = "Body1REC";
+	}
+
+	if(!isDefined(prop)) {
+		prop = "wheeled01";
+	}
+
+	var virDroid = makeTemplate(me, "Virtual Droid", body, prop, "", "", item, item);
+	return (virDroid !== null);
+}
+
 //Pick a random weapon line. May return undefined for machineguns.
 function chooseRandomWeapon() {
 	var weaps;
@@ -52,7 +70,7 @@ function chooseRandomWeapon() {
 		default: weaps = subpersonalities[personality].primaryWeapon; break;
 	}
 
-	if(!isDefined(weaps) || (returnPrimaryAlias() !== "las")) {
+	if(!isDefined(weaps)) {
 		weaps = subpersonalities[personality].primaryWeapon;
 	}
 
@@ -341,7 +359,7 @@ function produce() {
 		return;
 	}
 
-	const MIN_POWER = -20;
+	const MIN_POWER = 30;
 	const MIN_TRUCKS = 5;
 	const MIN_COM_ENG = 3;
 	const MIN_SENSORS = 2;
@@ -369,10 +387,10 @@ function produce() {
 						if(buildTrucks) {
 							buildSys(fac[x], "Spade1Mk1");
 						}
-						else if(buildSensors) {
+						else if(buildSensors && componentAvailable("SensorTurret1Mk1")) {
 							buildSys(fac[x]);
 						}
-						else if(allowSpecialSystems && buildRepairs) {
+						else if(allowSpecialSystems && buildRepairs && componentAvailable("LightRepair1")) {
 							buildSys(fac[x], repairTurrets);
 						}
 						else {
