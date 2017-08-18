@@ -3,6 +3,7 @@ const MIN_ATTACK_DROIDS = 6;
 const FACTORY = "A0LightFactory";
 const CYBORG_FACTORY = "A0CyborgFactory";
 const VTOL_FACTORY = "A0VTolFactory1";
+const MY_BASE = startPositions[me];
 
 //List of Cobra personalities:
 //AC: Cannon/Gauss/howitzer.
@@ -20,7 +21,6 @@ const subpersonalities = {
 		"artillery": weaponStats.howitzers,
 		"antiAir": weaponStats.AA, //cannons_AA is too weak.
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
-		"peaceChance": 100,
 		"defensePriority": 10,
 		"vtolPriority": 20,
 		"systemPriority": 30,
@@ -35,7 +35,6 @@ const subpersonalities = {
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, VTOL_FACTORY, CYBORG_FACTORY],
-		"peaceChance": 50,
 		"defensePriority": 20,
 		"vtolPriority": 40,
 		"systemPriority": 20,
@@ -48,10 +47,9 @@ const subpersonalities = {
 	AB: {
 		"primaryWeapon": weaponStats.rockets_AT,
 		"secondaryWeapon": weaponStats.gauss,
-		"artillery": weaponStats.rockets_Arty,
+		"artillery": weaponStats.missile_Arty,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [CYBORG_FACTORY, VTOL_FACTORY, FACTORY],
-		"peaceChance": 100,
 		"defensePriority": 60,
 		"vtolPriority": 90,
 		"systemPriority": 15,
@@ -66,7 +64,6 @@ const subpersonalities = {
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
-		"peaceChance": 80,
 		"defensePriority": 30,
 		"vtolPriority": 80,
 		"systemPriority": 45,
@@ -81,7 +78,6 @@ const subpersonalities = {
 		"artillery": weaponStats.fireMortars,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [VTOL_FACTORY, FACTORY, CYBORG_FACTORY],
-		"peaceChance": 75,
 		"defensePriority": 10,
 		"vtolPriority": 60,
 		"systemPriority": 40,
@@ -117,4 +113,4 @@ var nexusWaveOn; //Determine if the 'NEXUS Intruder Program' feature is on.
 var turnOffMG; //Turn off machine-gun related stuff.
 var throttleTime; //For events so that some do not trigger their code too fast. More details in stopExecution() in miscFunctions.
 var researchComplete; //Check if done with research.
-var peacefulTime; //Cobra initially only starts to attack when provoked.
+var lastAttackedTime;

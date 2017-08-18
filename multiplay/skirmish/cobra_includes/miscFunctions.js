@@ -72,8 +72,8 @@ function logObj(obj, message) {
 
 //Distance between an object and the Cobra base.
 function distanceToBase(obj1, obj2) {
-	var dist1 = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, obj1.x, obj1.y);
-	var dist2 = distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, obj2.x, obj2.y);
+	var dist1 = distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, obj1.x, obj1.y);
+	var dist2 = distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, obj2.x, obj2.y);
 	return (dist1 - dist2);
 }
 
@@ -103,7 +103,6 @@ function rangeStep(player) {
 		player = getMostHarmfulPlayer();
 	}
 
-	var target;
 	var targets = [];
 	var closestStructure = findNearestEnemyStructure(player);
 	var closestDroid = findNearestEnemyDroid(player);
@@ -117,10 +116,10 @@ function rangeStep(player) {
 
 	if(isDefined(targets[0])) {
 		targets = targets.sort(distanceToBase);
-		target = targets[0];
+		return targets[0];
 	}
 
-	return target;
+	return undefined;
 }
 
 //Ally is false for checking for enemy players
@@ -185,13 +184,13 @@ function checkLowPower(pow) {
 
 //return real power levels.
 function getRealPower() {
-	var pow = playerPower(me) - queuedPower(me);
+	const POWER = playerPower(me) - queuedPower(me);
 
-	if(playerAlliance(true).length && (pow < 50)) {
+	if(playerAlliance(true).length && (POWER < 50)) {
 		sendChatMessage("need Power", ALLIES);
 	}
 
-	return playerPower(me) - queuedPower(me);
+	return POWER;
 }
 
 //Find enemies that are still alive.
@@ -252,7 +251,6 @@ function removeDuplicateItems(temp) {
 //Set the initial grudge counter to target a random enemy.
 function initializeGrudgeCounter() {
 	grudgeCount = [];
-	var pos = [];
 
 	for(var i = 0; i < maxPlayers; ++i) {
 		grudgeCount.push(0);
@@ -273,6 +271,7 @@ function initiaizeRequiredGlobals() {
 	nexusWaveOn = false;
 	researchComplete = false;
 	throttleTime = [];
+	lastAttackedTime = 0;
 	initializeGrudgeCounter();
 
 	for(var i = 0; i < 4; ++i) {
@@ -286,21 +285,6 @@ function initiaizeRequiredGlobals() {
 	personality = choosePersonality();
 	turnOffMG = CheckStartingBases();
 	initializeResearchLists();
-	peacefulTime = (random(101) < subpersonalities[personality].peaceChance);
-}
-
-//Count how many Enemy VTOL units are on the map.
-function countEnemyVTOL() {
-	var enemies = findLivingEnemies();
-	var enemyVtolCount = 0;
-
-	for(var x = 0, e = enemies.length; x < e; ++x) {
-		enemyVtolCount += enumDroid(enemies[x]).filter(function(obj) {
-			return isVTOL(obj);
-		}).length;
-	}
-
-	return enemyVtolCount;
 }
 
 //Donate a droid from one of Cobra's groups.
@@ -316,11 +300,11 @@ function donateFromGroup(from, group) {
 			default: chosenGroup = enumGroup(attackGroup); break;
 		}
 
-		var droids = chosenGroup.filter(function(dr) { return (dr.health > MIN_HEALTH); });
-		var cacheDroids = droids.length;
+		const DROIDS = chosenGroup.filter(function(dr) { return (dr.health > MIN_HEALTH); });
+		const CACHE_DROIDS = droids.length;
 
-		if(cacheDroids >= MIN_ATTACK_DROIDS) {
-			var droid = droids[random(cacheDroids)];
+		if(CACHE_DROIDS >= MIN_ATTACK_DROIDS) {
+			var droid = DROIDS[random(CACHE_DROIDS)];
 			if(isDefined(droid)) {
 				donateObject(droid, from);
 			}
@@ -356,11 +340,11 @@ function StopTimersIfDead() {
 //Give a player all of Cobra's power. one use is if it dies, then it gives
 //all of its power to an ally.
 function donateAllPower() {
-	var allies = playerAlliance(true);
-	var len = allies.length;
+	const ALLY_PLAYERS = playerAlliance(true);
+	const LEN = ALLY_PLAYERS.length;
 
-	if(len) {
-		donatePower(playerPower(me), allies[random(len)]);
+	if(LEN) {
+		donatePower(playerPower(me), ALLY_PLAYERS[random(LEN)]);
 	}
 }
 

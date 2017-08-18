@@ -14,6 +14,20 @@ function switchOffMG() {
 	}
 }
 
+//Don't get too riled up until we get a formidable army.
+function restraint() {
+	const COOLDOWN = 10000;
+	const TOTAL_DROIDS = enumDroid(me).length;
+	var peacefulTime = false;
+
+	if((TOTAL_DROIDS < 25) && ((lastAttackedTime + COOLDOWN) < gameTime)) {
+		peacefulTime = true; //Calm down and gather more strength.
+		haltAttackDroids();
+	}
+
+	return peacefulTime;
+}
+
 //Choose the personality as described in the global subpersonalities.
 //When called from chat it will switch to that one directly.
 function choosePersonality(chatEvent) {

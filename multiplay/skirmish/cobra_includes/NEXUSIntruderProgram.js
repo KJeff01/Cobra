@@ -8,29 +8,32 @@ function cleanResearchItem(res, player) {
 
 	return removeDuplicateItems(temp);
 }
+
 //for stealing technology
 function completeRequiredResearch(item) {
-	log("Searching for required research of item: " + item);
-	var reqRes = cleanResearchItem(item, me);
+	//log("Searching for required research of item: " + item);
 
+	var reqRes = cleanResearchItem(item, me);
 	for(var s = 0, c = reqRes.length; s < c; ++s) {
-		log("	Found: " + reqRes[s].name);
-		enableResearch(reqRes[s].name, me);
-		completeResearch(reqRes[s].name, me);
+		//log("	Found: " + reqRes[s].name);
+		const NAME = reqRes[s].name;
+		enableResearch(NAME, me);
+		completeResearch(NAME, me);
 	}
 }
 
 //Try to determine if the droid has superior defenses.
 function analyzeDroidAlloys(droid) {
-	var dStr = (droid.droidType == DROID_CYBORG) ? "cyborg" : "tank";
-	var kinetic = (dStr === "cyborg") ? "R-Cyborg-Metals0" : "R-Vehicle-Metals0";
-	var thermal = (dStr === "cyborg") ? "R-Cyborg-Armor-Heat0" : "R-Vehicle-Armor-Heat0";
+	const TYPE = (droid.droidType == DROID_CYBORG) ? "cyborg" : "tank";
+	const KINETIC = (TYPE === "cyborg") ? "R-Cyborg-Metals0" : "R-Vehicle-Metals0";
+	const THERMAL = (TYPE === "cyborg") ? "R-Cyborg-Armor-Heat0" : "R-Vehicle-Armor-Heat0";
+	const PLAYER = droid.player;
 	var temp;
 
 	for(var t = 0; t < 2; ++t) {
 		for(var i = 1; i < 10; ++i) {
-			var temp = (t === 0) ? kinetic : thermal;
-			var reqRes = cleanResearchItem((temp + i), droid.player);
+			var temp = (t === 0) ? KINETIC : THERMAL;
+			var reqRes = cleanResearchItem((temp + i), PLAYER);
 
 			if(isDefined(reqRes[0])) {
 				var armorAlloy = temp + i;
@@ -51,7 +54,6 @@ function analyzeComponent(statList, component, droid) {
 
 	if(isDefined(component) && !componentAvailable(component)) {
 		for(var x = 0, s = statList.length; x < s; ++x) {
-
 			if(droid.droidType === DROID_CYBORG) {
 				statHolder = statList[x].weapons[0];
 			}
@@ -61,7 +63,7 @@ function analyzeComponent(statList, component, droid) {
 
 			if(statHolder === component) {
 				completeRequiredResearch(statList[x].res);
-				logObj(droid, "Assimilated player " + droid.player +"'s technology -> " + component + ".");
+				//logObj(droid, "Assimilated player " + droid.player +"'s technology -> " + component + ".");
 				makeComponentAvailable(component, me);
 				foundComponent = true;
 				break;
@@ -74,8 +76,8 @@ function analyzeComponent(statList, component, droid) {
 
 //Check an enemy droid and steal any new components not researched.
 function analyzeDroidComponents(droid) {
-	var body = droid.body;
-	var propulsion = droid.propulsion;
+	const BODY = droid.body;
+	const PROPULSION = droid.propulsion;
 	var weapon;
 
 	if(isDefined(droid.weapons[0])) {
@@ -87,13 +89,13 @@ function analyzeDroidComponents(droid) {
 	}
 
 	//steal body technology
-	analyzeComponent(bodyStats, body, droid);
+	analyzeComponent(bodyStats, BODY, droid);
 	//steal propulsion technology
-	analyzeComponent(propulsionStats, propulsion, droid);
+	analyzeComponent(propulsionStats, PROPULSION, droid);
 
 
 	//steal weapon technology
-	if(isDefined(weapon) && !isDesignable(weapon, body, propulsion)) {
+	if(isDefined(weapon) && !isDesignable(weapon, BODY, PROPULSION)) {
 		var breakOut = false;
 		for(var weaponList in weaponStats) {
 			if(isVTOL(droid)) {
@@ -114,7 +116,6 @@ function analyzeDroidComponents(droid) {
 }
 
 //Check the unit's technology and enable it for Cobra if it is new.
-//Called from nexusWave. (insane difficulty only).
 function stealEnemyTechnology(droid) {
 	analyzeDroidComponents(droid);
 	analyzeDroidAlloys(droid);
@@ -122,35 +123,36 @@ function stealEnemyTechnology(droid) {
 
 //Droid will attack allies. Either the enemy will attack its units or a friend.
 function malfunctionDroid() {
-	var enemies = playerAlliance(false);
-	var enemy = enemies[random(enemies.length)];
+	const ENEMY_PLAYERS = playerAlliance(false);
+	const TARGET_ENEMY = ENEMY_PLAYERS[random(ENEMY_PLAYERS.length)];
 
-	var droids = enumDroid(enemy).filter(function(d) {
+	const DROIDS = enumDroid(TARGET_ENEMY).filter(function(d) {
 		return ((d.droidType !== DROID_SENSOR)
 			&& !isConstruct(d)
 			&& (d.droidType !== DROID_REPAIR));
 	});
 
-	var cacheDroids = droids.length;
-	if(cacheDroids > 2) {
+	const CACHE_DROIDS = droids.length;
+	if(CACHE_DROIDS > 2) {
 		if(random(2)) {
-			var aDroid = droids[random(cacheDroids)];
-			var victim = droids[random(cacheDroids)];
-			logObj(aDroid, "Enemy droid told to attack its own units");
+			var aDroid = DROIDS[random(CACHE_DROIDS)];
+			var victim = DROIDS[random(CACHE_DROIDS)];
+			//logObj(aDroid, "Enemy droid told to attack its own units");
 			if(isDefined(aDroid) && isDefined(victim) && (aDroid !== victim)) {
 				orderDroidObj(aDroid, DORDER_ATTACK, victim);
 			}
 		}
 		else {
-			for(var j = 0; j < cacheDroids; ++j) {
-				if(!random(4) && isDefined(droids[j])) {
-					var dr = droids[j];
-					var rg = enumRange(dr.x, dr.y, 40, ALL_PLAYERS, false).filter(function(obj) {
-						return (obj.type === DROID) && allianceExistsBetween(obj, enemy) || (obj.player === enemy);
+			for(var j = 0; j < CACHE_DROIDS; ++j) {
+				if(!random(4) && isDefined(DROIDS[j])) {
+					var dr = DROIDS[j];
+					var rg = enumRange(dr.x, dr.y, 20, ALL_PLAYERS, false).filter(function(obj) {
+						return ((obj.type === DROID) && allianceExistsBetween(obj, TARGET_ENEMY) || (obj.player === TARGET_ENEMY));
 					});
-					var cacheRg = rg.length;
-					if(cacheRg) {
-						var newDroid = rg[random(cacheRg)];
+					const CACHE_RG = rg.length;
+
+					if(CACHE_RG) {
+						var newDroid = rg[random(CACHE_RG)];
 						if(isDefined(dr) && isDefined(newDroid)) {
 							orderDroidObj(dr, DORDER_ATTACK, newDroid);
 						}
@@ -166,17 +168,17 @@ function malfunctionDroid() {
 
 //Steal technology and potentially compromise the droid itself.
 function analyzeRandomEnemyDroid() {
-	var enemies = playerAlliance(false);
-	var enemy = enemies[random(enemies.length)];
-	var enemyDroids = enumDroid(enemy).filter(function(d) {
-		return isVTOL(d) || (d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG) || (d.droidType === DROID_SENSOR);
+	const ENEMY_PLAYERS = playerAlliance(false);
+	const TARGET_ENEMY = ENEMY_PLAYERS[random(ENEMY_PLAYERS.length)];
+	const ENEMY_DROIDS = enumDroid(TARGET_ENEMY).filter(function(d) {
+		return (isVTOL(d) || (d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG) || (d.droidType === DROID_SENSOR));
 	});
 
-	var cacheEnemyDroids = enemyDroids.length;
+	const LEN = ENEMY_DROIDS.length;
 
 	//Steal a randomly selected player technology.
-	if(cacheEnemyDroids) {
-		var dr = enemyDroids[random(cacheEnemyDroids)];
+	if(LEN) {
+		var dr = ENEMY_DROIDS[random(LEN)];
 		stealEnemyTechnology(dr);
 		if(random(100) <= 20) {
 			donateObject(dr, me);

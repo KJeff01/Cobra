@@ -23,7 +23,7 @@ function checkIfSeaMap() {
 	seaMapWithLandEnemy = false;
 
 	for(var i = 0; i < maxPlayers; ++i) {
-		if(!propulsionCanReach("wheeled01", startPositions[me].x, startPositions[me].y, startPositions[i].x, startPositions[i].y)) {
+		if(!propulsionCanReach("wheeled01", MY_BASE.x, MY_BASE.y, startPositions[i].x, startPositions[i].y)) {
 
 			//Check if it is a map 'spotter' pit
 			//Cyborgs will turn off in divided maps with a physical barrier still
@@ -43,8 +43,7 @@ function checkIfSeaMap() {
 	//Determine if we are sharing land on a hover map with an enemy that can reach us via non-hover propulsion.
 	if(hoverMap === true) {
 		for(var i = 0; i < maxPlayers; ++i) {
-			if(propulsionCanReach("wheeled01", startPositions[me].x, startPositions[me].y, startPositions[i].x, startPositions[i].y)
-			&& (i !== me) && !allianceExistsBetween(i, me)) {
+			if((i !== me) && !allianceExistsBetween(i, me) && propulsionCanReach("wheeled01", MY_BASE.x, MY_BASE.y, startPositions[i].x, startPositions[i].y)) {
 				//Check to see if it is a closed player slot
 				if(enumDroid(i).length > 0) {
 					seaMapWithLandEnemy = true;
@@ -77,16 +76,18 @@ function freeForAll() {
 	}
 
 	if(won === true) {
-		var friends = playerAlliance(true);
-		var cacheFriends = friends.length;
+		const FRIENDS = playerAlliance(true);
+		var CACHE_FRIENDS = FRIENDS.length;
 
-		if(cacheFriends) {
+		if(CACHE_FRIENDS) {
 			if(isDefined(getScavengerNumber()) && allianceExistsBetween(getScavengerNumber(), me))
 				setAlliance(getScavengerNumber(), me, false);
 
-			for(var i = 0; i < cacheFriends; ++i) {
-				chat(friends[i], "FREE FOR ALL!");
-				setAlliance(friends[i], me, false);
+			for(var i = 0; i < CACHE_FRIENDS; ++i) {
+				var idx = FRIENDS[i];
+
+				chat(idx, "FREE FOR ALL!");
+				setAlliance(idx, me, false);
 			}
 		}
 	}
@@ -101,8 +102,8 @@ function CheckStartingBases() {
 	}
 
 	if(componentAvailable("Body11ABT")) {
-		var cacheWeaps = subpersonalities[personality].primaryWeapon.weapons.length;
-		for(var i = 0; i < cacheWeaps; ++i) {
+		const CACHE_WEAPONS = subpersonalities[personality].primaryWeapon.weapons.length;
+		for(var i = 0; i < CACHE_WEAPONS; ++i) {
 			if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[i].stat)) {
 				return true;
 			}
@@ -122,6 +123,7 @@ function countAllResources() {
 			resources.push(res[c]);
 		}
 	}
+
 	if(isDefined(getScavengerNumber())) {
 		resources = appendListElements(resources, enumStruct(getScavengerNumber(), structures.derricks));
 	}
@@ -154,13 +156,12 @@ function mapOilLevel() {
 
 //Determine the base area that Cobra claims. Pass an object to see if it is in it.
 function initialTerritory(object) {
-	var xAverage = 2 * Math.ceil(mapWidth / maxPlayers);
-	var yAverage = 2 * Math.ceil(mapHeight / maxPlayers);
-	var locAlias = startPositions[me];
+	const X_AVERAGE = 2 * Math.ceil(mapWidth / maxPlayers);
+	const Y_AVERAGE = 2 * Math.ceil(mapHeight / maxPlayers);
 
 	var area = {
-		"x1": locAlias.x - xAverage, "y1": locAlias.y - yAverage,
-		"x2": locAlias.x + xAverage, "y2": locAlias.y + yAverage,
+		"x1": MY_BASE.x - X_AVERAGE, "y1": MY_BASE.y - Y_AVERAGE,
+		"x2": MY_BASE.x + X_AVERAGE, "y2": MY_BASE.y + Y_AVERAGE,
 	};
 
 	if(area.x1 < 0) {

@@ -30,8 +30,8 @@ function eventStartLevel() {
 
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
 
+	setTimer("produce", THINK_LONGER + 600 + 3 * random(70));
 	setTimer("buildOrder", THINK_LONGER + 1100 + 3 * random(60));
-	setTimer("produce", THINK_LONGER + 1800 + 3 * random(70));
 	setTimer("repairDamagedDroids", THINK_LONGER + 2500 + 4 * random(60));
 	setTimer("switchOffMG", THINK_LONGER + 3000 + 5 * random(60)); //May remove itself.
 	setTimer("spyRoutine", THINK_LONGER + 4500 + 4 * random(60));
@@ -129,7 +129,7 @@ function eventAttacked(victim, attacker) {
 			}
 		}
 
-		if(stopExecution(0, 12000) === false) {
+		if(stopExecution(0, 100000) === false) {
 			attackStuff(getScavengerNumber());
 		}
 
@@ -137,7 +137,7 @@ function eventAttacked(victim, attacker) {
 	}
 
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player)) {
-		peacefulTime = false;
+		lastAttackedTime = gameTime;
 
 		if(grudgeCount[attacker.player] < MAX_GRUDGE) {
 			grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 5;
@@ -150,17 +150,18 @@ function eventAttacked(victim, attacker) {
 				orderDroid(victim, DORDER_RTR);
 			}
 			else {
-				//Try to repair.
-				if(Math.floor(victim.health) < 40) {
-					repairDroid(victim, true);
+				if(Math.floor(victim.health) < 34) {
+					//Try to repair by force.
+					orderDroid(victim, DORDER_RTR);
 				}
 				else {
+					//Fuzzy repair algorithm.
 					repairDroid(victim, false);
 				}
 			}
 		}
 
-		if(stopExecution(0, 150) === true) {
+		if(stopExecution(0, 150) || restraint()) {
 			return;
 		}
 
@@ -178,12 +179,17 @@ function eventAttacked(victim, attacker) {
 			}
 		}
 
-		units = units.filter(function(dr) { return ((isVTOL(dr) && droidReady(dr)) || (!repairDroid(dr)) && droidCanReach(dr, attacker.x, attacker.y)); });
-		var cacheUnits = units.length;
+		units = units.filter(function(dr) {
+			return ((dr.id !== victim.id)
+				&& ((isVTOL(dr) && droidReady(dr))
+				|| (!repairDroid(dr)) && droidCanReach(dr, attacker.x, attacker.y))
+			);
+		});
+		const CACHE_UNITS = units.length;
 
-		if(cacheUnits >= MIN_ATTACK_DROIDS) {
-			var defend = (distBetweenTwoPoints(startPositions[me].x, startPositions[me].y, attacker.x, attacker.y) < 18);
-			for (var i = 0; i < cacheUnits; i++) {
+		if(CACHE_UNITS >= MIN_ATTACK_DROIDS) {
+			var defend = (distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, attacker.x, attacker.y) < 18);
+			for (var i = 0; i < CACHE_UNITS; i++) {
 				if((random(3) || defend) && isDefined(units[i]) && isDefined(attacker)) {
 					if(defend) {
 						orderDroidObj(units[i], DORDER_ATTACK, attacker);
@@ -213,23 +219,26 @@ function eventBeacon(x, y, from, to, message) {
 	}
 
 	if(allianceExistsBetween(from, to) || (to === from)) {
-		var cyborgs = enumGroup(cyborgGroup);
-		var tanks = enumGroup(attackGroup);
-		var vtols = enumGroup(vtolGroup);
+		const CYBORGS = enumGroup(cyborgGroup);
+		const TANKS = enumGroup(attackGroup);
+		const VTOLS = enumGroup(vtolGroup);
 
-		for (var i = 0, c = cyborgs.length; i < c; i++) {
-			if(!repairDroid(cyborgs[i]) && droidCanReach(cyborgs[i], x, y)) {
-				orderDroidLoc(cyborgs[i], DORDER_SCOUT, x, y);
+		for (var i = 0, c = CYBORGS.length; i < c; i++) {
+			var dr = CYBORGS[i];
+			if(!repairDroid(dr) && droidCanReach(dr, x, y)) {
+				orderDroidLoc(dr, DORDER_SCOUT, x, y);
 			}
 		}
-		for (var i = 0, t = tanks.length; i < t; i++) {
-			if(!repairDroid(tanks[i]) && droidCanReach(tanks[i], x, y)) {
-				orderDroidLoc(tanks[i], DORDER_SCOUT, x, y);
+		for (var i = 0, t = TANKS.length; i < t; i++) {
+			var dr = TANKS[i];
+			if(!repairDroid(dr) && droidCanReach(dr, x, y)) {
+				orderDroidLoc(dr, DORDER_SCOUT, x, y);
 			}
 		}
-		for (var i = 0, v = vtols.length; i < v; i++) {
-			if(vtolReady(vtols[i])) {
-				orderDroidLoc(vtols[i], DORDER_SCOUT, x, y);
+		for (var i = 0, v = VTOLS.length; i < v; i++) {
+			var dr = VTOLS[i];
+			if(vtolReady(dr)) {
+				orderDroidLoc(dr, DORDER_SCOUT, x, y);
 			}
 		}
 	}
@@ -261,9 +270,9 @@ function eventDestroyed(object) {
 //Basic Laser Satellite support.
 function eventStructureReady(structure) {
 	if(!isDefined(structure)) {
-		var las = enumStruct(me, structures.extras[2]);
-		if(isDefined(las[0])) {
-			structure = las[0];
+		const LASER = enumStruct(me, structures.extras[2]);
+		if(isDefined(LASER[0])) {
+			structure = LASER[0];
 		}
 		else {
 			queue("eventStructureReady", 10000);

@@ -21,12 +21,11 @@ function isConstruct(obj, countCybEng) {
 //Returns unfinished structures that are not defenses or derricks.
 function unfinishedStructures() {
 	const SAFE_DIST = 20;
-	const BASE = startPositions[me];
 	return enumStruct(me).filter(function(str) {
 		return (str.status !== BUILT
 			&& (str.stattype !== RESOURCE_EXTRACTOR
 			|| (str.stattype === DEFENSE
-			&& distBetweenTwoPoints(BASE.x, BASE.y, str.x, str.y) < SAFE_DIST))
+			&& distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, str.x, str.y) < SAFE_DIST))
 		);
 	});
 }
@@ -45,14 +44,14 @@ function conCanHelp(mydroid, bx, by) {
 
 //Return all idle construts. Specify the second param to return only the number of free trucks.
 function findIdleTrucks(number, type) {
-	var builders = isDefined(type) ? enumGroup(oilGrabberGroup) : enumGroup(constructGroup);
+	const BUILDERS = isDefined(type) ? enumGroup(oilGrabberGroup) : enumGroup(constructGroup);
 	var droidlist = [];
 
-	for (var i = 0, s = builders.length; i < s; i++)
+	for (var i = 0, s = BUILDERS.length; i < s; i++)
 	{
-		if (conCanHelp(builders[i], startPositions[me].x, startPositions[me].y))
+		if (conCanHelp(BUILDERS[i], MY_BASE.x, MY_BASE.y))
 		{
-			droidlist.push(builders[i]);
+			droidlist.push(BUILDERS[i]);
 		}
 	}
 
@@ -63,10 +62,10 @@ function findIdleTrucks(number, type) {
 function demolishThis(object)
 {
 	var success = false;
-	var droidList = findIdleTrucks();
+	const DROID_LIST = findIdleTrucks();
 
-	for (var i = 0, t = droidList.length; i < t; i++) {
-		if(orderDroidObj(droidList[i], DORDER_DEMOLISH, object)) {
+	for (var i = 0, t = DROID_LIST.length; i < t; i++) {
+		if(orderDroidObj(DROID_LIST[i], DORDER_DEMOLISH, object)) {
 			success = true;
 		}
 	}
@@ -103,7 +102,7 @@ function getDefenseStructure() {
 //Find the closest derrick that is not guarded a defense or ECM tower.
 function protectUnguardedDerricks(droid) {
 	var derrs = enumStruct(me, structures.derricks);
-	var cacheDerrs = derrs.length;
+	const LEN = derrs.length;
 
 	if(isDefined(droid)) {
 		if(buildStructure(droid, getDefenseStructure(), droid, 0)) {
@@ -113,11 +112,11 @@ function protectUnguardedDerricks(droid) {
 		return false;
 	}
 
-	if(cacheDerrs) {
+	if(LEN) {
 		var undefended = [];
 		derrs = sortAndReverseDistance(derrs);
 
-		for(var i = 0; i < cacheDerrs; ++i) {
+		for(var i = 0; i < LEN; ++i) {
 			var found = false;
 			var objects = enumRange(derrs[i].x, derrs[i].y, 8, me, false);
 
@@ -160,7 +159,7 @@ function buildStructure(droid, stat, defendThis, blocking) {
 			loc = pickStructLocation(droid, stat, defendThis.x, defendThis.y, blocking);
 		}
 		else {
-			loc = pickStructLocation(droid, stat, startPositions[me].x, startPositions[me].y, blocking);
+			loc = pickStructLocation(droid, stat, MY_BASE.x, MY_BASE.y, blocking);
 		}
 
 		if(isDefined(loc)) {
@@ -184,9 +183,9 @@ function buildStuff(struc, module, defendThis, blocking, truckGroup) {
 	}
 
 	var freeTrucks = findIdleTrucks(undefined, truckGroup);
-	var cacheTrucks = freeTrucks.length;
+	const LEN = freeTrucks.length;
 
-	if(cacheTrucks) {
+	if(LEN) {
 		freeTrucks = freeTrucks.sort(distanceToBase);
 		var truck = freeTrucks[0];
 
@@ -243,15 +242,15 @@ function lookForOil() {
 		oils = oils.slice(0, Math.ceil((oils.length / 2) + 1)); // first half
 	}
 
-	var cacheOils = oils.length;
-	var cacheDroids = droids.length;
+	const CACHE_OILS = oils.length;
+	const CACHE_DROIDS = droids.length;
 
-	if (cacheDroids && cacheOils) {
+	if (CACHE_DROIDS && CACHE_OILS) {
 		droids = droids.sort(distanceToBase);
 
-		for (var i = 0; i < cacheOils; i++) {
-			for (var j = 0; j < cacheDroids; j++) {
-				if(i + s >= cacheOils) {
+		for (var i = 0; i < CACHE_OILS; i++) {
+			for (var j = 0; j < CACHE_DROIDS; j++) {
+				if(i + s >= CACHE_OILS) {
 					break;
 				}
 
@@ -290,7 +289,7 @@ function buildSensors() {
 		return true;
 	}
 
-	if(countAndBuild(ECM, 1)) {
+	if(countAndBuild(ECM, 3)) {
 		return true;
 	}
 }
@@ -298,17 +297,17 @@ function buildSensors() {
 //Builds an AA site for the personality. It will always use stormbringer AA
 //once available.
 function buildAAForPersonality() {
-	var vtolCount = countEnemyVTOL();
+	const VTOL_COUNT = countEnemyVTOL();
 
 	//Use stormbringer if we have it.
-	if(countAndBuild("P0-AASite-Laser", Math.floor(vtolCount / 3))) {
+	if(countAndBuild("P0-AASite-Laser", Math.floor(VTOL_COUNT / 3))) {
 		return true;
 	}
 	else {
 		var aaType = subpersonalities[personality].antiAir.defenses;
 
 		for(var i = aaType.length - 1; i >= 0; --i) {
-			if(countAndBuild(aaType[i].stat, Math.floor(vtolCount / 3))) {
+			if(countAndBuild(aaType[i].stat, Math.floor(VTOL_COUNT / 3))) {
 				return true;
 			}
 		}
@@ -319,7 +318,7 @@ function buildAAForPersonality() {
 
 //Build defense systems.
 function buildDefenses() {
-	const MIN_POWER = 90;
+	const MIN_POWER = 150;
 
 	if((gameTime > 120000) && (getRealPower() > MIN_POWER)) {
 		if(buildSensors()) {
@@ -364,12 +363,16 @@ function buildPhase1() {
 		return true;
 	}
 
+	if(!CAMP_CLEAN && !researchComplete && countAndBuild(structures.labs, 3)) {
+		return true;
+	}
+
 	return false;
 }
 
 //Build at least one of each factory and then pursue the favorite factory.
 function factoryBuildOrder() {
-	const MIN_POWER = 200;
+	const MIN_POWER = 250;
 	if(getRealPower() < MIN_POWER) {
 		return false;
 	}
@@ -394,22 +397,23 @@ function factoryBuildOrder() {
 //Build all research labs and one of each factory and pursue the decided factory order.
 //Build repair bays when possible.
 function buildPhase2() {
-	const MIN_POWER = 250;
+	const MIN_POWER = 280;
 	const MIN_TIME = 180000;
+
 	if(!countStruct(structures.gens) || (getRealPower() < MIN_POWER)) {
 		return true;
 	}
 
-	if(!researchComplete && countAndBuild(structures.labs, 2)) {
+	if(!researchComplete && countAndBuild(structures.labs, 3)) {
 		return true;
 	}
 
 	if(gameTime > MIN_TIME) {
-		if(random(3) && countAndBuild(structures.extras[0], 5)) {
+		if(!researchComplete && countAndBuild(structures.labs, 5)) {
 			return true;
 		}
 
-		if(!researchComplete && countAndBuild(structures.labs, 5)) {
+		if(countAndBuild(structures.extras[0], 5)) {
 			return true;
 		}
 
@@ -438,7 +442,7 @@ function buildSpecialStructures() {
 
 //Build the minimum repairs and any vtol pads.
 function buildExtras() {
-	const MIN_POWER = 70;
+	const MIN_POWER = 180;
 	if(!isStructureAvailable("A0PowMod1") || (gameTime < 80000) || (getRealPower() < MIN_POWER)) {
 		return false;
 	}
@@ -457,8 +461,8 @@ function buildExtras() {
 //Cobra's unique build decisions
 function buildOrder() {
 	if(checkUnfinishedStructures()) { return; }
-	if(buildPhase1()) { return; }
 	if(maintenance()) { return; }
+	if(buildPhase1()) { return; }
 	if(enemyUnitsInBase()) { return; }
 	if(buildSpecialStructures()) { return; }
 	if(buildExtras()) { return; }

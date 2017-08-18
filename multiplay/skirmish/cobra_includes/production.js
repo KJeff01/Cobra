@@ -1,10 +1,9 @@
 
-const tankBody = [
+const TANK_BODY = [
 	"Body14SUP", // Dragon
 	"Body13SUP", // Wyvern
 	"Body10MBT", // Vengeance
 	"Body7ABT",  // Retribution
-	"Body9REC",  // Tiger
 	"Body6SUPP", // Panther
 	"Body12SUP", // Mantis
 	"Body8MBT",  // Scorpion
@@ -13,19 +12,19 @@ const tankBody = [
 	"Body1REC",  // Viper
 ];
 
-const sysBody = [
+const SYSTEM_BODY = [
 	"Body3MBT",  // Retaliation
 //	"Body2SUP",  // Leopard
 	"Body4ABT",  // Bug
 	"Body1REC",  // Viper
 ];
 
-const sysProp = [
+const SYSTEM_PROPULSION = [
 	"hover01", // hover
 	"wheeled01", // wheels
 ];
 
-const vtolBody = [
+const VTOL_BODY = [
 	"Body7ABT",  // Retribution
 	"Body6SUPP", // Panther
 	"Body8MBT",  // Scorpion
@@ -33,7 +32,7 @@ const vtolBody = [
 	"Body1REC",  // Viper
 ];
 
-const repairTurrets = [
+const REPAIR_TURRETS = [
 	"HeavyRepair",
 	"LightRepair1",
 ];
@@ -59,11 +58,12 @@ function isDesignable(item, body, prop) {
 //Pick a random weapon line. May return undefined for machineguns.
 function chooseRandomWeapon() {
 	var weaps;
+	var arti = false;
 
 	switch(random(6)) {
 		case 0: weaps = subpersonalities[personality].primaryWeapon; break;
 		case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
-		case 2: weaps = subpersonalities[personality].artillery; break;
+		case 2: weaps = subpersonalities[personality].artillery; arti = true; break;
 		case 3: weaps = weaponStats.lasers; break;
 		case 4: weaps = subpersonalities[personality].secondaryWeapon; break;
 		case 5: weaps = weaponStats.AS; break;
@@ -203,17 +203,17 @@ function useHover(weap) {
 	var useHover = false;
 
 	for(var i = 0, w = weap.length; i < w; ++i) {
-		if((weap[i] === "Flame1Mk1") || (weap[i] === "Flame2") || (weap[i] === "PlasmiteFlamer")) {
+		const NAME = weap[i];
+
+		if((NAME === "Flame1Mk1") || (NAME === "Flame2") || (NAME === "PlasmiteFlamer")) {
 			useHover = true;
 			break;
 		}
-
-		if((weap[i] === "Rocket-LtA-T") || (weap[i] === "Rocket-HvyA-T") || (weap[i] === "Missile-A-T")) {
+		if((NAME === "Rocket-LtA-T") || (NAME === "Rocket-HvyA-T") || (NAME === "Missile-A-T")) {
 			useHover = (random(101) <= 75);
 			break;
 		}
-
-		if((weap[i] === "Laser3BEAMMk1") || (weap[i] === "Laser2PULSEMk1") || (weap[i] === "HeavyLaser")) {
+		if((NAME === "Laser3BEAMMk1") || (NAME === "Laser2PULSEMk1") || (NAME === "HeavyLaser")) {
 			useHover = (random(101) <= 55);
 			break;
 		}
@@ -235,7 +235,7 @@ function pickPropulsion(weap) {
 		"wheeled01", // wheels
 	];
 
-	if((random(101) < 33) || (gameTime < TIME_FOR_HALF_TRACKS)) {
+	if((random(101) < 67) || (gameTime < TIME_FOR_HALF_TRACKS)) {
 		tankProp.shift();
 	}
 
@@ -255,18 +255,18 @@ function buildAttacker(struct) {
 
 	//Use Medium body for the first twenty minutes into a skirmish.
 	const TIME_FOR_MEDIUM_BODY = 1200000;
-	var useLighterBodies = (gameTime < TIME_FOR_MEDIUM_BODY);
-	var body = (useLighterBodies) ? vtolBody : tankBody;
+	const USE_LIGHTER_BODY = (gameTime < TIME_FOR_MEDIUM_BODY);
+	var body = USE_LIGHTER_BODY ? VTOL_BODY : TANK_BODY;
 
 	//Use light body sometimes if on a T1 match, excluding primary MG personalities.
-	if(useLighterBodies && ((returnPrimaryAlias() !== "mg") && !turnOffMG) && random(3)) {
-		body = sysBody;
+	if(USE_LIGHTER_BODY && ((returnPrimaryAlias() !== "mg") && !turnOffMG) && random(3)) {
+		body = SYSTEM_BODY;
 	}
 
 	var weap = choosePersonalityWeapon("TANK");
-	if(isDefined(weap)) {
-		var secondary = weap;
+	var secondary = choosePersonalityWeapon("TANK");
 
+	if(isDefined(weap) && isDefined(secondary)) {
 		if(isDefined(struct)) {
 			if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
 				secondary = "EMP-Cannon";
@@ -285,7 +285,7 @@ function buildSys(struct, weap) {
 		weap = ["Sensor-WideSpec", "SensorTurret1Mk1"];
 	}
 
-	return (isDefined(struct) && buildDroid(struct, "System unit", sysBody, sysProp, "", "", weap));
+	return (isDefined(struct) && buildDroid(struct, "System unit", SYSTEM_BODY, SYSTEM_PROPULSION, "", "", weap));
 }
 
 //Create a cyborg with available research. Expects a boolean for useEngineer or can undefined.
@@ -296,11 +296,7 @@ function buildCyborg(fac, useEngineer) {
 
 	//Build combat engineer if requested.
 	if(isDefined(useEngineer) && (useEngineer === true)) {
-		if(buildDroid(fac, "Combat Engineer", body, prop, "", "", weap)) {
-			return true;
-		}
-
-		return false;
+		return buildDroid(fac, "Combat Engineer", body, prop, "", "", weap);
 	}
 
 	var weaponLine = choosePersonalityWeapon("CYBORG");
@@ -322,7 +318,7 @@ function buildCyborg(fac, useEngineer) {
 //Create a vtol fighter with a medium body.
 function buildVTOL(struct) {
 	var weap = choosePersonalityWeapon("VTOL");
-	return (isDefined(struct) && isDefined(weap) && buildDroid(struct, "VTOL unit", vtolBody, "V-Tol", "", "", weap, weap));
+	return (isDefined(struct) && isDefined(weap) && buildDroid(struct, "VTOL unit", VTOL_BODY, "V-Tol", "", "", weap, weap));
 }
 
 //Check what system units are queued in a regular factory. Returns an object
@@ -337,13 +333,15 @@ function analyzeQueuedSystems() {
 		var virDroid = getDroidProduction(fac[i]);
 
 		if(virDroid !== null) {
-			if(virDroid.droidType === DROID_CONSTRUCT) {
+			const TYPE = virDroid.droidType;
+
+			if(TYPE === DROID_CONSTRUCT) {
 				trucks += 1;
 			}
-			if(virDroid.droidType === DROID_SENSOR) {
+			if(TYPE === DROID_SENSOR) {
 				sens += 1;
 			}
-			if(virDroid.droidType === DROID_REPAIR) {
+			if(TYPE === DROID_REPAIR) {
 				reps += 1;
 			}
 		}
@@ -359,8 +357,8 @@ function produce() {
 		return;
 	}
 
-	const MIN_POWER = 30;
-	const MIN_TRUCKS = 5;
+	const MIN_POWER = 200;
+	const MIN_TRUCKS = 6;
 	const MIN_COM_ENG = 3;
 	const MIN_SENSORS = 2;
 	const MIN_REPAIRS = 3;
@@ -381,28 +379,29 @@ function produce() {
 		if(!((facType === CYBORG_FACTORY) && !forceHover && turnOffCyborgs)) {
 
 			for(var x = 0, l = fac.length; x < l; ++x) {
-				if(isDefined(fac[x]) && structureIdle(fac[x]) && (getRealPower() > MIN_POWER)) {
+				const FC = fac[x];
+				if(isDefined(FC) && structureIdle(FC) && (getRealPower() > MIN_POWER)) {
 
 					if(facType === FACTORY) {
 						if(buildTrucks) {
-							buildSys(fac[x], "Spade1Mk1");
+							buildSys(FC, "Spade1Mk1");
 						}
 						else if(buildSensors && componentAvailable("SensorTurret1Mk1")) {
-							buildSys(fac[x]);
+							buildSys(FC);
 						}
 						else if(allowSpecialSystems && buildRepairs && componentAvailable("LightRepair1")) {
-							buildSys(fac[x], repairTurrets);
+							buildSys(FC, REPAIR_TURRETS);
 						}
 						else {
 							//Do not produce weak body units if we can give this factory a module.
-							if((fac[x].modules < 1) && componentAvailable("Body11ABT"))
+							if((FC.modules < 1) && componentAvailable("Body11ABT"))
 								continue;
 
-							buildAttacker(fac[x]);
+							buildAttacker(FC);
 						}
 					}
 					else {
-						(facType === CYBORG_FACTORY) ? buildCyborg(fac[x], useCybEngineer) : buildVTOL(fac[x]);
+						(facType === CYBORG_FACTORY) ? buildCyborg(FC, useCybEngineer) : buildVTOL(FC);
 					}
 				}
 			}

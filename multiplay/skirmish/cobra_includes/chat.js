@@ -41,9 +41,6 @@ function eventChat(from, to, message) {
 	else if(message === "oil level") {
 		sendChatMessage("Map oil count is: " + mapOilLevel(), ALLIES);
 	}
-	else if(message === "toggle passive") {
-		peacefulTime = !peacefulTime;
-	}
 
 
 	//Do not execute these statements if from is me or enemy.
@@ -77,20 +74,8 @@ function eventChat(from, to, message) {
 	}
 
 	//Here be commands that do something to a specific enemy.
-	var tmp = message.slice(0, -1);
-	if(tmp === "attack") {
-		var num = message.slice(-1);
-		if(!allianceExistsBetween(num, me) && (num !== me)) {
-			attackStuff(num);
-		}
-	}
-	else if(tmp === "oil") {
-		var num = message.slice(-1);
-		if(!allianceExistsBetween(num, me) && (num !== me)) {
-			chatAttackOil(num);
-		}
-	}
-	else if(tmp === "target") {
+	const REAL_MSG = message.slice(0, -1);
+	if(REAL_MSG === "target") {
 		var num = message.slice(-1);
 		if(!allianceExistsBetween(num, me) && (num !== me)) {
 			targetPlayer(num);

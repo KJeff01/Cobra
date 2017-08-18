@@ -46,15 +46,15 @@ const SENSOR_TECH = [
 ];
 
 const DEFENSE_UPGRADES = [
-	"R-Struc-Materials09",
 	"R-Sys-Resistance-Circuits",
 	"R-Defense-WallUpgrade12",
+	"R-Struc-Materials09",
 ];
 
 const BODY_RESEARCH = [
 	"R-Vehicle-Body11",
 	"R-Vehicle-Body12",
-	"R-Vehicle-Body09",
+	"R-Vehicle-Body06",
 	"R-Vehicle-Body10",
 	"R-Vehicle-Body14",
 ];
@@ -153,7 +153,7 @@ function evalResearch(lab, list) {
 }
 
 function eventResearched() {
-	const MIN_POWER = -10;
+	const MIN_POWER = 150;
 	if((gameTime < 2000) || (getRealPower() < MIN_POWER) || !(isDefined(techlist) && isDefined(turnOffMG) && isDefined(turnOffCyborgs))) {
 		return;
 	}
@@ -170,6 +170,18 @@ function eventResearched() {
 			found = evalResearch(lab, ESSENTIALS);
 			if(!found)
 				found = evalResearch(lab, techlist);
+
+			if(!turnOffMG || (returnPrimaryAlias() === "mg")) {
+				if(!found)
+					found = pursueResearch(lab, mgWeaponTech);
+				if(!found)
+					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
+			}
+
+			if(!found && !turnOffCyborgs)
+				found = evalResearch(lab, cyborgWeaps);
+			if(!found)
+				found = evalResearch(lab, weaponTech);
 
 			if(!found)
 				found = evalResearch(lab, SYSTEM_UPGRADES);
@@ -200,21 +212,25 @@ function eventResearched() {
 				}
 			}
 
-			if(!turnOffMG || (returnPrimaryAlias() === "mg")) {
+			//Use default AA until stormbringer.
+			if(countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser")) {
 				if(!found)
-					found = pursueResearch(lab, mgWeaponTech);
+					found = evalResearch(lab, antiAirTech);
 				if(!found)
-					found = pursueResearch(lab, "R-Wpn-MG-Damage08");
+					found = evalResearch(lab, antiAirExtras);
 			}
 
-			if(!found && !turnOffCyborgs)
-				found = evalResearch(lab, cyborgWeaps);
-			if(!found)
-				found = evalResearch(lab, weaponTech);
 			//Rocket/missile personalities NEED to seriously commit
 			//to their rocket upgrades to be even remotely successful.
 			if(!found && ((returnPrimaryAlias() === "rkt") || (returnPrimaryAlias() === "miss")))
 				found = evalResearch(lab, extraTech);
+
+			if(!found)
+				found = evalResearch(lab, artilleryTech);
+			if(!found)
+				found = evalResearch(lab, extraTech);
+			if(!found)
+				found = evalResearch(lab, artillExtra);
 
 			//Defense related tech.
 			if(!found)
@@ -226,24 +242,8 @@ function eventResearched() {
 
 			if(!found)
 				found = evalResearch(lab, MID_GAME_TECH);
-
-			if(!found)
-				found = evalResearch(lab, artilleryTech);
-			if(!found)
-				found = evalResearch(lab, extraTech);
 			if(!found)
 				found = evalResearch(lab, BODY_RESEARCH);
-
-			if(!found)
-				found = evalResearch(lab, artillExtra);
-
-			//Use default AA until stormbringer.
-			if(!isStructureAvailable("P0-AASite-Laser") && countEnemyVTOL()) {
-				if(!found)
-					found = evalResearch(lab, antiAirTech);
-				if(!found)
-					found = evalResearch(lab, antiAirExtras);
-			}
 
 			if(!found && (random(101) < subpersonalities[personality].vtolPriority))
 				found = evalResearch(lab, VTOL_RES);
