@@ -3,12 +3,13 @@ A Skirmish AI for warzone2100 with a dynamic build and research order for all Te
 
 Cobra uses a "grudge counter" to determine who it attacks. It contains a number for each player that increments with each aggresive act an enemy player makes towards it. The enemy with the highest number assigned to it is the one it attacks. The specific number for each enemy can easily be influenced by allied Cobra AI and, under the right circumstance, allows allied Cobra to take action against a specific player. This feature is very helpful in determining who is the biggest theat on the map and more or less balances the skirmish by keeping pressure on the most aggressive player (that it has encountered) until one of them is defeated.
 
-There are four personalities so far (all use lasers and plasma cannon when it can):
+There are five personalities so far (all use lasers and plasma cannon when it can):
 
-1. AC: Focus on Cannon/Gauss/Howitzer.
-2. AR: Focus on Flamer/Gauss/Howitzer.
-3. AM: Machine-guns/Lasers/Howitzer.
-4. AL: Lasers/Gauss/Fire mortar.
+1. AC: Cannon/Gauss/Howitzer.
+2. AR: Flamer/Gauss/Howitzer.
+3. AB: Rockets & missiles/Gauss/missile artillery.
+4. AM: Machine-guns/Lasers/Howitzer.
+5. AL: Lasers/Gauss/Fire mortar.
 
 Do note that AL is exclusive to T3 (with at least bases) and AM is exclusive to T1 (or if starting without a base). This only affects the initial personality and you can change the personality with a chat command later.
 
@@ -19,16 +20,14 @@ This AI will try to emulate the the core functionality of the NEXUS Intruder Pro
 
 chat commands include: 
 1. need power/truck/tank/cyborg/vtol.
-2. attackX -- (X being a player number). Does not imply Cobra will keep attacking that player at the moment.
-3. oilX -- to specifically attack nearby enemy oil. 
-4. AC/AR/AM/AL -- make it switch personalities.
-5. FFA -- after a team skirmish is won, break alliance and fight it (does not count as win/loss either way).
-6. toggle mg -- disable/enable machinegun use.
-7. toggle cyborg -- disable/enable cyborg use.
-8. toggle hover -- force Cobra to use hover propulsion for all tanks.
-9. oil level -- Ask what the oil count of the whole map is with a response of low, medium, or high.
-10. targetX -- Ask Cobra to focus on enemy player X.
-11. stats -- Which player Cobra is currently targeting.
+2. AC/AR/AB/AM/AL -- make it switch personalities.
+3. FFA -- after a team skirmish is won, break alliance and fight it (does not count as win/loss either way).
+4. toggle mg -- disable/enable machinegun use.
+5. toggle cyborg -- disable/enable cyborg use.
+6. toggle hover -- force Cobra to use hover propulsion for all tanks.
+7. oil level -- Ask what the oil count of the whole map is with a response of low, medium, or high.
+8. targetX -- Ask Cobra to focus on enemy player X.
+9. stats -- Which player Cobra is currently targeting.
 
 Press alt+h to drop a beacon and Cobra units will try making their way over to it if possible.
 
