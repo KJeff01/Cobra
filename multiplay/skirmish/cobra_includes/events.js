@@ -25,22 +25,21 @@ function eventGameInit() {
 //Initialze global variables and setup timers.
 function eventStartLevel() {
 	initiaizeRequiredGlobals();
-	recycleDroidsForHover();
-	buildOrder(); //Start building right away.
+	recycleForHoverCobra();
+	buildOrderCobra(); //Start building right away.
 
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
 
-	setTimer("produce", THINK_LONGER + 600 + 3 * random(70));
-	setTimer("buildOrder", THINK_LONGER + 1100 + 3 * random(60));
-	setTimer("repairDamagedDroids", THINK_LONGER + 2500 + 4 * random(60));
-	setTimer("switchOffMG", THINK_LONGER + 3000 + 5 * random(60)); //May remove itself.
-	setTimer("spyRoutine", THINK_LONGER + 4500 + 4 * random(60));
-	setTimer("vtolTactics", THINK_LONGER + 5600 + 3 * random(70));
-	setTimer("eventResearched", THINK_LONGER + 6500 + 3 * random(70));
-	setTimer("battleTactics", THINK_LONGER + 7000 + 5 * random(60));
-	setTimer("nexusWave", THINK_LONGER + 13000 + 3 * random(70)); //May remove itself.
-	setTimer("recycleDroidsForHover", THINK_LONGER + 15000 + 2 * random(60)); // May remove itself.
-	setTimer("StopTimersIfDead", THINK_LONGER + 100000 + 5 * random(70));
+	setTimer("CobraProduce", THINK_LONGER + 600 + 3 * random(70));
+	setTimer("buildOrderCobra", THINK_LONGER + 1100 + 3 * random(60));
+	setTimer("researchCobra", THINK_LONGER + 1400 + 3 * random(70));
+	setTimer("repairDroidTacticsCobra", THINK_LONGER + 2500 + 4 * random(60));
+	setTimer("artilleryTacticsCobra", THINK_LONGER + 4500 + 4 * random(60));
+	setTimer("vtolTacticsCobra", THINK_LONGER + 5600 + 3 * random(70));
+	setTimer("battleTacticsCobra", THINK_LONGER + 7000 + 5 * random(60));
+	setTimer("tryNexusFunctionalityCobra", THINK_LONGER + 13000 + 3 * random(70)); //May remove itself.
+	setTimer("recycleForHoverCobra", THINK_LONGER + 15000 + 2 * random(60)); // May remove itself.
+	setTimer("stopTimersCobra", THINK_LONGER + 100000 + 5 * random(70));
 }
 
 //This is meant to check for nearby oil resources next to the construct. also
@@ -63,7 +62,7 @@ function eventStructureBuilt(structure, droid) {
 				return ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
 			});
 
-			if(!isDefined(numDefenses[0])) {
+			if((gameTime > 120000) && !isDefined(numDefenses[0]) && (getRealPower() > 150)) {
 				protectUnguardedDerricks(droid);
 			}
 		}
@@ -85,12 +84,12 @@ function eventDroidIdle(droid) {
 function eventDroidBuilt(droid, struct) {
 	if (droid) {
 		if(isConstruct(droid)) {
-			if(enumGroup(constructGroup).length < 3) {
-				groupAdd(constructGroup, droid);
-				queue("checkUnfinishedStructures", 2500);
+			if(enumGroup(oilGrabberGroup).length < 3) {
+				groupAdd(oilGrabberGroup, droid);
 			}
 			else {
-				groupAdd(oilGrabberGroup, droid);
+				groupAdd(constructGroup, droid);
+				queue("checkUnfinishedStructures", 800);
 			}
 		}
 		else if(droid.droidType === DROID_SENSOR) {
@@ -161,7 +160,7 @@ function eventAttacked(victim, attacker) {
 			}
 		}
 
-		if(stopExecution(0, 150) || restraint()) {
+		if(stopExecution(0, 210) || restraint()) {
 			return;
 		}
 
@@ -174,7 +173,7 @@ function eventAttacked(victim, attacker) {
 				return (d.type === DROID) && ((d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG) || isVTOL(d));
 			});
 
-			if(!isDefined(units[3])) {
+			if(!isDefined(units[2])) {
 				units = chooseGroup();
 			}
 		}
@@ -206,7 +205,7 @@ function eventAttacked(victim, attacker) {
 //Add a beacon.
 function eventGroupLoss(droid, group, size) {
 	if(droid.order !== DORDER_RECYCLE) {
-		if(stopExecution(3, 3000) === false) {
+		if(stopExecution(3, 12000) === false) {
 			addBeacon(droid.x, droid.y, ALLIES);
 		}
 	}
@@ -214,32 +213,23 @@ function eventGroupLoss(droid, group, size) {
 
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message) {
-	if(stopExecution(2, 2000) === true) {
+	if(stopExecution(2, 13000) === true) {
 		return;
 	}
 
 	if(allianceExistsBetween(from, to) || (to === from)) {
-		const CYBORGS = enumGroup(cyborgGroup);
-		const TANKS = enumGroup(attackGroup);
-		const VTOLS = enumGroup(vtolGroup);
+		var enemyObject = enumRange(x, y, 8, ENEMIES, false)[0];
+		if(!isDefined(enemyObject)) {
+			return; //not close enough to the beacon.
+		}
 
-		for (var i = 0, c = CYBORGS.length; i < c; i++) {
-			var dr = CYBORGS[i];
-			if(!repairDroid(dr) && droidCanReach(dr, x, y)) {
-				orderDroidLoc(dr, DORDER_SCOUT, x, y);
-			}
-		}
-		for (var i = 0, t = TANKS.length; i < t; i++) {
-			var dr = TANKS[i];
-			if(!repairDroid(dr) && droidCanReach(dr, x, y)) {
-				orderDroidLoc(dr, DORDER_SCOUT, x, y);
-			}
-		}
-		for (var i = 0, v = VTOLS.length; i < v; i++) {
-			var dr = VTOLS[i];
-			if(vtolReady(dr)) {
-				orderDroidLoc(dr, DORDER_SCOUT, x, y);
-			}
+		//Now uses only one of the ground groups since telling every attack
+		//group has intense consequences on performance.
+		const UNITS = chooseGroup().filter(function(dr) {
+			return (!repairDroid(dr) && droidCanReach(dr, x, y));
+		});
+		for (var i = 0, c = UNITS.length; i < c; i++) {
+			orderDroidObj(UNITS[i], DORDER_ATTACK, enemyObject);
 		}
 	}
 }

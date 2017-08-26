@@ -195,7 +195,7 @@ const weaponStats = {
 	mortars: {
 		alias: "mor",
 		weapons: [
-			//{ res: "R-Wpn-Mortar01Lt", stat: "Mortar1Mk1" }, do not use on tanks.
+			{ res: "R-Wpn-Mortar01Lt", stat: "Mortar1Mk1" },
 			{ res: "R-Wpn-Mortar02Hvy", stat: "Mortar2Mk1" },
 			{ res: "R-Wpn-Mortar3", stat: "Mortar3ROTARYMk1" },
 			{ res: "R-Wpn-HowitzerMk1", stat: "Howitzer105Mk1" },
@@ -349,8 +349,8 @@ const weaponStats = {
 		alias: "rkta",
 		weapons: [
 			{ res: "R-Wpn-Rocket02-MRL", stat: "Rocket-MRL" }, // mra
-			{ res: "R-Wpn-Rocket03-HvAT", stat: "Rocket-BB" }, // bb
-			{ res: "R-Wpn-Rocket06-IDF", stat: "Rocket-IDF" }, // ripple
+			//{ res: "R-Wpn-Rocket03-HvAT", stat: "Rocket-BB" }, // bb
+			//{ res: "R-Wpn-Rocket06-IDF", stat: "Rocket-IDF" }, // ripple
 			{ res: "R-Wpn-MdArtMissile", stat: "Missile-MdArt" }, // seraph
 			{ res: "R-Wpn-HvArtMissile", stat: "Missile-HvyArt" }, // archie
 		],

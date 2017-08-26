@@ -129,21 +129,25 @@ function playerAlliance(ally) {
 		ally = false;
 	}
 
-	var players = [];
-	for(var i = 0; i < maxPlayers; ++i) {
-		if(!ally) {
-			if(!allianceExistsBetween(i, me) && (i !== me)) {
-				players.push(i);
+	function uncached(ally) {
+		var players = [];
+		for(var i = 0; i < maxPlayers; ++i) {
+			if(!ally) {
+				if(!allianceExistsBetween(i, me) && (i !== me)) {
+					players.push(i);
+				}
+			}
+			else {
+				if(allianceExistsBetween(i, me) && (i !== me)) {
+					players.push(i);
+				}
 			}
 		}
-		else {
-			if(allianceExistsBetween(i, me) && (i !== me)) {
-				players.push(i);
-			}
-		}
+
+		return players;
 	}
 
-	return players;
+	return cacheThis(uncached, [ally], undefined, 20000);
 }
 
 //Change stuff depending on difficulty.
@@ -185,7 +189,6 @@ function checkLowPower(pow) {
 //return real power levels.
 function getRealPower() {
 	const POWER = playerPower(me) - queuedPower(me);
-
 	if(playerAlliance(true).length && (POWER < 50)) {
 		sendChatMessage("need Power", ALLIES);
 	}
@@ -195,43 +198,49 @@ function getRealPower() {
 
 //Find enemies that are still alive.
 function findLivingEnemies() {
-	var alive = [];
-
-	for(var x = 0; x < maxPlayers; ++x) {
- 		if((x !== me) && !allianceExistsBetween(x, me) && (enumDroid(x).length || enumStruct(x).length)) {
-			alive.push(x);
-		}
-		else {
-			if(allianceExistsBetween(x, me) || (x === me)) {
-				grudgeCount[x] = -2; //Friendly player.
+	function uncached() {
+		var alive = [];
+		for(var x = 0; x < maxPlayers; ++x) {
+	 		if((x !== me) && !allianceExistsBetween(x, me) && (enumDroid(x).length || enumStruct(x).length)) {
+				alive.push(x);
 			}
 			else {
-				grudgeCount[x] = -1; //Dead enemy.
+				if(allianceExistsBetween(x, me) || (x === me)) {
+					grudgeCount[x] = -2; //Friendly player.
+				}
+				else {
+					grudgeCount[x] = -1; //Dead enemy.
+				}
 			}
-		}
- 	}
+	 	}
 
-	return alive;
+		return alive;
+	}
+
+	return cacheThis(uncached, [], undefined, 15000);
 }
 
 //Tell allies who is attacking Cobra the most.
 //When called from chat using "stats" it will also tell you who is the most aggressive towards Cobra.
 function getMostHarmfulPlayer(chatEvent) {
-	var mostHarmful = 0;
-	var enemies = findLivingEnemies();
+	function uncached(chatEvent) {
+		var mostHarmful = 0;
+		var enemies = findLivingEnemies();
+	 	for(var x = 0, c = enemies.length; x < c; ++x) {
+	 		if((grudgeCount[enemies[x]] >= 0) && (grudgeCount[enemies[x]] > grudgeCount[mostHarmful]))
+	 			mostHarmful = enemies[x];
+	 	}
+	 	if(isDefined(chatEvent) && (mostHarmful !== me)) {
+			sendChatMessage("Most harmful player: " + mostHarmful, ALLIES);
+		}
 
- 	for(var x = 0, c = enemies.length; x < c; ++x) {
- 		if((grudgeCount[enemies[x]] >= 0) && (grudgeCount[enemies[x]] > grudgeCount[mostHarmful]))
- 			mostHarmful = enemies[x];
- 	}
- 	if(isDefined(chatEvent) && (mostHarmful !== me)) {
-		sendChatMessage("Most harmful player: " + mostHarmful, ALLIES);
+		//In case Cobra is player zero (jsload or automation), return an enemy
+		//so that it does not attack itself if it wins.
+		var enemy_dummy = playerAlliance(false);
+		return ((mostHarmful !== me) && !allianceExistsBetween(mostHarmful, me)) ? mostHarmful : enemy_dummy[0];
 	}
 
-	//In case Cobra is player zero (jsload or automation), return an enemy
-	//so that it does not attack itself if it wins.
-	var enemy_dummy = playerAlliance(false);
-	return ((mostHarmful !== me) && !allianceExistsBetween(mostHarmful, me)) ? mostHarmful : enemy_dummy[0];
+	return cacheThis(uncached, [chatEvent]);
 }
 
 //Removes duplicate items from something.
@@ -283,7 +292,6 @@ function initiaizeRequiredGlobals() {
 	forceHover = checkIfSeaMap();
 	turnOffCyborgs = forceHover;
 	personality = choosePersonality();
-	turnOffMG = CheckStartingBases();
 	initializeResearchLists();
 }
 
@@ -325,11 +333,11 @@ function removeThisTimer(timer) {
 }
 
 //Stop the non auto-remove timers if Cobra died.
-function StopTimersIfDead() {
+function stopTimersCobra() {
 	if(!(enumGroup(constructGroup).length || enumStruct(me, FACTORY).length)) {
 		var timers = [
-			"buildOrder", "repairDamagedDroids", "produce", "battleTactics",
-			"spyRoutine", "StopTimersIfDead", "eventResearched"
+			"buildOrderCobra", "repairDroidTacticsCobra", "CobraProduce", "battleTacticsCobra",
+			"artilleryTacticsCobra", "stopTimersCobra", "researchCobra"
 		];
 
 		removeThisTimer(timers);
@@ -350,28 +358,32 @@ function donateAllPower() {
 
 //Tell if the personality likes cyborg or tank production.
 function droidPreference(swap) {
-	var preference;
-	if(!isDefined(swap)) {
-		swap = false;
+	function uncached(swap) {
+		var preference;
+		if(!isDefined(swap)) {
+			swap = false;
+		}
+
+		for(var i = 0; i < 2; ++i) {
+			var fac = subpersonalities[personality].factoryOrder[i];
+
+			if(fac !== VTOL_FACTORY) {
+				preference = (fac === CYBORG_FACTORY) ? "CYBORG" : "TANK";
+				break;
+			}
+		}
+
+		if(swap === true) {
+			if(preference === "CYBORG") {
+				preference = "TANK";
+			}
+			else {
+				preference = "CYBORG";
+			}
+		}
+
+		return preference;
 	}
 
-	for(var i = 0; i < 2; ++i) {
-		var fac = subpersonalities[personality].factoryOrder[i];
-
-		if(fac !== VTOL_FACTORY) {
-			preference = (fac === CYBORG_FACTORY) ? "CYBORG" : "TANK";
-			break;
-		}
-	}
-
-	if(swap === true) {
-		if(preference === "CYBORG") {
-			preference = "TANK";
-		}
-		else {
-			preference = "CYBORG";
-		}
-	}
-
-	return preference;
+	return cacheThis(uncached, [swap], undefined, Infinity);
 }

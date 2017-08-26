@@ -26,9 +26,6 @@ function eventChat(from, to, message) {
 	else if(message === "toggle cyborg") {
 		turnOffCyborgs = !turnOffCyborgs;
 	}
-	else if(message === "toggle mg") {
-		turnOffMG = !turnOffMG;
-	}
 	else if(message === "stats") {
 		getMostHarmfulPlayer("stat");
 	}

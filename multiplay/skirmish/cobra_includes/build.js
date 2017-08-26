@@ -42,9 +42,9 @@ function conCanHelp(mydroid, bx, by) {
 	);
 }
 
-//Return all idle construts. Specify the second param to return only the number of free trucks.
-function findIdleTrucks(number, type) {
-	const BUILDERS = isDefined(type) ? enumGroup(oilGrabberGroup) : enumGroup(constructGroup);
+//Return all idle construts. Passing in number will return the number of free trucks.
+function findIdleTrucks(number) {
+	const BUILDERS = enumGroup(constructGroup);
 	var droidlist = [];
 
 	for (var i = 0, s = BUILDERS.length; i < s; i++)
@@ -86,17 +86,19 @@ function countAndBuild(stat, count) {
 
 //Return the best available artillery defense structure.
 function getDefenseStructure() {
-	var stats = [];
-	var templates = subpersonalities[personality].artillery.defenses;
-
-	for(var i = templates.length - 1; i > 0; --i) {
-		if(isStructureAvailable(templates[i].stat)) {
-			return templates[i].stat;
+	function uncached() {
+		var templates = subpersonalities[personality].artillery.defenses;
+		for(var i = templates.length - 1; i > 0; --i) {
+			if(isStructureAvailable(templates[i].stat)) {
+				return templates[i].stat;
+			}
 		}
+
+		//Fallback onto the hmg tower.
+		return "GuardTower1";
 	}
 
-	//Fallback onto the hmg tower.
-	return "GuardTower1";
+	return cacheThis(uncached, [], undefined, 25000);
 }
 
 //Find the closest derrick that is not guarded a defense or ECM tower.
@@ -133,7 +135,7 @@ function protectUnguardedDerricks(droid) {
 		}
 
 		if(isDefined(undefended[0])) {
-			if(buildStuff(getDefenseStructure(), undefined, undefended[0], 0, "OIL")) {
+			if(buildStuff(getDefenseStructure(), undefined, undefended[0], 0)) {
 				return true;
 			}
 		}
@@ -177,12 +179,12 @@ function buildStructure(droid, stat, defendThis, blocking) {
 }
 
 //Build some object. Builds modules on structures also.
-function buildStuff(struc, module, defendThis, blocking, truckGroup) {
+function buildStuff(struc, module, defendThis, blocking) {
 	if(!isDefined(blocking)) {
 		blocking = 0;
 	}
 
-	var freeTrucks = findIdleTrucks(undefined, truckGroup);
+	var freeTrucks = findIdleTrucks();
 	const LEN = freeTrucks.length;
 
 	if(LEN) {
@@ -318,7 +320,7 @@ function buildAAForPersonality() {
 
 //Build defense systems.
 function buildDefenses() {
-	const MIN_POWER = 150;
+	const MIN_POWER = 180;
 
 	if((gameTime > 120000) && (getRealPower() > MIN_POWER)) {
 		if(buildSensors()) {
@@ -372,11 +374,6 @@ function buildPhase1() {
 
 //Build at least one of each factory and then pursue the favorite factory.
 function factoryBuildOrder() {
-	const MIN_POWER = 250;
-	if(getRealPower() < MIN_POWER) {
-		return false;
-	}
-
 	for(var x = 0; x < 2; ++x) {
 		var num = (!x) ? 1 : 5;
 
@@ -397,7 +394,7 @@ function factoryBuildOrder() {
 //Build all research labs and one of each factory and pursue the decided factory order.
 //Build repair bays when possible.
 function buildPhase2() {
-	const MIN_POWER = 280;
+	const MIN_POWER = 230;
 	const MIN_TIME = 180000;
 
 	if(!countStruct(structures.gens) || (getRealPower() < MIN_POWER)) {
@@ -442,7 +439,7 @@ function buildSpecialStructures() {
 
 //Build the minimum repairs and any vtol pads.
 function buildExtras() {
-	const MIN_POWER = 180;
+	const MIN_POWER = 210;
 	if(!isStructureAvailable("A0PowMod1") || (gameTime < 80000) || (getRealPower() < MIN_POWER)) {
 		return false;
 	}
@@ -459,7 +456,7 @@ function buildExtras() {
 }
 
 //Cobra's unique build decisions
-function buildOrder() {
+function buildOrderCobra() {
 	if(checkUnfinishedStructures()) { return; }
 	if(maintenance()) { return; }
 	if(buildPhase1()) { return; }
@@ -473,6 +470,7 @@ function buildOrder() {
 
 //Check if a building has modules to be built
 function maintenance() {
+	const MIN_POWER = 160;
 	const LIST = ["A0PowMod1", "A0FacMod1", "A0ResearchModule1", "A0FacMod1"];
 	const MODS = [1, 2, 1, 2]; //Number of modules paired with list above
 	var struct = null, module = "", structList = [];
@@ -514,7 +512,7 @@ function maintenance() {
 		}
 	}
 
-	if(struct && buildStuff(struct, module)) {
+	if(((getRealPower() > MIN_POWER) || (module === LIST[0])) && struct && buildStuff(struct, module)) {
 		return true;
 	}
 

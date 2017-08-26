@@ -5,12 +5,18 @@ function callFuncWithArgs(func, parameters) {
     return func.apply(this, parameters);
 }
 
-//cacheThis(FUNCTION_NAME, FUNCTION_PARAMETERS, CACHED_NAME, [TIME])
+//cacheThis(FUNCTION_NAME, [FUNCTION_PARAMETERS], [CACHED_NAME], [TIME])
 //Pass in Infinity for time to never recalculate it again.
 function cacheThis(func, funcParameters, cachedItem, time) {
-     const REFRESH_TIME = isDefined(time) ? time : 10000;
+     const REFRESH_TIME = isDefined(time) ? time : 15000;
+     if (!isDefined(cachedItem)) {
+          cachedItem = 0;
+     }
+     if(!isDefined(funcParameters)) {
+          funcParameters = [];
+     }
 
-     if(isDefined(arguments.callee.caller.cachedValues) && (time === Infinity)) {
+     if((time === Infinity) && isDefined(arguments.callee.caller.cachedValues)) {
           return arguments.callee.caller.cachedValues[cachedItem];
      }
 

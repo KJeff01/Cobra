@@ -1,16 +1,19 @@
 //Need to search for scavenger player number. Keep undefined if there are no scavengers.
 function getScavengerNumber() {
-	var scavNumber;
-
-	for(var x = maxPlayers; x < 11; ++x) {
-		var structs = enumStruct(x);
-		if(isDefined(structs[0])) {
-			scavNumber = x;
-			break;
+	function uncached() {
+		var scavNumber;
+		for(var x = maxPlayers; x < 11; ++x) {
+			var structs = enumStruct(x);
+			if(isDefined(structs[0])) {
+				scavNumber = x;
+				break;
+			}
 		}
+
+		return scavNumber;
 	}
 
-	return scavNumber;
+	return cacheThis(uncached, [], undefined, Infinity);
 }
 
 //Figure out if we are on a hover map. This is determined by checking if a
@@ -115,43 +118,53 @@ function CheckStartingBases() {
 
 //All derricks and all oil resources to find the map total.
 function countAllResources() {
-	var resources = enumFeature(-1, oilResources);
-
-	for(var i = 0; i < maxPlayers; ++i) {
-		var res = enumStruct(i, structures.derricks);
-		for(var c = 0, r = res.length; c < r; ++c) {
-			resources.push(res[c]);
+	function uncached() {
+		var resources = enumFeature(-1, oilResources);
+		for(var i = 0; i < maxPlayers; ++i) {
+			var res = enumStruct(i, structures.derricks);
+			for(var c = 0, r = res.length; c < r; ++c) {
+				resources.push(res[c]);
+			}
 		}
+
+		if(isDefined(getScavengerNumber())) {
+			resources = appendListElements(resources, enumStruct(getScavengerNumber(), structures.derricks));
+		}
+
+		return resources.length;
 	}
 
-	if(isDefined(getScavengerNumber())) {
-		resources = appendListElements(resources, enumStruct(getScavengerNumber(), structures.derricks));
-	}
-
-	return resources.length;
+	return cacheThis(uncached, [], undefined, Infinity);
 }
 
 // The amount of oil each player should hold.
 function averageOilPerPlayer() {
-	return (countAllResources() / maxPlayers);
+	function uncached() {
+		return (countAllResources() / maxPlayers);
+	}
+
+	return cacheThis(uncached, [],  undefined, Infinity);
 }
 
 //Is the map a low/medium/high power level. Returns a string of LOW/MEDIUM/HIGH.
 function mapOilLevel() {
-	var perPlayer = averageOilPerPlayer();
-	var str = "";
+	function uncached() {
+		var str;
+		var perPlayer = averageOilPerPlayer();
+		if(perPlayer <= 8) {
+			str = "LOW";
+		}
+		else if((perPlayer > 8) && (perPlayer <= 16)) {
+			str = "MEDIUM";
+		}
+		else {
+			str = "HIGH";
+		}
 
-	if(perPlayer <= 8) {
-		str = "LOW";
-	}
-	else if((perPlayer > 8) && (perPlayer <= 16)) {
-		str = "MEDIUM";
-	}
-	else {
-		str = "HIGH";
+		return str;
 	}
 
-	return str;
+	return cacheThis(uncached, [], undefined, Infinity);
 }
 
 //Determine the base area that Cobra claims. Pass an object to see if it is in it.

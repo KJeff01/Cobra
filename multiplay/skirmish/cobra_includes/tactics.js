@@ -33,16 +33,19 @@ function vtolArmed(obj, percent) {
 
 //Count how many Enemy VTOL units are on the map.
 function countEnemyVTOL() {
-	const ENEMY_PLAYERS = findLivingEnemies();
-	var enemyVtolCount = 0;
+	function uncached() {
+		const ENEMY_PLAYERS = findLivingEnemies();
+		var enemyVtolCount = 0;
+		for(var x = 0, e = ENEMY_PLAYERS.length; x < e; ++x) {
+			enemyVtolCount += enumDroid(ENEMY_PLAYERS[x]).filter(function(obj) {
+				return isVTOL(obj);
+			}).length;
+		}
 
-	for(var x = 0, e = ENEMY_PLAYERS.length; x < e; ++x) {
-		enemyVtolCount += enumDroid(ENEMY_PLAYERS[x]).filter(function(obj) {
-			return isVTOL(obj);
-		}).length;
+		return enemyVtolCount;
 	}
 
-	return enemyVtolCount;
+	return cacheThis(uncached, [], undefined, 30000);
 }
 
 //Return the closest factory for an enemy. Undefined if none.
@@ -140,7 +143,6 @@ function chooseGroup() {
 //Find the derricks of all enemy players, or just a specific one.
 function findEnemyDerricks(playerNumber) {
 	var derr = [];
-
 	if(!isDefined(playerNumber)) {
 		const ENEMY_PLAYERS = findLivingEnemies();
 		for(var i = 0, e = ENEMY_PLAYERS.length; i < e; ++i) {
@@ -167,7 +169,6 @@ function findNearestEnemyDroid(enemy) {
 	}
 
 	var badDroids = enumDroid(enemy);
-
 	if(isDefined(badDroids[0])) {
 		var temp = badDroids.filter(function(dr) { return !isVTOL(dr); });
 
@@ -255,7 +256,7 @@ function attackStuff(attacker) {
 }
 
 //Sensors know all your secrets. They will observe what is closest to Cobra base.
-function spyRoutine() {
+function artilleryTacticsCobra() {
 	if(restraint()) {
 		return;
 	}
@@ -296,7 +297,7 @@ function attackEnemyOil() {
 }
 
 //Defend or attack.
-function battleTactics() {
+function battleTacticsCobra() {
 	if(restraint()) {
 		return;
 	}
@@ -343,7 +344,7 @@ function battleTactics() {
 }
 
 //Recycle units when certain conditions are met.
-function recycleDroidsForHover() {
+function recycleForHoverCobra() {
 	const MIN_FACTORY = 1;
 	var systems = enumDroid(me).filter(function(dr) { return isConstruct(dr); });
 	systems = appendListElements(systems, enumDroid(me, DROID_SENSOR));
@@ -360,7 +361,7 @@ function recycleDroidsForHover() {
 		}
 
 		if(!forceHover && !NON_HOVER_SYSTEMS) {
-			removeThisTimer("recycleDroidsForHover");
+			removeThisTimer("recycleForHoverCobra");
 		}
 
 		if(forceHover) {
@@ -372,20 +373,19 @@ function recycleDroidsForHover() {
 			}
 
 			if(!(NON_HOVER_TANKS + NON_HOVER_SYSTEMS)) {
-				removeThisTimer("recycleDroidsForHover");
+				removeThisTimer("recycleForHoverCobra");
 			}
 		}
 	}
 }
 
 //Tell the repair group to go repair other droids.
-function repairDamagedDroids() {
+function repairDroidTacticsCobra() {
 	var reps = enumGroup(repairGroup);
 	const LEN = reps.length;
 
 	if(LEN) {
-		var myDroids = appendListElements(myDroids, enumGroup(attackGroup));
-		myDroids = appendListElements(myDroids, enumGroup(cyborgGroup));
+		var myDroids = random(2) ? enumGroup(attackGroup) : enumGroup(cyborgGroup);
 
 		if(isDefined(myDroids[0])) {
 			myDroids = myDroids.sort(sortDroidsByHealth);
@@ -416,7 +416,7 @@ function targetPlayer(playerNumber) {
 }
 
 //VTOL units do there own form of tactics.
-function vtolTactics() {
+function vtolTacticsCobra() {
 	if(restraint()) {
 		return;
 	}
@@ -460,8 +460,8 @@ function getCloseEnemyObject(enemy) {
 	if(!isDefined(enemy)) {
 		enemy = getMostHarmfulPlayer();
 	}
-	var target = findNearestEnemyStructure(enemy);
 
+	var target = findNearestEnemyStructure(enemy);
 	if(!isDefined(target)) {
 		target = findNearestEnemyDroid(enemy);
 
@@ -479,7 +479,16 @@ function enemyUnitsInBase() {
 		return (dr.type === DROID && dr.droidType === DROID_WEAPON);
 	});
 
-	return isDefined(enemyUnits[0]);
+	var enemyNearBase = isDefined(enemyUnits[0]);
+
+	//The attack code automatically chooses the closest object of the
+	//most harmful player anyway so this should suffice for defense.
+	if (enemyNearBase)
+	{
+		targetPlayer(enemyUnits[0].player); //play rough.
+	}
+
+	return enemyNearBase;
 }
 
 //Stop all attacker droids from attacking. Repairs are initiated in addition to that.

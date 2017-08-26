@@ -28,7 +28,6 @@ function analyzeDroidAlloys(droid) {
 	const KINETIC = (TYPE === "cyborg") ? "R-Cyborg-Metals0" : "R-Vehicle-Metals0";
 	const THERMAL = (TYPE === "cyborg") ? "R-Cyborg-Armor-Heat0" : "R-Vehicle-Armor-Heat0";
 	const PLAYER = droid.player;
-	var temp;
 
 	for(var t = 0; t < 2; ++t) {
 		for(var i = 1; i < 10; ++i) {
@@ -190,9 +189,9 @@ function analyzeRandomEnemyDroid() {
 //in ways of stopping what they are doing or ordering them to attack
 //another player or even stealing technology.
 //This effect only occurs while the Cobra command center is not destroyed.
-function nexusWave() {
+function tryNexusFunctionalityCobra() {
 	if(isDefined(nexusWaveOn) && !nexusWaveOn) {
-		removeThisTimer("nexusWave");
+		removeThisTimer("tryNexusFunctionalityCobra");
 		return;
 	}
 

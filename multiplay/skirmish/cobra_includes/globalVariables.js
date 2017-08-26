@@ -24,9 +24,10 @@ const subpersonalities = {
 		"defensePriority": 10,
 		"vtolPriority": 20,
 		"systemPriority": 30,
-		"alloyPriority": 40,
+		"alloyPriority": 20,
 		"res": [
 			"R-Wpn-Cannon-Damage02",
+			"R-Wpn-Cannon-ROF02",
 		],
 	},
 	AR: {
@@ -41,19 +42,19 @@ const subpersonalities = {
 		"alloyPriority": 45,
 		"res": [
 			"R-Wpn-Flamer-Damage03",
-			"R-Wpn-Flamer-ROF01",
+			"R-Wpn-Flamer-ROF03",
 		],
 	},
 	AB: {
 		"primaryWeapon": weaponStats.rockets_AT,
 		"secondaryWeapon": weaponStats.gauss,
-		"artillery": weaponStats.missile_Arty,
+		"artillery": weaponStats.rockets_Arty,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [CYBORG_FACTORY, VTOL_FACTORY, FACTORY],
 		"defensePriority": 60,
 		"vtolPriority": 90,
 		"systemPriority": 15,
-		"alloyPriority": 35,
+		"alloyPriority": 25,
 		"res": [
 			"R-Wpn-MG2Mk1",
 		],
@@ -67,7 +68,7 @@ const subpersonalities = {
 		"defensePriority": 30,
 		"vtolPriority": 80,
 		"systemPriority": 45,
-		"alloyPriority": 35,
+		"alloyPriority": 55,
 		"res": [
 			"R-Wpn-MG2Mk1",
 		],
@@ -81,7 +82,7 @@ const subpersonalities = {
 		"defensePriority": 10,
 		"vtolPriority": 60,
 		"systemPriority": 40,
-		"alloyPriority": 20,
+		"alloyPriority": 15,
 		"res": [
 			"R-Wpn-Mortar-Incenediary",
 			"R-Wpn-Laser01",
@@ -110,7 +111,6 @@ var forceHover; //Use hover propulsion only.
 var seaMapWithLandEnemy; //Hover map with an enemy sharing land with Cobra.
 var turnOffCyborgs; //Turn of cyborgs (hover maps/chat).
 var nexusWaveOn; //Determine if the 'NEXUS Intruder Program' feature is on.
-var turnOffMG; //Turn off machine-gun related stuff.
 var throttleTime; //For events so that some do not trigger their code too fast. More details in stopExecution() in miscFunctions.
 var researchComplete; //Check if done with research.
 var lastAttackedTime;

@@ -58,20 +58,22 @@ function isDesignable(item, body, prop) {
 //Pick a random weapon line. May return undefined for machineguns.
 function chooseRandomWeapon() {
 	var weaps;
-	var arti = false;
 
-	switch(random(6)) {
+	switch(random(5)) {
 		case 0: weaps = subpersonalities[personality].primaryWeapon; break;
-		case 1: if(!turnOffMG || (personality === "AM")) { weaps = weaponStats.machineguns; } break;
-		case 2: weaps = subpersonalities[personality].artillery; arti = true; break;
-		case 3: weaps = weaponStats.lasers; break;
-		case 4: weaps = subpersonalities[personality].secondaryWeapon; break;
-		case 5: weaps = weaponStats.AS; break;
+		case 1: weaps = subpersonalities[personality].artillery; break;
+		case 2: weaps = weaponStats.lasers; break;
+		case 3: weaps = subpersonalities[personality].secondaryWeapon; break;
+		case 4: weaps = weaponStats.AS; break;
 		default: weaps = subpersonalities[personality].primaryWeapon; break;
 	}
 
-	if(!isDefined(weaps)) {
+	if(!isDesignable(weaps.weapons[0].stat)) {
 		weaps = subpersonalities[personality].primaryWeapon;
+
+		if(!isDesignable(weaps.weapons[0].stat)) {
+			weaps = subpersonalities[personality].artillery;
+		}
 	}
 
 	return weaps;
@@ -148,7 +150,7 @@ function chooseRandomVTOLWeapon() {
 function choosePersonalityWeapon(type) {
 	var weaps;
 	var weaponList = [];
-	var isSecondary = false;
+
 	if(!isDefined(type)) {
 		type = "TANK";
 	}
@@ -167,9 +169,8 @@ function choosePersonalityWeapon(type) {
 		}
 
 		//Try defaulting to machine-guns then.
-		if(!turnOffMG && !isDesignable(weaponList)) {
+		if(!isDesignable(weaponList) && (personality !== "AL")) {
 			weaponList = [];
-
 			for(var i = weaponStats.machineguns.weapons.length - 1; i >= 0; --i) {
 				weaponList.push(weaponStats.machineguns.weapons[i].stat);
 			}
@@ -246,33 +247,23 @@ function pickPropulsion(weap) {
 //Personality AR uses hover when possible. All personalities may use special weapons on Hard/Insane.
 //Also when Cobra has Dragon body, the EMP Cannon may be selected as the second weapon if it is researched.
 function buildAttacker(struct) {
-	if(!(isDefined(forceHover) && isDefined(seaMapWithLandEnemy) && isDefined(turnOffMG))) {
+	if(!(isDefined(forceHover) && isDefined(seaMapWithLandEnemy))) {
 		return false;
 	}
 	if(forceHover && !seaMapWithLandEnemy && !componentAvailable("hover01")) {
 		return false;
 	}
 
-	//Use Medium body for the first twenty minutes into a skirmish.
-	const TIME_FOR_MEDIUM_BODY = 1200000;
-	const USE_LIGHTER_BODY = (gameTime < TIME_FOR_MEDIUM_BODY);
-	var body = USE_LIGHTER_BODY ? VTOL_BODY : TANK_BODY;
-
-	//Use light body sometimes if on a T1 match, excluding primary MG personalities.
-	if(USE_LIGHTER_BODY && ((returnPrimaryAlias() !== "mg") && !turnOffMG) && random(3)) {
-		body = SYSTEM_BODY;
-	}
-
 	var weap = choosePersonalityWeapon("TANK");
 	var secondary = choosePersonalityWeapon("TANK");
 
-	if(isDefined(weap) && isDefined(secondary)) {
+	if(isDefined(weap) && isDefined(secondary) && (secondary[0] !== "Laser4-PlasmaCannon")) {
 		if(isDefined(struct)) {
 			if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
 				secondary = "EMP-Cannon";
 			}
 
-			return buildDroid(struct, "Droid", body, pickPropulsion(weap), "", "", weap, secondary);
+			return buildDroid(struct, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
 		}
 	}
 
@@ -352,12 +343,12 @@ function analyzeQueuedSystems() {
 
 
 //Produce a unit when factories allow it.
-function produce() {
+function CobraProduce() {
 	if(isDefined(enumDroid(me)[149])) {
 		return;
 	}
 
-	const MIN_POWER = 200;
+	const MIN_POWER = 180;
 	const MIN_TRUCKS = 6;
 	const MIN_COM_ENG = 3;
 	const MIN_SENSORS = 2;
@@ -389,7 +380,7 @@ function produce() {
 						else if(buildSensors && componentAvailable("SensorTurret1Mk1")) {
 							buildSys(FC);
 						}
-						else if(allowSpecialSystems && buildRepairs && componentAvailable("LightRepair1")) {
+						else if(allowSpecialSystems && buildRepairs && isDesignable("LightRepair1")) {
 							buildSys(FC, REPAIR_TURRETS);
 						}
 						else {
@@ -401,7 +392,12 @@ function produce() {
 						}
 					}
 					else {
-						(facType === CYBORG_FACTORY) ? buildCyborg(FC, useCybEngineer) : buildVTOL(FC);
+						if (facType === CYBORG_FACTORY) {
+							buildCyborg(FC, useCybEngineer);
+						}
+						else {
+							buildVTOL(FC);
+						}
 					}
 				}
 			}
