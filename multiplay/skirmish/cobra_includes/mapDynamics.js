@@ -1,10 +1,14 @@
 //Need to search for scavenger player number. Keep undefined if there are no scavengers.
-function getScavengerNumber() {
-	function uncached() {
+function getScavengerNumber()
+{
+	function uncached()
+	{
 		var scavNumber;
-		for(var x = maxPlayers; x < 11; ++x) {
+		for (var x = maxPlayers; x < 11; ++x)
+		{
 			var structs = enumStruct(x);
-			if(isDefined(structs[0])) {
+			if (isDefined(structs[0]))
+			{
 				scavNumber = x;
 				break;
 			}
@@ -21,22 +25,29 @@ function getScavengerNumber() {
 //or map spotter pits) and doing similar checks for hover propulsion.
 //Furthermore it can discover if it is sharing land with an enemy and disable/enable
 //unit production depending on the case until it reaches hover propulsion.
-function checkIfSeaMap() {
+function checkIfSeaMap()
+{
 	var hoverMap = false;
 	seaMapWithLandEnemy = false;
 
-	for(var i = 0; i < maxPlayers; ++i) {
-		if(!propulsionCanReach("wheeled01", MY_BASE.x, MY_BASE.y, startPositions[i].x, startPositions[i].y)) {
+	for (var i = 0; i < maxPlayers; ++i)
+	{
+		if (!propulsionCanReach("wheeled01", MY_BASE.x, MY_BASE.y, startPositions[i].x, startPositions[i].y))
+		{
 
 			//Check if it is a map 'spotter' pit
 			//Cyborgs will turn off in divided maps with a physical barrier still
 			var temp = 0;
-			for(var t = 0; t < maxPlayers; ++t) {
-				if(!propulsionCanReach("hover01", startPositions[i].x, startPositions[i].y, startPositions[t].x, startPositions[t].y))
+			for (var t = 0; t < maxPlayers; ++t)
+			{
+				if (!propulsionCanReach("hover01", startPositions[i].x, startPositions[i].y, startPositions[t].x, startPositions[t].y))
+				{
 					temp = temp + 1;
+				}
 			}
 
-			if(temp !== maxPlayers - 1) {
+			if (temp !== maxPlayers - 1)
+			{
 				hoverMap = true; //And thus forceHover = true
 				break;
 			}
@@ -44,70 +55,45 @@ function checkIfSeaMap() {
 	}
 
 	//Determine if we are sharing land on a hover map with an enemy that can reach us via non-hover propulsion.
-	if(hoverMap === true) {
-		for(var i = 0; i < maxPlayers; ++i) {
-			if((i !== me) && !allianceExistsBetween(i, me) && propulsionCanReach("wheeled01", MY_BASE.x, MY_BASE.y, startPositions[i].x, startPositions[i].y)) {
+	if (hoverMap === true)
+	{
+		for (var i = 0; i < maxPlayers; ++i)
+		{
+			if ((i !== me) && !allianceExistsBetween(i, me) && propulsionCanReach("wheeled01", MY_BASE.x, MY_BASE.y, startPositions[i].x, startPositions[i].y))
+			{
 				//Check to see if it is a closed player slot
-				if(enumDroid(i).length > 0) {
+				if (enumDroid(i).length)
+				{
 					seaMapWithLandEnemy = true;
 					break;
 				}
 			}
-			if(seaMapWithLandEnemy === true)
+			if (seaMapWithLandEnemy === true)
+			{
 				break;
+			}
 		}
 	}
 
 	return hoverMap;
 }
 
-//If played on the team that won, then break alliance with everybody and try to conquer them.
-//Completely pointless feature, but makes everything a bit more fun.
-//chat: 'FFA'.
-function freeForAll() {
-	var won = true;
-
-	for (var p = 0; p < maxPlayers; ++p) {
-		if (p != me && !allianceExistsBetween(p, me)) {
-			var factories = countStruct("A0LightFactory", p) + countStruct("A0CyborgFactory", p);
-			var droids = countDroid(DROID_ANY, p);
-			if (droids > 0 || factories > 0) {
-				won = false;
-				break;
-			}
-		}
-	}
-
-	if(won === true) {
-		const FRIENDS = playerAlliance(true);
-		var CACHE_FRIENDS = FRIENDS.length;
-
-		if(CACHE_FRIENDS) {
-			if(isDefined(getScavengerNumber()) && allianceExistsBetween(getScavengerNumber(), me))
-				setAlliance(getScavengerNumber(), me, false);
-
-			for(var i = 0; i < CACHE_FRIENDS; ++i) {
-				var idx = FRIENDS[i];
-
-				chat(idx, "FREE FOR ALL!");
-				setAlliance(idx, me, false);
-			}
-		}
-	}
-}
-
-
 //Turn off Machine-guns on T2 and T3
 //Very cheap analysis done here.
-function CheckStartingBases() {
-	if(personality === "AL") {
+function CheckStartingBases()
+{
+	if (personality === "AL")
+	{
 		return true;
 	}
 
-	if(componentAvailable("Body11ABT")) {
+	if (componentAvailable("Body11ABT"))
+	{
 		const CACHE_WEAPONS = subpersonalities[personality].primaryWeapon.weapons.length;
-		for(var i = 0; i < CACHE_WEAPONS; ++i) {
-			if(isDesignable(subpersonalities[personality].primaryWeapon.weapons[i].stat)) {
+		for (var i = 0; i < CACHE_WEAPONS; ++i)
+		{
+			if (isDesignable(subpersonalities[personality].primaryWeapon.weapons[i].stat))
+			{
 				return true;
 			}
 		}
@@ -117,17 +103,22 @@ function CheckStartingBases() {
 }
 
 //All derricks and all oil resources to find the map total.
-function countAllResources() {
-	function uncached() {
-		var resources = enumFeature(-1, oilResources);
-		for(var i = 0; i < maxPlayers; ++i) {
+function countAllResources()
+{
+	function uncached()
+	{
+		var resources = enumFeature(-1, OIL_RES);
+		for (var i = 0; i < maxPlayers; ++i)
+		{
 			var res = enumStruct(i, structures.derricks);
-			for(var c = 0, r = res.length; c < r; ++c) {
+			for (var c = 0, r = res.length; c < r; ++c)
+			{
 				resources.push(res[c]);
 			}
 		}
 
-		if(isDefined(getScavengerNumber())) {
+		if (isDefined(getScavengerNumber()))
+		{
 			resources = appendListElements(resources, enumStruct(getScavengerNumber(), structures.derricks));
 		}
 
@@ -138,8 +129,10 @@ function countAllResources() {
 }
 
 // The amount of oil each player should hold.
-function averageOilPerPlayer() {
-	function uncached() {
+function averageOilPerPlayer()
+{
+	function uncached()
+	{
 		return (countAllResources() / maxPlayers);
 	}
 
@@ -147,17 +140,22 @@ function averageOilPerPlayer() {
 }
 
 //Is the map a low/medium/high power level. Returns a string of LOW/MEDIUM/HIGH.
-function mapOilLevel() {
-	function uncached() {
+function mapOilLevel()
+{
+	function uncached()
+	{
 		var str;
 		var perPlayer = averageOilPerPlayer();
-		if(perPlayer <= 8) {
+		if (perPlayer <= 8)
+		{
 			str = "LOW";
 		}
-		else if((perPlayer > 8) && (perPlayer <= 16)) {
+		else if ((perPlayer > 8) && (perPlayer <= 16))
+		{
 			str = "MEDIUM";
 		}
-		else {
+		else
+		{
 			str = "HIGH";
 		}
 
@@ -168,32 +166,41 @@ function mapOilLevel() {
 }
 
 //Determine the base area that Cobra claims. Pass an object to see if it is in it.
-function initialTerritory(object) {
+function initialTerritory(object)
+{
 	const X_AVERAGE = 2 * Math.ceil(mapWidth / maxPlayers);
 	const Y_AVERAGE = 2 * Math.ceil(mapHeight / maxPlayers);
 
-	var area = {
+	var area =
+	{
 		"x1": MY_BASE.x - X_AVERAGE, "y1": MY_BASE.y - Y_AVERAGE,
 		"x2": MY_BASE.x + X_AVERAGE, "y2": MY_BASE.y + Y_AVERAGE,
 	};
 
-	if(area.x1 < 0) {
+	if (area.x1 < 0)
+	{
 		area.x1 = 0;
 	}
-	if(area.y1 < 0) {
+	if (area.y1 < 0)
+	{
 		area.y1 = 0;
 	}
-	if(area.x2 > mapWidth) {
+	if (area.x2 > mapWidth)
+	{
 		area.x2 = mapWidth;
 	}
-	if(area.y2 > mapHeight) {
+	if (area.y2 > mapHeight)
+	{
 		area.y2 = mapHeight;
 	}
 
-	if(isDefined(object)) {
+	if (isDefined(object))
+	{
 		var stuff = enumArea(area.x1, area.y1, area.x2, area.y2);
-		for(var i = 0, l = stuff.length; i < l; ++i) {
-			if(object.id === stuff[i].id) {
+		for(var i = 0, l = stuff.length; i < l; ++i)
+		{
+			if(object.id === stuff[i].id)
+			{
 				return true;
 			}
 		}

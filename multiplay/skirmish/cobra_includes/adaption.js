@@ -1,11 +1,29 @@
+//If starting with a low tech level, then disable Machine-guns when the
+//personality can design its last primary weapon.
+function switchOffMG()
+{
+	if (returnPrimaryAlias() === "mg")
+	{
+		removeThisTimer("switchOffMG");
+		return;
+	}
+
+	if (componentAvailable("Body5REC"))
+	{
+		turnOffMG = true;
+		removeThisTimer("switchOffMG");
+	}
+}
 
 //Don't get too riled up until we get a formidable army.
-function restraint() {
+function restraint()
+{
 	const COOLDOWN = 10000;
 	const LOW_COUNT = !isDefined(enumDroid(me)[20]);
 	var peacefulTime = false;
 
-	if(LOW_COUNT && ((lastAttackedTime + COOLDOWN) < gameTime)) {
+	if (LOW_COUNT && ((lastAttackedTime + COOLDOWN) < gameTime))
+	{
 		peacefulTime = true; //Calm down and gather more strength.
 		haltAttackDroids();
 	}
@@ -15,11 +33,14 @@ function restraint() {
 
 //Choose the personality as described in the global subpersonalities.
 //When called from chat it will switch to that one directly.
-function choosePersonality(chatEvent) {
-	if(!isDefined(chatEvent)) {
+function choosePersonality(chatEvent)
+{
+	if (!isDefined(chatEvent))
+	{
 		return adaptToMap();
 	}
-	else {
+	else
+	{
 		personality = chatEvent;
 		initializeResearchLists();
 		sendChatMessage("Using personality: " + personality, ALLIES);
@@ -27,7 +48,8 @@ function choosePersonality(chatEvent) {
 }
 
 //Tell us what our personality is.
-function myPersonality() {
+function myPersonality()
+{
 	return personality;
 }
 
@@ -40,14 +62,17 @@ function adaptToMap() {
 	const T3_MATCH = isDesignable("Howitzer03-Rot");
 	const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC", "AL"];
 
-	if(!T3_MATCH && (((maxPlayers - 1) === 1) || ((MAP_OIL_LEVEL === "LOW") && !ALLY_COUNT))) {
+	if (!T3_MATCH && (((maxPlayers - 1) === 1) || ((MAP_OIL_LEVEL === "LOW") && !ALLY_COUNT)))
+	{
 		choice = ADAPT_PERSONALITIES[random(3)]; // AM, AR, AB.
 	}
-	else if ((MAP_OIL_LEVEL === "MEDIUM") || ALLY_COUNT) {
+	else if ((MAP_OIL_LEVEL === "MEDIUM") || ALLY_COUNT)
+	{
 		var offset = (T3_MATCH && (baseType !== CAMP_CLEAN)) ? 4 : 3;
 		choice = ADAPT_PERSONALITIES[random(offset) + 1]; // AR, AB, AC, AL.
 	}
-	else {
+	else
+	{
 		var offset = (T3_MATCH && (baseType !== CAMP_CLEAN)) ? 2 : 1;
 		choice = ADAPT_PERSONALITIES[random(offset) + 2]; // AC, AL.
 	}

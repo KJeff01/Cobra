@@ -4,6 +4,114 @@ const FACTORY = "A0LightFactory";
 const CYBORG_FACTORY = "A0CyborgFactory";
 const VTOL_FACTORY = "A0VTolFactory1";
 const MY_BASE = startPositions[me];
+const MIN_TRUCKS = 6;
+const OIL_RES = "OilResource";
+
+//Research constants
+const TANK_ARMOR = [
+	"R-Vehicle-Metals09",
+	"R-Vehicle-Armor-Heat09",
+];
+const CYBORG_ARMOR = [
+	"R-Cyborg-Metals09",
+	"R-Cyborg-Armor-Heat09",
+];
+const ESSENTIALS = [
+	"R-Sys-Engineering01",
+	"R-Defense-Tower01",
+	"R-Struc-PowerModuleMk1",
+	"R-Struc-Research-Upgrade09",
+	"R-Struc-Power-Upgrade03a",
+	"R-Vehicle-Prop-Halftracks",
+	"R-Vehicle-Body05",
+	"R-Struc-RprFac-Upgrade01",
+	"R-Vehicle-Prop-Hover",
+	"R-Vehicle-Body04",
+];
+const SYSTEM_UPGRADES = [
+	"R-Sys-Sensor-Upgrade03",
+	"R-Sys-MobileRepairTurretHvy",
+	"R-Struc-Factory-Upgrade09",
+	"R-Sys-Autorepair-General",
+	"R-Struc-RprFac-Upgrade06",
+];
+const FLAMER = [
+	"R-Wpn-Flame2",
+	"R-Wpn-Flamer-ROF03",
+	"R-Wpn-Flamer-Damage09",
+];
+const SENSOR_TECH = [
+	"R-Sys-ECM-Upgrade02",
+	"R-Sys-Sensor-WS",
+	"R-Sys-RadarDetector01",
+	"R-Wpn-LasSat",
+];
+const DEFENSE_UPGRADES = [
+	"R-Sys-Resistance-Circuits",
+	"R-Defense-WallUpgrade12",
+	"R-Struc-Materials09",
+];
+const BODY_RESEARCH = [
+	"R-Vehicle-Body11",
+	"R-Vehicle-Body12",
+	"R-Vehicle-Body06",
+	"R-Vehicle-Body10",
+	"R-Vehicle-Body14",
+];
+const VTOL_RES = [
+	"R-Wpn-Bomb-Accuracy03",
+	"R-Struc-VTOLPad-Upgrade06",
+	"R-Wpn-Bomb05",
+	"R-Wpn-Bomb06",
+];
+const MID_GAME_TECH = [
+	"R-Cyborg-Metals05",
+	"R-Vehicle-Metals05",
+	"R-Wpn-Bomb04",
+	"R-Wpn-Bomb-Accuracy02",
+	"R-Struc-VTOLPad-Upgrade04",
+	"R-Defense-WallUpgrade03",
+];
+const LATE_EARLY_GAME_TECH = [
+	"R-Vehicle-Body11",
+	"R-Vehicle-Prop-Tracks",
+];
+
+//Production constants
+const TANK_BODY = [
+	"Body14SUP", // Dragon
+	"Body13SUP", // Wyvern
+	"Body10MBT", // Vengeance
+	"Body7ABT",  // Retribution
+	"Body6SUPP", // Panther
+	"Body11ABT", // Python
+	"Body12SUP", // Mantis
+	"Body8MBT",  // Scorpion
+	"Body5REC",  // Cobra
+	"Body1REC",  // Viper
+];
+const SYSTEM_BODY = [
+	"Body3MBT",  // Retaliation
+//	"Body2SUP",  // Leopard
+	"Body4ABT",  // Bug
+	"Body1REC",  // Viper
+];
+const SYSTEM_PROPULSION = [
+	"hover01", // hover
+	"wheeled01", // wheels
+];
+const VTOL_BODY = [
+	"Body7ABT",  // Retribution
+	"Body6SUPP", // Panther
+	"Body8MBT",  // Scorpion
+	"Body5REC",  // Cobra
+	"Body1REC",  // Viper
+];
+const REPAIR_TURRETS = [
+	"HeavyRepair",
+	"LightRepair1",
+];
+
 
 //List of Cobra personalities:
 //AC: Cannon/Gauss/howitzer.
@@ -14,8 +122,10 @@ const MY_BASE = startPositions[me];
 //All personalities use laser technology. This includes the plasma cannon.
 //The secondary weapon has low priority.
 //TODO: Stop producing primaryWeapon when secondary is available.
-const subpersonalities = {
-	AC: {
+const subpersonalities =
+{
+	AC:
+	{
 		"primaryWeapon": weaponStats.cannons,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.howitzers,
@@ -30,7 +140,8 @@ const subpersonalities = {
 			"R-Wpn-Cannon-ROF02",
 		],
 	},
-	AR: {
+	AR:
+	{
 		"primaryWeapon": weaponStats.flamers,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.mortars,
@@ -45,7 +156,8 @@ const subpersonalities = {
 			"R-Wpn-Flamer-ROF03",
 		],
 	},
-	AB: {
+	AB:
+	{
 		"primaryWeapon": weaponStats.rockets_AT,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.rockets_Arty,
@@ -59,7 +171,8 @@ const subpersonalities = {
 			"R-Wpn-MG2Mk1",
 		],
 	},
-	AM: {
+	AM:
+	{
 		"primaryWeapon": weaponStats.machineguns,
 		"secondaryWeapon": weaponStats.lasers,
 		"artillery": weaponStats.mortars,
@@ -73,7 +186,8 @@ const subpersonalities = {
 			"R-Wpn-MG2Mk1",
 		],
 	},
-	AL: {
+	AL:
+	{
 		"primaryWeapon": weaponStats.lasers,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.fireMortars,
@@ -84,7 +198,7 @@ const subpersonalities = {
 		"systemPriority": 40,
 		"alloyPriority": 15,
 		"res": [
-			"R-Wpn-Mortar-Incenediary",
+			"R-Wpn-Mortar-Incendiary",
 			"R-Wpn-Laser01",
 			"R-Sys-Autorepair-General",
 			"R-Wpn-Mortar-Damage06",
@@ -114,3 +228,21 @@ var nexusWaveOn; //Determine if the 'NEXUS Intruder Program' feature is on.
 var throttleTime; //For events so that some do not trigger their code too fast. More details in stopExecution() in miscFunctions.
 var researchComplete; //Check if done with research.
 var lastAttackedTime;
+var turnOffMG; //This is only used for when the personalities don't have their weapons researched.
+var buildQueue;
+
+// -- Weapon research list (initializeResearchLists).
+var techlist;
+var weaponTech;
+var laserTech;
+var artilleryTech;
+var artillExtra;
+var laserExtra;
+var extraTech;
+var cyborgWeaps;
+var antiAirTech;
+var antiAirExtras;
+var extremeLaserTech;
+var secondaryWeaponTech;
+var secondaryWeaponExtra;
+var defenseTech;

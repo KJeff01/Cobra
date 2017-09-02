@@ -1,7 +1,8 @@
 
 //Droids that are attacking should not be pulled away until
 //they destroy whatever thay are attacking or need repair.
-function droidReady(droid) {
+function droidReady(droid)
+{
 	return (!repairDroid(droid, false)
 		&& (droid.order !== DORDER_ATTACK)
 		&& (droid.order !== DORDER_RTR)
@@ -11,8 +12,10 @@ function droidReady(droid) {
 }
 
 //Check if a passed in weapon name is a plasma cannon.
-function isPlasmaCannon(weaponName) {
-	if(!isDefined(weaponName)) {
+function isPlasmaCannon(weaponName)
+{
+	if (!isDefined(weaponName))
+	{
 		return false;
 	}
 
@@ -21,9 +24,12 @@ function isPlasmaCannon(weaponName) {
 
 //Modified from Nullbot.
 //Returns true if the VTOL has ammo. False if empty.
-function vtolArmed(obj, percent) {
-	for (var i = 0, p = obj.weapons.length; i < p; ++i) {
-		if (obj.weapons[i].armed >= percent) {
+function vtolArmed(obj, percent)
+{
+	for (var i = 0, p = obj.weapons.length; i < p; ++i)
+	{
+		if (obj.weapons[i].armed >= percent)
+		{
 			return true;
 		}
 	}
@@ -32,11 +38,14 @@ function vtolArmed(obj, percent) {
 }
 
 //Count how many Enemy VTOL units are on the map.
-function countEnemyVTOL() {
-	function uncached() {
+function countEnemyVTOL()
+{
+	function uncached()
+	{
 		const ENEMY_PLAYERS = findLivingEnemies();
 		var enemyVtolCount = 0;
-		for(var x = 0, e = ENEMY_PLAYERS.length; x < e; ++x) {
+		for (var x = 0, e = ENEMY_PLAYERS.length; x < e; ++x)
+		{
 			enemyVtolCount += enumDroid(ENEMY_PLAYERS[x]).filter(function(obj) {
 				return isVTOL(obj);
 			}).length;
@@ -45,12 +54,14 @@ function countEnemyVTOL() {
 		return enemyVtolCount;
 	}
 
-	return cacheThis(uncached, [], undefined, 30000);
+	return cacheThis(uncached, []);
 }
 
 //Return the closest factory for an enemy. Undefined if none.
-function returnClosestEnemyFactory(enemyNumber) {
-	if(!isDefined(enemyNumber)) {
+function returnClosestEnemyFactory(enemyNumber)
+{
+	if (!isDefined(enemyNumber))
+	{
 		enemyNumber = getMostHarmfulPlayer();
 	}
 
@@ -58,7 +69,8 @@ function returnClosestEnemyFactory(enemyNumber) {
 	facs = appendListElements(facs, enumStruct(enemyNumber, CYBORG_FACTORY));
 	facs = appendListElements(facs, enumStruct(enemyNumber, VTOL_FACTORY));
 
-	if(isDefined(facs[0])) {
+	if (isDefined(facs[0]))
+	{
 		facs = facs.sort(distanceToBase);
 		return facs[0];
 	}
@@ -67,13 +79,16 @@ function returnClosestEnemyFactory(enemyNumber) {
 }
 
 //Return the closest enemy truck for an enemy. Undefined if none.
-function getClosestEnemyTruck(enemyNumber) {
-	if(!isDefined(enemyNumber)) {
+function getClosestEnemyTruck(enemyNumber)
+{
+	if (!isDefined(enemyNumber))
+	{
 		enemyNumber = getMostHarmfulPlayer();
 	}
 
 	var trucks = enumDroid(enemyNumber, DROID_CONSTRUCT);
-	if(isDefined(trucks[0])) {
+	if (isDefined(trucks[0]))
+	{
 		trucks.sort(distanceToBase);
 		return trucks[0];
 	}
@@ -82,20 +97,24 @@ function getClosestEnemyTruck(enemyNumber) {
 }
 
 //Should the vtol attack when ammo is high enough?
-function vtolReady(droid) {
-	if(!isVTOL(droid)) {
+function vtolReady(droid)
+{
+	const ARMED_PERCENT = 1;
+	if (!isVTOL(droid))
+	{
 		return true; //See droidReady(droid).
 	}
 
-	const ARMED_PERCENT = 1;
-
-	if ((droid.order === DORDER_ATTACK) || (droid.order === DORDER_REARM)) {
+	if ((droid.order === DORDER_ATTACK) || (droid.order === DORDER_REARM))
+	{
 		return false;
 	}
-	if (vtolArmed(droid, ARMED_PERCENT)) {
+	if (vtolArmed(droid, ARMED_PERCENT))
+	{
 		return true;
 	}
-	if (droid.order !== DORDER_REARM) {
+	if (droid.order !== DORDER_REARM)
+	{
 		orderDroid(droid, DORDER_REARM);
 	}
 
@@ -103,24 +122,29 @@ function vtolReady(droid) {
 }
 
 //Repair a droid with the option of forcing it to.
-function repairDroid(droid, force) {
+function repairDroid(droid, force)
+{
 	const FORCE_REPAIR_PERCENT = 40;
 	const EXPERIENCE_DIVISOR = 22;
 	const HEALTH_TO_REPAIR = 58 + Math.floor(droid.experience / EXPERIENCE_DIVISOR);
 
-	if(!isDefined(force)) {
+	if (!isDefined(force))
+	{
 		force = false;
 	}
 
-	if(Math.floor(droid.health) <= FORCE_REPAIR_PERCENT) {
+	if (Math.floor(droid.health) <= FORCE_REPAIR_PERCENT)
+	{
 		force = true;
 	}
 
-	if((droid.order === DORDER_RTR) && ((Math.floor(droid.health) < 100) || force)) {
+	if ((droid.order === DORDER_RTR) && ((Math.floor(droid.health) < 100) || force))
+	{
 		return true;
 	}
 
-	if(countStruct(structures.extras[0]) && (force || (Math.floor(droid.health) <= HEALTH_TO_REPAIR))) {
+	if (countStruct(structures.extras[0]) && (force || (Math.floor(droid.health) <= HEALTH_TO_REPAIR)))
+	{
 		orderDroid(droid, DORDER_RTR);
 		return true;
 	}
@@ -129,50 +153,60 @@ function repairDroid(droid, force) {
 }
 
 //choose either cyborgs or tanks.
-function chooseGroup() {
-	const TANKS = enumGroup(attackGroup);
-	const BORGS = enumGroup(cyborgGroup);
+function chooseGroup()
+{
+	var grp = random(2) ? enumGroup(attackGroup) : enumGroup(cyborgGroup);
+	grp = grp.filter(function(dr) { return droidReady(dr); });
 
-	if(isDefined(BORGS[MIN_ATTACK_DROIDS]) && random(2)) {
-		return BORGS;
-	}
-
-	return TANKS; //Fallback.
+	return !isDefined(grp[MIN_ATTACK_DROIDS]) ? enumGroup(attackGroup) : grp;
 }
 
 //Find the derricks of all enemy players, or just a specific one.
-function findEnemyDerricks(playerNumber) {
-	var derr = [];
-	if(!isDefined(playerNumber)) {
-		const ENEMY_PLAYERS = findLivingEnemies();
-		for(var i = 0, e = ENEMY_PLAYERS.length; i < e; ++i) {
-			derr = appendListElements(derr, enumStruct(ENEMY_PLAYERS[i], structures.derricks));
+function findEnemyDerricks(playerNumber)
+{
+	function uncached(playerNumber)
+	{
+		var derr = [];
+		if (!isDefined(playerNumber))
+		{
+			const ENEMY_PLAYERS = findLivingEnemies();
+			for (var i = 0, e = ENEMY_PLAYERS.length; i < e; ++i)
+			{
+				derr = appendListElements(derr, enumStruct(ENEMY_PLAYERS[i], structures.derricks));
+			}
+
+			//Include scavenger owned derricks if they exist
+			if (isDefined(getScavengerNumber()) && !allianceExistsBetween(getScavengerNumber(), me))
+			{
+				derr = appendListElements(derr, enumStruct(getScavengerNumber(), structures.derricks));
+			}
+		}
+		else
+		{
+			derr = enumStruct(playerNumber, structures.derricks);
 		}
 
-		//Include scavenger owned derricks if they exist
-		if(isDefined(getScavengerNumber()) && !allianceExistsBetween(getScavengerNumber(), me)) {
-			derr = appendListElements(derr, enumStruct(getScavengerNumber(), structures.derricks));
-		}
-	}
-	else {
-		derr = enumStruct(playerNumber, structures.derricks);
+		return derr;
 	}
 
-	return derr;
+	return cacheThis(uncached, [playerNumber], undefined, 3000);
 }
 
 //Find closest enemy droid. Returns undefined otherwise. Do not target VTOLs
 //unless they are the only remaining droids.
-function findNearestEnemyDroid(enemy) {
-	if(!isDefined(enemy)) {
+function findNearestEnemyDroid(enemy)
+{
+	if (!isDefined(enemy))
+	{
 		enemy = getMostHarmfulPlayer();
 	}
 
 	var badDroids = enumDroid(enemy);
-	if(isDefined(badDroids[0])) {
+	if (isDefined(badDroids[0]))
+	{
 		var temp = badDroids.filter(function(dr) { return !isVTOL(dr); });
-
-		if(!isDefined(temp[0])) {
+		if (!isDefined(temp[0]))
+		{
 			temp = badDroids;
 		}
 
@@ -184,17 +218,21 @@ function findNearestEnemyDroid(enemy) {
 }
 
 //Return the closest structure of an enemy. Returns undefined otherwise.
-function findNearestEnemyStructure(enemy) {
-	if(!isDefined(enemy)) {
+function findNearestEnemyStructure(enemy)
+{
+	if (!isDefined(enemy))
+	{
 		enemy = getMostHarmfulPlayer();
 	}
 
 	var s = enumStruct(enemy).filter(function(obj) { return (obj.stattype !== WALL); });
-	if(!isDefined(s[0])) {
+	if (!isDefined(s[0]))
+	{
 		s = enumStruct(enemy);
 	}
 
-	if(isDefined(s[0])) {
+	if (isDefined(s[0]))
+	{
 		s = s.sort(distanceToBase);
 		return s[0];
 	}
@@ -203,51 +241,62 @@ function findNearestEnemyStructure(enemy) {
 }
 
 //Attack something.
-function attackWithGroup(enemy, targets) {
+function attackWithGroup(enemy, targets)
+{
 	const DROIDS = chooseGroup();
 	const LEN = DROIDS.length;
 
-	if(!isDefined(enemy)) {
+	if (!isDefined(enemy))
+	{
 		enemy = getMostHarmfulPlayer();
 	}
 
-	if(LEN >= MIN_ATTACK_DROIDS) {
+	if (LEN >= MIN_ATTACK_DROIDS)
+	{
 		var target;
-
-		if(isDefined(targets) && isDefined(targets[0])) {
+		if (isDefined(targets) && isDefined(targets[0]))
+		{
 			targets = targets.sort(distanceToBase);
 			target = targets[0];
 		}
-		else {
+		else
+		{
 			target = getCloseEnemyObject();
 		}
 
-		for (var j = 0; j < LEN; j++) {
+		for (var j = 0; j < LEN; j++)
+		{
 			attackThisObject(DROIDS[j], target);
 		}
 	}
 }
 
 //Mark a target for death.
-function chatTactic(enemy) {
-	if(!isDefined(enemy)) {
+function chatTactic(enemy)
+{
+	if (!isDefined(enemy))
+	{
 		enemy = getMostHarmfulPlayer();
 	}
 
 	const MSG = lastMsg.slice(0, -1);
-	if((MSG !== "target") && (playerAlliance(true).length)) {
+	if ((MSG !== "target") && (playerAlliance(true).length))
+	{
 		sendChatMessage("target" + enemy, ALLIES);
 	}
 }
 
 //attacker is a player number. Attack a specific player.
-function attackStuff(attacker) {
-	if(restraint()) {
+function attackStuff(attacker)
+{
+	if (restraint())
+	{
 		return;
 	}
 
 	var selectedEnemy = getMostHarmfulPlayer();
-	if(isDefined(attacker) && !allianceExistsBetween(attacker, me) && (attacker !== me)) {
+	if (isDefined(attacker) && !allianceExistsBetween(attacker, me) && (attacker !== me))
+	{
 		selectedEnemy = attacker;
 	}
 
@@ -256,23 +305,31 @@ function attackStuff(attacker) {
 }
 
 //Sensors know all your secrets. They will observe what is closest to Cobra base.
-function artilleryTacticsCobra() {
-	if(restraint()) {
+function artilleryTacticsCobra()
+{
+	if (restraint())
+	{
 		return;
 	}
 
-	var sensors = enumGroup(sensorGroup);
+	var sensors = enumGroup(sensorGroup).filter(function(dr)
+	{
+		return droidReady(dr);
+	});
 	const ARTILLERY_UNITS = enumGroup(artilleryGroup);
 	const ARTI_LEN = ARTILLERY_UNITS.length;
 	const SENS_LEN = sensors.length;
 
-	if(SENS_LEN * ARTI_LEN) {
+	if (SENS_LEN * ARTI_LEN)
+	{
 		sensors = sortAndReverseDistance(sensors);
 		var obj = rangeStep();
 
-		if(isDefined(obj)) {
+		if (isDefined(obj))
+		{
 			orderDroidObj(sensors[0], DORDER_OBSERVE, obj);
-			for(var i = 0; i < ARTI_LEN; ++i) {
+			for (var i = 0; i < ARTI_LEN; ++i)
+			{
 				attackThisObject(ARTILLERY_UNITS[i], obj);
 			}
 		}
@@ -280,16 +337,19 @@ function artilleryTacticsCobra() {
 }
 
 //Attack enemy oil when if attacking group is large enough.
-function attackEnemyOil() {
+function attackEnemyOil()
+{
 	const WHO = chooseGroup();
 	const LEN = WHO.length;
 
-	if(LEN >= MIN_ATTACK_DROIDS) {
+	if (LEN >= MIN_ATTACK_DROIDS)
+	{
 		var derr = findEnemyDerricks();
-		if(isDefined(derr[0])) {
+		if (isDefined(derr[0]))
+		{
 			derr = derr.sort(distanceToBase);
-
-			for(var i = 0; i < LEN; ++i) {
+			for (var i = 0; i < LEN; ++i)
+			{
 				attackThisObject(WHO[i], derr[0]);
 			}
 		}
@@ -297,8 +357,10 @@ function attackEnemyOil() {
 }
 
 //Defend or attack.
-function battleTacticsCobra() {
-	if(restraint()) {
+function battleTacticsCobra()
+{
+	if (restraint())
+	{
 		return;
 	}
 
@@ -307,36 +369,44 @@ function battleTacticsCobra() {
 	const MIN_GRUDGE = 300;
 	donateSomePower();
 
-	if((countStruct(structures.derricks) < MIN_DERRICKS) || (getRealPower() < -50)) {
+	if ((countStruct(structures.derricks) < MIN_DERRICKS) || (getRealPower() < -50))
+	{
 		attackEnemyOil();
 	}
-	else if(grudgeCount[ENEMY] > MIN_GRUDGE) {
+	else if (grudgeCount[ENEMY] > MIN_GRUDGE)
+	{
 		const ENEMY_FACTORY = returnClosestEnemyFactory();
-
-		if(random(101) < 5) {
+		if (random(101) < 5)
+		{
 			chatTactic(ENEMY); //Tell players to attack this enemy.
 		}
 
-		if(isDefined(ENEMY_FACTORY)) {
+		if (isDefined(ENEMY_FACTORY))
+		{
 			attackWithGroup(ENEMY, ENEMY_FACTORY);
 		}
-		else {
+		else
+		{
 			const ENEMY_TRUCK = getClosestEnemyTruck();
-			if(isDefined(ENEMY_TRUCK)) {
+			if (isDefined(ENEMY_TRUCK))
+			{
 				attackWithGroup(ENEMY, ENEMY_TRUCK);
 			}
-			else {
+			else
+			{
 				grudgeCount[ENEMY] = 0; //they dead.
 			}
 		}
 	}
-	else {
+	else
+	{
 		const WHO = chooseGroup();
 		const LEN = WHO.length;
-
-		if(LEN >= MIN_ATTACK_DROIDS) {
+		if (LEN >= MIN_ATTACK_DROIDS)
+		{
 			var nearestTarget = getCloseEnemyObject();
-			for(var i = 0; i < LEN; ++i) {
+			for (var i = 0; i < LEN; ++i)
+			{
 				attackThisObject(WHO[i], nearestTarget);
 			}
 		}
@@ -344,7 +414,8 @@ function battleTacticsCobra() {
 }
 
 //Recycle units when certain conditions are met.
-function recycleForHoverCobra() {
+function recycleForHoverCobra()
+{
 	const MIN_FACTORY = 1;
 	var systems = enumDroid(me).filter(function(dr) { return isConstruct(dr); });
 	systems = appendListElements(systems, enumDroid(me, DROID_SENSOR));
@@ -353,26 +424,32 @@ function recycleForHoverCobra() {
 	var unfinished = unfinishedStructures();
 	const NON_HOVER_SYSTEMS = systems.length;
 
-	if((countStruct(FACTORY) > MIN_FACTORY) && componentAvailable("hover01")) {
-		if(!isDefined(unfinished[0]) && NON_HOVER_SYSTEMS) {
-			for(var i = 0; i < NON_HOVER_SYSTEMS; ++i) {
+	if ((countStruct(FACTORY) > MIN_FACTORY) && componentAvailable("hover01"))
+	{
+		if (!isDefined(unfinished[0]) && NON_HOVER_SYSTEMS)
+		{
+			for (var i = 0; i < NON_HOVER_SYSTEMS; ++i)
+			{
 				orderDroid(systems[i], DORDER_RECYCLE);
 			}
 		}
 
-		if(!forceHover && !NON_HOVER_SYSTEMS) {
+		if (!forceHover && !NON_HOVER_SYSTEMS)
+		{
 			removeThisTimer("recycleForHoverCobra");
 		}
 
-		if(forceHover) {
+		if (forceHover)
+		{
 			var tanks = enumGroup(attackGroup).filter(function(dr) { return (dr.droidType === DROID_WEAPON && dr.propulsion !== "hover01"); });
 			const NON_HOVER_TANKS = tanks.length;
-
-			for(var j = 0; j < NON_HOVER_TANKS; ++j) {
+			for (var j = 0; j < NON_HOVER_TANKS; ++j)
+			{
 				orderDroid(tanks[j], DORDER_RECYCLE);
 			}
 
-			if(!(NON_HOVER_TANKS + NON_HOVER_SYSTEMS)) {
+			if (!(NON_HOVER_TANKS + NON_HOVER_SYSTEMS))
+			{
 				removeThisTimer("recycleForHoverCobra");
 			}
 		}
@@ -380,21 +457,26 @@ function recycleForHoverCobra() {
 }
 
 //Tell the repair group to go repair other droids.
-function repairDroidTacticsCobra() {
+function repairDroidTacticsCobra()
+{
 	var reps = enumGroup(repairGroup);
 	const LEN = reps.length;
 
-	if(LEN) {
+	if (LEN)
+	{
 		var myDroids = random(2) ? enumGroup(attackGroup) : enumGroup(cyborgGroup);
 
-		if(isDefined(myDroids[0])) {
+		if (isDefined(myDroids[0]))
+		{
 			myDroids = myDroids.sort(sortDroidsByHealth);
 			var weakest = myDroids[0];
 			var dorder_droidrepair = 26; //FIXME: when DORDER_DROIDREPAIR can be called, remove this.
 
-			for(var i = 0; i < LEN; ++i) {
+			for (var i = 0; i < LEN; ++i)
+			{
 				const REPAIR_UNIT = reps[i];
-				if(isDefined(REPAIR_UNIT) && (REPAIR_UNIT.order !== dorder_droidrepair) && isDefined(weakest) && (Math.ceil(weakest.health) < 100)) {
+				if (isDefined(REPAIR_UNIT) && (REPAIR_UNIT.order !== dorder_droidrepair) && isDefined(weakest) && (Math.ceil(weakest.health) < 100))
+				{
 					orderDroidLoc(weakest, DORDER_MOVE, REPAIR_UNIT.x, REPAIR_UNIT.y);
 					orderDroidObj(REPAIR_UNIT, dorder_droidrepair, weakest);
 				}
@@ -404,51 +486,65 @@ function repairDroidTacticsCobra() {
 }
 
 // Make Cobra focus on this player if asked. Chat command only.
-function targetPlayer(playerNumber) {
+function targetPlayer(playerNumber)
+{
 	const INC = 100;
 	const PREVIOUS_TARGET = getMostHarmfulPlayer();
 
-	if(playerNumber !== PREVIOUS_TARGET) {
-		if((grudgeCount[playerNumber] + INC) < MAX_GRUDGE) {
+	if (playerNumber !== PREVIOUS_TARGET)
+	{
+		if ((grudgeCount[playerNumber] + INC) < MAX_GRUDGE)
+		{
 			grudgeCount[playerNumber] = grudgeCount[PREVIOUS_TARGET] + INC;
 		}
 	}
 }
 
 //VTOL units do there own form of tactics.
-function vtolTacticsCobra() {
-	if(restraint()) {
+function vtolTacticsCobra()
+{
+	if (restraint())
+	{
 		return;
 	}
 
 	const MIN_VTOLS = 5;
-	const VTOLS = enumGroup(vtolGroup);
-	const LEN = VTOLS.length;
+	var vtols = enumGroup(vtolGroup).filter(function(dr) { return droidReady(dr); });
+	const LEN = vtols.length;
 
-	if(LEN >= MIN_VTOLS) {
+	if (LEN >= MIN_VTOLS)
+	{
 		var target = getCloseEnemyObject();
-		for(var i = 0; i < LEN; ++i) {
-			attackThisObject(VTOLS[i], target);
+		for (var i = 0; i < LEN; ++i)
+		{
+			attackThisObject(vtols[i], target);
 		}
 	}
 }
 
 //Decide how to attack this target.
-function attackThisObject(droid, target) {
-	if(!isDefined(droid.weapons[0])) {
+function attackThisObject(droid, target)
+{
+	if (!isDefined(droid.weapons[0]))
+	{
 		return;
 	}
 
-	if(!isDefined(target)) {
+	if (!isDefined(target))
+	{
 		target = getCloseEnemyObject();
 	}
 
-	if(isDefined(droid) && isDefined(target) && droidReady(droid) && droidCanReach(droid, target.x, target.y)) {
-		if(!((target.type === DROID) && isVTOL(target) && (isVTOL(droid) && !droid.weapons[0].canHitAir))) {
-			if(!isPlasmaCannon(droid.weapons[0].name) && (target.type === DROID)) {
+	if (isDefined(droid) && droidReady(droid) && isDefined(target) && droidCanReach(droid, target.x, target.y))
+	{
+		if (!((target.type === DROID) && isVTOL(target) && (isVTOL(droid) && !droid.weapons[0].canHitAir)))
+		{
+			if (!isPlasmaCannon(droid.weapons[0].name) && (target.type === DROID))
+			{
 				orderDroidLoc(droid, DORDER_SCOUT, target.x, target.y);
 			}
-			else {
+			else
+			{
 				orderDroidObj(droid, DORDER_ATTACK, target);
 			}
 		}
@@ -456,16 +552,19 @@ function attackThisObject(droid, target) {
 }
 
 //Return the closest enemy player structure or droid. Undefined if none.
-function getCloseEnemyObject(enemy) {
-	if(!isDefined(enemy)) {
+function getCloseEnemyObject(enemy)
+{
+	if (!isDefined(enemy))
+	{
 		enemy = getMostHarmfulPlayer();
 	}
 
 	var target = findNearestEnemyStructure(enemy);
-	if(!isDefined(target)) {
+	if (!isDefined(target))
+	{
 		target = findNearestEnemyDroid(enemy);
-
-		if(!isDefined(target)) {
+		if (!isDefined(target))
+		{
 			return undefined;
 		}
 	}
@@ -474,7 +573,8 @@ function getCloseEnemyObject(enemy) {
 }
 
 //Check if enemy units are in or around Cobra base.
-function enemyUnitsInBase() {
+function enemyUnitsInBase()
+{
 	var enemyUnits = enumRange(MY_BASE.x, MY_BASE.y, 16, ENEMIES, true).filter(function(dr) {
 		return (dr.type === DROID && dr.droidType === DROID_WEAPON);
 	});
@@ -492,26 +592,29 @@ function enemyUnitsInBase() {
 }
 
 //Stop all attacker droids from attacking. Repairs are initiated in addition to that.
-function haltAttackDroids() {
+function haltAttackDroids()
+{
 	const DROIDS = enumDroid(me).filter(function(dr) {
 		return ((dr.droidType !== DROID_CONSTRUCT) && (dr.droidType !== DROID_REPAIR));
 	});
 
-	for(var i = 0, l = DROIDS.length; i < l; ++i) {
+	for (var i = 0, l = DROIDS.length; i < l; ++i)
+	{
 		const DROID = DROIDS[i];
-
 		orderDroid(DROID, DORDER_STOP);
 		repairDroid(DROID, false);
 	}
 }
 
 //Donate my power to allies if I have too much.
-function donateSomePower() {
+function donateSomePower()
+{
 	const ALLY_PLAYERS = playerAlliance(true);
 	const LEN = ALLY_PLAYERS.length;
 	const ALIVE_ENEMIES = findLivingEnemies().length;
 
-	if(LEN && ALIVE_ENEMIES && (getRealPower() > 3000)) {
+	if (LEN && ALIVE_ENEMIES && (getRealPower() > 3000))
+	{
 		donatePower(playerPower(me) / 2, ALLY_PLAYERS[random(LEN)]);
 	}
 }

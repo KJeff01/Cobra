@@ -11,7 +11,6 @@ const structures = {
 	extras: [ "A0RepairCentre3", "A0Sat-linkCentre", "A0LasSatCommand", ],
 };
 
-const oilResources = [ "OilResource", ];
 const powerUps = [ "OilDrum", "Crate" ];
 
 const sensorTurrets = [
@@ -48,8 +47,10 @@ const propulsionStats = [
 	{ res: "R-Vehicle-Prop-VTOL", stat: "V-Tol" },
 ];
 
-const weaponStats = {
-	machineguns: {
+const weaponStats =
+{
+	machineguns:
+	{
 		alias: "mg",
 		weapons: [
 			{ res: "R-Wpn-MG1Mk1", stat: "MG1Mk1" }, // mg
@@ -81,7 +82,8 @@ const weaponStats = {
 			"R-Wpn-MG-Damage08",
 		],
 	},
-	flamers: {
+	flamers:
+	{
 		alias: "fl",
 		weapons: [
 			{ res: "R-Wpn-Flamer01Mk1", stat: "Flame1Mk1" }, // flamer
@@ -104,7 +106,8 @@ const weaponStats = {
 			"R-Wpn-Flamer-Damage09",
 		],
 	},
-	cannons: {
+	cannons:
+	{
 		alias: "cn",
 		weapons: [
 			{ res: "R-Wpn-Cannon1Mk1", stat: "Cannon1Mk1" }, // lc
@@ -147,7 +150,8 @@ const weaponStats = {
 			"R-Wpn-Cannon-Accuracy02",
 		],
 	},
-	gauss: {
+	gauss:
+	{
 		alias: "ga",
 		weapons: [
 			{ res: "R-Wpn-RailGun01", stat: "RailGun1Mk1" }, // needle
@@ -175,7 +179,8 @@ const weaponStats = {
 			"R-Wpn-Rail-ROF03",
 		],
 	},
-	cannons_AA: {
+	cannons_AA:
+	{
 		alias: "cnaa",
 		weapons: [
 			{ res: "R-Wpn-AAGun02", stat: "AAGun2Mk1" },
@@ -192,7 +197,8 @@ const weaponStats = {
 			"R-Wpn-Cannon-Accuracy02",
 		],
 	},
-	mortars: {
+	mortars:
+	{
 		alias: "mor",
 		weapons: [
 			{ res: "R-Wpn-Mortar01Lt", stat: "Mortar1Mk1" },
@@ -230,7 +236,8 @@ const weaponStats = {
 			"R-Wpn-Howitzer-Accuracy03",
 		],
 	},
-	howitzers: {
+	howitzers:
+	{
 		alias: "how",
 		weapons: [
 			{ res: "R-Wpn-HowitzerMk1", stat: "Howitzer105Mk1" },
@@ -258,11 +265,12 @@ const weaponStats = {
 			"R-Wpn-Howitzer-Accuracy03",
 		],
 	},
-	fireMortars: {
+	fireMortars:
+	{
 		alias: "fmor",
 		weapons: [
-			{ res: "R-Wpn-Mortar-Incenediary", stat: "Mortar-Incenediary" },
-			{ res: "R-Wpn-Howitzer-Incenediary", stat: "Howitzer-Incenediary" },
+			{ res: "R-Wpn-Mortar-Incendiary", stat: "Mortar-Incendiary" },
+			{ res: "R-Wpn-Howitzer-Incendiary", stat: "Howitzer-Incendiary" },
 		],
 		vtols: [
 			{ res: "R-Wpn-Bomb03", stat: "Bomb3-VTOL-LtINC" },
@@ -270,8 +278,8 @@ const weaponStats = {
 			{ res: "R-Wpn-Bomb05", stat: "Bomb5-VTOL-Plasmite" },
 		],
 		defenses: [
-			{ res: "R-Defense-MortarPit-Incenediary", stat: "Emplacement-MortarPit-Incenediary" },
-			{ res: "R-Defense-Howitzer-Incenediary", stat: "Emplacement-Howitzer-Incenediary" },
+			{ res: "R-Defense-MortarPit-Incendiary", stat: "Emplacement-MortarPit-Incendiary" },
+			{ res: "R-Defense-Howitzer-Incendiary", stat: "Emplacement-Howitzer-Incendiary" },
 		],
 		templates: [],
 		extras: [
@@ -283,7 +291,8 @@ const weaponStats = {
 			"R-Wpn-Howitzer-Accuracy03",
 		],
 	},
-	rockets_AT: {
+	rockets_AT:
+	{
 		alias: "rkt",
 		weapons: [
 			{ res: "R-Wpn-Rocket05-MiniPod", stat: "Rocket-Pod" }, // pod
@@ -322,7 +331,8 @@ const weaponStats = {
 			"R-Wpn-Missile-Accuracy02",
 		],
 	},
-	missile_AT: {
+	missile_AT:
+	{
 		alias: "miss",
 		weapons: [
 			{ res: "R-Wpn-Missile2A-T", stat: "Missile-A-T" }, // scourge
@@ -345,7 +355,8 @@ const weaponStats = {
 			"R-Wpn-Missile-Accuracy02",
 		],
 	},
-	rockets_Arty: {
+	rockets_Arty:
+	{
 		alias: "rkta",
 		weapons: [
 			{ res: "R-Wpn-Rocket02-MRL", stat: "Rocket-MRL" }, // mra
@@ -372,7 +383,8 @@ const weaponStats = {
 			"R-Wpn-Missile-Accuracy02",
 		],
 	},
-	missile_Arty: {
+	missile_Arty:
+	{
 		alias: "missa",
 		weapons: [
 			{ res: "R-Wpn-MdArtMissile", stat: "Missile-MdArt" }, // seraph
@@ -390,7 +402,8 @@ const weaponStats = {
 			"R-Wpn-Missile-Accuracy02",
 		],
 	},
-	rockets_AS: {
+	rockets_AS:
+	{
 		alias: "rktas",
 		weapons: [
 			{ res: "R-Wpn-Rocket03-HvAT", stat: "Rocket-BB" }, // bb
@@ -402,7 +415,8 @@ const weaponStats = {
 		templates: [],
 		extras: [],
 	},
-	rockets_AA: {
+	rockets_AA:
+	{
 		alias: "rktaa",
 		weapons: [
 			{ res: "R-Wpn-Sunburst", stat: "Rocket-Sunburst" }, // sunburst
@@ -428,7 +442,8 @@ const weaponStats = {
 			"R-Wpn-Missile-Accuracy02",
 		],
 	},
-	lasers: {
+	lasers:
+	{
 		alias: "las",
 		weapons: [
 			{ res: "R-Wpn-Laser01", stat: "Laser3BEAMMk1" }, // flash
@@ -456,7 +471,8 @@ const weaponStats = {
 			"R-Wpn-Energy-Accuracy01",
 		],
 	},
-	fort_AT: {
+	fort_AT:
+	{
 		alias: "fort",
 		weapons: [],
 		vtols: [],
@@ -469,7 +485,8 @@ const weaponStats = {
 		templates: [],
 		extras: [],
 	},
-	AS: {
+	AS:
+	{
 		alias: "as",
 		weapons: [
 			{ res: "R-Wpn-PlasmaCannon", stat: "Laser4-PlasmaCannon" }, // plasma cannon
@@ -486,7 +503,8 @@ const weaponStats = {
 			"R-Wpn-Cannon-ROF06",
 		],
 	},
-	bombs: {
+	bombs:
+	{
 		alias: "bomb",
 		weapons: [],
 		vtols: [
@@ -506,7 +524,8 @@ const weaponStats = {
 			"R-Struc-VTOLPad-Upgrade06",
 		],
 	},
-	AA: {
+	AA:
+	{
 		alias: "aa",
 		weapons: [
 			{ res: "R-Wpn-AAGun03", stat: "QuadMg1AAGun" }, // hurricane
@@ -527,7 +546,8 @@ const weaponStats = {
 			"R-Wpn-AAGun-Accuracy03",
 		],
 	},
-	nexusTech: {
+	nexusTech:
+	{
 		alias: "nex",
 		weapons: [
 			//{ res: "R-Wpn-EMPCannon", stat: "EMP-Cannon" },
@@ -545,7 +565,8 @@ const weaponStats = {
 		    "R-Sys-Resistance-Circuits",
 		],
 	},
-	lasers_AA: {
+	lasers_AA:
+	{
 		alias: "lasaa",
 		weapons: [
 			{ res: "R-Wpn-AALaser", stat: "AAGunLaser" }, // stormbringer
@@ -561,7 +582,8 @@ const weaponStats = {
 			"R-Wpn-Energy-Accuracy01",
 		],
 	},
-	empBomb: {
+	empBomb:
+	{
 		alias: "empbomb",
 		weapons: [],
 		vtols: [

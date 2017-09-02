@@ -2,32 +2,38 @@
 //a better file to be placed in yet.
 
 // Random number between 0 and max-1.
-function random(max) {
+function random(max)
+{
 	return (max <= 0) ? 0 : Math.floor(Math.random() * max);
 }
 
 // Returns true if something is defined
-function isDefined(data) {
+function isDefined(data)
+{
 	return (typeof(data) !== "undefined");
 }
 
 //Determine if a game object is destroyed or not.
-function isObjectAlive(object) {
+function isObjectAlive(object)
+{
 	return (isDefined(object) && object && (object.id !== 0));
 }
 
 //Sort an array from smallest to largest in value.
-function sortArrayNumeric(a, b) {
+function sortArrayNumeric(a, b)
+{
 	return (a - b);
 }
 
 //Sort an array from smallest to largest in terms of droid health.
-function sortDroidsByHealth(a, b) {
+function sortDroidsByHealth(a, b)
+{
 	return (a.health - b.health);
 }
 
 //Used for deciding if a truck will capture oil.
-function isUnsafeEnemyObject(obj) {
+function isUnsafeEnemyObject(obj)
+{
 	return ((obj.type === DROID)
 		|| ((obj.type === STRUCTURE)
 		&& (obj.stattype === DEFENSE)
@@ -36,70 +42,85 @@ function isUnsafeEnemyObject(obj) {
 }
 
 //Sort by distance to base and reverse.
-function sortAndReverseDistance(arr) {
+function sortAndReverseDistance(arr)
+{
 	return (arr.sort(distanceToBase)).reverse();
 }
 
 //Return the alias of the primary weapon.
-function returnPrimaryAlias() {
+function returnPrimaryAlias()
+{
 	return subpersonalities[personality].primaryWeapon.alias;
 }
 
 //Return the alias of the secondary weapon.
-function returnSecondaryAlias() {
+function returnSecondaryAlias()
+{
 	return subpersonalities[personality].secondaryWeapon.alias;
 }
 
 //Return the alias of the anti-air weaponry.
-function returnAntiAirAlias() {
+function returnAntiAirAlias()
+{
 	return subpersonalities[personality].antiAir.alias;
 }
 
 //Return the alias of the artillery weapon.
-function returnArtilleryAlias() {
+function returnArtilleryAlias()
+{
 	return subpersonalities[personality].artillery.alias;
 }
 
 //Dump some text.
-function log(message) {
+function log(message)
+{
 	dump(gameTime + " : " + message);
 }
 
 //Dump information about an object and some text.
-function logObj(obj, message) {
+function logObj(obj, message)
+{
 	dump(gameTime + " : [" + obj.name + " id=" + obj.id + "] > " + message);
 }
 
 //Distance between an object and the Cobra base.
-function distanceToBase(obj1, obj2) {
+function distanceToBase(obj1, obj2)
+{
 	var dist1 = distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, obj1.x, obj1.y);
 	var dist2 = distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, obj2.x, obj2.y);
 	return (dist1 - dist2);
 }
 
 //Push list elements into another.
-function appendListElements(list, items) {
-	if(!isDefined(list)) {
+function appendListElements(list, items)
+{
+	if (!isDefined(list))
+	{
 		list = [];
 	}
 
 	var temp = list;
-	for(var i = 0, c = items.length; i < c; ++i) {
+	for (var i = 0, c = items.length; i < c; ++i)
+	{
 		temp.push(items[i]);
 	}
 
 	return temp;
 }
 
-function addDroidsToGroup(group, droids) {
-	for(var i = 0, d = droids.length; i < d; ++i) {
+function addDroidsToGroup(group, droids)
+{
+	for (var i = 0, d = droids.length; i < d; ++i)
+	{
 		groupAdd(group, droids[i]);
 	}
 }
 
 //Returns closest enemy object.
-function rangeStep(player) {
-	if(!isDefined(player)) {
+function rangeStep(player)
+{
+	if (!isDefined(player))
+	{
 		player = getMostHarmfulPlayer();
 	}
 
@@ -107,14 +128,17 @@ function rangeStep(player) {
 	var closestStructure = findNearestEnemyStructure(player);
 	var closestDroid = findNearestEnemyDroid(player);
 
-	if (isDefined(closestStructure)) {
+	if (isDefined(closestStructure))
+	{
 		targets.push(closestStructure);
 	}
-	if(isDefined(closestDroid)) {
+	if (isDefined(closestDroid))
+	{
 		targets.push(closestDroid);
 	}
 
-	if(isDefined(targets[0])) {
+	if (isDefined(targets[0]))
+	{
 		targets = targets.sort(distanceToBase);
 		return targets[0];
 	}
@@ -124,21 +148,29 @@ function rangeStep(player) {
 
 //Ally is false for checking for enemy players
 //Ally is true for allies.
-function playerAlliance(ally) {
-	if(!isDefined(ally)) {
+function playerAlliance(ally)
+{
+	if (!isDefined(ally))
+	{
 		ally = false;
 	}
 
-	function uncached(ally) {
+	function uncached(ally)
+	{
 		var players = [];
-		for(var i = 0; i < maxPlayers; ++i) {
-			if(!ally) {
-				if(!allianceExistsBetween(i, me) && (i !== me)) {
+		for (var i = 0; i < maxPlayers; ++i)
+		{
+			if (!ally)
+			{
+				if (!allianceExistsBetween(i, me) && (i !== me))
+				{
 					players.push(i);
 				}
 			}
-			else {
-				if(allianceExistsBetween(i, me) && (i !== me)) {
+			else
+			{
+				if (allianceExistsBetween(i, me) && (i !== me))
+				{
 					players.push(i);
 				}
 			}
@@ -147,12 +179,14 @@ function playerAlliance(ally) {
 		return players;
 	}
 
-	return cacheThis(uncached, [ally], undefined, 20000);
+	return cacheThis(uncached, [ally], undefined, 5000);
 }
 
 //Change stuff depending on difficulty.
-function diffPerks() {
-	switch(difficulty) {
+function diffPerks()
+{
+	switch (difficulty)
+	{
 		case EASY:
 			//This is handled in eventStartLevel().
 			break;
@@ -171,15 +205,20 @@ function diffPerks() {
 }
 
 //See if power levels are low. This takes account of only the power obtained from the generators.
-function checkLowPower(pow) {
-	if(!isDefined(pow)) {
+function checkLowPower(pow)
+{
+	if (!isDefined(pow))
+	{
 		pow = 25;
 	}
 
-	if(playerPower(me) < pow) {
-		if(playerAlliance(true).length) {
+	if (playerPower(me) < pow)
+	{
+		if (playerAlliance(true).length)
+		{
 			sendChatMessage("need Power", ALLIES);
 		}
+
 		return true;
 	}
 
@@ -187,9 +226,11 @@ function checkLowPower(pow) {
 }
 
 //return real power levels.
-function getRealPower() {
+function getRealPower()
+{
 	const POWER = playerPower(me) - queuedPower(me);
-	if(playerAlliance(true).length && (POWER < 50)) {
+	if (playerAlliance(true).length && (POWER < 50))
+	{
 		sendChatMessage("need Power", ALLIES);
 	}
 
@@ -197,18 +238,25 @@ function getRealPower() {
 }
 
 //Find enemies that are still alive.
-function findLivingEnemies() {
-	function uncached() {
+function findLivingEnemies()
+{
+	function uncached()
+	{
 		var alive = [];
-		for(var x = 0; x < maxPlayers; ++x) {
-	 		if((x !== me) && !allianceExistsBetween(x, me) && (enumDroid(x).length || enumStruct(x).length)) {
+		for (var x = 0; x < maxPlayers; ++x)
+		{
+	 		if ((x !== me) && !allianceExistsBetween(x, me) && (enumDroid(x).length || enumStruct(x).length))
+			{
 				alive.push(x);
 			}
-			else {
-				if(allianceExistsBetween(x, me) || (x === me)) {
+			else
+			{
+				if (allianceExistsBetween(x, me) || (x === me))
+				{
 					grudgeCount[x] = -2; //Friendly player.
 				}
-				else {
+				else
+				{
 					grudgeCount[x] = -1; //Dead enemy.
 				}
 			}
@@ -217,91 +265,89 @@ function findLivingEnemies() {
 		return alive;
 	}
 
-	return cacheThis(uncached, [], undefined, 15000);
+	return cacheThis(uncached, [], undefined, 10000);
 }
 
 //Tell allies who is attacking Cobra the most.
 //When called from chat using "stats" it will also tell you who is the most aggressive towards Cobra.
-function getMostHarmfulPlayer(chatEvent) {
-	function uncached(chatEvent) {
+function getMostHarmfulPlayer(chatEvent)
+{
+	function uncached(chatEvent)
+	{
 		var mostHarmful = 0;
 		var enemies = findLivingEnemies();
-	 	for(var x = 0, c = enemies.length; x < c; ++x) {
+	 	for (var x = 0, c = enemies.length; x < c; ++x)
+		{
 	 		if((grudgeCount[enemies[x]] >= 0) && (grudgeCount[enemies[x]] > grudgeCount[mostHarmful]))
-	 			mostHarmful = enemies[x];
+			{
+				mostHarmful = enemies[x];
+			}
 	 	}
-	 	if(isDefined(chatEvent) && (mostHarmful !== me)) {
+	 	if (isDefined(chatEvent) && (mostHarmful !== me))
+		{
 			sendChatMessage("Most harmful player: " + mostHarmful, ALLIES);
 		}
 
 		//In case Cobra is player zero (jsload or automation), return an enemy
 		//so that it does not attack itself if it wins.
 		var enemy_dummy = playerAlliance(false);
-		return ((mostHarmful !== me) && !allianceExistsBetween(mostHarmful, me)) ? mostHarmful : enemy_dummy[0];
+		return ((mostHarmful !== me) && !allianceExistsBetween(me, mostHarmful)) ? mostHarmful : enemy_dummy[0];
 	}
 
-	return cacheThis(uncached, [chatEvent]);
+	return cacheThis(uncached, [chatEvent], undefined, 12000);
 }
 
 //Removes duplicate items from something.
-function removeDuplicateItems(temp) {
+function removeDuplicateItems(temp)
+{
 	var prims = {"boolean":{}, "number":{}, "string":{}}, objs = [];
-	return temp.filter(function(item) {
+	return temp.filter(function(item)
+	{
 		var type = typeof item;
-		if(type in prims) {
+		if (type in prims)
+		{
 			return prims[type].hasOwnProperty(item) ? false : (prims[type][item] = true);
 		}
-		else {
+		else
+		{
 			return objs.indexOf(item) >= 0 ? false : objs.push(item);
 		}
 	});
 }
 
 //Set the initial grudge counter to target a random enemy.
-function initializeGrudgeCounter() {
+function initializeGrudgeCounter()
+{
 	grudgeCount = [];
 
-	for(var i = 0; i < maxPlayers; ++i) {
+	for (var i = 0; i < maxPlayers; ++i)
+	{
 		grudgeCount.push(0);
 	}
 
-	for(var i = 0; i < maxPlayers; ++i) {
-		if((!allianceExistsBetween(i, me)) && (i !== me)) {
+	for (var i = 0; i < maxPlayers; ++i)
+	{
+		if ((!allianceExistsBetween(i, me)) && (i !== me))
+		{
 			grudgeCount[i] = random(30);
 		}
-		else {
+		else
+		{
 			grudgeCount[i] = -2; //Otherwise bad stuff (attacking itself and allies) happens.
 		}
 	}
 }
 
-//Called from eventStartLevel, this initializes the globals.
-function initiaizeRequiredGlobals() {
-	nexusWaveOn = false;
-	researchComplete = false;
-	throttleTime = [];
-	lastAttackedTime = 0;
-	initializeGrudgeCounter();
-
-	for(var i = 0; i < 4; ++i) {
-		throttleTime.push(0);
-	}
-
-	diffPerks();
-
-	forceHover = checkIfSeaMap();
-	turnOffCyborgs = forceHover;
-	personality = choosePersonality();
-	initializeResearchLists();
-}
-
 //Donate a droid from one of Cobra's groups.
-function donateFromGroup(from, group) {
-	if(isDefined(group)) {
+function donateFromGroup(from, group)
+{
+	if (isDefined(group))
+	{
 		const MIN_HEALTH = 80;
 		var chosenGroup;
 
-		switch(group) {
+		switch (group)
+		{
 			case "ATTACK": chosenGroup = enumGroup(attackGroup); break;
 			case "CYBORG": chosenGroup = enumGroup(cyborgGroup); break;
 			case "VTOL": chosenGroup = enumGroup(vtolGroup); break;
@@ -311,9 +357,11 @@ function donateFromGroup(from, group) {
 		const DROIDS = chosenGroup.filter(function(dr) { return (dr.health > MIN_HEALTH); });
 		const CACHE_DROIDS = droids.length;
 
-		if(CACHE_DROIDS >= MIN_ATTACK_DROIDS) {
+		if (CACHE_DROIDS >= MIN_ATTACK_DROIDS)
+		{
 			var droid = DROIDS[random(CACHE_DROIDS)];
-			if(isDefined(droid)) {
+			if (isDefined(droid))
+			{
 				donateObject(droid, from);
 			}
 		}
@@ -321,23 +369,29 @@ function donateFromGroup(from, group) {
 }
 
 //Remove timers. May pass a string or an array of strings.
-function removeThisTimer(timer) {
-	if(timer instanceof Array) {
-		for(var i = 0, l = timer.length; i < l; ++i) {
+function removeThisTimer(timer)
+{
+	if (timer instanceof Array)
+	{
+		for(var i = 0, l = timer.length; i < l; ++i)
+		{
 			removeTimer(timer[i]);
 		}
 	}
-	else {
+	else
+	{
 		removeTimer(timer);
 	}
 }
 
 //Stop the non auto-remove timers if Cobra died.
-function stopTimersCobra() {
-	if(!(enumGroup(constructGroup).length || enumStruct(me, FACTORY).length)) {
+function stopTimersCobra()
+{
+	if (!(enumGroup(constructGroup).length || enumStruct(me, FACTORY).length))
+	{
 		var timers = [
 			"buildOrderCobra", "repairDroidTacticsCobra", "CobraProduce", "battleTacticsCobra",
-			"artilleryTacticsCobra", "stopTimersCobra", "researchCobra"
+			"artilleryTacticsCobra", "stopTimersCobra", "researchCobra", "lookForOil",
 		];
 
 		removeThisTimer(timers);
@@ -347,37 +401,46 @@ function stopTimersCobra() {
 
 //Give a player all of Cobra's power. one use is if it dies, then it gives
 //all of its power to an ally.
-function donateAllPower() {
+function donateAllPower()
+{
 	const ALLY_PLAYERS = playerAlliance(true);
 	const LEN = ALLY_PLAYERS.length;
 
-	if(LEN) {
+	if (LEN)
+	{
 		donatePower(playerPower(me), ALLY_PLAYERS[random(LEN)]);
 	}
 }
 
 //Tell if the personality likes cyborg or tank production.
-function droidPreference(swap) {
-	function uncached(swap) {
+function droidPreference(swap)
+{
+	function uncached(swap)
+	{
 		var preference;
-		if(!isDefined(swap)) {
+		if (!isDefined(swap))
+		{
 			swap = false;
 		}
 
-		for(var i = 0; i < 2; ++i) {
+		for (var i = 0; i < 2; ++i)
+		{
 			var fac = subpersonalities[personality].factoryOrder[i];
-
-			if(fac !== VTOL_FACTORY) {
+			if (fac !== VTOL_FACTORY)
+			{
 				preference = (fac === CYBORG_FACTORY) ? "CYBORG" : "TANK";
 				break;
 			}
 		}
 
-		if(swap === true) {
-			if(preference === "CYBORG") {
+		if (swap === true)
+		{
+			if (preference === "CYBORG")
+			{
 				preference = "TANK";
 			}
-			else {
+			else
+			{
 				preference = "CYBORG";
 			}
 		}

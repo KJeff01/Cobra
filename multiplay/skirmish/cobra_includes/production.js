@@ -1,53 +1,19 @@
 
-const TANK_BODY = [
-	"Body14SUP", // Dragon
-	"Body13SUP", // Wyvern
-	"Body10MBT", // Vengeance
-	"Body7ABT",  // Retribution
-	"Body6SUPP", // Panther
-	"Body12SUP", // Mantis
-	"Body8MBT",  // Scorpion
-	"Body11ABT", // Python
-	"Body5REC",  // Cobra
-	"Body1REC",  // Viper
-];
-
-const SYSTEM_BODY = [
-	"Body3MBT",  // Retaliation
-//	"Body2SUP",  // Leopard
-	"Body4ABT",  // Bug
-	"Body1REC",  // Viper
-];
-
-const SYSTEM_PROPULSION = [
-	"hover01", // hover
-	"wheeled01", // wheels
-];
-
-const VTOL_BODY = [
-	"Body7ABT",  // Retribution
-	"Body6SUPP", // Panther
-	"Body8MBT",  // Scorpion
-	"Body5REC",  // Cobra
-	"Body1REC",  // Viper
-];
-
-const REPAIR_TURRETS = [
-	"HeavyRepair",
-	"LightRepair1",
-];
-
-//See if we can design this droid. Mostly used for checking for new weapons with the NIP.
-function isDesignable(item, body, prop) {
-	if(!isDefined(item)) {
+//See if we can design this droid.
+function isDesignable(item, body, prop)
+{
+	if (!isDefined(item))
+	{
 		return false;
 	}
 
-	if(!isDefined(body)) {
+	if (!isDefined(body))
+	{
 		body = "Body1REC";
 	}
 
-	if(!isDefined(prop)) {
+	if (!isDefined(prop))
+	{
 		prop = "wheeled01";
 	}
 
@@ -56,10 +22,12 @@ function isDesignable(item, body, prop) {
 }
 
 //Pick a random weapon line. May return undefined for machineguns.
-function chooseRandomWeapon() {
+function chooseRandomWeapon()
+{
 	var weaps;
 
-	switch(random(5)) {
+	switch (random(5))
+	{
 		case 0: weaps = subpersonalities[personality].primaryWeapon; break;
 		case 1: weaps = subpersonalities[personality].artillery; break;
 		case 2: weaps = weaponStats.lasers; break;
@@ -68,22 +36,16 @@ function chooseRandomWeapon() {
 		default: weaps = subpersonalities[personality].primaryWeapon; break;
 	}
 
-	if(!isDesignable(weaps.weapons[0].stat)) {
-		weaps = subpersonalities[personality].primaryWeapon;
-
-		if(!isDesignable(weaps.weapons[0].stat)) {
-			weaps = subpersonalities[personality].artillery;
-		}
-	}
-
 	return weaps;
 }
 
 //Prepare the weapon list.
-function shuffleWeaponList(weaps) {
+function shuffleWeaponList(weaps)
+{
 	var weaponList = [];
 
-	for(var i = 0, w = weaps.length; i < w; ++i) {
+	for (var i = 0, w = weaps.length; i < w; ++i)
+	{
 		weaponList.push(weaps[i].stat);
 	}
 
@@ -92,13 +54,16 @@ function shuffleWeaponList(weaps) {
 }
 
 //Either fastFire or normal.
-function chooseWeaponType(weaps) {
+function chooseWeaponType(weaps)
+{
 	var weaponType = weaps;
 
-	if(isDefined(weaps.fastFire) && (random(101) < 50)) {
+	if (isDefined(weaps.fastFire) && (random(101) < 50))
+	{
 		weaponType = weaps.fastFire;
 	}
-	else {
+	else
+	{
 		weaponType = weaps.weapons;
 	}
 
@@ -106,12 +71,14 @@ function chooseWeaponType(weaps) {
 }
 
 //Choose a random cyborg weapon line. May return undefined.
-function chooseRandomCyborgWeapon() {
+function chooseRandomCyborgWeapon()
+{
 	var weaps;
 
 	//grenadier cyborgs can only be built as long as Cobra does not Have
 	//access to pepperpot. They are too weak after that.
-	switch(random(4)) {
+	switch (random(4))
+	{
 		case 0: weaps = subpersonalities[personality].primaryWeapon; break;
 		case 1: weaps = weaponStats.lasers; break;
 		case 2: weaps = subpersonalities[personality].secondaryWeapon; break;
@@ -123,11 +90,13 @@ function chooseRandomCyborgWeapon() {
 }
 
 //Choose random VTOL weapon line. Defaults to bombs if undefined.
-function chooseRandomVTOLWeapon() {
+function chooseRandomVTOLWeapon()
+{
 	var weaps;
 	var isEMP = false;
 
-	switch(random(5)) {
+	switch (random(5))
+	{
 		case 0: if((returnPrimaryAlias() !== "mg") && (returnPrimaryAlias() !== "fl")) { weaps = subpersonalities[personality].primaryWeapon; } break;
 		case 1: weaps = weaponStats.lasers; break;
 		case 2: weaps = subpersonalities[personality].secondaryWeapon; break;
@@ -136,7 +105,8 @@ function chooseRandomVTOLWeapon() {
 		default: weaps = weaponStats.lasers; break;
 	}
 
-	if(!isDefined(weaps) || (!isEMP && (weaps.vtols.length - 1 <= 0))) {
+	if (!isDefined(weaps) || (!isEMP && (weaps.vtols.length - 1 <= 0)))
+	{
 		weaps = weaponStats.bombs;
 	}
 
@@ -147,42 +117,49 @@ function chooseRandomVTOLWeapon() {
 //Randomly choose the best weapon with current technology.
 //Defaults to machine-guns when other choices are unavailable (if allowed). May return undefined.
 //Also cyborgs will not return the actual stat list with this function due to how they are built.
-function choosePersonalityWeapon(type) {
+function choosePersonalityWeapon(type)
+{
 	var weaps;
 	var weaponList = [];
 
-	if(!isDefined(type)) {
+	if (!isDefined(type))
+	{
 		type = "TANK";
 	}
 
-	if(type === "TANK") {
+	if (type === "TANK")
+	{
 		const PLASMA_LAUNCHER = "PlasmaHeavy";
-
 		weaps = chooseRandomWeapon();
 		weaponList = shuffleWeaponList(chooseWeaponType(weaps));
 
 		//on hard difficulty and above.
-		if(componentAvailable("tracked01") && (random(101) <= 1)) {
-			if((difficulty === HARD) || (difficulty === INSANE)) {
+		if (componentAvailable("tracked01") && (random(101) <= 1))
+		{
+			if((difficulty === HARD) || (difficulty === INSANE))
+			{
 				weaponList.push(PLASMA_LAUNCHER);
 			}
 		}
 
-		//Try defaulting to machine-guns then.
-		if(!isDesignable(weaponList) && (personality !== "AL")) {
+		if (!turnOffMG && !isDesignable(weaponList))
+		{
 			weaponList = [];
-			for(var i = weaponStats.machineguns.weapons.length - 1; i >= 0; --i) {
-				weaponList.push(weaponStats.machineguns.weapons[i].stat);
-			}
+ 			for (var i = weaponStats.machineguns.weapons.length - 1; i >= 0; --i)
+			{
+ 				weaponList.push(weaponStats.machineguns.weapons[i].stat);
+ 			}
 		}
 	}
-	else if(type === "CYBORG") {
+	else if (type === "CYBORG")
+	{
 		weaps = chooseRandomCyborgWeapon();
 	}
-	else if(type === "VTOL") {
+	else if (type === "VTOL")
+	{
 		weaps = chooseRandomVTOLWeapon();
-
-		for(var i = weaps.length - 1; i >= 0; --i) {
+		for (var i = weaps.length - 1; i >= 0; --i)
+		{
 			weaponList.push(weaps[i].stat);
 		}
 	}
@@ -192,29 +169,38 @@ function choosePersonalityWeapon(type) {
 
 //What conditions will allow hover use. There is a 15% chance regardless of weapon.
 //Expects an array of weapons.
-function useHover(weap) {
-	if(!(isDefined(weap) && componentAvailable("hover01"))) {
+function useHover(weap)
+{
+	if (!(isDefined(weap) && componentAvailable("hover01")))
+	{
 		return false;
 	}
 
-	if(forceHover) {
+	if (forceHover)
+	{
 		return true;
 	}
 
 	var useHover = false;
 
-	for(var i = 0, w = weap.length; i < w; ++i) {
+	for (var i = 0, w = weap.length; i < w; ++i)
+	{
 		const NAME = weap[i];
 
-		if((NAME === "Flame1Mk1") || (NAME === "Flame2") || (NAME === "PlasmiteFlamer")) {
+		if ((NAME === "Flame1Mk1") || (NAME === "Flame2") || (NAME === "PlasmiteFlamer"))
+		{
 			useHover = true;
 			break;
 		}
-		if((NAME === "Rocket-LtA-T") || (NAME === "Rocket-HvyA-T") || (NAME === "Missile-A-T")) {
+
+		if ((NAME === "Rocket-LtA-T") || (NAME === "Rocket-HvyA-T") || (NAME === "Missile-A-T"))
+		{
 			useHover = (random(101) <= 75);
 			break;
 		}
-		if((NAME === "Laser3BEAMMk1") || (NAME === "Laser2PULSEMk1") || (NAME === "HeavyLaser")) {
+
+		if ((NAME === "Laser3BEAMMk1") || (NAME === "Laser2PULSEMk1") || (NAME === "HeavyLaser"))
+		{
 			useHover = (random(101) <= 55);
 			break;
 		}
@@ -224,8 +210,10 @@ function useHover(weap) {
 }
 
 //Choose our ground propulsion. Non-hover units will have a preference for tracks.
-function pickPropulsion(weap) {
-	if(useHover(weap)) {
+function pickPropulsion(weap)
+{
+	if (useHover(weap))
+	{
 		return "hover01";
 	}
 
@@ -236,7 +224,8 @@ function pickPropulsion(weap) {
 		"wheeled01", // wheels
 	];
 
-	if((random(101) < 67) || (gameTime < TIME_FOR_HALF_TRACKS)) {
+	if ((random(101) < 45) || (gameTime < TIME_FOR_HALF_TRACKS))
+	{
 		tankProp.shift();
 	}
 
@@ -246,20 +235,26 @@ function pickPropulsion(weap) {
 //Create a ground attacker tank with a heavy body when possible.
 //Personality AR uses hover when possible. All personalities may use special weapons on Hard/Insane.
 //Also when Cobra has Dragon body, the EMP Cannon may be selected as the second weapon if it is researched.
-function buildAttacker(struct) {
-	if(!(isDefined(forceHover) && isDefined(seaMapWithLandEnemy))) {
+function buildAttacker(struct)
+{
+	if (!(isDefined(forceHover) && isDefined(seaMapWithLandEnemy)))
+	{
 		return false;
 	}
-	if(forceHover && !seaMapWithLandEnemy && !componentAvailable("hover01")) {
+	if (forceHover && !seaMapWithLandEnemy && !componentAvailable("hover01"))
+	{
 		return false;
 	}
 
 	var weap = choosePersonalityWeapon("TANK");
 	var secondary = choosePersonalityWeapon("TANK");
 
-	if(isDefined(weap) && isDefined(secondary) && (secondary[0] !== "Laser4-PlasmaCannon")) {
-		if(isDefined(struct)) {
-			if(!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon")) {
+	if (isDefined(weap) && isDefined(secondary) && (secondary[0] !== "Laser4-PlasmaCannon"))
+	{
+		if (isDefined(struct))
+		{
+			if (!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon"))
+			{
 				secondary = "EMP-Cannon";
 			}
 
@@ -271,8 +266,10 @@ function buildAttacker(struct) {
 }
 
 //Create trucks or sensors with a light body. Default to a sensor.
-function buildSys(struct, weap) {
-	if(!isDefined(weap)) {
+function buildSys(struct, weap)
+{
+	if (!isDefined(weap))
+	{
 		weap = ["Sensor-WideSpec", "SensorTurret1Mk1"];
 	}
 
@@ -280,24 +277,29 @@ function buildSys(struct, weap) {
 }
 
 //Create a cyborg with available research. Expects a boolean for useEngineer or can undefined.
-function buildCyborg(fac, useEngineer) {
+function buildCyborg(fac, useEngineer)
+{
 	var weap = "CyborgSpade";
 	var body = "CyborgLightBody";
 	var prop = "CyborgLegs";
 
 	//Build combat engineer if requested.
-	if(isDefined(useEngineer) && (useEngineer === true)) {
+	if (isDefined(useEngineer) && (useEngineer === true))
+	{
 		return buildDroid(fac, "Combat Engineer", body, prop, "", "", weap);
 	}
 
 	var weaponLine = choosePersonalityWeapon("CYBORG");
-	if(isDefined(weaponLine) && isDefined(fac)) {
-		for(var x = weaponLine.templates.length - 1; x >= 0; --x) {
+	if (isDefined(weaponLine) && isDefined(fac))
+	{
+		for (var x = weaponLine.templates.length - 1; x >= 0; --x)
+		{
 			body = weaponLine.templates[x].body;
 			prop = weaponLine.templates[x].prop;
 			weap = weaponLine.templates[x].weapons[0];
 
-			if(buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap)) {
+			if (buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap))
+			{
 				return true;
 			}
 		}
@@ -307,32 +309,38 @@ function buildCyborg(fac, useEngineer) {
 }
 
 //Create a vtol fighter with a medium body.
-function buildVTOL(struct) {
+function buildVTOL(struct)
+{
 	var weap = choosePersonalityWeapon("VTOL");
 	return (isDefined(struct) && isDefined(weap) && buildDroid(struct, "VTOL unit", VTOL_BODY, "V-Tol", "", "", weap, weap));
 }
 
 //Check what system units are queued in a regular factory. Returns an object
 //containing the number or trucks/sensors/repairs queued.
-function analyzeQueuedSystems() {
+function analyzeQueuedSystems()
+{
 	var fac = enumStruct(me, FACTORY);
 	var trucks = 0;
 	var sens = 0;
 	var reps = 0;
 
-	for(var i = 0, l = fac.length; i < l; ++i) {
+	for (var i = 0, l = fac.length; i < l; ++i)
+	{
 		var virDroid = getDroidProduction(fac[i]);
-
-		if(virDroid !== null) {
+		if (virDroid !== null)
+		{
 			const TYPE = virDroid.droidType;
 
-			if(TYPE === DROID_CONSTRUCT) {
+			if (TYPE === DROID_CONSTRUCT)
+			{
 				trucks += 1;
 			}
-			if(TYPE === DROID_SENSOR) {
+			if (TYPE === DROID_SENSOR)
+			{
 				sens += 1;
 			}
-			if(TYPE === DROID_REPAIR) {
+			if (TYPE === DROID_REPAIR)
+			{
 				reps += 1;
 			}
 		}
@@ -343,13 +351,9 @@ function analyzeQueuedSystems() {
 
 
 //Produce a unit when factories allow it.
-function CobraProduce() {
-	if(isDefined(enumDroid(me)[149])) {
-		return;
-	}
-
+function CobraProduce()
+{
 	const MIN_POWER = 180;
-	const MIN_TRUCKS = 6;
 	const MIN_COM_ENG = 3;
 	const MIN_SENSORS = 2;
 	const MIN_REPAIRS = 3;
@@ -363,45 +367,67 @@ function CobraProduce() {
 	var buildTrucks = ((enumGroup(constructGroup).length + enumGroup(oilGrabberGroup).length + systems.truck) < MIN_TRUCKS);
 
 	//Loop through factories in the order the personality likes.
-	for(var i = 0; i < 3; ++i) {
+	for (var i = 0; i < 3; ++i)
+	{
 		var facType = subpersonalities[personality].factoryOrder[i];
 		var fac = enumStruct(me, facType);
 
-		if(!((facType === CYBORG_FACTORY) && !forceHover && turnOffCyborgs)) {
+		if (!((facType === CYBORG_FACTORY) && !forceHover && turnOffCyborgs))
+		{
 
-			for(var x = 0, l = fac.length; x < l; ++x) {
+			for (var x = 0, l = fac.length; x < l; ++x)
+			{
 				const FC = fac[x];
-				if(isDefined(FC) && structureIdle(FC) && (getRealPower() > MIN_POWER)) {
+				if (isDefined(FC) && structureIdle(FC) && (getRealPower() > MIN_POWER))
+				{
 
-					if(facType === FACTORY) {
-						if(buildTrucks) {
+					if (facType === FACTORY)
+					{
+						if (buildTrucks)
+						{
 							buildSys(FC, "Spade1Mk1");
 						}
-						else if(buildSensors && componentAvailable("SensorTurret1Mk1")) {
+						else if (buildSensors
+							&& enumGroup(artilleryGroup).length
+							&& componentAvailable("SensorTurret1Mk1"))
+						{
 							buildSys(FC);
 						}
-						else if(allowSpecialSystems && buildRepairs && isDesignable("LightRepair1")) {
+						else if (allowSpecialSystems
+							&& buildRepairs
+							&& isDesignable("LightRepair1"))
+						{
 							buildSys(FC, REPAIR_TURRETS);
 						}
-						else {
+						else
+						{
 							//Do not produce weak body units if we can give this factory a module.
-							if((FC.modules < 1) && componentAvailable("Body11ABT"))
+							if (!countStruct(structures.gens)
+								|| (FC.modules < 1
+								&& componentAvailable("Body11ABT")))
+							{
 								continue;
+							}
 
 							buildAttacker(FC);
 						}
 					}
-					else {
-						if (facType === CYBORG_FACTORY) {
-							buildCyborg(FC, useCybEngineer);
-						}
-						else {
-							buildVTOL(FC);
+					else
+					{
+						if (countStruct(structures.gens))
+						{
+							if (facType === CYBORG_FACTORY)
+							{
+								buildCyborg(FC, useCybEngineer);
+							}
+							else
+							{
+								buildVTOL(FC);
+							}
 						}
 					}
 				}
 			}
 		}
 	}
-
 }
