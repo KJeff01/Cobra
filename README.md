@@ -7,7 +7,7 @@ There are five personalities so far (all use lasers and plasma cannon when it ca
 
 1. AC: Cannon/Gauss/Howitzer.
 2. AR: Flamer/Gauss/Howitzer.
-3. AB: Rockets & missiles/Gauss/missile artillery.
+3. AB: Rockets & missiles/Gauss/rocket & missile artillery.
 4. AM: Machine-guns/Lasers/Howitzer.
 5. AL: Lasers/Gauss/Fire mortar.
 
@@ -22,17 +22,16 @@ chat commands include:
 1. need power/truck/tank/cyborg/vtol.
 2. AC/AR/AB/AM/AL -- make it switch personalities.
 3. FFA -- after a team skirmish is won, break alliance and fight it (does not count as win/loss either way).
-4. toggle mg -- disable/enable machinegun use.
-5. toggle cyborg -- disable/enable cyborg use.
-6. toggle hover -- force Cobra to use hover propulsion for all tanks.
-7. oil level -- Ask what the oil count of the whole map is with a response of low, medium, or high.
-8. targetX -- Ask Cobra to focus on enemy player X.
-9. stats -- Which player Cobra is currently targeting.
+4. toggle cyborg -- disable/enable cyborg use.
+5. toggle hover -- force Cobra to use hover propulsion for all tanks.
+6. oil level -- Ask what the oil count of the whole map is with a response of low, medium, or high.
+7. targetX -- Ask Cobra to focus on enemy player X.
+8. stats -- Which player Cobra is currently targeting.
 
 Press alt+h to drop a beacon and Cobra units will try making their way over to it if possible.
 
-warzone2100 links:
-1. This AI uses a slimmed version of the NullBot3 standard file for research related information: https://github.com/haoNoQ/nullbot
+Warzone2100 links:
+1. This AI uses a slimmed version of the NullBot3 standard ruleset file for research related information: https://github.com/haoNoQ/nullbot
 2. website https://wz2100.net/
 3. github https://github.com/Warzone2100/warzone2100
 4. Official discussion forum thread: http://forums.wz2100.net/viewtopic.php?f=49&t=12676
