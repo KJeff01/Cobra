@@ -28,12 +28,17 @@ function chooseRandomWeapon()
 
 	switch (random(5))
 	{
-		case 0: weaps = subpersonalities[personality].primaryWeapon; break;
-		case 1: weaps = subpersonalities[personality].artillery; break;
+		case 0: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
+		case 1: if (useArti) { weaps = SUB_PERSONALITIES[personality].artillery; } break;
 		case 2: weaps = weaponStats.lasers; break;
-		case 3: weaps = subpersonalities[personality].secondaryWeapon; break;
+		case 3: weaps = SUB_PERSONALITIES[personality].secondaryWeapon; break;
 		case 4: weaps = weaponStats.AS; break;
-		default: weaps = subpersonalities[personality].primaryWeapon; break;
+		default: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
+	}
+
+	if (!isDefined(weaps))
+	{
+		weaps = weaponStats.lasers;
 	}
 
 	return weaps;
@@ -79,11 +84,11 @@ function chooseRandomCyborgWeapon()
 	//access to pepperpot. They are too weak after that.
 	switch (random(4))
 	{
-		case 0: weaps = subpersonalities[personality].primaryWeapon; break;
+		case 0: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
 		case 1: weaps = weaponStats.lasers; break;
-		case 2: weaps = subpersonalities[personality].secondaryWeapon; break;
-		case 3: if(!componentAvailable("Mortar3ROTARYMk1")) { weaps = subpersonalities[personality].artillery; } break;
-		default: weaps = subpersonalities[personality].primaryWeapon; break;
+		case 2: weaps = SUB_PERSONALITIES[personality].secondaryWeapon; break;
+		case 3: if(!componentAvailable("Mortar3ROTARYMk1") && useArti) { weaps = SUB_PERSONALITIES[personality].artillery; } break;
+		default: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
 	}
 
 	return weaps;
@@ -97,9 +102,9 @@ function chooseRandomVTOLWeapon()
 
 	switch (random(5))
 	{
-		case 0: if((returnPrimaryAlias() !== "mg") && (returnPrimaryAlias() !== "fl")) { weaps = subpersonalities[personality].primaryWeapon; } break;
+		case 0: if((returnPrimaryAlias() !== "mg") && (returnPrimaryAlias() !== "fl")) { weaps = SUB_PERSONALITIES[personality].primaryWeapon; } break;
 		case 1: weaps = weaponStats.lasers; break;
-		case 2: weaps = subpersonalities[personality].secondaryWeapon; break;
+		case 2: weaps = SUB_PERSONALITIES[personality].secondaryWeapon; break;
 		case 3: weaps = weaponStats.bombs; break;
 		case 4: weaps = weaponStats.empBomb; isEMP = true; break;
 		default: weaps = weaponStats.lasers; break;
@@ -353,7 +358,7 @@ function analyzeQueuedSystems()
 //Produce a unit when factories allow it.
 function CobraProduce()
 {
-	const MIN_POWER = 180;
+	const MIN_POWER = 160;
 	const MIN_COM_ENG = 3;
 	const MIN_SENSORS = 2;
 	const MIN_REPAIRS = 3;
@@ -369,7 +374,7 @@ function CobraProduce()
 	//Loop through factories in the order the personality likes.
 	for (var i = 0; i < 3; ++i)
 	{
-		var facType = subpersonalities[personality].factoryOrder[i];
+		var facType = SUB_PERSONALITIES[personality].factoryOrder[i];
 		var fac = enumStruct(me, facType);
 
 		if (!((facType === CYBORG_FACTORY) && !forceHover && turnOffCyborgs))
@@ -422,7 +427,10 @@ function CobraProduce()
 							}
 							else
 							{
-								buildVTOL(FC);
+								if (useVtol)
+								{
+									buildVTOL(FC);
+								}
 							}
 						}
 					}

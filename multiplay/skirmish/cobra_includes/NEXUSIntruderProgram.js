@@ -230,7 +230,7 @@ function tryNexusFunctionalityCobra()
 {
 	if (isDefined(nexusWaveOn) && !nexusWaveOn)
 	{
-		removeThisTimer("tryNexusFunctionalityCobra");
+		//removeThisTimer("tryNexusFunctionalityCobra");
 		return;
 	}
 

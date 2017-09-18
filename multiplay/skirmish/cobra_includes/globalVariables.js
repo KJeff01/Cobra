@@ -1,5 +1,5 @@
 const MAX_GRUDGE = 50000;
-const MIN_ATTACK_DROIDS = 6;
+const MIN_ATTACK_DROIDS = 7;
 const FACTORY = "A0LightFactory";
 const CYBORG_FACTORY = "A0CyborgFactory";
 const VTOL_FACTORY = "A0VTolFactory1";
@@ -31,8 +31,8 @@ const ESSENTIALS = [
 const SYSTEM_UPGRADES = [
 	"R-Sys-Sensor-Upgrade03",
 	"R-Sys-MobileRepairTurretHvy",
-	"R-Struc-Factory-Upgrade09",
 	"R-Sys-Autorepair-General",
+	"R-Struc-Factory-Upgrade09",
 	"R-Struc-RprFac-Upgrade06",
 ];
 const FLAMER = [
@@ -60,17 +60,9 @@ const BODY_RESEARCH = [
 ];
 const VTOL_RES = [
 	"R-Wpn-Bomb-Accuracy03",
-	"R-Struc-VTOLPad-Upgrade06",
-	"R-Wpn-Bomb05",
-	"R-Wpn-Bomb06",
-];
-const MID_GAME_TECH = [
-	"R-Cyborg-Metals05",
-	"R-Vehicle-Metals05",
 	"R-Wpn-Bomb04",
-	"R-Wpn-Bomb-Accuracy02",
-	"R-Struc-VTOLPad-Upgrade04",
-	"R-Defense-WallUpgrade03",
+	"R-Struc-VTOLPad-Upgrade06",
+	"R-Wpn-Bomb06",
 ];
 const LATE_EARLY_GAME_TECH = [
 	"R-Vehicle-Body11",
@@ -122,7 +114,7 @@ const REPAIR_TURRETS = [
 //All personalities use laser technology. This includes the plasma cannon.
 //The secondary weapon has low priority.
 //TODO: Stop producing primaryWeapon when secondary is available.
-const subpersonalities =
+const SUB_PERSONALITIES =
 {
 	AC:
 	{
@@ -198,12 +190,7 @@ const subpersonalities =
 		"systemPriority": 40,
 		"alloyPriority": 15,
 		"res": [
-			"R-Wpn-Mortar-Incendiary",
 			"R-Wpn-Laser01",
-			"R-Sys-Autorepair-General",
-			"R-Wpn-Mortar-Damage06",
-			"R-Wpn-Mortar-ROF04",
-			"R-Wpn-Mortar-Acc03",
 		],
 	},
 };
@@ -230,6 +217,8 @@ var researchComplete; //Check if done with research.
 var lastAttackedTime;
 var turnOffMG; //This is only used for when the personalities don't have their weapons researched.
 var buildQueue;
+var useArti;
+var useVtol;
 
 // -- Weapon research list (initializeResearchLists).
 var techlist;

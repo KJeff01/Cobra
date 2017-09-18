@@ -512,7 +512,7 @@ const weaponStats =
 			{ res: "R-Wpn-Bomb03", stat: "Bomb3-VTOL-LtINC" }, // Phosphor bomb
 			{ res: "R-Wpn-Bomb02", stat: "Bomb2-VTOL-HvHE" }, // HEAP bomb
 			{ res: "R-Wpn-Bomb04", stat: "Bomb4-VTOL-HvyINC" }, // Thermite bomb
-			{ res: "R-Wpn-Bomb05", stat: "Bomb5-VTOL-Plasmite" }, // Plasmite bomb
+			//{ res: "R-Wpn-Bomb05", stat: "Bomb5-VTOL-Plasmite" }, // Plasmite bomb
 		],
 		empBomb: [
 			{ res: "R-Wpn-Bomb06", stat: "Bomb6-VTOL-EMP" }, // EMP Missile Launcher

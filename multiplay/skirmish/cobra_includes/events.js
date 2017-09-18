@@ -63,6 +63,8 @@ function eventStartLevel()
 	personality = choosePersonality();
 	turnOffMG = CheckStartingBases();
 	initializeResearchLists();
+	useArti = personality !== "AL" && random(101) < 50;
+	useVtol = random(101) < 50;
 
 	recycleForHoverCobra();
 	buildOrderCobra(); //Start building right away.
@@ -71,14 +73,14 @@ function eventStartLevel()
 	setTimer("CobraProduce", THINK_LONGER + 600 + 3 * random(70));
 	setTimer("buildOrderCobra", THINK_LONGER + 1100 + 3 * random(60));
 	setTimer("researchCobra", THINK_LONGER + 1400 + 3 * random(70));
-	setTimer("switchOffMG", THINK_LONGER + 1800 + 3 * random(70)); //May remove itself.
+	setTimer("switchOffMG", THINK_LONGER + 1800 + 3 * random(70));
 	setTimer("lookForOil", THINK_LONGER + 2000 + 3 * random(60))
 	setTimer("repairDroidTacticsCobra", THINK_LONGER + 2500 + 4 * random(60));
 	setTimer("artilleryTacticsCobra", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("vtolTacticsCobra", THINK_LONGER + 5600 + 3 * random(70));
 	setTimer("battleTacticsCobra", THINK_LONGER + 7000 + 5 * random(60));
-	setTimer("tryNexusFunctionalityCobra", THINK_LONGER + 13000 + 3 * random(70)); //May remove itself.
-	setTimer("recycleForHoverCobra", THINK_LONGER + 15000 + 2 * random(60)); // May remove itself.
+	setTimer("tryNexusFunctionalityCobra", THINK_LONGER + 13000 + 3 * random(70));
+	setTimer("recycleForHoverCobra", THINK_LONGER + 15000 + 2 * random(60));
 	setTimer("stopTimersCobra", THINK_LONGER + 100000 + 5 * random(70));
 }
 
@@ -188,7 +190,7 @@ function eventAttacked(victim, attacker)
 		{
 			if ((victim.droidType === DROID_WEAPON) || (victim.droidType === DROID_CYBORG))
 			{
-				orderDroidObj(victim, DORDER_ATTACK, attacker);
+				orderDroidLoc(victim, DORDER_SCOUT, attacker.x, attacker.y);
 			}
 		}
 

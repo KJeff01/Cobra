@@ -433,25 +433,26 @@ function recycleForHoverCobra()
 				orderDroid(systems[i], DORDER_RECYCLE);
 			}
 		}
-
+		/*
 		if (!forceHover && !NON_HOVER_SYSTEMS)
 		{
 			removeThisTimer("recycleForHoverCobra");
 		}
-
+		*/
 		if (forceHover)
 		{
-			var tanks = enumGroup(attackGroup).filter(function(dr) { return (dr.droidType === DROID_WEAPON && dr.propulsion !== "hover01"); });
+			var tanks = enumGroup(attackGroup).filter(function(dr) { return (dr.propulsion !== "hover01"); });
 			const NON_HOVER_TANKS = tanks.length;
 			for (var j = 0; j < NON_HOVER_TANKS; ++j)
 			{
 				orderDroid(tanks[j], DORDER_RECYCLE);
 			}
-
+			/*
 			if (!(NON_HOVER_TANKS + NON_HOVER_SYSTEMS))
 			{
 				removeThisTimer("recycleForHoverCobra");
 			}
+			*/
 		}
 	}
 }
@@ -595,7 +596,10 @@ function enemyUnitsInBase()
 function haltAttackDroids()
 {
 	const DROIDS = enumDroid(me).filter(function(dr) {
-		return ((dr.droidType !== DROID_CONSTRUCT) && (dr.droidType !== DROID_REPAIR));
+		return (dr.droidType !== DROID_CONSTRUCT
+			&& dr.droidType !== DROID_REPAIR
+			&& !isVTOL(dr)
+		);
 	});
 
 	for (var i = 0, l = DROIDS.length; i < l; ++i)

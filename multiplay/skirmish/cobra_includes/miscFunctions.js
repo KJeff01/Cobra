@@ -50,25 +50,25 @@ function sortAndReverseDistance(arr)
 //Return the alias of the primary weapon.
 function returnPrimaryAlias()
 {
-	return subpersonalities[personality].primaryWeapon.alias;
+	return SUB_PERSONALITIES[personality].primaryWeapon.alias;
 }
 
 //Return the alias of the secondary weapon.
 function returnSecondaryAlias()
 {
-	return subpersonalities[personality].secondaryWeapon.alias;
+	return SUB_PERSONALITIES[personality].secondaryWeapon.alias;
 }
 
 //Return the alias of the anti-air weaponry.
 function returnAntiAirAlias()
 {
-	return subpersonalities[personality].antiAir.alias;
+	return SUB_PERSONALITIES[personality].antiAir.alias;
 }
 
 //Return the alias of the artillery weapon.
 function returnArtilleryAlias()
 {
-	return subpersonalities[personality].artillery.alias;
+	return SUB_PERSONALITIES[personality].artillery.alias;
 }
 
 //Dump some text.
@@ -268,11 +268,10 @@ function findLivingEnemies()
 	return cacheThis(uncached, [], undefined, 10000);
 }
 
-//Tell allies who is attacking Cobra the most.
-//When called from chat using "stats" it will also tell you who is the most aggressive towards Cobra.
-function getMostHarmfulPlayer(chatEvent)
+//The enemy of which Cobra is focusing on.
+function getMostHarmfulPlayer()
 {
-	function uncached(chatEvent)
+	function uncached()
 	{
 		var mostHarmful = 0;
 		var enemies = findLivingEnemies();
@@ -283,18 +282,14 @@ function getMostHarmfulPlayer(chatEvent)
 				mostHarmful = enemies[x];
 			}
 	 	}
-	 	if (isDefined(chatEvent) && (mostHarmful !== me))
-		{
-			sendChatMessage("Most harmful player: " + mostHarmful, ALLIES);
-		}
 
 		//In case Cobra is player zero (jsload or automation), return an enemy
 		//so that it does not attack itself if it wins.
-		var enemy_dummy = playerAlliance(false);
+		var enemy_dummy = playerAlliance(false).reverse();
 		return ((mostHarmful !== me) && !allianceExistsBetween(me, mostHarmful)) ? mostHarmful : enemy_dummy[0];
 	}
 
-	return cacheThis(uncached, [chatEvent], undefined, 12000);
+	return cacheThis(uncached, [], undefined, 12000);
 }
 
 //Removes duplicate items from something.
@@ -389,12 +384,14 @@ function stopTimersCobra()
 {
 	if (!(enumGroup(constructGroup).length || enumStruct(me, FACTORY).length))
 	{
+		/*
 		var timers = [
 			"buildOrderCobra", "repairDroidTacticsCobra", "CobraProduce", "battleTacticsCobra",
 			"artilleryTacticsCobra", "stopTimersCobra", "researchCobra", "lookForOil",
 		];
 
 		removeThisTimer(timers);
+		*/
 		donateAllPower();
 	}
 }
@@ -406,7 +403,7 @@ function donateAllPower()
 	const ALLY_PLAYERS = playerAlliance(true);
 	const LEN = ALLY_PLAYERS.length;
 
-	if (LEN)
+	if (LEN && playerPower(me) > 0)
 	{
 		donatePower(playerPower(me), ALLY_PLAYERS[random(LEN)]);
 	}
@@ -425,7 +422,7 @@ function droidPreference(swap)
 
 		for (var i = 0; i < 2; ++i)
 		{
-			var fac = subpersonalities[personality].factoryOrder[i];
+			var fac = SUB_PERSONALITIES[personality].factoryOrder[i];
 			if (fac !== VTOL_FACTORY)
 			{
 				preference = (fac === CYBORG_FACTORY) ? "CYBORG" : "TANK";

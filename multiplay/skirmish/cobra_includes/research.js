@@ -20,20 +20,20 @@ function updateResearchList(stat, len)
 //Call this again when manually changing a personality.
 function initializeResearchLists()
 {
-	techlist = subpersonalities[personality].res;
-	antiAirTech = updateResearchList(subpersonalities[personality].antiAir.defenses);
-	antiAirExtras = updateResearchList(subpersonalities[personality].antiAir.extras);
+	techlist = SUB_PERSONALITIES[personality].res;
+	antiAirTech = updateResearchList(SUB_PERSONALITIES[personality].antiAir.defenses);
+	antiAirExtras = updateResearchList(SUB_PERSONALITIES[personality].antiAir.extras);
 	extremeLaserTech = updateResearchList(weaponStats.AS.extras);
 	laserTech = updateResearchList(weaponStats.lasers.weapons);
 	laserExtra = updateResearchList(weaponStats.lasers.extras);
-	weaponTech = updateResearchList(subpersonalities[personality].primaryWeapon.weapons);
-	artilleryTech = updateResearchList(subpersonalities[personality].artillery.weapons);
-	artillExtra = updateResearchList(subpersonalities[personality].artillery.extras);
-	extraTech = updateResearchList(subpersonalities[personality].primaryWeapon.extras);
-	secondaryWeaponTech = updateResearchList(subpersonalities[personality].secondaryWeapon.weapons);
-	secondaryWeaponExtra = updateResearchList(subpersonalities[personality].secondaryWeapon.extras);
-	defenseTech = updateResearchList(subpersonalities[personality].artillery.defenses);
-	cyborgWeaps = updateResearchList(subpersonalities[personality].primaryWeapon.templates);
+	weaponTech = updateResearchList(SUB_PERSONALITIES[personality].primaryWeapon.weapons);
+	artilleryTech = updateResearchList(SUB_PERSONALITIES[personality].artillery.weapons);
+	artillExtra = updateResearchList(SUB_PERSONALITIES[personality].artillery.extras);
+	extraTech = updateResearchList(SUB_PERSONALITIES[personality].primaryWeapon.extras);
+	secondaryWeaponTech = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.weapons);
+	secondaryWeaponExtra = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.extras);
+	defenseTech = updateResearchList(SUB_PERSONALITIES[personality].artillery.defenses);
+	cyborgWeaps = updateResearchList(SUB_PERSONALITIES[personality].primaryWeapon.templates);
 }
 
 //This function aims to more cleanly discover available research topics
@@ -58,7 +58,7 @@ function evalResearch(lab, list)
 
 function researchCobra()
 {
-	const MIN_POWER = 170;
+	const MIN_POWER = 180;
 	if (!countDroid(DROID_CONSTRUCT)
 		|| getRealPower() < MIN_POWER
 		|| !(isDefined(techlist) && isDefined(turnOffCyborgs)))
@@ -97,7 +97,7 @@ function researchCobra()
 					found = evalResearch(lab, antiAirExtras);
 			}
 
-			if (!found && (random(101) < subpersonalities[personality].alloyPriority))
+			if (!found && (random(101) < SUB_PERSONALITIES[personality].alloyPriority))
 			{
 				found = evalResearch(lab, TANK_ARMOR);
 				if (!found && !turnOffCyborgs && countStruct(CYBORG_FACTORY))
@@ -110,45 +110,31 @@ function researchCobra()
 				found = evalResearch(lab, cyborgWeaps);
 			if (!found)
 				found = evalResearch(lab, extraTech);
-			if (!found)
+			if (!found && useArti)
 				found = evalResearch(lab, artilleryTech);
-			if (!found)
-				found = evalResearch(lab, MID_GAME_TECH);
-			if (!found)
+			if (!found && useArti)
 				found = evalResearch(lab, artillExtra);
 
+			if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
+				found = evalResearch(lab, SENSOR_TECH);
 			if (!found)
 				found = evalResearch(lab, defenseTech);
-			if (!found && (random(101) < subpersonalities[personality].systemPriority))
-				found = evalResearch(lab, SENSOR_TECH);
 
-			if (!found && (random(101) < subpersonalities[personality].vtolPriority))
+			if (!found && useVtol && (random(101) < SUB_PERSONALITIES[personality].vtolPriority))
 				found = evalResearch(lab, VTOL_RES);
 
-			if (!found && (random(101) < subpersonalities[personality].defensePriority))
+			if (!found && (random(101) < SUB_PERSONALITIES[personality].defensePriority))
 				found = evalResearch(lab, DEFENSE_UPGRADES);
 			if (!found)
 				found = evalResearch(lab, BODY_RESEARCH);
 
-
-			if (!found)
-				found = pursueResearch(lab, "R-Wpn-PlasmaCannon");
-			if (componentAvailable("Laser4-PlasmaCannon"))
-			{
-				if(!found)
-					found = evalResearch(lab, extremeLaserTech);
-				if(!found)
-					found = evalResearch(lab, FLAMER);
-			}
-
-
 			//Late game weapon.
 			if (random(3))
 			{
-				var cyborgSecondary = appendListElements(cyborgSecondary, updateResearchList(subpersonalities[personality].secondaryWeapon.templates));
-				var len = subpersonalities[personality].primaryWeapon.weapons.length - 1;
+				var cyborgSecondary = appendListElements(cyborgSecondary, updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates));
+				var len = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length - 1;
 
-				if (isDesignable(subpersonalities[personality].primaryWeapon.weapons[len].stat))
+				if (isDesignable(SUB_PERSONALITIES[personality].primaryWeapon.weapons[len].stat))
 				{
 					if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
 						found = pursueResearch(lab, cyborgSecondary);
@@ -168,6 +154,16 @@ function researchCobra()
 				found = evalResearch(lab, laserExtra);
 			if (!found)
 				found = pursueResearch(lab, "R-Defense-AA-Laser");
+
+			if (!found)
+				found = pursueResearch(lab, "R-Wpn-PlasmaCannon");
+			if (componentAvailable("Laser4-PlasmaCannon"))
+			{
+				if(!found)
+					found = evalResearch(lab, extremeLaserTech);
+				if(!found)
+					found = evalResearch(lab, FLAMER);
+			}
 
 			//Very likely going to be done with research by now.
 			if (!found && componentAvailable("Body14SUP") && isDesignable("EMP-Cannon") && isStructureAvailable(structures.extras[2]))

@@ -37,7 +37,7 @@ function eventChat(from, to, message)
 	}
 	else if (message === "stats")
 	{
-		getMostHarmfulPlayer("stat");
+		sendChatMessage(MostHarmfulPlayer(), to);
 	}
 	else if (message === "FFA")
 	{
@@ -50,6 +50,14 @@ function eventChat(from, to, message)
 	else if (message === "oil level")
 	{
 		sendChatMessage("Map oil count is: " + mapOilLevel(), ALLIES);
+	}
+	else if (message === "toggle arti")
+	{
+		useArti = !useArti;
+	}
+	else if (message === "toggle vtol")
+	{
+		useVtol = !useVtol;
 	}
 
 

@@ -2,24 +2,23 @@
 //personality can design its last primary weapon.
 function switchOffMG()
 {
-	if (returnPrimaryAlias() === "mg")
+	if (turnOffMG || (returnPrimaryAlias() === "mg"))
 	{
-		removeThisTimer("switchOffMG");
 		return;
 	}
 
 	if (componentAvailable("Body5REC"))
 	{
 		turnOffMG = true;
-		removeThisTimer("switchOffMG");
+		//removeThisTimer("switchOffMG");
 	}
 }
 
 //Don't get too riled up until we get a formidable army.
 function restraint()
 {
-	const COOLDOWN = 10000;
-	const LOW_COUNT = !isDefined(enumDroid(me)[20]);
+	const COOLDOWN = 6000;
+	const LOW_COUNT = enumDroid(me).length < 20;
 	var peacefulTime = false;
 
 	if (LOW_COUNT && ((lastAttackedTime + COOLDOWN) < gameTime))
@@ -31,7 +30,7 @@ function restraint()
 	return peacefulTime;
 }
 
-//Choose the personality as described in the global subpersonalities.
+//Choose the personality as described in the global SUB_PERSONALITIES.
 //When called from chat it will switch to that one directly.
 function choosePersonality(chatEvent)
 {

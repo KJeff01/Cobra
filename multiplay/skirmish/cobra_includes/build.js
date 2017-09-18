@@ -119,7 +119,7 @@ function getDefenseStructure()
 {
 	function uncached()
 	{
-		var templates = subpersonalities[personality].artillery.defenses;
+		var templates = SUB_PERSONALITIES[personality].artillery.defenses;
 		for (var i = templates.length - 1; i > 0; --i)
 		{
 			if (isStructureAvailable(templates[i].stat))
@@ -318,14 +318,9 @@ function lookForOil()
 		for (var j = 0, drLen = droids.length; j < drLen; j++)
 		{
 			var dist = distBetweenTwoPoints(droids[j].x, droids[j].y, oils[i].x, oils[i].y);
-			var unsafe = enumRange(oils[i].x, oils[i].y, 5, ENEMIES, false);
+			var unsafe = enumRange(oils[i].x, oils[i].y, 9, ENEMIES, false);
 			unsafe = unsafe.filter(isUnsafeEnemyObject);
-			if (droidCanReach(droids[j], oils[i].x, oils[i].y)
-				&& !isDefined(unsafe[0])
-				&& droids[j].order != DORDER_BUILD
-				&& droids[j].order != DORDER_LINEBUILD
-				&& bestDist > dist
-				&& !droids[j].busy)
+			if (!isDefined(unsafe[0]) && conCanHelp(droids[j], oils[i].x, oils[i].y))
 			{
 				bestDroid = droids[j];
 				bestDist = dist;
@@ -389,7 +384,7 @@ function buildAAForPersonality()
 	}
 	else
 	{
-		var aaType = subpersonalities[personality].antiAir.defenses;
+		var aaType = SUB_PERSONALITIES[personality].antiAir.defenses;
 		for (var i = aaType.length - 1; i >= 0; --i)
 		{
 			if (countAndBuild(aaType[i].stat, Math.floor(VTOL_COUNT / 3)))
@@ -468,7 +463,12 @@ function factoryBuildOrder()
 		var num = (!x) ? 1 : 5;
 		for (var i = 0; i < 3; ++i)
 		{
-			var fac = subpersonalities[personality].factoryOrder[i];
+			var fac = SUB_PERSONALITIES[personality].factoryOrder[i];
+			if (fac === VTOL_FACTORY && !useVtol)
+			{
+				continue;
+			}
+			
 			if (!((fac === CYBORG_FACTORY) && turnOffCyborgs && !forceHover))
 			{
 				if (countAndBuild(fac, num))
