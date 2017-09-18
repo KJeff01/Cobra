@@ -468,7 +468,7 @@ function factoryBuildOrder()
 			{
 				continue;
 			}
-			
+
 			if (!((fac === CYBORG_FACTORY) && turnOffCyborgs && !forceHover))
 			{
 				if (countAndBuild(fac, num))
