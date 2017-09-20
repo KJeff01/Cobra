@@ -45,7 +45,6 @@ function eventGameInit()
 //Initialze global variables and setup timers.
 function eventStartLevel()
 {
-	nexusWaveOn = false;
 	researchComplete = false;
 	throttleTime = [];
 	lastAttackedTime = 0;
@@ -79,7 +78,6 @@ function eventStartLevel()
 	setTimer("artilleryTacticsCobra", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("vtolTacticsCobra", THINK_LONGER + 5600 + 3 * random(70));
 	setTimer("battleTacticsCobra", THINK_LONGER + 7000 + 5 * random(60));
-	setTimer("tryNexusFunctionalityCobra", THINK_LONGER + 13000 + 3 * random(70));
 	setTimer("recycleForHoverCobra", THINK_LONGER + 15000 + 2 * random(60));
 	setTimer("stopTimersCobra", THINK_LONGER + 100000 + 5 * random(70));
 }

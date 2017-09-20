@@ -11,7 +11,6 @@ include(COBRA_INCLUDES + "miscFunctions.js");
 include(COBRA_INCLUDES + "build.js");
 include(COBRA_INCLUDES + "production.js");
 include(COBRA_INCLUDES + "tactics.js");
-include(COBRA_INCLUDES + "NEXUSIntruderProgram.js");
 include(COBRA_INCLUDES + "mapDynamics.js");
 include(COBRA_INCLUDES + "research.js");
 include(COBRA_INCLUDES + "events.js");

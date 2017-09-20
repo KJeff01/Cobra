@@ -211,7 +211,6 @@ var lastMsg; //The last Cobra chat message.
 var forceHover; //Use hover propulsion only.
 var seaMapWithLandEnemy; //Hover map with an enemy sharing land with Cobra.
 var turnOffCyborgs; //Turn of cyborgs (hover maps/chat).
-var nexusWaveOn; //Determine if the 'NEXUS Intruder Program' feature is on.
 var throttleTime; //For events so that some do not trigger their code too fast. More details in stopExecution() in miscFunctions.
 var researchComplete; //Check if done with research.
 var lastAttackedTime;
