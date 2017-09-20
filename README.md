@@ -15,9 +15,6 @@ Do note that AL is exclusive to T3 (with at least bases) and AM is exclusive to 
 
 Hard/insane difficulty enables Heavy Plasma Launcher for Cobra (very small chance of being built at any given time after it obtains tracked propulsion).
 
-This AI will try to emulate the core functionality of the NEXUS Intruder Program (Insane difficulty only). As long as the Cobra HQ is intact it will scan enemy droids for technologies that Cobra does not have (Weapons/Propulsion/Body) and even defense upgrades. If an enemy unit has superior technology, then Cobra can assimilate the new core components of the droid. Even better is that Cobra will be granted all the required research that leads to the new component. Also it can force enemy droids to malfunction and attack friendly units/its own structures/or even stop the action of the target droid. This is mostly a toy feature.
-
-
 chat commands include:
 1. need power/truck/tank/cyborg/vtol.
 2. AC/AR/AB/AM/AL -- make it switch personalities.
@@ -30,10 +27,10 @@ chat commands include:
 9. toggle arti -- Enable or disable artillery production/research.
 10. toggle vtol -- Enable or disable VTOL production/research.
 
-Press alt+h to drop a beacon and Cobra units will try making their way over to it if possible.
+Press alt + h to drop a beacon and Cobra units will try making their way over to it if possible.
 
 Warzone2100 links:
 1. This AI uses a slimmed version of the NullBot3 standard ruleset file for research related information: https://github.com/haoNoQ/nullbot
-2. website https://wz2100.net/
-3. github https://github.com/Warzone2100/warzone2100
+2. Website https://wz2100.net/
+3. Github https://github.com/Warzone2100/warzone2100
 4. Official discussion forum thread: http://forums.wz2100.net/viewtopic.php?f=49&t=12676
