@@ -126,7 +126,7 @@ const SUB_PERSONALITIES =
 		"defensePriority": 10,
 		"vtolPriority": 20,
 		"systemPriority": 30,
-		"alloyPriority": 20,
+		"alloyPriority": 10,
 		"res": [
 			"R-Wpn-Cannon-Damage02",
 			"R-Wpn-Cannon-ROF02",
@@ -142,7 +142,7 @@ const SUB_PERSONALITIES =
 		"defensePriority": 20,
 		"vtolPriority": 40,
 		"systemPriority": 20,
-		"alloyPriority": 45,
+		"alloyPriority": 25,
 		"res": [
 			"R-Wpn-Flamer-Damage03",
 			"R-Wpn-Flamer-ROF03",
@@ -158,7 +158,7 @@ const SUB_PERSONALITIES =
 		"defensePriority": 60,
 		"vtolPriority": 90,
 		"systemPriority": 15,
-		"alloyPriority": 25,
+		"alloyPriority": 15,
 		"res": [
 			"R-Wpn-MG2Mk1",
 		],
@@ -173,7 +173,7 @@ const SUB_PERSONALITIES =
 		"defensePriority": 30,
 		"vtolPriority": 80,
 		"systemPriority": 45,
-		"alloyPriority": 55,
+		"alloyPriority": 45,
 		"res": [
 			"R-Wpn-MG2Mk1",
 		],
@@ -186,9 +186,9 @@ const SUB_PERSONALITIES =
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [VTOL_FACTORY, FACTORY, CYBORG_FACTORY],
 		"defensePriority": 10,
-		"vtolPriority": 60,
+		"vtolPriority": 100,
 		"systemPriority": 40,
-		"alloyPriority": 15,
+		"alloyPriority": 5,
 		"res": [
 			"R-Wpn-Laser01",
 		],
@@ -215,7 +215,6 @@ var throttleTime; //For events so that some do not trigger their code too fast. 
 var researchComplete; //Check if done with research.
 var lastAttackedTime;
 var turnOffMG; //This is only used for when the personalities don't have their weapons researched.
-var buildQueue;
 var useArti;
 var useVtol;
 

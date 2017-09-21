@@ -49,7 +49,6 @@ function eventStartLevel()
 	throttleTime = [];
 	lastAttackedTime = 0;
 	initializeGrudgeCounter();
-	buildQueue = [];
 
 	for (var i = 0; i < 4; ++i)
 	{
@@ -69,9 +68,9 @@ function eventStartLevel()
 	buildOrderCobra(); //Start building right away.
 
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
-	setTimer("CobraProduce", THINK_LONGER + 600 + 3 * random(70));
+	setTimer("researchCobra", THINK_LONGER + 700 + 3 * random(70));
 	setTimer("buildOrderCobra", THINK_LONGER + 1100 + 3 * random(60));
-	setTimer("researchCobra", THINK_LONGER + 1400 + 3 * random(70));
+	setTimer("CobraProduce", THINK_LONGER + 1400 + 3 * random(70));
 	setTimer("switchOffMG", THINK_LONGER + 1800 + 3 * random(70));
 	setTimer("lookForOil", THINK_LONGER + 2000 + 3 * random(60))
 	setTimer("repairDroidTacticsCobra", THINK_LONGER + 2500 + 4 * random(60));

@@ -86,20 +86,6 @@ function demolishThis(object)
 	return success;
 }
 
-//Check if a stored id matches this soon to be built object. Very good for oil snatching.
-function inBuildQueue(obj)
-{
-	for (var i = 0, l = buildQueue.length; i < l; ++i)
-	{
-		if (obj.id === buildQueue[i])
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
 //Build a certain number of something
 function countAndBuild(stat, count)
 {
@@ -305,16 +291,10 @@ function lookForOil()
 	var bestDroid = null;
 	var bestDist = 99999;
 	var success = false;
-	buildQueue = [];
 
 	oils = oils.sort(distanceToBase); // grab closer oils first
 	for (var i = 0, oilLen = oils.length; i < oilLen; i++)
 	{
-		if (inBuildQueue(oils[i]))
-		{
-			continue;
-		}
-
 		for (var j = 0, drLen = droids.length; j < drLen; j++)
 		{
 			var dist = distBetweenTwoPoints(droids[j].x, droids[j].y, oils[i].x, oils[i].y);
@@ -334,7 +314,6 @@ function lookForOil()
 			bestDist = 99999;
 			bestDroid = null;
 			success = true;
-			buildQueue.push(oils[i].id);
 		}
 	}
 
