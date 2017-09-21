@@ -58,7 +58,7 @@ function evalResearch(lab, list)
 
 function researchCobra()
 {
-	const MIN_POWER = 180;
+	const MIN_POWER = 170;
 	if (!countDroid(DROID_CONSTRUCT)
 		|| getRealPower() < MIN_POWER
 		|| !(isDefined(techlist) && isDefined(turnOffCyborgs)))
@@ -73,11 +73,10 @@ function researchCobra()
 	for (var i = 0, a = labList.length; i < a; ++i)
 	{
 		var lab = labList[i];
-		var found = false;
+		var found = evalResearch(lab, ESSENTIALS);
 
-		if (getRealPower() > MIN_POWER)
+		if (!found && (getRealPower() > MIN_POWER))
 		{
-			found = evalResearch(lab, ESSENTIALS);
 			if (!found)
 				found = evalResearch(lab, techlist);
 
@@ -117,7 +116,7 @@ function researchCobra()
 
 			if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
 				found = evalResearch(lab, SENSOR_TECH);
-			if (!found)
+			if (!found && useArti)
 				found = evalResearch(lab, defenseTech);
 
 			if (!found && useVtol && (random(101) < SUB_PERSONALITIES[personality].vtolPriority))

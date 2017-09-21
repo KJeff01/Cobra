@@ -45,12 +45,10 @@ function eventGameInit()
 //Initialze global variables and setup timers.
 function eventStartLevel()
 {
-	nexusWaveOn = false;
 	researchComplete = false;
 	throttleTime = [];
 	lastAttackedTime = 0;
 	initializeGrudgeCounter();
-	buildQueue = [];
 
 	for (var i = 0; i < 4; ++i)
 	{
@@ -70,16 +68,15 @@ function eventStartLevel()
 	buildOrderCobra(); //Start building right away.
 
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
-	setTimer("CobraProduce", THINK_LONGER + 600 + 3 * random(70));
+	setTimer("researchCobra", THINK_LONGER + 700 + 3 * random(70));
 	setTimer("buildOrderCobra", THINK_LONGER + 1100 + 3 * random(60));
-	setTimer("researchCobra", THINK_LONGER + 1400 + 3 * random(70));
+	setTimer("CobraProduce", THINK_LONGER + 1400 + 3 * random(70));
 	setTimer("switchOffMG", THINK_LONGER + 1800 + 3 * random(70));
 	setTimer("lookForOil", THINK_LONGER + 2000 + 3 * random(60))
 	setTimer("repairDroidTacticsCobra", THINK_LONGER + 2500 + 4 * random(60));
 	setTimer("artilleryTacticsCobra", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("vtolTacticsCobra", THINK_LONGER + 5600 + 3 * random(70));
 	setTimer("battleTacticsCobra", THINK_LONGER + 7000 + 5 * random(60));
-	setTimer("tryNexusFunctionalityCobra", THINK_LONGER + 13000 + 3 * random(70));
 	setTimer("recycleForHoverCobra", THINK_LONGER + 15000 + 2 * random(60));
 	setTimer("stopTimersCobra", THINK_LONGER + 100000 + 5 * random(70));
 }
