@@ -77,6 +77,7 @@ function eventStartLevel()
 	setTimer("artilleryTacticsCobra", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("vtolTacticsCobra", THINK_LONGER + 5600 + 3 * random(70));
 	setTimer("battleTacticsCobra", THINK_LONGER + 7000 + 5 * random(60));
+	setTimer("checkAllForRepair", THINK_LONGER + 9000 + 3 * random(60));
 	setTimer("recycleForHoverCobra", THINK_LONGER + 15000 + 2 * random(60));
 	setTimer("stopTimersCobra", THINK_LONGER + 100000 + 5 * random(70));
 }
@@ -191,7 +192,7 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (stopExecution(0, 100000) === false)
+		if (!stopExecution("throttleeventAttacked1", 100000))
 		{
 			attackStuff(getScavengerNumber());
 		}
@@ -231,7 +232,7 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (stopExecution(0, 210) || restraint())
+		if (!stopExecution("throttleEventAttacked2", 210) || restraint())
 		{
 			return;
 		}
@@ -287,7 +288,7 @@ function eventGroupLoss(droid, group, size)
 {
 	if (droid.order !== DORDER_RECYCLE)
 	{
-		if (stopExecution(3, 12000) === false)
+		if (!stopExecution("throttleGroupLoss", 12000) === false)
 		{
 			addBeacon(droid.x, droid.y, ALLIES);
 		}
@@ -297,7 +298,7 @@ function eventGroupLoss(droid, group, size)
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message)
 {
-	if (stopExecution(2, 13000) === true)
+	if (!stopExecution("throttleBeacon", 13000))
 	{
 		return;
 	}

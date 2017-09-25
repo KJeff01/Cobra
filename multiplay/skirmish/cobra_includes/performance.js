@@ -42,31 +42,30 @@ function cacheThis(func, funcParameters, cachedItem, time)
      return arguments.callee.caller.cachedValues[cachedItem];
 }
 
-//TODO: Implement this better
-//Determine if something (namely events) should be skipped momentarily.
-//0 - eventAttacked().
-//1 - eventChat().
-//2 - eventBeacon().
-//3 - eventGroupLoss(). (the addBeacon call).
-//ms is a delay value.
-//Defaults to checking eventAttacked timer.
-function stopExecution(throttleNumber, ms)
+//A simple throttle function to make sure something is not executed too much.
+function stopExecution(throttleThis, time)
 {
-	if (!isDefined(throttleNumber))
+     if (!isDefined(time))
      {
-		throttleNumber = 0;
-	}
+          time = 2000;
+     }
+     
+     if (!isDefined(arguments.callee.caller.throttleTimes))
+     {
+          arguments.callee.caller.throttleTimes = {};
+     }
 
-	if (!isDefined(ms))
+	if (!isDefined(arguments.callee.caller.throttleTimes[throttleThis]))
      {
-		ms = 1000;
-	}
-
-	if (gameTime > (throttleTime[throttleNumber] + ms))
-     {
-		throttleTime[throttleNumber] = gameTime + (4 * random(500));
+		arguments.callee.caller.throttleTimes[throttleThis] = gameTime;
 		return false;
 	}
 
-	return true;
+	if (gameTime - arguments.callee.caller.throttleTimes[throttleThis] < time)
+     {
+          return true;
+     }
+
+	arguments.callee.caller.throttleTimes[throttleThis] = gameTime;
+	return false;
 }

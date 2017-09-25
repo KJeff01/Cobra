@@ -152,6 +152,25 @@ function repairDroid(droid, force)
 	return false;
 }
 
+//Continuously check a random ground group for repair
+function checkAllForRepair()
+{
+	var droids = random(2) ? enumGroup(attackGroup) : enumGroup(cyborgGroup);
+
+	for (var i = 0, l = droids.length; i < l; ++i)
+	{
+		if (Math.floor(droid.health) < 42)
+		{
+			//Try to repair by force.
+			orderDroid(victim, DORDER_RTR);
+		}
+		else
+		{
+			//Fuzzy repair algorithm.
+			repairDroid(victim, false);
+		}
+	}
+}
 //choose either cyborgs or tanks.
 function chooseGroup()
 {

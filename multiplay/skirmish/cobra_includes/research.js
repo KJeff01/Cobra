@@ -59,9 +59,7 @@ function evalResearch(lab, list)
 function researchCobra()
 {
 	const MIN_POWER = 170;
-	if (!countDroid(DROID_CONSTRUCT)
-		|| getRealPower() < MIN_POWER
-		|| !(isDefined(techlist) && isDefined(turnOffCyborgs)))
+	if (!countDroid(DROID_CONSTRUCT) || !(isDefined(techlist) && isDefined(turnOffCyborgs)))
 	{
 		return;
 	}
@@ -81,11 +79,12 @@ function researchCobra()
 				found = evalResearch(lab, techlist);
 
 			if (!found)
-				found = evalResearch(lab, weaponTech);
-			if (!found)
 				found = evalResearch(lab, SYSTEM_UPGRADES);
 			if (!found)
 				found = evalResearch(lab, LATE_EARLY_GAME_TECH);
+
+			if (!found)
+				found = evalResearch(lab, weaponTech);
 
 			//Use default AA until stormbringer.
 			if (countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
@@ -127,21 +126,17 @@ function researchCobra()
 			if (!found)
 				found = evalResearch(lab, BODY_RESEARCH);
 
-			//Late game weapon.
-			if (random(3))
-			{
-				var cyborgSecondary = appendListElements(cyborgSecondary, updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates));
-				var len = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length - 1;
 
-				if (isDesignable(SUB_PERSONALITIES[personality].primaryWeapon.weapons[len].stat))
-				{
-					if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
-						found = pursueResearch(lab, cyborgSecondary);
-					if(!found)
-						found = evalResearch(lab, secondaryWeaponExtra);
-					if(!found)
-						found = evalResearch(lab, secondaryWeaponTech);
-				}
+			var cyborgSecondary = appendListElements(cyborgSecondary, updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates));
+			var len = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length - 1;
+			if (isDesignable(SUB_PERSONALITIES[personality].primaryWeapon.weapons[len].stat))
+			{
+				if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
+					found = pursueResearch(lab, cyborgSecondary);
+				if(!found)
+					found = evalResearch(lab, secondaryWeaponExtra);
+				if(!found)
+					found = evalResearch(lab, secondaryWeaponTech);
 			}
 
 			// Lasers
