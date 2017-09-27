@@ -358,7 +358,7 @@ function analyzeQueuedSystems()
 //Produce a unit when factories allow it.
 function CobraProduce()
 {
-	const MIN_POWER = 160;
+	const MIN_POWER = 165;
 	const MIN_COM_ENG = 3;
 	const MIN_SENSORS = 2;
 	const MIN_REPAIRS = 3;

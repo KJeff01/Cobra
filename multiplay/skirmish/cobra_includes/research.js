@@ -58,7 +58,7 @@ function evalResearch(lab, list)
 
 function researchCobra()
 {
-	const MIN_POWER = 170;
+	const MIN_POWER = 155;
 	if (!countDroid(DROID_CONSTRUCT) || !(isDefined(techlist) && isDefined(turnOffCyborgs)))
 	{
 		return;
@@ -71,20 +71,20 @@ function researchCobra()
 	for (var i = 0, a = labList.length; i < a; ++i)
 	{
 		var lab = labList[i];
-		var found = evalResearch(lab, ESSENTIALS);
+		var found = found = evalResearch(lab, ESSENTIALS);
 
-		if (!found && (getRealPower() > MIN_POWER))
+		if (!found && getRealPower() > MIN_POWER)
 		{
 			if (!found)
 				found = evalResearch(lab, techlist);
 
 			if (!found)
-				found = evalResearch(lab, SYSTEM_UPGRADES);
-			if (!found)
-				found = evalResearch(lab, LATE_EARLY_GAME_TECH);
+				found = evalResearch(lab, weaponTech);
 
 			if (!found)
-				found = evalResearch(lab, weaponTech);
+				found = evalResearch(lab, LATE_EARLY_GAME_TECH);
+			if (!found)
+				found = evalResearch(lab, SYSTEM_UPGRADES);
 
 			//Use default AA until stormbringer.
 			if (countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))

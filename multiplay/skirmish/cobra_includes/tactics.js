@@ -4,9 +4,9 @@
 function droidReady(droid)
 {
 	return (!repairDroid(droid, false)
-		&& (droid.order !== DORDER_ATTACK)
-		&& (droid.order !== DORDER_RTR)
-		&& (droid.order !== DORDER_RECYCLE)
+		&& droid.order !== DORDER_ATTACK
+		&& droid.order !== DORDER_RTR
+		&& droid.order !== DORDER_RECYCLE
 		&& vtolReady(droid) //True for non-VTOL units
 	);
 }
@@ -155,19 +155,24 @@ function repairDroid(droid, force)
 //Continuously check a random ground group for repair
 function checkAllForRepair()
 {
-	var droids = random(2) ? enumGroup(attackGroup) : enumGroup(cyborgGroup);
+	if (!countStruct(structures.extras[0]))
+	{
+		return;
+	}
 
+	var droids = random(2) ? enumGroup(attackGroup) : enumGroup(cyborgGroup);
 	for (var i = 0, l = droids.length; i < l; ++i)
 	{
+		var droid = droids[i];
 		if (Math.floor(droid.health) < 42)
 		{
 			//Try to repair by force.
-			orderDroid(victim, DORDER_RTR);
+			orderDroid(droid, DORDER_RTR);
 		}
 		else
 		{
 			//Fuzzy repair algorithm.
-			repairDroid(victim, false);
+			repairDroid(droid, false);
 		}
 	}
 }
@@ -308,7 +313,7 @@ function chatTactic(enemy)
 //attacker is a player number. Attack a specific player.
 function attackStuff(attacker)
 {
-	if (restraint())
+	if (stopExecution("attackStuff", 5000))
 	{
 		return;
 	}
@@ -326,13 +331,7 @@ function attackStuff(attacker)
 //Sensors know all your secrets. They will observe what is closest to Cobra base.
 function artilleryTacticsCobra()
 {
-	if (restraint())
-	{
-		return;
-	}
-
-	var sensors = enumGroup(sensorGroup).filter(function(dr)
-	{
+	var sensors = enumGroup(sensorGroup).filter(function(dr) {
 		return droidReady(dr);
 	});
 	const ARTILLERY_UNITS = enumGroup(artilleryGroup);
@@ -378,17 +377,12 @@ function attackEnemyOil()
 //Defend or attack.
 function battleTacticsCobra()
 {
-	if (restraint())
-	{
-		return;
-	}
-
 	const MIN_DERRICKS = averageOilPerPlayer();
 	const ENEMY = getMostHarmfulPlayer();
 	const MIN_GRUDGE = 300;
 	donateSomePower();
 
-	if ((countStruct(structures.derricks) < MIN_DERRICKS) || (getRealPower() < -50))
+	if ((countStruct(structures.derricks) < MIN_DERRICKS) || (getRealPower() < -230))
 	{
 		attackEnemyOil();
 	}
@@ -523,13 +517,10 @@ function targetPlayer(playerNumber)
 //VTOL units do there own form of tactics.
 function vtolTacticsCobra()
 {
-	if (restraint())
-	{
-		return;
-	}
-
 	const MIN_VTOLS = 5;
-	var vtols = enumGroup(vtolGroup).filter(function(dr) { return droidReady(dr); });
+	var vtols = enumGroup(vtolGroup).filter(function(dr) {
+		return droidReady(dr);
+	});
 	const LEN = vtols.length;
 
 	if (LEN >= MIN_VTOLS)
@@ -609,24 +600,6 @@ function enemyUnitsInBase()
 	}
 
 	return enemyNearBase;
-}
-
-//Stop all attacker droids from attacking. Repairs are initiated in addition to that.
-function haltAttackDroids()
-{
-	const DROIDS = enumDroid(me).filter(function(dr) {
-		return (dr.droidType !== DROID_CONSTRUCT
-			&& dr.droidType !== DROID_REPAIR
-			&& !isVTOL(dr)
-		);
-	});
-
-	for (var i = 0, l = DROIDS.length; i < l; ++i)
-	{
-		const DROID = DROIDS[i];
-		orderDroid(DROID, DORDER_STOP);
-		repairDroid(DROID, false);
-	}
 }
 
 //Donate my power to allies if I have too much.

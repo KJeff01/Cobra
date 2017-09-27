@@ -68,16 +68,16 @@ function eventStartLevel()
 	buildOrderCobra(); //Start building right away.
 
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
-	setTimer("researchCobra", THINK_LONGER + 700 + 3 * random(70));
+	setTimer("CobraProduce", THINK_LONGER + 700 + 3 * random(70));
 	setTimer("buildOrderCobra", THINK_LONGER + 1100 + 3 * random(60));
-	setTimer("CobraProduce", THINK_LONGER + 1400 + 3 * random(70));
-	setTimer("switchOffMG", THINK_LONGER + 1800 + 3 * random(70));
-	setTimer("lookForOil", THINK_LONGER + 2000 + 3 * random(60))
+	setTimer("researchCobra", THINK_LONGER + 1200 + 3 * random(70));
+	setTimer("lookForOil", THINK_LONGER + 1600 + 3 * random(60))
+	setTimer("checkAllForRepair", THINK_LONGER + 2000 + 3 * random(60));
 	setTimer("repairDroidTacticsCobra", THINK_LONGER + 2500 + 4 * random(60));
 	setTimer("artilleryTacticsCobra", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("vtolTacticsCobra", THINK_LONGER + 5600 + 3 * random(70));
 	setTimer("battleTacticsCobra", THINK_LONGER + 7000 + 5 * random(60));
-	setTimer("checkAllForRepair", THINK_LONGER + 9000 + 3 * random(60));
+	setTimer("switchOffMG", THINK_LONGER + 10000 + 3 * random(70));
 	setTimer("recycleForHoverCobra", THINK_LONGER + 15000 + 2 * random(60));
 	setTimer("stopTimersCobra", THINK_LONGER + 100000 + 5 * random(70));
 }
@@ -192,12 +192,12 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (!stopExecution("throttleeventAttacked1", 100000))
+		if (stopExecution("throttleEventAttacked1", 40000))
 		{
-			attackStuff(getScavengerNumber());
+			return;
 		}
 
-		return;
+		attackStuff(getScavengerNumber());
 	}
 
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player))
@@ -232,7 +232,7 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (!stopExecution("throttleEventAttacked2", 210) || restraint())
+		if (stopExecution("throttleEventAttacked2", 750))
 		{
 			return;
 		}
@@ -288,17 +288,19 @@ function eventGroupLoss(droid, group, size)
 {
 	if (droid.order !== DORDER_RECYCLE)
 	{
-		if (!stopExecution("throttleGroupLoss", 12000) === false)
+		if (stopExecution("throttleGroupLoss", 12000))
 		{
-			addBeacon(droid.x, droid.y, ALLIES);
+			return;
 		}
+
+		addBeacon(droid.x, droid.y, ALLIES);
 	}
 }
 
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message)
 {
-	if (!stopExecution("throttleBeacon", 13000))
+	if (stopExecution("throttleBeacon", 13000))
 	{
 		return;
 	}

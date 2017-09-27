@@ -298,7 +298,7 @@ function lookForOil()
 		for (var j = 0, drLen = droids.length; j < drLen; j++)
 		{
 			var dist = distBetweenTwoPoints(droids[j].x, droids[j].y, oils[i].x, oils[i].y);
-			var unsafe = enumRange(oils[i].x, oils[i].y, 9, ENEMIES, false);
+			var unsafe = enumRange(oils[i].x, oils[i].y, 6, ENEMIES, false);
 			unsafe = unsafe.filter(isUnsafeEnemyObject);
 			if (!isDefined(unsafe[0]) && conCanHelp(droids[j], oils[i].x, oils[i].y))
 			{
@@ -307,7 +307,7 @@ function lookForOil()
 			}
 		}
 
-		if (bestDroid)
+		if (!stopExecution("oil" + oils[i].x * mapWidth * oils[i].y, 90000) && bestDroid)
 		{
 			bestDroid.busy = true;
 			orderDroidBuild(bestDroid, DORDER_BUILD, structures.derricks, oils[i].x, oils[i].y);
@@ -465,7 +465,7 @@ function factoryBuildOrder()
 //Build repair bays when possible.
 function buildPhase2()
 {
-	const MIN_POWER = 230;
+	const MIN_POWER = 250;
 
 	if (!countStruct(structures.gens) || (getRealPower() < MIN_POWER))
 	{
