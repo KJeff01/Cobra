@@ -58,7 +58,6 @@ function evalResearch(lab, list)
 
 function researchCobra()
 {
-	const MIN_POWER = 155;
 	if (!countDroid(DROID_CONSTRUCT) || !(isDefined(techlist) && isDefined(turnOffCyborgs)))
 	{
 		return;
@@ -77,23 +76,17 @@ function researchCobra()
 		{
 			if (!found)
 				found = evalResearch(lab, techlist);
-
 			if (!found)
-				found = evalResearch(lab, weaponTech);
+				found = evalResearch(lab, ESSENTIALS_2);
 
 			if (!found)
 				found = evalResearch(lab, LATE_EARLY_GAME_TECH);
+			if (!found && !turnOffCyborgs)
+				found = evalResearch(lab, cyborgWeaps);
 			if (!found)
 				found = evalResearch(lab, SYSTEM_UPGRADES);
-
-			//Use default AA until stormbringer.
-			if (countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
-			{
-				if (!found)
-					found = evalResearch(lab, antiAirTech);
-				if (!found)
-					found = evalResearch(lab, antiAirExtras);
-			}
+			if (!found)
+				found = evalResearch(lab, weaponTech);
 
 			if (!found && (random(101) < SUB_PERSONALITIES[personality].alloyPriority))
 			{
@@ -104,25 +97,30 @@ function researchCobra()
 				}
 			}
 
-			if (!found && !turnOffCyborgs)
-				found = evalResearch(lab, cyborgWeaps);
 			if (!found)
 				found = evalResearch(lab, extraTech);
 			if (!found && useArti)
-				found = evalResearch(lab, artilleryTech);
-			if (!found && useArti)
-				found = evalResearch(lab, artillExtra);
+				found = evalResearch(lab, defenseTech);
+			if (!found && (random(101) < SUB_PERSONALITIES[personality].defensePriority))
+				found = evalResearch(lab, DEFENSE_UPGRADES);
+
+			//Use default AA until stormbringer.
+			if (!random(4) && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
+			{
+				if (!found)
+					found = evalResearch(lab, antiAirTech);
+				if (!found)
+					found = evalResearch(lab, antiAirExtras);
+			}
 
 			if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
 				found = evalResearch(lab, SENSOR_TECH);
 			if (!found && useArti)
-				found = evalResearch(lab, defenseTech);
-
+				found = evalResearch(lab, artilleryTech);
 			if (!found && useVtol && (random(101) < SUB_PERSONALITIES[personality].vtolPriority))
 				found = evalResearch(lab, VTOL_RES);
-
-			if (!found && (random(101) < SUB_PERSONALITIES[personality].defensePriority))
-				found = evalResearch(lab, DEFENSE_UPGRADES);
+			if (!found && useArti)
+				found = evalResearch(lab, artillExtra);
 			if (!found)
 				found = evalResearch(lab, BODY_RESEARCH);
 

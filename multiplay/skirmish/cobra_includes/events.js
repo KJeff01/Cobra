@@ -26,7 +26,7 @@ function eventGameInit()
 	{
 		if (l < MIN_TRUCKS)
 		{
-			baseType === CAMP_CLEAN ? groupAdd(constructGroup, cons[i]) : groupAdd(oilGrabberGroup, cons[i]);
+			!countStruct(FACTORY) ? groupAdd(constructGroup, cons[i]) : groupAdd(oilGrabberGroup, cons[i]);
 		}
 		else
 		{
@@ -47,7 +47,6 @@ function eventStartLevel()
 {
 	researchComplete = false;
 	throttleTime = [];
-	lastAttackedTime = 0;
 	initializeGrudgeCounter();
 
 	for (var i = 0; i < 4; ++i)
@@ -61,8 +60,8 @@ function eventStartLevel()
 	personality = choosePersonality();
 	turnOffMG = CheckStartingBases();
 	initializeResearchLists();
-	useArti = personality !== "AL" && random(101) < 50;
-	useVtol = random(101) < 50;
+	useArti = true;
+	useVtol = true;
 
 	recycleForHoverCobra();
 	buildOrderCobra(); //Start building right away.
@@ -202,7 +201,6 @@ function eventAttacked(victim, attacker)
 
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player))
 	{
-		lastAttackedTime = gameTime;
 
 		if (grudgeCount[attacker.player] < MAX_GRUDGE)
 		{

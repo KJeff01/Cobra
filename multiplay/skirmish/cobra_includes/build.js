@@ -307,7 +307,7 @@ function lookForOil()
 			}
 		}
 
-		if (!stopExecution("oil" + oils[i].x * mapWidth * oils[i].y, 90000) && bestDroid)
+		if (bestDroid && !stopExecution("oil" + oils[i].y * mapWidth * oils[i].x, 50000))
 		{
 			bestDroid.busy = true;
 			orderDroidBuild(bestDroid, DORDER_BUILD, structures.derricks, oils[i].x, oils[i].y);
@@ -379,13 +379,12 @@ function buildAAForPersonality()
 //Build defense systems.
 function buildDefenses()
 {
-	const MIN_POWER = 180;
 	if (buildAAForPersonality())
 	{
 		return true;
 	}
 
-	if ((gameTime > 240000) && (getRealPower() > MIN_POWER))
+	if ((gameTime > 240000) && (getRealPower() > MIN_BUILD_POWER))
 	{
 		if (buildSensors())
 		{
@@ -439,21 +438,24 @@ function factoryBuildOrder()
 {
 	for (var x = 0; x < 2; ++x)
 	{
+		//Always build at least one of each factory, if allowed.
+		if (x && (getRealPower() < MIN_BUILD_POWER))
+		{
+			break;
+		}
+
 		var num = (!x) ? 1 : 5;
 		for (var i = 0; i < 3; ++i)
 		{
 			var fac = SUB_PERSONALITIES[personality].factoryOrder[i];
-			if (fac === VTOL_FACTORY && !useVtol)
+			if ((fac === VTOL_FACTORY && !useVtol) || (fac === CYBORG_FACTORY && (turnOffCyborgs || forceHover)))
 			{
 				continue;
 			}
 
-			if (!((fac === CYBORG_FACTORY) && turnOffCyborgs && !forceHover))
+			if (countAndBuild(fac, num))
 			{
-				if (countAndBuild(fac, num))
-				{
-					return true;
-				}
+				return true;
 			}
 		}
 	}
@@ -465,24 +467,31 @@ function factoryBuildOrder()
 //Build repair bays when possible.
 function buildPhase2()
 {
-	const MIN_POWER = 250;
-
-	if (!countStruct(structures.gens) || (getRealPower() < MIN_POWER))
+	if (!countStruct(structures.gens))
 	{
 		return true;
 	}
 
-	if (!researchComplete && countAndBuild(structures.labs, 5))
+	if (!(getRealPower() < MIN_BUILD_POWER))
 	{
-		return true;
+		//Force three factories when there are three research labs.
+		if (countStruct(structures.labs) > 2 && countAndBuild(FACTORY, 3))
+		{
+			return true;
+		}
+
+		if (!researchComplete && countAndBuild(structures.labs, 5))
+		{
+			return true;
+		}
+
+		if (countAndBuild(structures.extras[0], 5))
+		{
+			return true;
+		}
 	}
 
-	if (countAndBuild(structures.extras[0], 5))
-	{
-		return true;
-	}
-
-	if (factoryBuildOrder())
+	if (random(2) && factoryBuildOrder())
 	{
 		return true;
 	}
@@ -540,7 +549,6 @@ function buildOrderCobra()
 //Check if a building has modules to be built
 function maintenance()
 {
-	const MIN_POWER = 160;
 	const LIST = ["A0PowMod1", "A0FacMod1", "A0ResearchModule1", "A0FacMod1"];
 	const MODS = [1, 2, 1, 2]; //Number of modules paired with list above
 	var struct = null, module = "", structList = [];
@@ -573,7 +581,7 @@ function maintenance()
 					//Only build the last factory module if we have a heavy body
 					if (structList[c].modules === 1)
 					{
-						if ((i === 1) && !componentAvailable("Body11ABT"))
+						if ((i === 1) && !componentAvailable("Body12SUP"))
 						{
 							continue;
 						}

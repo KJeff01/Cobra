@@ -1,23 +1,7 @@
-//Need to search for scavenger player number. Keep undefined if there are no scavengers.
+
 function getScavengerNumber()
 {
-	function uncached()
-	{
-		var scavNumber;
-		for (var x = maxPlayers; x < 11; ++x)
-		{
-			var structs = enumStruct(x);
-			if (isDefined(structs[0]))
-			{
-				scavNumber = x;
-				break;
-			}
-		}
-
-		return scavNumber;
-	}
-
-	return cacheThis(uncached, [], undefined, Infinity);
+	return scavengerPlayer;
 }
 
 //Figure out if we are on a hover map. This is determined by checking if a
