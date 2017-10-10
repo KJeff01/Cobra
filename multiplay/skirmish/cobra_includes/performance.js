@@ -33,7 +33,10 @@ function cacheThis(func, funcParameters, cachedItem, time)
 
 	var t = arguments.callee.caller.cachedTimes[cachedItem];
      var obj = arguments.callee.caller.cachedValues[cachedItem];
-	if (!isDefined(obj) || ((gameTime - t) >= REFRESH_TIME))
+     var def = isDefined(obj);
+	if (!def
+          || (def && isDefined(obj.typeInfo) && (getObject(obj.typeInfo, obj.playerInfo, obj.idInfo) === null))
+          || ((gameTime - t) >= REFRESH_TIME))
      {
 		arguments.callee.caller.cachedValues[cachedItem] = callFuncWithArgs(func, funcParameters);
 		arguments.callee.caller.cachedTimes[cachedItem] = gameTime;
@@ -42,31 +45,41 @@ function cacheThis(func, funcParameters, cachedItem, time)
      return arguments.callee.caller.cachedValues[cachedItem];
 }
 
-//TODO: Implement this better
-//Determine if something (namely events) should be skipped momentarily.
-//0 - eventAttacked().
-//1 - eventChat().
-//2 - eventBeacon().
-//3 - eventGroupLoss(). (the addBeacon call).
-//ms is a delay value.
-//Defaults to checking eventAttacked timer.
-function stopExecution(throttleNumber, ms)
+//A simple throttle function to make sure something is not executed too much.
+function stopExecution(throttleThis, time)
 {
-	if (!isDefined(throttleNumber))
+     if (!isDefined(time))
      {
-		throttleNumber = 0;
-	}
+          time = 2000;
+     }
 
-	if (!isDefined(ms))
+     if (!isDefined(arguments.callee.caller.throttleTimes))
      {
-		ms = 1000;
-	}
+          arguments.callee.caller.throttleTimes = {};
+     }
 
-	if (gameTime > (throttleTime[throttleNumber] + ms))
+	if (!isDefined(arguments.callee.caller.throttleTimes[throttleThis]))
      {
-		throttleTime[throttleNumber] = gameTime + (4 * random(500));
+		arguments.callee.caller.throttleTimes[throttleThis] = gameTime;
 		return false;
 	}
 
-	return true;
+	if (gameTime - arguments.callee.caller.throttleTimes[throttleThis] < time)
+     {
+          return true;
+     }
+
+	arguments.callee.caller.throttleTimes[throttleThis] = gameTime;
+	return false;
+}
+
+//This way we can pass around DROID/STRUCTURE/FEATURE object information in cacheThis by using getObject()
+//in the calling functions since assigning a variable only keeps a snapshot of the object as it was at the time.
+function objectInformation(object)
+{
+     return {
+          "typeInfo": object.type,
+          "playerInfo": object.player,
+          "idInfo": object.id
+     };
 }

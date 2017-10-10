@@ -7,7 +7,7 @@ function needPowerGenerator()
 		return ((countStruct(structures.derricks) - (countStruct(structures.gens) * 4)) > 0);
 	}
 
-	return cacheThis(uncached, [], undefined, 4000);
+	return cacheThis(uncached, [], undefined, 8000);
 }
 
 //Determine if this is a constructor droid. Specify and optional second paramter
@@ -100,26 +100,6 @@ function countAndBuild(stat, count)
 	return false;
 }
 
-//Return the best available artillery defense structure.
-function getDefenseStructure()
-{
-	function uncached()
-	{
-		var templates = SUB_PERSONALITIES[personality].artillery.defenses;
-		for (var i = templates.length - 1; i > 0; --i)
-		{
-			if (isStructureAvailable(templates[i].stat))
-			{
-				return templates[i].stat;
-			}
-		}
-		//Fallback onto the hmg tower.
-		return "GuardTower1";
-	}
-
-	return cacheThis(uncached, []);
-}
-
 //Find the closest derrick that is not guarded a defense or ECM tower.
 function protectUnguardedDerricks(droid)
 {
@@ -128,7 +108,7 @@ function protectUnguardedDerricks(droid)
 
 	if (isDefined(droid))
 	{
-		if (buildStructure(droid, getDefenseStructure(), droid, 0))
+		if (buildStructure(droid, returnDefense(), droid, 0))
 		{
 			return true;
 		}
@@ -163,7 +143,7 @@ function protectUnguardedDerricks(droid)
 
 		if (isDefined(undefended[0]))
 		{
-			if (buildStuff(getDefenseStructure(), undefined, undefended[0], 0, true))
+			if (buildStuff(returnDefense(), undefined, undefended[0], 0, true))
 			{
 				return true;
 			}
@@ -232,14 +212,14 @@ function buildStuff(struc, module, defendThis, blocking, oilGroup)
 		freeTrucks = freeTrucks.sort(distanceToBase);
 		var truck = freeTrucks[0];
 
-		if (isDefined(struc) && isDefined(module) && isDefined(truck))
+		if (isDefined(module) && isDefined(truck))
 		{
 			if (orderDroidBuild(truck, DORDER_BUILD, module, struc.x, struc.y))
 			{
 				return true;
 			}
 		}
-		if (isDefined(truck) && isDefined(struc))
+		if (isDefined(truck))
 		{
 			if (isDefined(defendThis))
 			{
@@ -298,7 +278,7 @@ function lookForOil()
 		for (var j = 0, drLen = droids.length; j < drLen; j++)
 		{
 			var dist = distBetweenTwoPoints(droids[j].x, droids[j].y, oils[i].x, oils[i].y);
-			var unsafe = enumRange(oils[i].x, oils[i].y, 9, ENEMIES, false);
+			var unsafe = enumRange(oils[i].x, oils[i].y, 6, ENEMIES, false);
 			unsafe = unsafe.filter(isUnsafeEnemyObject);
 			if (!isDefined(unsafe[0]) && conCanHelp(droids[j], oils[i].x, oils[i].y))
 			{
@@ -307,7 +287,7 @@ function lookForOil()
 			}
 		}
 
-		if (bestDroid)
+		if (bestDroid && !stopExecution("oil" + oils[i].y * mapWidth * oils[i].x, 50000))
 		{
 			bestDroid.busy = true;
 			orderDroidBuild(bestDroid, DORDER_BUILD, structures.derricks, oils[i].x, oils[i].y);
@@ -376,17 +356,94 @@ function buildAAForPersonality()
 	return false;
 }
 
-//Build defense systems.
-function buildDefenses()
+// type refers to either a hardpoint like structure or an artillery emplacement.
+// returns undefined if no structure it can build can be built.
+function returnDefense(type)
 {
-	const MIN_POWER = 180;
+	if (!isDefined(type))
+	{
+		type = random(2);
+	}
+
+	const ELECTRONIC_CHANCE = 67;
+	var defenses = (type === 0) ? SUB_PERSONALITIES[personality].primaryWeapon.defenses : SUB_PERSONALITIES[personality].artillery.defenses;
+	var bestDefense = "Emplacement-MortarEMP"; //default
+
+	//Choose a random electronic warfare defense if possible.
+	if (random(101) < ELECTRONIC_CHANCE)
+	{
+		var avail = 0;
+		for (var i = 0, t = ELECTRONIC_DEFENSES.length; i < t; ++i)
+		{
+			if(isStructureAvailable(ELECTRONIC_DEFENSES[i]))
+			{
+				avail += 1;
+			}
+		}
+
+		if (avail > 0)
+		{
+			defenses = [];
+			defenses.push(ELECTRONIC_DEFENSES[random(avail)]);
+		}
+	}
+
+	for (var i = defenses.length - 1; i > -1; --i)
+	{
+		var def = isDefined(defenses[i].stat);
+		if (def && isStructureAvailable(defenses[i].stat))
+		{
+			bestDefense = defenses[i].stat;
+			break;
+		}
+		else if (!def && isStructureAvailable(defenses[i]))
+		{
+			bestDefense = defenses[i];
+			break;
+		}
+	}
+
+	return bestDefense;
+}
+
+// Immediately try building a defense near this truck.
+function buildDefenseNearTruck(truck, type)
+{
+	if (!isDefined(type))
+	{
+		type = 0;
+	}
+
+	var defense = returnDefense(type);
+
+	if (isDefined(defense))
+	{
+		var result = pickStructLocation(truck, defense, truck.x, truck.y, 1);
+		if (result)
+		{
+			return orderDroidBuild(truck, DORDER_BUILD, defense, result.x, result.y);
+		}
+	}
+
+	return false;
+}
+
+// Passing a truck will instruct that truck to pick
+// a location to build a defense structure near it.
+function buildDefenses(truck)
+{
 	if (buildAAForPersonality())
 	{
 		return true;
 	}
 
-	if ((gameTime > 240000) && (getRealPower() > MIN_POWER))
+	if ((gameTime > 180000) && (getRealPower() > MIN_BUILD_POWER))
 	{
+		if (isDefined(truck))
+		{
+			return buildDefenseNearTruck(truck, 0);
+		}
+
 		if (buildSensors())
 		{
 			return true;
@@ -395,6 +452,12 @@ function buildDefenses()
 		if (protectUnguardedDerricks())
 		{
 			return true;
+		}
+
+		var def = returnDefense();
+		if (isDefined(def))
+		{
+			return countAndBuild(def, Infinity);
 		}
 	}
 
@@ -439,21 +502,24 @@ function factoryBuildOrder()
 {
 	for (var x = 0; x < 2; ++x)
 	{
+		//Always build at least one of each factory, if allowed.
+		if (x && (getRealPower() < MIN_BUILD_POWER))
+		{
+			break;
+		}
+
 		var num = (!x) ? 1 : 5;
 		for (var i = 0; i < 3; ++i)
 		{
 			var fac = SUB_PERSONALITIES[personality].factoryOrder[i];
-			if (fac === VTOL_FACTORY && !useVtol)
+			if ((fac === VTOL_FACTORY && !useVtol) || (fac === CYBORG_FACTORY && (turnOffCyborgs || forceHover)))
 			{
 				continue;
 			}
 
-			if (!((fac === CYBORG_FACTORY) && turnOffCyborgs && !forceHover))
+			if (countAndBuild(fac, num))
 			{
-				if (countAndBuild(fac, num))
-				{
-					return true;
-				}
+				return true;
 			}
 		}
 	}
@@ -465,21 +531,22 @@ function factoryBuildOrder()
 //Build repair bays when possible.
 function buildPhase2()
 {
-	const MIN_POWER = 230;
-
-	if (!countStruct(structures.gens) || (getRealPower() < MIN_POWER))
+	if (!countStruct(structures.gens))
 	{
 		return true;
 	}
 
-	if (!researchComplete && countAndBuild(structures.labs, 5))
+	if (!(getRealPower() < MIN_BUILD_POWER))
 	{
-		return true;
-	}
+		if (!researchComplete && countAndBuild(structures.labs, 5))
+		{
+			return true;
+		}
 
-	if (countAndBuild(structures.extras[0], 5))
-	{
-		return true;
+		if (countAndBuild(structures.extras[0], 5))
+		{
+			return true;
+		}
 	}
 
 	if (factoryBuildOrder())
@@ -527,20 +594,20 @@ function buildExtras()
 //Cobra's unique build decisions
 function buildOrderCobra()
 {
+	var turtling = !confidenceThreshold();
 	if(checkUnfinishedStructures()) { return; }
 	if(maintenance()) { return; }
 	if(buildPhase1()) { return; }
-	if(enemyUnitsInBase()) { return; }
 	if(buildSpecialStructures()) { return; }
-	buildDefenses();
+	(turtling && buildDefenses());
 	if(buildExtras()) { return; }
 	if(buildPhase2()) { return; }
+	(!turtling && buildDefenses());
 }
 
 //Check if a building has modules to be built
 function maintenance()
 {
-	const MIN_POWER = 160;
 	const LIST = ["A0PowMod1", "A0FacMod1", "A0ResearchModule1", "A0FacMod1"];
 	const MODS = [1, 2, 1, 2]; //Number of modules paired with list above
 	var struct = null, module = "", structList = [];
@@ -570,14 +637,6 @@ function maintenance()
 			{
 				if (structList[c].modules < MODS[i])
 				{
-					//Only build the last factory module if we have a heavy body
-					if (structList[c].modules === 1)
-					{
-						if ((i === 1) && !componentAvailable("Body11ABT"))
-						{
-							continue;
-						}
-					}
 					struct = structList[c];
 					module = LIST[i];
 					break;

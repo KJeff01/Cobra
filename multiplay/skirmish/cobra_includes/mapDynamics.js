@@ -1,23 +1,7 @@
-//Need to search for scavenger player number. Keep undefined if there are no scavengers.
+
 function getScavengerNumber()
 {
-	function uncached()
-	{
-		var scavNumber;
-		for (var x = maxPlayers; x < 11; ++x)
-		{
-			var structs = enumStruct(x);
-			if (isDefined(structs[0]))
-			{
-				scavNumber = x;
-				break;
-			}
-		}
-
-		return scavNumber;
-	}
-
-	return cacheThis(uncached, [], undefined, Infinity);
+	return scavengerPlayer;
 }
 
 //Figure out if we are on a hover map. This is determined by checking if a
@@ -62,7 +46,7 @@ function checkIfSeaMap()
 			if ((i !== me) && !allianceExistsBetween(i, me) && propulsionCanReach("wheeled01", MY_BASE.x, MY_BASE.y, startPositions[i].x, startPositions[i].y))
 			{
 				//Check to see if it is a closed player slot
-				if (enumDroid(i).length)
+				if (countDroid(DROID_ANY, i).length)
 				{
 					seaMapWithLandEnemy = true;
 					break;

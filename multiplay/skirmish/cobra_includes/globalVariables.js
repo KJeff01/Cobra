@@ -6,6 +6,14 @@ const VTOL_FACTORY = "A0VTolFactory1";
 const MY_BASE = startPositions[me];
 const MIN_TRUCKS = 6;
 const OIL_RES = "OilResource";
+const MIN_POWER = 180;
+const MIN_BUILD_POWER = 230;
+
+const ELECTRONIC_DEFENSES = [
+	"Sys-SpyTower",
+	"WallTower-EMP",
+	"Emplacement-MortarEMP",
+];
 
 //Research constants
 const TANK_ARMOR = [
@@ -22,11 +30,12 @@ const ESSENTIALS = [
 	"R-Struc-PowerModuleMk1",
 	"R-Struc-Research-Upgrade09",
 	"R-Struc-Power-Upgrade03a",
+];
+const ESSENTIALS_2 = [
 	"R-Vehicle-Prop-Halftracks",
 	"R-Vehicle-Body05",
 	"R-Struc-RprFac-Upgrade01",
 	"R-Vehicle-Prop-Hover",
-	"R-Vehicle-Body04",
 ];
 const SYSTEM_UPGRADES = [
 	"R-Sys-Sensor-Upgrade03",
@@ -59,13 +68,14 @@ const BODY_RESEARCH = [
 	"R-Vehicle-Body14",
 ];
 const VTOL_RES = [
+	"R-Wpn-Bomb02",
 	"R-Wpn-Bomb-Accuracy03",
-	"R-Wpn-Bomb04",
 	"R-Struc-VTOLPad-Upgrade06",
+	"R-Wpn-Bomb04",
 	"R-Wpn-Bomb06",
 ];
 const LATE_EARLY_GAME_TECH = [
-	"R-Vehicle-Body11",
+	"R-Vehicle-Body12",
 	"R-Vehicle-Prop-Tracks",
 ];
 
@@ -75,16 +85,14 @@ const TANK_BODY = [
 	"Body13SUP", // Wyvern
 	"Body10MBT", // Vengeance
 	"Body7ABT",  // Retribution
-	"Body6SUPP", // Panther
-	"Body11ABT", // Python
 	"Body12SUP", // Mantis
+	"Body6SUPP", // Panther
 	"Body8MBT",  // Scorpion
 	"Body5REC",  // Cobra
 	"Body1REC",  // Viper
 ];
 const SYSTEM_BODY = [
 	"Body3MBT",  // Retaliation
-//	"Body2SUP",  // Leopard
 	"Body4ABT",  // Bug
 	"Body1REC",  // Viper
 ];
@@ -126,7 +134,7 @@ const SUB_PERSONALITIES =
 		"defensePriority": 10,
 		"vtolPriority": 20,
 		"systemPriority": 30,
-		"alloyPriority": 10,
+		"alloyPriority": 20,
 		"res": [
 			"R-Wpn-Cannon-Damage02",
 			"R-Wpn-Cannon-ROF02",
@@ -138,14 +146,14 @@ const SUB_PERSONALITIES =
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
-		"factoryOrder": [FACTORY, VTOL_FACTORY, CYBORG_FACTORY],
+		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 20,
 		"vtolPriority": 40,
 		"systemPriority": 20,
 		"alloyPriority": 25,
 		"res": [
 			"R-Wpn-Flamer-Damage03",
-			"R-Wpn-Flamer-ROF03",
+			"R-Wpn-Flamer-ROF01",
 		],
 	},
 	AB:
@@ -153,14 +161,16 @@ const SUB_PERSONALITIES =
 		"primaryWeapon": weaponStats.rockets_AT,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.rockets_Arty,
-		"antiAir": weaponStats.AA,
-		"factoryOrder": [CYBORG_FACTORY, VTOL_FACTORY, FACTORY],
+		"antiAir": weaponStats.rockets_AA,
+		"factoryOrder": [FACTORY, VTOL_FACTORY, CYBORG_FACTORY],
 		"defensePriority": 60,
 		"vtolPriority": 90,
 		"systemPriority": 15,
 		"alloyPriority": 15,
 		"res": [
 			"R-Wpn-MG2Mk1",
+			"R-Wpn-Rocket02-MRL",
+			"R-Wpn-Rocket01-LtAT",
 		],
 	},
 	AM:
@@ -188,8 +198,9 @@ const SUB_PERSONALITIES =
 		"defensePriority": 10,
 		"vtolPriority": 100,
 		"systemPriority": 40,
-		"alloyPriority": 5,
+		"alloyPriority": 10,
 		"res": [
+			"R-Wpn-Mortar-Incenediary",
 			"R-Wpn-Laser01",
 		],
 	},
@@ -198,7 +209,6 @@ const SUB_PERSONALITIES =
 // Groups
 var attackGroup;
 var vtolGroup;
-var cyborgGroup;
 var sensorGroup;
 var repairGroup;
 var artilleryGroup;
@@ -211,9 +221,7 @@ var lastMsg; //The last Cobra chat message.
 var forceHover; //Use hover propulsion only.
 var seaMapWithLandEnemy; //Hover map with an enemy sharing land with Cobra.
 var turnOffCyborgs; //Turn of cyborgs (hover maps/chat).
-var throttleTime; //For events so that some do not trigger their code too fast. More details in stopExecution() in miscFunctions.
 var researchComplete; //Check if done with research.
-var lastAttackedTime;
 var turnOffMG; //This is only used for when the personalities don't have their weapons researched.
 var useArti;
 var useVtol;
@@ -233,3 +241,4 @@ var extremeLaserTech;
 var secondaryWeaponTech;
 var secondaryWeaponExtra;
 var defenseTech;
+var standardDefenseTech;

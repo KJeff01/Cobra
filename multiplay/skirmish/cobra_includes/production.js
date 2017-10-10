@@ -358,11 +358,13 @@ function analyzeQueuedSystems()
 //Produce a unit when factories allow it.
 function CobraProduce()
 {
-	const MIN_POWER = 160;
-	const MIN_COM_ENG = 3;
+	if (countDroid(DROID_ANY) >= 150)
+	{
+		return; //Stop spamming about having the droid limit reached.
+	}
 	const MIN_SENSORS = 2;
 	const MIN_REPAIRS = 3;
-	var useCybEngineer = false; //countStruct(CYBORG_FACTORY) && !componentAvailable("hover01");
+	var useCybEngineer = countStruct(CYBORG_FACTORY) && (enumGroup(constructGroup).length < 4);
 	var systems = analyzeQueuedSystems();
 
 	var attackers = enumGroup(attackGroup);
@@ -409,7 +411,7 @@ function CobraProduce()
 							//Do not produce weak body units if we can give this factory a module.
 							if (!countStruct(structures.gens)
 								|| (FC.modules < 1
-								&& componentAvailable("Body11ABT")))
+								&& componentAvailable("Body12SUP")))
 							{
 								continue;
 							}
@@ -421,7 +423,7 @@ function CobraProduce()
 					{
 						if (countStruct(structures.gens))
 						{
-							if (facType === CYBORG_FACTORY)
+							if (facType === CYBORG_FACTORY && (!turnOffCyborgs || !forceHover))
 							{
 								buildCyborg(FC, useCybEngineer);
 							}

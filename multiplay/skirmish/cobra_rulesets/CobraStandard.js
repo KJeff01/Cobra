@@ -360,8 +360,7 @@ const weaponStats =
 		alias: "rkta",
 		weapons: [
 			{ res: "R-Wpn-Rocket02-MRL", stat: "Rocket-MRL" }, // mra
-			//{ res: "R-Wpn-Rocket03-HvAT", stat: "Rocket-BB" }, // bb
-			//{ res: "R-Wpn-Rocket06-IDF", stat: "Rocket-IDF" }, // ripple
+			{ res: "R-Wpn-Rocket06-IDF", stat: "Rocket-IDF" }, // ripple
 			{ res: "R-Wpn-MdArtMissile", stat: "Missile-MdArt" }, // seraph
 			{ res: "R-Wpn-HvArtMissile", stat: "Missile-HvyArt" }, // archie
 		],
@@ -508,8 +507,8 @@ const weaponStats =
 		alias: "bomb",
 		weapons: [],
 		vtols: [
-			{ res: "R-Wpn-Bomb01", stat: "Bomb1-VTOL-LtHE" }, // cluster bomb
-			{ res: "R-Wpn-Bomb03", stat: "Bomb3-VTOL-LtINC" }, // Phosphor bomb
+		//	{ res: "R-Wpn-Bomb01", stat: "Bomb1-VTOL-LtHE" }, // cluster bomb
+			//{ res: "R-Wpn-Bomb03", stat: "Bomb3-VTOL-LtINC" }, // Phosphor bomb
 			{ res: "R-Wpn-Bomb02", stat: "Bomb2-VTOL-HvHE" }, // HEAP bomb
 			{ res: "R-Wpn-Bomb04", stat: "Bomb4-VTOL-HvyINC" }, // Thermite bomb
 			//{ res: "R-Wpn-Bomb05", stat: "Bomb5-VTOL-Plasmite" }, // Plasmite bomb

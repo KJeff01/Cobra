@@ -6,7 +6,6 @@ function eventGameInit()
 {
 	attackGroup = newGroup();
 	vtolGroup = newGroup();
-	cyborgGroup = newGroup();
 	sensorGroup = newGroup();
 	repairGroup = newGroup();
 	artilleryGroup = newGroup();
@@ -15,7 +14,7 @@ function eventGameInit()
 	lastMsg = "eventGameInit";
 
 	addDroidsToGroup(attackGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return !obj.isCB; }));
-	addDroidsToGroup(cyborgGroup, enumDroid(me, DROID_CYBORG));
+	addDroidsToGroup(attackGroup, enumDroid(me, DROID_CYBORG));
 	addDroidsToGroup(vtolGroup, enumDroid(me).filter(function(obj) { return isVTOL(obj); }));
 	addDroidsToGroup(sensorGroup, enumDroid(me, DROID_SENSOR));
 	addDroidsToGroup(repairGroup, enumDroid(me, DROID_REPAIR));
@@ -26,7 +25,7 @@ function eventGameInit()
 	{
 		if (l < MIN_TRUCKS)
 		{
-			baseType === CAMP_CLEAN ? groupAdd(constructGroup, cons[i]) : groupAdd(oilGrabberGroup, cons[i]);
+			!countStruct(FACTORY) ? groupAdd(constructGroup, cons[i]) : groupAdd(oilGrabberGroup, cons[i]);
 		}
 		else
 		{
@@ -46,37 +45,30 @@ function eventGameInit()
 function eventStartLevel()
 {
 	researchComplete = false;
-	throttleTime = [];
-	lastAttackedTime = 0;
 	initializeGrudgeCounter();
-
-	for (var i = 0; i < 4; ++i)
-	{
-		throttleTime.push(0);
-	}
-
 	diffPerks();
 	forceHover = checkIfSeaMap();
 	turnOffCyborgs = forceHover;
 	personality = choosePersonality();
 	turnOffMG = CheckStartingBases();
 	initializeResearchLists();
-	useArti = personality !== "AL" && random(101) < 50;
-	useVtol = random(101) < 50;
+	useArti = true;
+	useVtol = true;
 
 	recycleForHoverCobra();
 	buildOrderCobra(); //Start building right away.
 
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
-	setTimer("researchCobra", THINK_LONGER + 700 + 3 * random(70));
+	setTimer("CobraProduce", THINK_LONGER + 700 + 3 * random(70));
 	setTimer("buildOrderCobra", THINK_LONGER + 1100 + 3 * random(60));
-	setTimer("CobraProduce", THINK_LONGER + 1400 + 3 * random(70));
-	setTimer("switchOffMG", THINK_LONGER + 1800 + 3 * random(70));
-	setTimer("lookForOil", THINK_LONGER + 2000 + 3 * random(60))
+	setTimer("researchCobra", THINK_LONGER + 1200 + 3 * random(70));
+	setTimer("lookForOil", THINK_LONGER + 1600 + 3 * random(60))
+	setTimer("checkAllForRepair", THINK_LONGER + 2000 + 3 * random(60));
 	setTimer("repairDroidTacticsCobra", THINK_LONGER + 2500 + 4 * random(60));
 	setTimer("artilleryTacticsCobra", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("vtolTacticsCobra", THINK_LONGER + 5600 + 3 * random(70));
 	setTimer("battleTacticsCobra", THINK_LONGER + 7000 + 5 * random(60));
+	setTimer("switchOffMG", THINK_LONGER + 10000 + 3 * random(70));
 	setTimer("recycleForHoverCobra", THINK_LONGER + 15000 + 2 * random(60));
 	setTimer("stopTimersCobra", THINK_LONGER + 100000 + 5 * random(70));
 }
@@ -133,7 +125,8 @@ function eventDroidBuilt(droid, struct)
 	{
 		if (isConstruct(droid))
 		{
-			if (enumGroup(oilGrabberGroup).length < 4)
+			//Combat engineesr are always base builders.
+			if (droid.body !== "CyborgLightBody" && enumGroup(oilGrabberGroup).length < 4)
 			{
 				groupAdd(oilGrabberGroup, droid);
 			}
@@ -155,11 +148,7 @@ function eventDroidBuilt(droid, struct)
 		{
 			groupAdd(vtolGroup, droid);
 		}
-		else if (droid.droidType === DROID_CYBORG)
-		{
-			groupAdd(cyborgGroup, droid);
-		}
-		else if (droid.droidType === DROID_WEAPON)
+		else if (droid.droidType === DROID_WEAPON || droid.droidType === DROID_CYBORG)
 		{
 			//Anything with splash damage or CB abiliities go here.
 			if (droid.isCB || droid.hasIndirect)
@@ -191,17 +180,16 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (stopExecution(0, 100000) === false)
+		if (stopExecution("throttleEventAttacked1", 20000))
 		{
-			attackStuff(getScavengerNumber());
+			return;
 		}
 
-		return;
+		attackStuff(getScavengerNumber());
 	}
 
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player))
 	{
-		lastAttackedTime = gameTime;
 
 		if (grudgeCount[attacker.player] < MAX_GRUDGE)
 		{
@@ -231,7 +219,7 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (stopExecution(0, 210) || restraint())
+		if (stopExecution("throttleEventAttacked2", 750) || !shouldCobraAttack())
 		{
 			return;
 		}
@@ -247,14 +235,14 @@ function eventAttacked(victim, attacker)
 				return (d.type === DROID) && ((d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG) || isVTOL(d));
 			});
 
-			if (!isDefined(units[2]))
+			if (units.length < 2)
 			{
 				units = chooseGroup();
 			}
 		}
 
 		units = units.filter(function(dr) {
-			return ((dr.id !== victim.id)
+			return (dr.id !== victim.id
 				&& ((isVTOL(dr) && droidReady(dr))
 				|| (!repairDroid(dr)) && droidCanReach(dr, attacker.x, attacker.y))
 			);
@@ -287,17 +275,19 @@ function eventGroupLoss(droid, group, size)
 {
 	if (droid.order !== DORDER_RECYCLE)
 	{
-		if (stopExecution(3, 12000) === false)
+		if (stopExecution("throttleGroupLoss", 12000))
 		{
-			addBeacon(droid.x, droid.y, ALLIES);
+			return;
 		}
+
+		addBeacon(droid.x, droid.y, ALLIES);
 	}
 }
 
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message)
 {
-	if (stopExecution(2, 13000) === true)
+	if (stopExecution("throttleBeacon", 13000) || !shouldCobraAttack())
 	{
 		return;
 	}
@@ -310,10 +300,8 @@ function eventBeacon(x, y, from, to, message)
 			return; //not close enough to the beacon.
 		}
 
-		//Now uses only one of the ground groups since telling every attack
-		//group has intense consequences on performance.
 		const UNITS = chooseGroup().filter(function(dr) {
-			return (!repairDroid(dr) && droidCanReach(dr, x, y));
+			return droidCanReach(dr, x, y);
 		});
 		for (var i = 0, c = UNITS.length; i < c; i++)
 		{
@@ -370,10 +358,10 @@ function eventStructureReady(structure)
 		}
 	}
 
-	const ENEMY_FACTORY = returnClosestEnemyFactory();
-	if (isDefined(ENEMY_FACTORY))
+	var fac = returnClosestEnemyFactory();
+	if (isDefined(fac))
 	{
-		activateStructure(structure, ENEMY_FACTORY);
+		activateStructure(structure, getObject(fac.typeInfo, fac.playerInfo, fac.idInfo));
 	}
 	else
 	{
