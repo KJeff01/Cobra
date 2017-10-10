@@ -1,13 +1,19 @@
 const MAX_GRUDGE = 50000;
-const MIN_ATTACK_DROIDS = 6;
+const MIN_ATTACK_DROIDS = 7;
 const FACTORY = "A0LightFactory";
 const CYBORG_FACTORY = "A0CyborgFactory";
 const VTOL_FACTORY = "A0VTolFactory1";
 const MY_BASE = startPositions[me];
 const MIN_TRUCKS = 6;
 const OIL_RES = "OilResource";
-const MIN_POWER = 185;
-const MIN_BUILD_POWER = 210;
+const MIN_POWER = 180;
+const MIN_BUILD_POWER = 230;
+
+const ELECTRONIC_DEFENSES = [
+	"Sys-SpyTower",
+	"WallTower-EMP",
+	"Emplacement-MortarEMP",
+];
 
 //Research constants
 const TANK_ARMOR = [
@@ -194,6 +200,7 @@ const SUB_PERSONALITIES =
 		"systemPriority": 40,
 		"alloyPriority": 10,
 		"res": [
+			"R-Wpn-Mortar-Incenediary",
 			"R-Wpn-Laser01",
 		],
 	},
@@ -202,7 +209,6 @@ const SUB_PERSONALITIES =
 // Groups
 var attackGroup;
 var vtolGroup;
-var cyborgGroup;
 var sensorGroup;
 var repairGroup;
 var artilleryGroup;
@@ -215,7 +221,6 @@ var lastMsg; //The last Cobra chat message.
 var forceHover; //Use hover propulsion only.
 var seaMapWithLandEnemy; //Hover map with an enemy sharing land with Cobra.
 var turnOffCyborgs; //Turn of cyborgs (hover maps/chat).
-var throttleTime; //For events so that some do not trigger their code too fast. More details in stopExecution() in miscFunctions.
 var researchComplete; //Check if done with research.
 var turnOffMG; //This is only used for when the personalities don't have their weapons researched.
 var useArti;
@@ -236,3 +241,4 @@ var extremeLaserTech;
 var secondaryWeaponTech;
 var secondaryWeaponExtra;
 var defenseTech;
+var standardDefenseTech;

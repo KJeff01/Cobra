@@ -6,7 +6,6 @@ function eventGameInit()
 {
 	attackGroup = newGroup();
 	vtolGroup = newGroup();
-	cyborgGroup = newGroup();
 	sensorGroup = newGroup();
 	repairGroup = newGroup();
 	artilleryGroup = newGroup();
@@ -15,7 +14,7 @@ function eventGameInit()
 	lastMsg = "eventGameInit";
 
 	addDroidsToGroup(attackGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return !obj.isCB; }));
-	addDroidsToGroup(cyborgGroup, enumDroid(me, DROID_CYBORG));
+	addDroidsToGroup(attackGroup, enumDroid(me, DROID_CYBORG));
 	addDroidsToGroup(vtolGroup, enumDroid(me).filter(function(obj) { return isVTOL(obj); }));
 	addDroidsToGroup(sensorGroup, enumDroid(me, DROID_SENSOR));
 	addDroidsToGroup(repairGroup, enumDroid(me, DROID_REPAIR));
@@ -46,14 +45,7 @@ function eventGameInit()
 function eventStartLevel()
 {
 	researchComplete = false;
-	throttleTime = [];
 	initializeGrudgeCounter();
-
-	for (var i = 0; i < 4; ++i)
-	{
-		throttleTime.push(0);
-	}
-
 	diffPerks();
 	forceHover = checkIfSeaMap();
 	turnOffCyborgs = forceHover;
@@ -133,7 +125,8 @@ function eventDroidBuilt(droid, struct)
 	{
 		if (isConstruct(droid))
 		{
-			if (enumGroup(oilGrabberGroup).length < 4)
+			//Combat engineesr are always base builders.
+			if (droid.body !== "CyborgLightBody" && enumGroup(oilGrabberGroup).length < 4)
 			{
 				groupAdd(oilGrabberGroup, droid);
 			}
@@ -155,11 +148,7 @@ function eventDroidBuilt(droid, struct)
 		{
 			groupAdd(vtolGroup, droid);
 		}
-		else if (droid.droidType === DROID_CYBORG)
-		{
-			groupAdd(cyborgGroup, droid);
-		}
-		else if (droid.droidType === DROID_WEAPON)
+		else if (droid.droidType === DROID_WEAPON || droid.droidType === DROID_CYBORG)
 		{
 			//Anything with splash damage or CB abiliities go here.
 			if (droid.isCB || droid.hasIndirect)
@@ -191,7 +180,7 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (stopExecution("throttleEventAttacked1", 40000))
+		if (stopExecution("throttleEventAttacked1", 20000))
 		{
 			return;
 		}
@@ -230,7 +219,7 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (stopExecution("throttleEventAttacked2", 750))
+		if (stopExecution("throttleEventAttacked2", 750) || !shouldCobraAttack())
 		{
 			return;
 		}
@@ -246,14 +235,14 @@ function eventAttacked(victim, attacker)
 				return (d.type === DROID) && ((d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG) || isVTOL(d));
 			});
 
-			if (!isDefined(units[2]))
+			if (units.length < 2)
 			{
 				units = chooseGroup();
 			}
 		}
 
 		units = units.filter(function(dr) {
-			return ((dr.id !== victim.id)
+			return (dr.id !== victim.id
 				&& ((isVTOL(dr) && droidReady(dr))
 				|| (!repairDroid(dr)) && droidCanReach(dr, attacker.x, attacker.y))
 			);
@@ -298,7 +287,7 @@ function eventGroupLoss(droid, group, size)
 //Better check what is going on over there.
 function eventBeacon(x, y, from, to, message)
 {
-	if (stopExecution("throttleBeacon", 13000))
+	if (stopExecution("throttleBeacon", 13000) || !shouldCobraAttack())
 	{
 		return;
 	}
@@ -311,10 +300,8 @@ function eventBeacon(x, y, from, to, message)
 			return; //not close enough to the beacon.
 		}
 
-		//Now uses only one of the ground groups since telling every attack
-		//group has intense consequences on performance.
 		const UNITS = chooseGroup().filter(function(dr) {
-			return (!repairDroid(dr) && droidCanReach(dr, x, y));
+			return droidCanReach(dr, x, y);
 		});
 		for (var i = 0, c = UNITS.length; i < c; i++)
 		{
@@ -371,10 +358,10 @@ function eventStructureReady(structure)
 		}
 	}
 
-	const ENEMY_FACTORY = returnClosestEnemyFactory();
-	if (isDefined(ENEMY_FACTORY))
+	var fac = returnClosestEnemyFactory();
+	if (isDefined(fac))
 	{
-		activateStructure(structure, ENEMY_FACTORY);
+		activateStructure(structure, getObject(fac.typeInfo, fac.playerInfo, fac.idInfo));
 	}
 	else
 	{

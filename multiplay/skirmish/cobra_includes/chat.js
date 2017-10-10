@@ -133,7 +133,7 @@ function freeForAll()
 	if (won === true)
 	{
 		const FRIENDS = playerAlliance(true);
-		var CACHE_FRIENDS = FRIENDS.length;
+		const CACHE_FRIENDS = FRIENDS.length;
 
 		if (CACHE_FRIENDS)
 		{

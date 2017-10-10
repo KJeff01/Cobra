@@ -10,25 +10,25 @@ function random(max)
 // Returns true if something is defined
 function isDefined(data)
 {
-	return (typeof(data) !== "undefined");
+	return typeof(data) !== "undefined";
 }
 
 //Determine if a game object is destroyed or not.
 function isObjectAlive(object)
 {
-	return (isDefined(object) && object && (object.id !== 0));
+	return object && isDefined(object) && (object.id !== 0);
 }
 
 //Sort an array from smallest to largest in value.
 function sortArrayNumeric(a, b)
 {
-	return (a - b);
+	return a - b;
 }
 
 //Sort an array from smallest to largest in terms of droid health.
 function sortDroidsByHealth(a, b)
 {
-	return (a.health - b.health);
+	return a.health - b.health;
 }
 
 //Used for deciding if a truck will capture oil.
@@ -88,7 +88,7 @@ function distanceToBase(obj1, obj2)
 {
 	var dist1 = distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, obj1.x, obj1.y);
 	var dist2 = distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, obj2.x, obj2.y);
-	return (dist1 - dist2);
+	return dist1 - dist2;
 }
 
 //Push list elements into another.
@@ -119,31 +119,36 @@ function addDroidsToGroup(group, droids)
 //Returns closest enemy object.
 function rangeStep(player)
 {
-	if (!isDefined(player))
+	function uncached(player)
 	{
-		player = getMostHarmfulPlayer();
+		if (!isDefined(player))
+		{
+			player = getMostHarmfulPlayer();
+		}
+
+		var targets = [];
+		var struc = findNearestEnemyStructure(player);
+		var droid = findNearestEnemyDroid(player);
+
+		if (isDefined(struc))
+		{
+			targets.push(getObject(struc.typeInfo, struc.playerInfo, struc.idInfo));
+		}
+		if (isDefined(droid))
+		{
+			targets.push(getObject(droid.typeInfo, droid.playerInfo, droid.idInfo));
+		}
+
+		if (isDefined(targets[0]))
+		{
+			targets = targets.sort(distanceToBase);
+			return objectInformation(targets[0]);
+		}
+
+		return undefined;
 	}
 
-	var targets = [];
-	var closestStructure = findNearestEnemyStructure(player);
-	var closestDroid = findNearestEnemyDroid(player);
-
-	if (isDefined(closestStructure))
-	{
-		targets.push(closestStructure);
-	}
-	if (isDefined(closestDroid))
-	{
-		targets.push(closestDroid);
-	}
-
-	if (isDefined(targets[0]))
-	{
-		targets = targets.sort(distanceToBase);
-		return targets[0];
-	}
-
-	return undefined;
+	return cacheThis(uncached, [player]);
 }
 
 //Ally is false for checking for enemy players
@@ -246,7 +251,7 @@ function findLivingEnemies()
 		var alive = [];
 		for (var x = 0; x < maxPlayers; ++x)
 		{
-	 		if ((x !== me) && !allianceExistsBetween(x, me) && (enumDroid(x).length || enumStruct(x).length))
+	 		if ((x !== me) && !allianceExistsBetween(x, me) && (countDroid(DROID_ANY, x).length || enumStruct(x).length))
 			{
 				alive.push(x);
 			}
@@ -345,7 +350,7 @@ function donateFromGroup(from, group)
 		switch (group)
 		{
 			case "ATTACK": chosenGroup = enumGroup(attackGroup); break;
-			case "CYBORG": chosenGroup = enumGroup(cyborgGroup); break;
+			case "CYBORG": chosenGroup = enumGroup(attackGroup).filter(function(dr) { return dr.droidType === DROID_CYBORG; }); break;
 			case "VTOL": chosenGroup = enumGroup(vtolGroup); break;
 			default: chosenGroup = enumGroup(attackGroup); break;
 		}

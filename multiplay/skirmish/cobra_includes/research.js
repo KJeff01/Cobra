@@ -33,6 +33,7 @@ function initializeResearchLists()
 	secondaryWeaponTech = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.weapons);
 	secondaryWeaponExtra = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.extras);
 	defenseTech = updateResearchList(SUB_PERSONALITIES[personality].artillery.defenses);
+	standardDefenseTech = updateResearchList(SUB_PERSONALITIES[personality].primaryWeapon.defenses)
 	cyborgWeaps = updateResearchList(SUB_PERSONALITIES[personality].primaryWeapon.templates);
 }
 
@@ -42,18 +43,15 @@ function initializeResearchLists()
 //one is not completed... so lets help it a bit.
 function evalResearch(lab, list)
 {
-	var found = false;
-
 	for (var i = 0, a = list.length; i < a; ++i)
 	{
-		found = pursueResearch(lab, list[i]);
-		if (found)
+		if (pursueResearch(lab, list[i]))
 		{
-			break;
+			return true;
 		}
 	}
 
-	return found;
+	return false;
 }
 
 function researchCobra()
@@ -88,6 +86,20 @@ function researchCobra()
 			if (!found)
 				found = evalResearch(lab, weaponTech);
 
+			//Use default AA until stormbringer.
+			if (!random(2) && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
+			{
+				if (!found)
+					found = evalResearch(lab, antiAirTech);
+				if (!found)
+					found = evalResearch(lab, antiAirExtras);
+			}
+
+			if (!found && useArti && returnArtilleryAlias() !== "rkta")
+				found = evalResearch(lab, artillExtra);
+			if (!found)
+				found = evalResearch(lab, extraTech);
+
 			if (!found && (random(101) < SUB_PERSONALITIES[personality].alloyPriority))
 			{
 				found = evalResearch(lab, TANK_ARMOR);
@@ -97,30 +109,21 @@ function researchCobra()
 				}
 			}
 
-			if (!found)
-				found = evalResearch(lab, extraTech);
 			if (!found && useArti)
 				found = evalResearch(lab, defenseTech);
-			if (!found && (random(101) < SUB_PERSONALITIES[personality].defensePriority))
-				found = evalResearch(lab, DEFENSE_UPGRADES);
+			if (!found)
+				found = evalResearch(lab, standardDefenseTech);
 
-			//Use default AA until stormbringer.
-			if (!random(4) && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
-			{
-				if (!found)
-					found = evalResearch(lab, antiAirTech);
-				if (!found)
-					found = evalResearch(lab, antiAirExtras);
-			}
-
-			if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
-				found = evalResearch(lab, SENSOR_TECH);
 			if (!found && useArti)
 				found = evalResearch(lab, artilleryTech);
+			if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
+				found = evalResearch(lab, SENSOR_TECH);
+
 			if (!found && useVtol && (random(101) < SUB_PERSONALITIES[personality].vtolPriority))
 				found = evalResearch(lab, VTOL_RES);
-			if (!found && useArti)
-				found = evalResearch(lab, artillExtra);
+
+			if (!found && (random(101) < SUB_PERSONALITIES[personality].defensePriority))
+				found = evalResearch(lab, DEFENSE_UPGRADES);
 			if (!found)
 				found = evalResearch(lab, BODY_RESEARCH);
 

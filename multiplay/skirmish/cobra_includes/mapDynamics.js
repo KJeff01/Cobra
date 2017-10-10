@@ -46,7 +46,7 @@ function checkIfSeaMap()
 			if ((i !== me) && !allianceExistsBetween(i, me) && propulsionCanReach("wheeled01", MY_BASE.x, MY_BASE.y, startPositions[i].x, startPositions[i].y))
 			{
 				//Check to see if it is a closed player slot
-				if (enumDroid(i).length)
+				if (countDroid(DROID_ANY, i).length)
 				{
 					seaMapWithLandEnemy = true;
 					break;

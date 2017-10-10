@@ -358,10 +358,13 @@ function analyzeQueuedSystems()
 //Produce a unit when factories allow it.
 function CobraProduce()
 {
-	const MIN_COM_ENG = 3;
+	if (countDroid(DROID_ANY) >= 150)
+	{
+		return; //Stop spamming about having the droid limit reached.
+	}
 	const MIN_SENSORS = 2;
 	const MIN_REPAIRS = 3;
-	var useCybEngineer = false; //countStruct(CYBORG_FACTORY) && !componentAvailable("hover01");
+	var useCybEngineer = countStruct(CYBORG_FACTORY) && (enumGroup(constructGroup).length < 4);
 	var systems = analyzeQueuedSystems();
 
 	var attackers = enumGroup(attackGroup);

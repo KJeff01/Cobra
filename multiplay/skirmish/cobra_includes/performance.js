@@ -33,7 +33,10 @@ function cacheThis(func, funcParameters, cachedItem, time)
 
 	var t = arguments.callee.caller.cachedTimes[cachedItem];
      var obj = arguments.callee.caller.cachedValues[cachedItem];
-	if (!isDefined(obj) || ((gameTime - t) >= REFRESH_TIME))
+     var def = isDefined(obj);
+	if (!def
+          || (def && isDefined(obj.typeInfo) && (getObject(obj.typeInfo, obj.playerInfo, obj.idInfo) === null))
+          || ((gameTime - t) >= REFRESH_TIME))
      {
 		arguments.callee.caller.cachedValues[cachedItem] = callFuncWithArgs(func, funcParameters);
 		arguments.callee.caller.cachedTimes[cachedItem] = gameTime;
@@ -49,7 +52,7 @@ function stopExecution(throttleThis, time)
      {
           time = 2000;
      }
-     
+
      if (!isDefined(arguments.callee.caller.throttleTimes))
      {
           arguments.callee.caller.throttleTimes = {};
@@ -68,4 +71,15 @@ function stopExecution(throttleThis, time)
 
 	arguments.callee.caller.throttleTimes[throttleThis] = gameTime;
 	return false;
+}
+
+//This way we can pass around DROID/STRUCTURE/FEATURE object information in cacheThis by using getObject()
+//in the calling functions since assigning a variable only keeps a snapshot of the object as it was at the time.
+function objectInformation(object)
+{
+     return {
+          "typeInfo": object.type,
+          "playerInfo": object.player,
+          "idInfo": object.id
+     };
 }
