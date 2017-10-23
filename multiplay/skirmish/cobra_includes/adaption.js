@@ -21,14 +21,15 @@ function choosePersonality(chatEvent)
 {
 	if (!isDefined(chatEvent))
 	{
-		return adaptToMap();
+		personality = adaptToMap();
 	}
 	else
 	{
 		personality = chatEvent;
-		initializeResearchLists();
 		sendChatMessage("Using personality: " + personality, ALLIES);
 	}
+
+	initializeResearchLists();
 }
 
 //Tell us what our personality is.

@@ -432,11 +432,6 @@ function buildDefenseNearTruck(truck, type)
 // a location to build a defense structure near it.
 function buildDefenses(truck)
 {
-	if (buildAAForPersonality())
-	{
-		return true;
-	}
-
 	if ((gameTime > 180000) && (getRealPower() > MIN_BUILD_POWER))
 	{
 		if (isDefined(truck))
@@ -594,22 +589,21 @@ function buildExtras()
 //Cobra's unique build decisions
 function buildOrderCobra()
 {
-	var turtling = !confidenceThreshold();
-	if(checkUnfinishedStructures()) { return; }
-	if(maintenance()) { return; }
-	if(buildPhase1()) { return; }
-	if(buildSpecialStructures()) { return; }
-	(turtling && buildDefenses());
-	if(buildExtras()) { return; }
-	if(buildPhase2()) { return; }
-	(!turtling && buildDefenses());
+	if (checkUnfinishedStructures()) { return; }
+	if (maintenance()) { return; }
+	if (buildPhase1()) { return; }
+	if (buildSpecialStructures()) { return; }
+	if (buildAAForPersonality()) { return; }
+	if (buildExtras()) { return; }
+	if (buildPhase2()) { return; }
+	buildDefenses();
 }
 
 //Check if a building has modules to be built
 function maintenance()
 {
-	const LIST = ["A0PowMod1", "A0FacMod1", "A0ResearchModule1", "A0FacMod1"];
-	const MODS = [1, 2, 1, 2]; //Number of modules paired with list above
+	const LIST = ["A0PowMod1", "A0ResearchModule1", "A0FacMod1", "A0FacMod1"];
+	const MODS = [1, 1, 2, 2]; //Number of modules paired with list above
 	var struct = null, module = "", structList = [];
 
 	if (!countStruct(structures.gens) || (countStruct(structures.derricks) < 4))
@@ -627,8 +621,8 @@ function maintenance()
 			}
 			switch (i) {
 				case 0: { structList = enumStruct(me, structures.gens).sort(distanceToBase);  break; }
-				case 1: { structList = enumStruct(me, FACTORY).sort(distanceToBase);  break; }
-				case 2: { structList = enumStruct(me, structures.labs).sort(distanceToBase);  break; }
+				case 1: { structList = enumStruct(me, structures.labs).sort(distanceToBase);  break; }
+				case 2: { structList = enumStruct(me, FACTORY).sort(distanceToBase);  break; }
 				case 3: { structList = enumStruct(me, VTOL_FACTORY).sort(distanceToBase);  break; }
 				default: { break; }
 			}

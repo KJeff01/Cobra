@@ -55,8 +55,8 @@ function returnClosestEnemyFactory(enemyNumber)
 		}
 
 		var facs = enumStruct(enemyNumber, FACTORY);
-		facs = appendListElements(facs, enumStruct(enemyNumber, CYBORG_FACTORY));
-		facs = appendListElements(facs, enumStruct(enemyNumber, VTOL_FACTORY));
+		facs.concat(enumStruct(enemyNumber, CYBORG_FACTORY));
+		facs.concat(enumStruct(enemyNumber, VTOL_FACTORY));
 
 		if (isDefined(facs[0]))
 		{
@@ -182,13 +182,13 @@ function findEnemyDerricks(playerNumber)
 			const ENEMY_PLAYERS = findLivingEnemies();
 			for (var i = 0, e = ENEMY_PLAYERS.length; i < e; ++i)
 			{
-				derr = appendListElements(derr, enumStruct(ENEMY_PLAYERS[i], structures.derricks));
+				derr.concat(enumStruct(ENEMY_PLAYERS[i], structures.derricks));
 			}
 
 			//Include scavenger owned derricks if they exist
 			if (isDefined(getScavengerNumber()) && !allianceExistsBetween(getScavengerNumber(), me))
 			{
-				derr = appendListElements(derr, enumStruct(getScavengerNumber(), structures.derricks));
+				derr.concat(enumStruct(getScavengerNumber(), structures.derricks));
 			}
 		}
 		else
@@ -269,17 +269,15 @@ function findNearestEnemyStructure(enemy)
 //Attack something.
 function attackWithGroup(enemy, targets)
 {
-	const DROIDS = chooseGroup();
-	const LEN = DROIDS.length;
-
-	if (!isDefined(enemy))
-	{
-		enemy = getMostHarmfulPlayer();
-	}
-
-	if (LEN >= MIN_ATTACK_DROIDS)
+	if (shouldCobraAttack())
 	{
 		var target;
+		var droids = chooseGroup();
+		if (!isDefined(enemy))
+		{
+			enemy = getMostHarmfulPlayer();
+		}
+
 		if (isDefined(targets) && isDefined(targets[0]))
 		{
 			targets = targets.sort(distanceToBase);
@@ -294,9 +292,9 @@ function attackWithGroup(enemy, targets)
 			}
 		}
 
-		for (var j = 0; j < LEN; j++)
+		for (var j = 0, l = droids.length; j < l; j++)
 		{
-			attackThisObject(DROIDS[j], target);
+			attackThisObject(droids[j], target);
 		}
 	}
 }
@@ -410,12 +408,17 @@ function battleTacticsCobra()
 //Recycle units when certain conditions are met.
 function recycleForHoverCobra()
 {
+	if (recycled)
+	{
+		return;
+	}
+
 	const MIN_FACTORY = 1;
 	var systems = enumDroid(me).filter(function(dr) {
 		return isConstruct(dr);
 	});
-	systems = appendListElements(systems, enumDroid(me, DROID_SENSOR));
-	systems = appendListElements(systems, enumDroid(me, DROID_REPAIR));
+	systems.concat(enumDroid(me, DROID_SENSOR));
+	systems.concat(enumDroid(me, DROID_REPAIR));
 	systems = systems.filter(function(dr) {
 		return (dr.body !== "CyborgLightBody" && dr.propulsion !== "hover01");
 	});
@@ -431,12 +434,12 @@ function recycleForHoverCobra()
 				orderDroid(systems[i], DORDER_RECYCLE);
 			}
 		}
-		/*
+
 		if (!forceHover && !NON_HOVER_SYSTEMS)
 		{
-			removeThisTimer("recycleForHoverCobra");
+			recycled = true; //removeThisTimer("recycleForHoverCobra");
 		}
-		*/
+
 		if (forceHover)
 		{
 			var tanks = enumGroup(attackGroup).filter(function(dr) { return (dr.propulsion !== "hover01"); });
@@ -445,12 +448,11 @@ function recycleForHoverCobra()
 			{
 				orderDroid(tanks[j], DORDER_RECYCLE);
 			}
-			/*
+
 			if (!(NON_HOVER_TANKS + NON_HOVER_SYSTEMS))
 			{
-				removeThisTimer("recycleForHoverCobra");
+				recycled = true; //removeThisTimer("recycleForHoverCobra");
 			}
-			*/
 		}
 	}
 }
@@ -597,25 +599,6 @@ function donateSomePower()
 	}
 }
 
-//Flee! Flee for your lives!
-function runAway()
-{
-	var droids = enumDroid(me).filter(function(dr) {
-		return ((dr.droidType === DROID_WEAPON
-			|| dr.droidType === DROID_CYBORG)
-			&& !isVTOL(dr));
-	});
-
-	for (var i = 0, l = droids.length; i < l; ++i)
-	{
-		var droid = droids[i];
-		if (droid.order !== DORDER_RTR)
-		{
-			orderDroidLoc(droid, DORDER_MOVE, MY_BASE.x, MY_BASE.y);
-		}
-	}
-}
-
 //Does Cobra believe it is winning or could win?
 function confidenceThreshold()
 {
@@ -623,8 +606,8 @@ function confidenceThreshold()
 	var points = 0;
 	var derrRatio = Math.floor(DERR_COUNT / countAllResources()) * 100;
 
-	//Owning ~half the oils or more is a good signal of winning
-	if (derrRatio >= 40)
+	//Owning ~half the oils or more is a good signal of winning and so is 40+ droids.
+	if (derrRatio >= 30 || countDroid(DROID_ANY) > 40)
 	{
 		return true;
 	}
@@ -637,12 +620,8 @@ function confidenceThreshold()
 		points = (findLivingEnemies().length <= playerAlliance(true).length + 1) ? (points + 15) : (points - 15);
 	}
 	//more
-	points = random(2) ? (points + random(8)) : (points - random(4));
-	points += Math.floor(DERR_COUNT / 2.5);
-	if (enumGroup(attackGroup).length < MIN_ATTACK_DROIDS)
-	{
-		points -= 6;
-	}
+	points += random(8) + Math.floor(DERR_COUNT / 2);
+	points += countDroid(DROID_ANY) < 8 ? -5 : 5;
 
 	return (points > -1);
 }
@@ -650,12 +629,5 @@ function confidenceThreshold()
 //Check if our forces are large enough to take on the most harmful player.
 function shouldCobraAttack()
 {
-	if (confidenceThreshold() && countDroid(DROID_ANY) > 15)
-	{
-		return true;
-	}
-	else {
-		runAway();
-		return false;
-	}
+	return confidenceThreshold();
 }

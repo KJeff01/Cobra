@@ -94,16 +94,12 @@ function countAllResources()
 		var resources = enumFeature(-1, OIL_RES);
 		for (var i = 0; i < maxPlayers; ++i)
 		{
-			var res = enumStruct(i, structures.derricks);
-			for (var c = 0, r = res.length; c < r; ++c)
-			{
-				resources.push(res[c]);
-			}
+			resources.concat(enumStruct(i, structures.derricks));
 		}
 
 		if (isDefined(getScavengerNumber()))
 		{
-			resources = appendListElements(resources, enumStruct(getScavengerNumber(), structures.derricks));
+			resources.concat(enumStruct(getScavengerNumber(), structures.derricks));
 		}
 
 		return resources.length;

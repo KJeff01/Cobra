@@ -77,12 +77,14 @@ function researchCobra()
 			if (!found)
 				found = evalResearch(lab, ESSENTIALS_2);
 
-			if (!found)
-				found = evalResearch(lab, LATE_EARLY_GAME_TECH);
-			if (!found && !turnOffCyborgs)
+			if (!found && !turnOffCyborgs && !random(3))
 				found = evalResearch(lab, cyborgWeaps);
 			if (!found)
 				found = evalResearch(lab, SYSTEM_UPGRADES);
+			if (!found && !random(4))
+				found = evalResearch(lab, LATE_EARLY_GAME_TECH);
+			if (!found)
+				found = evalResearch(lab, extraTech);
 			if (!found)
 				found = evalResearch(lab, weaponTech);
 
@@ -95,11 +97,6 @@ function researchCobra()
 					found = evalResearch(lab, antiAirExtras);
 			}
 
-			if (!found && useArti && returnArtilleryAlias() !== "rkta")
-				found = evalResearch(lab, artillExtra);
-			if (!found)
-				found = evalResearch(lab, extraTech);
-
 			if (!found && (random(101) < SUB_PERSONALITIES[personality].alloyPriority))
 			{
 				found = evalResearch(lab, TANK_ARMOR);
@@ -109,15 +106,17 @@ function researchCobra()
 				}
 			}
 
-			if (!found && useArti)
-				found = evalResearch(lab, defenseTech);
 			if (!found)
 				found = evalResearch(lab, standardDefenseTech);
+			if (!found && useArti && returnArtilleryAlias() !== "rkta")
+				found = evalResearch(lab, artillExtra);
 
-			if (!found && useArti)
-				found = evalResearch(lab, artilleryTech);
 			if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
 				found = evalResearch(lab, SENSOR_TECH);
+			if (!found && useArti)
+				found = evalResearch(lab, defenseTech);
+			if (!found && useArti)
+				found = evalResearch(lab, artilleryTech);
 
 			if (!found && useVtol && (random(101) < SUB_PERSONALITIES[personality].vtolPriority))
 				found = evalResearch(lab, VTOL_RES);
@@ -128,7 +127,7 @@ function researchCobra()
 				found = evalResearch(lab, BODY_RESEARCH);
 
 
-			var cyborgSecondary = appendListElements(cyborgSecondary, updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates));
+			var cyborgSecondary = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates);
 			var len = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length - 1;
 			if (isDesignable(SUB_PERSONALITIES[personality].primaryWeapon.weapons[len].stat))
 			{

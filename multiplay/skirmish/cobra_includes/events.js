@@ -49,11 +49,11 @@ function eventStartLevel()
 	diffPerks();
 	forceHover = checkIfSeaMap();
 	turnOffCyborgs = forceHover;
-	personality = choosePersonality();
+	choosePersonality();
 	turnOffMG = CheckStartingBases();
-	initializeResearchLists();
 	useArti = true;
 	useVtol = true;
+	recycled = false;
 
 	recycleForHoverCobra();
 	buildOrderCobra(); //Start building right away.
@@ -180,12 +180,12 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (stopExecution("throttleEventAttacked1", 20000))
+		if (!stopExecution("throttleEventAttacked1", 20000))
 		{
-			return;
+			attackStuff(getScavengerNumber());
 		}
 
-		attackStuff(getScavengerNumber());
+		return;
 	}
 
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player))
@@ -275,12 +275,10 @@ function eventGroupLoss(droid, group, size)
 {
 	if (droid.order !== DORDER_RECYCLE)
 	{
-		if (stopExecution("throttleGroupLoss", 12000))
+		if (!stopExecution("throttleGroupLoss", 12000))
 		{
-			return;
+			addBeacon(droid.x, droid.y, ALLIES);
 		}
-
-		addBeacon(droid.x, droid.y, ALLIES);
 	}
 }
 
@@ -294,18 +292,16 @@ function eventBeacon(x, y, from, to, message)
 
 	if (allianceExistsBetween(from, to) || (to === from))
 	{
-		var enemyObject = enumRange(x, y, 8, ENEMIES, false)[0];
+		var enemyObject = enumRange(x, y, 5, ENEMIES, false)[0];
 		if (!isDefined(enemyObject))
 		{
 			return; //not close enough to the beacon.
 		}
 
-		const UNITS = chooseGroup().filter(function(dr) {
-			return droidCanReach(dr, x, y);
-		});
-		for (var i = 0, c = UNITS.length; i < c; i++)
+		var units = chooseGroup();
+		for (var i = 0, c = units.length; i < c; i++)
 		{
-			orderDroidObj(UNITS[i], DORDER_ATTACK, enemyObject);
+			attackThisObject(units[i], enemyObject);
 		}
 	}
 }
@@ -331,11 +327,12 @@ function eventDestroyed(object)
 	{
 		if (object.player === me)
 		{
-			var enemies = enumRange(object.x, object.y, 8, ENEMIES, false);
+			var enemies = enumRange(object.x, object.y, 5, ENEMIES, false);
 			enemies = enemies.sort(distanceToBase);
-			if (isDefined(enemies[0]) && grudgeCount[enemies[0].player] < MAX_GRUDGE)
+			var enemy = enemies[0];
+			if (isDefined(enemy) && grudgeCount[enemy.player] < MAX_GRUDGE)
 			{
-				grudgeCount[enemies[0].player] = grudgeCount[enemies[0].player] + 5;
+				grudgeCount[enemy.player] = grudgeCount[enemy.player] + 5;
 			}
 		}
 	}
