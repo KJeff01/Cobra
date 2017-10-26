@@ -42,24 +42,28 @@ function myPersonality()
 //isDesignable("Howitzer03-Rot") checks if it a T3 match and allows personality AL to be used (must have bases).
 function adaptToMap() {
 	var choice = "";
+	var personal;
+	var offset;
 	const ALLY_COUNT = playerAlliance(true).length - 1;
 	const MAP_OIL_LEVEL = mapOilLevel();
 	const T3_MATCH = isDesignable("Howitzer03-Rot");
-	const ADAPT_PERSONALITIES = ["AM", "AR", "AB", "AC", "AL"];
 
 	if (!T3_MATCH && (((maxPlayers - 1) === 1) || ((MAP_OIL_LEVEL === "LOW") && !ALLY_COUNT)))
 	{
-		choice = ADAPT_PERSONALITIES[random(3)]; // AM, AR, AB.
+		personal = ["AM", "AR", "AB"];
+		choice = personal[random(3)];
 	}
 	else if ((MAP_OIL_LEVEL === "MEDIUM") || ALLY_COUNT)
 	{
-		var offset = (T3_MATCH && (baseType !== CAMP_CLEAN)) ? 4 : 3;
-		choice = ADAPT_PERSONALITIES[random(offset) + 1]; // AR, AB, AC, AL.
+		personal = ["AR", "AB", "AC", "AA", "AL"];
+		offset = (T3_MATCH && (baseType !== CAMP_CLEAN)) ? 5 : 4;
+		choice = personal[random(offset)];
 	}
 	else
 	{
-		var offset = (T3_MATCH && (baseType !== CAMP_CLEAN)) ? 2 : 1;
-		choice = ADAPT_PERSONALITIES[random(offset) + 2]; // AC, AL.
+		personal = ["AC", "AA", "AL"];
+		offset = (T3_MATCH && (baseType !== CAMP_CLEAN)) ? 3 : 2;
+		choice = personal[random(offset)];
 	}
 
 	return choice;

@@ -282,10 +282,10 @@ function eventGroupLoss(droid, group, size)
 	}
 }
 
-//Better check what is going on over there.
+//Target player closest to beacon.
 function eventBeacon(x, y, from, to, message)
 {
-	if (stopExecution("throttleBeacon", 13000) || !shouldCobraAttack())
+	if (stopExecution("throttleBeacon", 20000) || !shouldCobraAttack())
 	{
 		return;
 	}
@@ -293,15 +293,9 @@ function eventBeacon(x, y, from, to, message)
 	if (allianceExistsBetween(from, to) || (to === from))
 	{
 		var enemyObject = enumRange(x, y, 5, ENEMIES, false)[0];
-		if (!isDefined(enemyObject))
+		if (isDefined(enemyObject))
 		{
-			return; //not close enough to the beacon.
-		}
-
-		var units = chooseGroup();
-		for (var i = 0, c = units.length; i < c; i++)
-		{
-			attackThisObject(units[i], enemyObject);
+			chatTactic(enemyObject.player);
 		}
 	}
 }

@@ -135,7 +135,7 @@ const SUB_PERSONALITIES =
 		"primaryWeapon": weaponStats.cannons,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.howitzers,
-		"antiAir": weaponStats.AA, //cannons_AA is too weak.
+		"antiAir": weaponStats.cannons_AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 10,
 		"vtolPriority": 20,
@@ -192,6 +192,21 @@ const SUB_PERSONALITIES =
 		"alloyPriority": 45,
 		"res": [
 			"R-Wpn-MG2Mk1",
+		],
+	},
+	AA:
+	{
+		"primaryWeapon": weaponStats.mortars,
+		"secondaryWeapon": weaponStats.gauss,
+		"artillery": weaponStats.fireMortars,
+		"antiAir": weaponStats.AA,
+		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
+		"defensePriority": 70,
+		"vtolPriority": 15,
+		"systemPriority": 100,
+		"alloyPriority": 60,
+		"res": [
+			"R-Wpn-Mortar01Lt",
 		],
 	},
 	AL:

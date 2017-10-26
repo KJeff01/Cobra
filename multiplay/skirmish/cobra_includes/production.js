@@ -263,7 +263,7 @@ function buildAttacker(struct)
 				secondary = "EMP-Cannon";
 			}
 
-			return buildDroid(struct, "Droid", gameTime < 420000 ? SYSTEM_BODY : TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
+			return buildDroid(struct, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
 		}
 	}
 

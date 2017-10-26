@@ -547,7 +547,7 @@ function attackThisObject(droid, target)
 	{
 		if (!((target.type === DROID) && isVTOL(target) && (isVTOL(droid) && !droid.weapons[0].canHitAir)))
 		{
-			if (!isPlasmaCannon(droid.weapons[0].name) && (target.type === DROID))
+			if (!isPlasmaCannon(droid.weapons[0].name) && (target.type === DROID || (target.type === STRUCTURE && target.stattype !== WALL)))
 			{
 				orderDroidLoc(droid, DORDER_SCOUT, target.x, target.y);
 			}

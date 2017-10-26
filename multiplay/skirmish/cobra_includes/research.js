@@ -81,7 +81,7 @@ function researchCobra()
 				found = evalResearch(lab, cyborgWeaps);
 			if (!found)
 				found = evalResearch(lab, SYSTEM_UPGRADES);
-			if (!found && !random(4))
+			if (!found)
 				found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 			if (!found)
 				found = evalResearch(lab, extraTech);
@@ -97,6 +97,9 @@ function researchCobra()
 					found = evalResearch(lab, antiAirExtras);
 			}
 
+			if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
+				found = evalResearch(lab, SENSOR_TECH);
+
 			if (!found && (random(101) < SUB_PERSONALITIES[personality].alloyPriority))
 			{
 				found = evalResearch(lab, TANK_ARMOR);
@@ -111,8 +114,6 @@ function researchCobra()
 			if (!found && useArti && returnArtilleryAlias() !== "rkta")
 				found = evalResearch(lab, artillExtra);
 
-			if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
-				found = evalResearch(lab, SENSOR_TECH);
 			if (!found && useArti)
 				found = evalResearch(lab, defenseTech);
 			if (!found && useArti)
@@ -123,21 +124,6 @@ function researchCobra()
 
 			if (!found && (random(101) < SUB_PERSONALITIES[personality].defensePriority))
 				found = evalResearch(lab, DEFENSE_UPGRADES);
-			if (!found)
-				found = evalResearch(lab, BODY_RESEARCH);
-
-
-			var cyborgSecondary = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates);
-			var len = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length - 1;
-			if (isDesignable(SUB_PERSONALITIES[personality].primaryWeapon.weapons[len].stat))
-			{
-				if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
-					found = pursueResearch(lab, cyborgSecondary);
-				if(!found)
-					found = evalResearch(lab, secondaryWeaponExtra);
-				if(!found)
-					found = evalResearch(lab, secondaryWeaponTech);
-			}
 
 			// Lasers
 			if (!found && !turnOffCyborgs)
@@ -150,6 +136,9 @@ function researchCobra()
 				found = pursueResearch(lab, "R-Defense-AA-Laser");
 
 			if (!found)
+				found = evalResearch(lab, BODY_RESEARCH);
+
+			if (!found)
 				found = pursueResearch(lab, "R-Wpn-PlasmaCannon");
 			if (componentAvailable("Laser4-PlasmaCannon"))
 			{
@@ -157,6 +146,18 @@ function researchCobra()
 					found = evalResearch(lab, extremeLaserTech);
 				if(!found)
 					found = evalResearch(lab, FLAMER);
+			}
+
+			var cyborgSecondary = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates);
+			var len = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length - 1;
+			if (isDesignable(SUB_PERSONALITIES[personality].primaryWeapon.weapons[len].stat))
+			{
+				if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
+					found = pursueResearch(lab, cyborgSecondary);
+				if(!found)
+					found = evalResearch(lab, secondaryWeaponExtra);
+				if(!found)
+					found = evalResearch(lab, secondaryWeaponTech);
 			}
 
 			//Very likely going to be done with research by now.
