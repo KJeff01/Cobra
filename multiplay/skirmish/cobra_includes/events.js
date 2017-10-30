@@ -60,10 +60,10 @@ function eventStartLevel()
 
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
 	setTimer("CobraProduce", THINK_LONGER + 700 + 3 * random(70));
+	setTimer("checkAllForRepair", THINK_LONGER + 900 + 3 * random(60));
 	setTimer("buildOrderCobra", THINK_LONGER + 1100 + 3 * random(60));
 	setTimer("researchCobra", THINK_LONGER + 1200 + 3 * random(70));
 	setTimer("lookForOil", THINK_LONGER + 1600 + 3 * random(60))
-	setTimer("checkAllForRepair", THINK_LONGER + 2000 + 3 * random(60));
 	setTimer("repairDroidTacticsCobra", THINK_LONGER + 2500 + 4 * random(60));
 	setTimer("artilleryTacticsCobra", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("vtolTacticsCobra", THINK_LONGER + 5600 + 3 * random(70));
@@ -270,18 +270,6 @@ function eventAttacked(victim, attacker)
 	}
 }
 
-//Add a beacon.
-function eventGroupLoss(droid, group, size)
-{
-	if (droid.order !== DORDER_RECYCLE)
-	{
-		if (!stopExecution("throttleGroupLoss", 12000))
-		{
-			addBeacon(droid.x, droid.y, ALLIES);
-		}
-	}
-}
-
 //Target player closest to beacon.
 function eventBeacon(x, y, from, to, message)
 {
@@ -292,7 +280,7 @@ function eventBeacon(x, y, from, to, message)
 
 	if (allianceExistsBetween(from, to) || (to === from))
 	{
-		var enemyObject = enumRange(x, y, 5, ENEMIES, false)[0];
+		var enemyObject = enumRange(x, y, 4, ENEMIES, false)[0];
 		if (isDefined(enemyObject))
 		{
 			chatTactic(enemyObject.player);
@@ -321,6 +309,14 @@ function eventDestroyed(object)
 	{
 		if (object.player === me)
 		{
+			if (object.type === DROID && object.order !== DORDER_RECYCLE)
+			{
+				if (!stopExecution("throttleDestroyed", 12000))
+				{
+					addBeacon(object.x, object.y, ALLIES);
+				}
+			}
+
 			var enemies = enumRange(object.x, object.y, 5, ENEMIES, false);
 			enemies = enemies.sort(distanceToBase);
 			var enemy = enemies[0];

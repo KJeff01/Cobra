@@ -109,10 +109,10 @@ function researchCobra()
 				}
 			}
 
-			if (!found)
-				found = evalResearch(lab, standardDefenseTech);
 			if (!found && useArti && returnArtilleryAlias() !== "rkta")
 				found = evalResearch(lab, artillExtra);
+			if (!found)
+				found = evalResearch(lab, standardDefenseTech);
 
 			if (!found && useArti)
 				found = evalResearch(lab, defenseTech);
@@ -129,14 +129,14 @@ function researchCobra()
 			if (!found && !turnOffCyborgs)
 				found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
 			if (!found)
+				found = evalResearch(lab, BODY_RESEARCH);
+			if (!found)
 				found = evalResearch(lab, laserTech);
 			if (!found)
 				found = evalResearch(lab, laserExtra);
 			if (!found)
 				found = pursueResearch(lab, "R-Defense-AA-Laser");
 
-			if (!found)
-				found = evalResearch(lab, BODY_RESEARCH);
 
 			if (!found)
 				found = pursueResearch(lab, "R-Wpn-PlasmaCannon");

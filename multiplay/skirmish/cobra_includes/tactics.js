@@ -427,7 +427,7 @@ function recycleForHoverCobra()
 
 	if ((countStruct(FACTORY) > MIN_FACTORY) && componentAvailable("hover01"))
 	{
-		if (!isDefined(unfinished[0]) && NON_HOVER_SYSTEMS)
+		if (!unfinished.length && NON_HOVER_SYSTEMS)
 		{
 			for (var i = 0; i < NON_HOVER_SYSTEMS; ++i)
 			{
