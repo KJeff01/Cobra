@@ -19,9 +19,10 @@ function isPlasmaCannon(weaponName)
 
 //Modified from Nullbot.
 //Returns true if the VTOL has ammo. False if empty.
-function vtolArmed(obj, percent)
+//NOTE: Expects the .armed property being passed.
+function vtolArmed(armedValue, percent)
 {
-	return obj.weapons[0].armed >= percent;
+	return armedValue >= percent;
 }
 
 //Count how many Enemy VTOL units are on the map.
@@ -33,9 +34,15 @@ function countEnemyVTOL()
 		var enemyVtolCount = 0;
 		for (var x = 0, e = ENEMY_PLAYERS.length; x < e; ++x)
 		{
-			enemyVtolCount += enumDroid(ENEMY_PLAYERS[x]).filter(function(obj) {
-				return isVTOL(obj);
-			}).length;
+			var playerDroids = enumDroid(ENEMY_PLAYERS[x]);
+			for (var c = 0, l = playerDroids.length; c < l; ++c)
+			{
+				var prop = playerDroids[c].propulsion;
+				if (prop === "V-Tol" || prop === "Helicopter")
+				{
+					++enemyVtolCount;
+				}
+			}
 		}
 
 		return enemyVtolCount;
@@ -55,8 +62,8 @@ function returnClosestEnemyFactory(enemyNumber)
 		}
 
 		var facs = enumStruct(enemyNumber, FACTORY);
-		facs = appendListElements(facs, enumStruct(enemyNumber, CYBORG_FACTORY));
-		facs = appendListElements(facs, enumStruct(enemyNumber, VTOL_FACTORY));
+		facs.concat(enumStruct(enemyNumber, CYBORG_FACTORY));
+		facs.concat(enumStruct(enemyNumber, VTOL_FACTORY));
 
 		if (isDefined(facs[0]))
 		{
@@ -106,7 +113,7 @@ function vtolReady(droid)
 	{
 		return false;
 	}
-	if (vtolArmed(droid, ARMED_PERCENT))
+	if (vtolArmed(droid.weapons[0].armed, ARMED_PERCENT))
 	{
 		return true;
 	}
@@ -182,13 +189,13 @@ function findEnemyDerricks(playerNumber)
 			const ENEMY_PLAYERS = findLivingEnemies();
 			for (var i = 0, e = ENEMY_PLAYERS.length; i < e; ++i)
 			{
-				derr = appendListElements(derr, enumStruct(ENEMY_PLAYERS[i], structures.derricks));
+				derr.concat(enumStruct(ENEMY_PLAYERS[i], structures.derricks));
 			}
 
 			//Include scavenger owned derricks if they exist
 			if (isDefined(getScavengerNumber()) && !allianceExistsBetween(getScavengerNumber(), me))
 			{
-				derr = appendListElements(derr, enumStruct(getScavengerNumber(), structures.derricks));
+				derr.concat(enumStruct(getScavengerNumber(), structures.derricks));
 			}
 		}
 		else
@@ -269,34 +276,32 @@ function findNearestEnemyStructure(enemy)
 //Attack something.
 function attackWithGroup(enemy, targets)
 {
-	const DROIDS = chooseGroup();
-	const LEN = DROIDS.length;
-
-	if (!isDefined(enemy))
-	{
-		enemy = getMostHarmfulPlayer();
-	}
-
-	if (LEN >= MIN_ATTACK_DROIDS)
+	if (shouldCobraAttack())
 	{
 		var target;
+		var droids = chooseGroup();
+		if (!isDefined(enemy))
+		{
+			enemy = getMostHarmfulPlayer();
+		}
+
 		if (isDefined(targets) && isDefined(targets[0]))
 		{
 			targets = targets.sort(distanceToBase);
-			target = targets[0];
+			target = objectInformation(targets[0]);
 		}
 		else
 		{
 			target = rangeStep();
-			if (isDefined(target))
+			if (!isDefined(target))
 			{
-				target = getObject(target.typeInfo, target.playerInfo, target.idInfo);
+				return;
 			}
 		}
 
-		for (var j = 0; j < LEN; j++)
+		for (var j = 0, l = droids.length; j < l; j++)
 		{
-			attackThisObject(DROIDS[j], target);
+			attackThisObject(droids[j].id, target);
 		}
 	}
 }
@@ -355,11 +360,11 @@ function artilleryTacticsCobra()
 
 		if (isDefined(obj))
 		{
-			obj = getObject(obj.typeInfo, obj.playerInfo, obj.idInfo);
-			orderDroidObj(sensors[0], DORDER_OBSERVE, obj);
+			var tempObj = getObject(obj.typeInfo, obj.playerInfo, obj.idInfo);
+			orderDroidObj(sensors[0], DORDER_OBSERVE, tempObj);
 			for (var i = 0; i < ARTI_LEN; ++i)
 			{
-				attackThisObject(ARTILLERY_UNITS[i], obj);
+				attackThisObject(ARTILLERY_UNITS[i].id, obj);
 			}
 		}
 	}
@@ -374,12 +379,11 @@ function attackEnemyOil()
 	if (LEN >= MIN_ATTACK_DROIDS)
 	{
 		var derr = findEnemyDerricks();
-		derr = getObject(derr.typeInfo, derr.playerInfo, derr.idInfo);
 		if (isDefined(derr))
 		{
 			for (var i = 0; i < LEN; ++i)
 			{
-				attackThisObject(WHO[i], derr);
+				attackThisObject(WHO[i].id, derr);
 			}
 		}
 	}
@@ -397,11 +401,10 @@ function battleTacticsCobra()
 		var target = rangeStep();
 		if (isDefined(target))
 		{
-			target = getObject(target.typeInfo, target.playerInfo, target.idInfo);
 			const WHO = chooseGroup();
 			for (var i = 0, l = WHO.length; i < l; ++i)
 			{
-				attackThisObject(WHO[i], target);
+				attackThisObject(WHO[i].id, target);
 			}
 		}
 	}
@@ -410,12 +413,17 @@ function battleTacticsCobra()
 //Recycle units when certain conditions are met.
 function recycleForHoverCobra()
 {
+	if (recycled)
+	{
+		return;
+	}
+
 	const MIN_FACTORY = 1;
 	var systems = enumDroid(me).filter(function(dr) {
 		return isConstruct(dr);
 	});
-	systems = appendListElements(systems, enumDroid(me, DROID_SENSOR));
-	systems = appendListElements(systems, enumDroid(me, DROID_REPAIR));
+	systems.concat(enumDroid(me, DROID_SENSOR));
+	systems.concat(enumDroid(me, DROID_REPAIR));
 	systems = systems.filter(function(dr) {
 		return (dr.body !== "CyborgLightBody" && dr.propulsion !== "hover01");
 	});
@@ -424,19 +432,19 @@ function recycleForHoverCobra()
 
 	if ((countStruct(FACTORY) > MIN_FACTORY) && componentAvailable("hover01"))
 	{
-		if (!isDefined(unfinished[0]) && NON_HOVER_SYSTEMS)
+		if (!unfinished.length && NON_HOVER_SYSTEMS)
 		{
 			for (var i = 0; i < NON_HOVER_SYSTEMS; ++i)
 			{
 				orderDroid(systems[i], DORDER_RECYCLE);
 			}
 		}
-		/*
+
 		if (!forceHover && !NON_HOVER_SYSTEMS)
 		{
-			removeThisTimer("recycleForHoverCobra");
+			recycled = true; //removeThisTimer("recycleForHoverCobra");
 		}
-		*/
+
 		if (forceHover)
 		{
 			var tanks = enumGroup(attackGroup).filter(function(dr) { return (dr.propulsion !== "hover01"); });
@@ -445,12 +453,11 @@ function recycleForHoverCobra()
 			{
 				orderDroid(tanks[j], DORDER_RECYCLE);
 			}
-			/*
+
 			if (!(NON_HOVER_TANKS + NON_HOVER_SYSTEMS))
 			{
-				removeThisTimer("recycleForHoverCobra");
+				recycled = true; //removeThisTimer("recycleForHoverCobra");
 			}
-			*/
 		}
 	}
 }
@@ -515,43 +522,36 @@ function vtolTacticsCobra()
 		var target = rangeStep();
 		if (isDefined(target))
 		{
-			target = getObject(target.typeInfo, target.playerInfo, target.idInfo);
 			for (var i = 0; i < LEN; ++i)
 			{
-				attackThisObject(vtols[i], target);
+				attackThisObject(vtols[i].id, target);
 			}
 		}
 	}
 }
 
-//Decide how to attack this target.
-function attackThisObject(droid, target)
+//Decide how to attack this target. droidID is Cobra's droid and target is
+//the object returned by objectInformation().
+function attackThisObject(droidID, target)
 {
-	if (!isDefined(droid.weapons[0]))
+	var d = getObject(DROID, me, droidID);
+	if (d === null || !isDefined(d.weapons[0]))
 	{
 		return;
 	}
 
-	if (!isDefined(target))
+	var t = getObject(target.typeInfo, target.playerInfo, target.idInfo);
+	if ((d !== null) && droidReady(d) && (t !== null) && droidCanReach(d, t.x, t.y))
 	{
-		target = rangeStep();
-		if (isDefined(target))
+		if (!((t.type === DROID) && isVTOL(t) && (isVTOL(d) && !d.weapons[0].canHitAir)))
 		{
-			target = getObject(target.typeInfo, target.playerInfo, target.idInfo);
-		}
-	}
-
-	if (isDefined(droid) && droidReady(droid) && isDefined(target) && droidCanReach(droid, target.x, target.y))
-	{
-		if (!((target.type === DROID) && isVTOL(target) && (isVTOL(droid) && !droid.weapons[0].canHitAir)))
-		{
-			if (!isPlasmaCannon(droid.weapons[0].name) && (target.type === DROID))
+			if (!isPlasmaCannon(d.weapons[0].name) && (t.type === DROID || (t.type === STRUCTURE && t.stattype !== WALL)))
 			{
-				orderDroidLoc(droid, DORDER_SCOUT, target.x, target.y);
+				orderDroidLoc(d, DORDER_SCOUT, t.x, t.y);
 			}
 			else
 			{
-				orderDroidObj(droid, DORDER_ATTACK, target);
+				orderDroidObj(d, DORDER_ATTACK, t);
 			}
 		}
 	}
@@ -597,25 +597,6 @@ function donateSomePower()
 	}
 }
 
-//Flee! Flee for your lives!
-function runAway()
-{
-	var droids = enumDroid(me).filter(function(dr) {
-		return ((dr.droidType === DROID_WEAPON
-			|| dr.droidType === DROID_CYBORG)
-			&& !isVTOL(dr));
-	});
-
-	for (var i = 0, l = droids.length; i < l; ++i)
-	{
-		var droid = droids[i];
-		if (droid.order !== DORDER_RTR)
-		{
-			orderDroidLoc(droid, DORDER_MOVE, MY_BASE.x, MY_BASE.y);
-		}
-	}
-}
-
 //Does Cobra believe it is winning or could win?
 function confidenceThreshold()
 {
@@ -623,8 +604,8 @@ function confidenceThreshold()
 	var points = 0;
 	var derrRatio = Math.floor(DERR_COUNT / countAllResources()) * 100;
 
-	//Owning ~half the oils or more is a good signal of winning
-	if (derrRatio >= 40)
+	//Owning ~half the oils or more is a good signal of winning and so is 40+ droids.
+	if (derrRatio >= 30 || countDroid(DROID_ANY) > 40)
 	{
 		return true;
 	}
@@ -637,12 +618,8 @@ function confidenceThreshold()
 		points = (findLivingEnemies().length <= playerAlliance(true).length + 1) ? (points + 15) : (points - 15);
 	}
 	//more
-	points = random(2) ? (points + random(8)) : (points - random(4));
-	points += Math.floor(DERR_COUNT / 2.5);
-	if (enumGroup(attackGroup).length < MIN_ATTACK_DROIDS)
-	{
-		points -= 6;
-	}
+	points += random(8) + Math.floor(DERR_COUNT / 2);
+	points += countDroid(DROID_ANY) < 8 ? -5 : 5;
 
 	return (points > -1);
 }
@@ -650,12 +627,5 @@ function confidenceThreshold()
 //Check if our forces are large enough to take on the most harmful player.
 function shouldCobraAttack()
 {
-	if (confidenceThreshold() && countDroid(DROID_ANY) > 15)
-	{
-		return true;
-	}
-	else {
-		runAway();
-		return false;
-	}
+	return confidenceThreshold();
 }

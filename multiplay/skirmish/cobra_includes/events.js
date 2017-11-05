@@ -49,21 +49,21 @@ function eventStartLevel()
 	diffPerks();
 	forceHover = checkIfSeaMap();
 	turnOffCyborgs = forceHover;
-	personality = choosePersonality();
+	choosePersonality();
 	turnOffMG = CheckStartingBases();
-	initializeResearchLists();
 	useArti = true;
 	useVtol = true;
+	recycled = false;
 
 	recycleForHoverCobra();
 	buildOrderCobra(); //Start building right away.
 
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
 	setTimer("CobraProduce", THINK_LONGER + 700 + 3 * random(70));
+	setTimer("checkAllForRepair", THINK_LONGER + 900 + 3 * random(60));
 	setTimer("buildOrderCobra", THINK_LONGER + 1100 + 3 * random(60));
 	setTimer("researchCobra", THINK_LONGER + 1200 + 3 * random(70));
 	setTimer("lookForOil", THINK_LONGER + 1600 + 3 * random(60))
-	setTimer("checkAllForRepair", THINK_LONGER + 2000 + 3 * random(60));
 	setTimer("repairDroidTacticsCobra", THINK_LONGER + 2500 + 4 * random(60));
 	setTimer("artilleryTacticsCobra", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("vtolTacticsCobra", THINK_LONGER + 5600 + 3 * random(70));
@@ -113,7 +113,7 @@ function eventDroidIdle(droid)
 		if (isDefined(enemyObjects[0]))
 		{
 			enemyObjects = enemyObjects.sort(distanceToBase);
-			attackThisObject(droid, enemyObjects[0]);
+			attackThisObject(droid.id, objectInformation(enemyObjects[0]));
 		}
 	}
 }
@@ -180,12 +180,12 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (stopExecution("throttleEventAttacked1", 20000))
+		if (!stopExecution("throttleEventAttacked1", 20000))
 		{
-			return;
+			attackStuff(getScavengerNumber());
 		}
 
-		attackStuff(getScavengerNumber());
+		return;
 	}
 
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player))
@@ -270,42 +270,20 @@ function eventAttacked(victim, attacker)
 	}
 }
 
-//Add a beacon.
-function eventGroupLoss(droid, group, size)
-{
-	if (droid.order !== DORDER_RECYCLE)
-	{
-		if (stopExecution("throttleGroupLoss", 12000))
-		{
-			return;
-		}
-
-		addBeacon(droid.x, droid.y, ALLIES);
-	}
-}
-
-//Better check what is going on over there.
+//Target player closest to beacon.
 function eventBeacon(x, y, from, to, message)
 {
-	if (stopExecution("throttleBeacon", 13000) || !shouldCobraAttack())
+	if (stopExecution("throttleBeacon", 20000) || !shouldCobraAttack())
 	{
 		return;
 	}
 
 	if (allianceExistsBetween(from, to) || (to === from))
 	{
-		var enemyObject = enumRange(x, y, 8, ENEMIES, false)[0];
-		if (!isDefined(enemyObject))
+		var enemyObject = enumRange(x, y, 4, ENEMIES, false)[0];
+		if (isDefined(enemyObject))
 		{
-			return; //not close enough to the beacon.
-		}
-
-		const UNITS = chooseGroup().filter(function(dr) {
-			return droidCanReach(dr, x, y);
-		});
-		for (var i = 0, c = UNITS.length; i < c; i++)
-		{
-			orderDroidObj(UNITS[i], DORDER_ATTACK, enemyObject);
+			chatTactic(enemyObject.player);
 		}
 	}
 }
@@ -331,11 +309,19 @@ function eventDestroyed(object)
 	{
 		if (object.player === me)
 		{
-			var enemies = enumRange(object.x, object.y, 8, ENEMIES, false);
-			enemies = enemies.sort(distanceToBase);
-			if (isDefined(enemies[0]) && grudgeCount[enemies[0].player] < MAX_GRUDGE)
+			if (object.type === DROID && object.order !== DORDER_RECYCLE)
 			{
-				grudgeCount[enemies[0].player] = grudgeCount[enemies[0].player] + 5;
+				if (!stopExecution("throttleDestroyed", 12000))
+				{
+					addBeacon(object.x, object.y, ALLIES);
+				}
+			}
+
+			var enemies = enumRange(object.x, object.y, 5, ENEMIES, false);
+			var enemy = enemies[0];
+			if (isDefined(enemy) && grudgeCount[enemy.player] < MAX_GRUDGE)
+			{
+				grudgeCount[enemy.player] = grudgeCount[enemy.player] + 5;
 			}
 		}
 	}

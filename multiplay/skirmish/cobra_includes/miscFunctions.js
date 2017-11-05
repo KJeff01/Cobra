@@ -13,12 +13,6 @@ function isDefined(data)
 	return typeof(data) !== "undefined";
 }
 
-//Determine if a game object is destroyed or not.
-function isObjectAlive(object)
-{
-	return object && isDefined(object) && (object.id !== 0);
-}
-
 //Sort an array from smallest to largest in value.
 function sortArrayNumeric(a, b)
 {
@@ -91,23 +85,6 @@ function distanceToBase(obj1, obj2)
 	return dist1 - dist2;
 }
 
-//Push list elements into another.
-function appendListElements(list, items)
-{
-	if (!isDefined(list))
-	{
-		list = [];
-	}
-
-	var temp = list;
-	for (var i = 0, c = items.length; i < c; ++i)
-	{
-		temp.push(items[i]);
-	}
-
-	return temp;
-}
-
 function addDroidsToGroup(group, droids)
 {
 	for (var i = 0, d = droids.length; i < d; ++i)
@@ -151,8 +128,7 @@ function rangeStep(player)
 	return cacheThis(uncached, [player]);
 }
 
-//Ally is false for checking for enemy players
-//Ally is true for allies.
+//passing true finds allies and passing false finds enemies.
 function playerAlliance(ally)
 {
 	if (!isDefined(ally))
@@ -281,6 +257,11 @@ function getMostHarmfulPlayer()
 	{
 		var mostHarmful = 0;
 		var enemies = findLivingEnemies();
+		if (!enemies.length)
+		{
+			return 0; //If nothing to attack, then attack player 0 (happens only after winning).
+		}
+
 	 	for (var x = 0, c = enemies.length; x < c; ++x)
 		{
 	 		if((grudgeCount[enemies[x]] >= 0) && (grudgeCount[enemies[x]] > grudgeCount[mostHarmful]))
@@ -289,10 +270,7 @@ function getMostHarmfulPlayer()
 			}
 	 	}
 
-		//In case Cobra is player zero (jsload or automation), return an enemy
-		//so that it does not attack itself if it wins.
-		var enemy_dummy = playerAlliance(false).reverse();
-		return ((mostHarmful !== me) && !allianceExistsBetween(me, mostHarmful)) ? mostHarmful : enemy_dummy[0];
+		return mostHarmful;
 	}
 
 	return cacheThis(uncached, [], undefined, 12000);
@@ -388,7 +366,7 @@ function removeThisTimer(timer)
 //Stop the non auto-remove timers if Cobra died.
 function stopTimersCobra()
 {
-	if (!(enumGroup(constructGroup).length || enumStruct(me, FACTORY).length))
+	if (!(countDroid(DROID_ANY) || countStruct(FACTORY) || countStruct(CYBORG_FACTORY)))
 	{
 		/*
 		var timers = [

@@ -145,8 +145,8 @@ const weaponStats =
 			{ res: "R-Cyborg-Hvywpn-Acannon", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-Acannon", ] }, // ac super
 		],
 		extras: [
-			"R-Wpn-Cannon-Damage09",
 			"R-Wpn-Cannon-ROF06",
+			"R-Wpn-Cannon-Damage09",
 			"R-Wpn-Cannon-Accuracy02",
 		],
 	},
@@ -192,8 +192,8 @@ const weaponStats =
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-Cannon-Damage09",
 			"R-Wpn-Cannon-ROF06",
+			"R-Wpn-Cannon-Damage09",
 			"R-Wpn-Cannon-Accuracy02",
 		],
 	},
@@ -228,11 +228,11 @@ const weaponStats =
 			{ res: "R-Wpn-Mortar01Lt", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "Cyb-Wpn-Grenade", ] },
 		],
 		extras: [
-			"R-Wpn-Mortar-Damage06",
 			"R-Wpn-Mortar-ROF04",
 			"R-Wpn-Mortar-Acc03",
-			"R-Wpn-Howitzer-Damage06",
+			"R-Wpn-Mortar-Damage06",
 			"R-Wpn-Howitzer-ROF04",
+			"R-Wpn-Howitzer-Damage06",
 			"R-Wpn-Howitzer-Accuracy03",
 		],
 	},
@@ -256,12 +256,10 @@ const weaponStats =
 			{ res: "R-Defense-RotHow", stat: "Emplacement-RotHow" },
 			{ res: "R-Defense-HvyHowitzer", stat: "Emplacement-Howitzer150" },
 		],
-		templates: [
-			{ res: "R-Wpn-Mortar01Lt", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "Cyb-Wpn-Grenade", ] },
-		],
+		templates: [],
 		extras: [
-			"R-Wpn-Howitzer-Damage06",
 			"R-Wpn-Howitzer-ROF04",
+			"R-Wpn-Howitzer-Damage06",
 			"R-Wpn-Howitzer-Accuracy03",
 		],
 	},
@@ -271,6 +269,9 @@ const weaponStats =
 		weapons: [
 			{ res: "R-Wpn-Mortar-Incenediary", stat: "Mortar-Incenediary" },
 			{ res: "R-Wpn-Howitzer-Incenediary", stat: "Howitzer-Incenediary" },
+		],
+		fastFire: [
+			{ res: "R-Wpn-Howitzer03-Rot", stat: "Howitzer03-Rot" },
 		],
 		vtols: [
 			{ res: "R-Wpn-Bomb03", stat: "Bomb3-VTOL-LtINC" },
@@ -283,11 +284,11 @@ const weaponStats =
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-Mortar-Damage06",
 			"R-Wpn-Mortar-ROF04",
 			"R-Wpn-Mortar-Acc03",
-			"R-Wpn-Howitzer-Damage06",
+			"R-Wpn-Mortar-Damage06",
 			"R-Wpn-Howitzer-ROF04",
+			"R-Wpn-Howitzer-Damage06",
 			"R-Wpn-Howitzer-Accuracy03",
 		],
 	},
@@ -324,8 +325,8 @@ const weaponStats =
 			{ res: "R-Cyborg-Hvywpn-A-T", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-A-T", ] }, // scourge super
 		],
 		extras: [
-			"R-Wpn-Rocket-Damage09",
 			"R-Wpn-Rocket-ROF03",
+			"R-Wpn-Rocket-Damage09",
 			"R-Wpn-Missile-Damage03",
 			"R-Wpn-Missile-ROF03",
 			"R-Wpn-Missile-Accuracy02",
@@ -364,6 +365,9 @@ const weaponStats =
 			{ res: "R-Wpn-MdArtMissile", stat: "Missile-MdArt" }, // seraph
 			{ res: "R-Wpn-HvArtMissile", stat: "Missile-HvyArt" }, // archie
 		],
+		fastFire: [
+			{ res: "R-Wpn-MdArtMissile", stat: "Missile-MdArt" },
+		],
 		vtols: [
 			{ res: "R-Wpn-Rocket03-HvAT", stat: "Rocket-VTOL-BB" }, // bb
 		],
@@ -375,8 +379,8 @@ const weaponStats =
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-Rocket-Damage09",
 			"R-Wpn-Rocket-ROF03",
+			"R-Wpn-Rocket-Damage09",
 			"R-Wpn-Missile-Damage03",
 			"R-Wpn-Missile-ROF03",
 			"R-Wpn-Missile-Accuracy02",
@@ -388,6 +392,9 @@ const weaponStats =
 		weapons: [
 			{ res: "R-Wpn-MdArtMissile", stat: "Missile-MdArt" }, // seraph
 			{ res: "R-Wpn-HvArtMissile", stat: "Missile-HvyArt" }, // archie
+		],
+		fastFire: [
+			{ res: "R-Wpn-MdArtMissile", stat: "Missile-MdArt" },
 		],
 		vtols: [],
 		defenses: [
@@ -434,8 +441,8 @@ const weaponStats =
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-Rocket-Damage09",
 			"R-Wpn-Rocket-ROF03",
+			"R-Wpn-Rocket-Damage09",
 			"R-Wpn-Missile-Damage03",
 			"R-Wpn-Missile-ROF03",
 			"R-Wpn-Missile-Accuracy02",
@@ -465,9 +472,9 @@ const weaponStats =
 			{ res: "R-Cyborg-Hvywpn-PulseLsr", body: "CyborgHeavyBody", prop: "CyborgLegs", weapons: [ "Cyb-Hvywpn-PulseLsr", ] }, // pulse super
 		],
 		extras: [
-			"R-Wpn-Energy-Damage03",
 			"R-Wpn-Energy-ROF03",
 			"R-Wpn-Energy-Accuracy01",
+			"R-Wpn-Energy-Damage03",
 		],
 	},
 	fort_AT:
@@ -497,9 +504,9 @@ const weaponStats =
 		],
 		templates: [],
 		extras: [
+			"R-Wpn-Cannon-ROF06",
 			"R-Wpn-Cannon-Accuracy02",
 			"R-Wpn-Cannon-Damage09",
-			"R-Wpn-Cannon-ROF06",
 		],
 	},
 	bombs:
@@ -540,8 +547,8 @@ const weaponStats =
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-AAGun-Damage06",
 			"R-Wpn-AAGun-ROF06",
+			"R-Wpn-AAGun-Damage06",
 			"R-Wpn-AAGun-Accuracy03",
 		],
 	},
@@ -576,9 +583,9 @@ const weaponStats =
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-Energy-Damage03",
 			"R-Wpn-Energy-ROF03",
 			"R-Wpn-Energy-Accuracy01",
+			"R-Wpn-Energy-Damage03",
 		],
 	},
 	empBomb:
