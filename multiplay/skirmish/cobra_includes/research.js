@@ -109,15 +109,15 @@ function researchCobra()
 				}
 			}
 
-			if (!found && useArti && returnArtilleryAlias() !== "rkta")
+			if (!found && useArti && (returnArtilleryAlias() !== "rkta"))
 				found = evalResearch(lab, artillExtra);
-			if (!found)
-				found = evalResearch(lab, standardDefenseTech);
-
-			if (!found && useArti)
-				found = evalResearch(lab, defenseTech);
 			if (!found && useArti)
 				found = evalResearch(lab, artilleryTech);
+
+			if (!found)
+				found = evalResearch(lab, standardDefenseTech);
+			if (!found && useArti)
+				found = evalResearch(lab, defenseTech);
 
 			if (!found && useVtol && (random(101) < SUB_PERSONALITIES[personality].vtolPriority))
 				found = evalResearch(lab, VTOL_RES);
@@ -125,18 +125,8 @@ function researchCobra()
 			if (!found && (random(101) < SUB_PERSONALITIES[personality].defensePriority))
 				found = evalResearch(lab, DEFENSE_UPGRADES);
 
-			// Lasers
-			if (!found && !turnOffCyborgs)
-				found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
 			if (!found)
 				found = evalResearch(lab, BODY_RESEARCH);
-			if (!found)
-				found = evalResearch(lab, laserTech);
-			if (!found)
-				found = evalResearch(lab, laserExtra);
-			if (!found)
-				found = pursueResearch(lab, "R-Defense-AA-Laser");
-
 
 			if (!found)
 				found = pursueResearch(lab, "R-Wpn-PlasmaCannon");
@@ -147,6 +137,19 @@ function researchCobra()
 				if(!found)
 					found = evalResearch(lab, FLAMER);
 			}
+
+			// Lasers
+			var aa = returnAntiAirAlias();
+			if (!found && !turnOffCyborgs)
+				found = pursueResearch(lab, "R-Cyborg-Hvywpn-PulseLsr");
+			if (!found)
+				found = evalResearch(lab, laserTech);
+			if (!found)
+				found = evalResearch(lab, laserExtra);
+			//Rocket/missile AA does not need this. Still uses it if researched.
+			if (!found && (aa !== "rkta" && aa !== "missa"))
+				found = pursueResearch(lab, "R-Defense-AA-Laser");
+
 
 			var cyborgSecondary = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates);
 			var len = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length - 1;

@@ -113,7 +113,7 @@ function eventDroidIdle(droid)
 		if (isDefined(enemyObjects[0]))
 		{
 			enemyObjects = enemyObjects.sort(distanceToBase);
-			attackThisObject(droid, enemyObjects[0]);
+			attackThisObject(droid.id, objectInformation(enemyObjects[0]));
 		}
 	}
 }
@@ -318,7 +318,6 @@ function eventDestroyed(object)
 			}
 
 			var enemies = enumRange(object.x, object.y, 5, ENEMIES, false);
-			enemies = enemies.sort(distanceToBase);
 			var enemy = enemies[0];
 			if (isDefined(enemy) && grudgeCount[enemy.player] < MAX_GRUDGE)
 			{

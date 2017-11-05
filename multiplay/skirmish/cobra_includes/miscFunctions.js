@@ -366,7 +366,7 @@ function removeThisTimer(timer)
 //Stop the non auto-remove timers if Cobra died.
 function stopTimersCobra()
 {
-	if (!(enumGroup(constructGroup).length || enumStruct(me, FACTORY).length))
+	if (!(countDroid(DROID_ANY) || countStruct(FACTORY) || countStruct(CYBORG_FACTORY)))
 	{
 		/*
 		var timers = [

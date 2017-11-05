@@ -441,11 +441,6 @@ function buildDefenses(truck)
 			return buildDefenseNearTruck(truck, 0);
 		}
 
-		if (buildSensors())
-		{
-			return true;
-		}
-
 		if (protectUnguardedDerricks())
 		{
 			return true;
@@ -577,6 +572,11 @@ function buildExtras()
 	}
 	//Build the minimum repair facilities.
 	if (countAndBuild(structures.extras[0], 1 + (countStruct(structures.gens) > 1)))
+	{
+		return true;
+	}
+
+	if (buildSensors())
 	{
 		return true;
 	}

@@ -206,7 +206,7 @@ const SUB_PERSONALITIES =
 		"systemPriority": 100,
 		"alloyPriority": 60,
 		"res": [
-			"R-Wpn-Mortar01Lt",
+			"R-Defense-HvyMor",
 		],
 	},
 	AL:

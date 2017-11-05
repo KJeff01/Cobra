@@ -256,9 +256,7 @@ const weaponStats =
 			{ res: "R-Defense-RotHow", stat: "Emplacement-RotHow" },
 			{ res: "R-Defense-HvyHowitzer", stat: "Emplacement-Howitzer150" },
 		],
-		templates: [
-			{ res: "R-Wpn-Mortar01Lt", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "Cyb-Wpn-Grenade", ] },
-		],
+		templates: [],
 		extras: [
 			"R-Wpn-Howitzer-ROF04",
 			"R-Wpn-Howitzer-Damage06",
