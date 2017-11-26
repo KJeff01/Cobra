@@ -240,7 +240,7 @@ function pickPropulsion(weap)
 //Create a ground attacker tank with a heavy body when possible.
 //Personality AR uses hover when possible. All personalities may use special weapons on Hard/Insane.
 //Also when Cobra has Dragon body, the EMP Cannon may be selected as the second weapon if it is researched.
-function buildAttacker(struct)
+function buildAttacker(id)
 {
 	if (!(isDefined(forceHover) && isDefined(seaMapWithLandEnemy)))
 	{
@@ -253,40 +253,43 @@ function buildAttacker(struct)
 
 	var weap = choosePersonalityWeapon("TANK");
 	var secondary = choosePersonalityWeapon("TANK");
+	var fac = getObject(STRUCTURE, me, id);
 
 	if (isDefined(weap) && isDefined(secondary) && (secondary[0] !== "Laser4-PlasmaCannon"))
 	{
-		if (isDefined(struct))
+		if (fac !== null)
 		{
 			if (!random(3) && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon"))
 			{
 				secondary = "EMP-Cannon";
 			}
 
-			return buildDroid(struct, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
+			return buildDroid(fac, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
 		}
 	}
 
 	return false;
 }
 
-//Create trucks or sensors with a light body. Default to a sensor.
-function buildSys(struct, weap)
+//Create trucks or sensors with a light/medium body. Default to a sensor.
+function buildSys(id, weap)
 {
+	var fac = getObject(STRUCTURE, me, id);
 	if (!isDefined(weap))
 	{
 		weap = ["Sensor-WideSpec", "SensorTurret1Mk1"];
 	}
 
-	return (isDefined(struct) && buildDroid(struct, "System unit", SYSTEM_BODY, SYSTEM_PROPULSION, "", "", weap));
+	return (fac !== null && buildDroid(fac, "System unit", random(2) ? SYSTEM_BODY : VTOL_BODY, SYSTEM_PROPULSION, "", "", weap));
 }
 
 //Create a cyborg with available research. Expects a boolean for useEngineer or can undefined.
-function buildCyborg(fac, useEngineer)
+function buildCyborg(id, useEngineer)
 {
 	var weap = "CyborgSpade";
 	var body = "CyborgLightBody";
 	var prop = "CyborgLegs";
+	var fac = getObject(STRUCTURE, me, id);
 
 	//Build combat engineer if requested.
 	if (isDefined(useEngineer) && (useEngineer === true))
@@ -295,7 +298,7 @@ function buildCyborg(fac, useEngineer)
 	}
 
 	var weaponLine = choosePersonalityWeapon("CYBORG");
-	if (isDefined(weaponLine) && isDefined(fac))
+	if (isDefined(weaponLine) && fac !== null)
 	{
 		for (var x = weaponLine.templates.length - 1; x >= 0; --x)
 		{
@@ -314,10 +317,11 @@ function buildCyborg(fac, useEngineer)
 }
 
 //Create a vtol fighter with a medium body.
-function buildVTOL(struct)
+function buildVTOL(id)
 {
 	var weap = choosePersonalityWeapon("VTOL");
-	return (isDefined(struct) && isDefined(weap) && buildDroid(struct, "VTOL unit", VTOL_BODY, "V-Tol", "", "", weap, weap));
+	var fac = getObject(STRUCTURE, me, id);
+	return (fac !== null && isDefined(weap) && buildDroid(fac, "VTOL unit", VTOL_BODY, "V-Tol", "", "", weap, weap));
 }
 
 //Check what system units are queued in a regular factory. Returns an object
@@ -385,26 +389,26 @@ function CobraProduce()
 			for (var x = 0, l = fac.length; x < l; ++x)
 			{
 				const FC = fac[x];
-				if (isDefined(FC) && structureIdle(FC) && (getRealPower() > MIN_POWER))
+				if (FC && structureIdle(FC) && (getRealPower() > MIN_POWER))
 				{
 
 					if (facType === FACTORY)
 					{
 						if (buildTrucks)
 						{
-							buildSys(FC, "Spade1Mk1");
+							buildSys(FC.id, "Spade1Mk1");
 						}
 						else if (buildSensors
 							&& enumGroup(artilleryGroup).length
 							&& componentAvailable("SensorTurret1Mk1"))
 						{
-							buildSys(FC);
+							buildSys(FC.id);
 						}
 						else if (allowSpecialSystems
 							&& buildRepairs
 							&& isDesignable("LightRepair1"))
 						{
-							buildSys(FC, REPAIR_TURRETS);
+							buildSys(FC.id, REPAIR_TURRETS);
 						}
 						else
 						{
@@ -416,7 +420,7 @@ function CobraProduce()
 								continue;
 							}
 
-							buildAttacker(FC);
+							buildAttacker(FC.id);
 						}
 					}
 					else
@@ -425,13 +429,13 @@ function CobraProduce()
 						{
 							if (facType === CYBORG_FACTORY && (!turnOffCyborgs || !forceHover))
 							{
-								buildCyborg(FC, useCybEngineer);
+								buildCyborg(FC.id, useCybEngineer);
 							}
 							else
 							{
 								if (useVtol)
 								{
-									buildVTOL(FC);
+									buildVTOL(FC.id);
 								}
 							}
 						}

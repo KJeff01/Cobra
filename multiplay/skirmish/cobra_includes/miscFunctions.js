@@ -253,6 +253,11 @@ function findLivingEnemies()
 //The enemy of which Cobra is focusing on.
 function getMostHarmfulPlayer()
 {
+	if (isDefined(scavengerPlayer) && (gameTime < lastAttackedByScavs + 25000))
+	{
+		return scavengerPlayer;
+	}
+
 	function uncached()
 	{
 		var mostHarmful = 0;
@@ -333,16 +338,12 @@ function donateFromGroup(from, group)
 			default: chosenGroup = enumGroup(attackGroup); break;
 		}
 
-		const DROIDS = chosenGroup.filter(function(dr) { return (dr.health > MIN_HEALTH); });
+		var droids = chosenGroup.filter(function(dr) { return (dr.health > MIN_HEALTH); });
 		const CACHE_DROIDS = droids.length;
 
 		if (CACHE_DROIDS >= MIN_ATTACK_DROIDS)
 		{
-			var droid = DROIDS[random(CACHE_DROIDS)];
-			if (isDefined(droid))
-			{
-				donateObject(droid, from);
-			}
+			donateObject(droids[random(CACHE_DROIDS)], from);
 		}
 	}
 }
@@ -368,14 +369,12 @@ function stopTimersCobra()
 {
 	if (!(countDroid(DROID_ANY) || countStruct(FACTORY) || countStruct(CYBORG_FACTORY)))
 	{
-		/*
 		var timers = [
 			"buildOrderCobra", "repairDroidTacticsCobra", "CobraProduce", "battleTacticsCobra",
 			"artilleryTacticsCobra", "stopTimersCobra", "researchCobra", "lookForOil",
 		];
 
 		removeThisTimer(timers);
-		*/
 		donateAllPower();
 	}
 }
@@ -391,43 +390,4 @@ function donateAllPower()
 	{
 		donatePower(playerPower(me), ALLY_PLAYERS[random(LEN)]);
 	}
-}
-
-//Tell if the personality likes cyborg or tank production.
-function droidPreference(swap)
-{
-	function uncached(swap)
-	{
-		var preference;
-		if (!isDefined(swap))
-		{
-			swap = false;
-		}
-
-		for (var i = 0; i < 2; ++i)
-		{
-			var fac = SUB_PERSONALITIES[personality].factoryOrder[i];
-			if (fac !== VTOL_FACTORY)
-			{
-				preference = (fac === CYBORG_FACTORY) ? "CYBORG" : "TANK";
-				break;
-			}
-		}
-
-		if (swap === true)
-		{
-			if (preference === "CYBORG")
-			{
-				preference = "TANK";
-			}
-			else
-			{
-				preference = "CYBORG";
-			}
-		}
-
-		return preference;
-	}
-
-	return cacheThis(uncached, [swap], undefined, Infinity);
 }

@@ -4,13 +4,13 @@ function switchOffMG()
 {
 	if (turnOffMG || (returnPrimaryAlias() === "mg"))
 	{
+		removeThisTimer("switchOffMG");
 		return;
 	}
 
 	if (componentAvailable("Body5REC"))
 	{
 		turnOffMG = true;
-		//removeThisTimer("switchOffMG");
 	}
 }
 

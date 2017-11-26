@@ -53,7 +53,7 @@ function eventStartLevel()
 	turnOffMG = CheckStartingBases();
 	useArti = true;
 	useVtol = true;
-	recycled = false;
+	lastAttackedByScavs = 0;
 
 	recycleForHoverCobra();
 	buildOrderCobra(); //Start building right away.
@@ -96,7 +96,7 @@ function eventStructureBuilt(structure, droid)
 				return ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
 			});
 
-			if ((gameTime > 240000) && !isDefined(numDefenses[0]))
+			if ((gameTime > 120000) && !isDefined(numDefenses[0]))
 			{
 				protectUnguardedDerricks(droid);
 			}
@@ -170,27 +170,14 @@ function eventAttacked(victim, attacker)
 		return;
 	}
 
-	if (isDefined(getScavengerNumber()) && (attacker.player === getScavengerNumber()))
+	if (isDefined(scavengerPlayer) && (attacker.player === scavengerPlayer))
 	{
-		if (isDefined(victim) && isDefined(attacker) && (victim.type === DROID) && !repairDroid(victim, false))
-		{
-			if ((victim.droidType === DROID_WEAPON) || (victim.droidType === DROID_CYBORG))
-			{
-				orderDroidLoc(victim, DORDER_SCOUT, attacker.x, attacker.y);
-			}
-		}
-
-		if (!stopExecution("throttleEventAttacked1", 20000))
-		{
-			attackStuff(getScavengerNumber());
-		}
-
+		lastAttackedByScavs = gameTime;
 		return;
 	}
 
 	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player))
 	{
-
 		if (grudgeCount[attacker.player] < MAX_GRUDGE)
 		{
 			grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 5;
@@ -305,24 +292,21 @@ function eventObjectTransfer(obj, from)
 //Increase grudge counter for closest enemy.
 function eventDestroyed(object)
 {
-	if (!(isDefined(getScavengerNumber()) && (object.player === getScavengerNumber())))
+	if (object.player === me)
 	{
-		if (object.player === me)
+		if (object.type === DROID && object.order !== DORDER_RECYCLE)
 		{
-			if (object.type === DROID && object.order !== DORDER_RECYCLE)
+			if (!stopExecution("throttleDestroyed", 12000))
 			{
-				if (!stopExecution("throttleDestroyed", 12000))
-				{
-					addBeacon(object.x, object.y, ALLIES);
-				}
+				addBeacon(object.x, object.y, ALLIES);
 			}
+		}
 
-			var enemies = enumRange(object.x, object.y, 5, ENEMIES, false);
-			var enemy = enemies[0];
-			if (isDefined(enemy) && grudgeCount[enemy.player] < MAX_GRUDGE)
-			{
-				grudgeCount[enemy.player] = grudgeCount[enemy.player] + 5;
-			}
+		var enemies = enumRange(object.x, object.y, 5, ENEMIES, false);
+		var enemy = enemies[0];
+		if (isDefined(enemy) && enemy.player < maxPlayers && grudgeCount[enemy.player] < MAX_GRUDGE)
+		{
+			grudgeCount[enemy.player] = grudgeCount[enemy.player] + 5;
 		}
 	}
 }

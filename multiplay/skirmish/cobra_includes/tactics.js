@@ -193,9 +193,9 @@ function findEnemyDerricks(playerNumber)
 			}
 
 			//Include scavenger owned derricks if they exist
-			if (isDefined(getScavengerNumber()) && !allianceExistsBetween(getScavengerNumber(), me))
+			if (isDefined(scavengerPlayer) && !allianceExistsBetween(scavengerPlayer, me))
 			{
-				derr.concat(enumStruct(getScavengerNumber(), structures.derricks));
+				derr.concat(enumStruct(scavengerPlayer, structures.derricks));
 			}
 		}
 		else
@@ -392,7 +392,6 @@ function attackEnemyOil()
 //Defend or attack.
 function battleTacticsCobra()
 {
-	const ENEMY = getMostHarmfulPlayer();
 	donateSomePower();
 	enemyUnitsInBase()
 
@@ -413,11 +412,6 @@ function battleTacticsCobra()
 //Recycle units when certain conditions are met.
 function recycleForHoverCobra()
 {
-	if (recycled)
-	{
-		return;
-	}
-
 	const MIN_FACTORY = 1;
 	var systems = enumDroid(me).filter(function(dr) {
 		return isConstruct(dr);
@@ -442,7 +436,7 @@ function recycleForHoverCobra()
 
 		if (!forceHover && !NON_HOVER_SYSTEMS)
 		{
-			recycled = true; //removeThisTimer("recycleForHoverCobra");
+			removeThisTimer("recycleForHoverCobra");
 		}
 
 		if (forceHover)
@@ -456,7 +450,7 @@ function recycleForHoverCobra()
 
 			if (!(NON_HOVER_TANKS + NON_HOVER_SYSTEMS))
 			{
-				recycled = true; //removeThisTimer("recycleForHoverCobra");
+				removeThisTimer("recycleForHoverCobra");
 			}
 		}
 	}
@@ -498,6 +492,10 @@ function targetPlayer(playerNumber)
 {
 	const INC = 100;
 	const PREVIOUS_TARGET = getMostHarmfulPlayer();
+	if (isDefined(scavengerPlayer) && ((playerNumber === scavengerPlayer) || (PREVIOUS_TARGET === scavengerPlayer)))
+	{
+		return; //No targeting scavs.
+	}
 
 	if (playerNumber !== PREVIOUS_TARGET)
 	{
@@ -604,22 +602,27 @@ function confidenceThreshold()
 	var points = 0;
 	var derrRatio = Math.floor(DERR_COUNT / countAllResources()) * 100;
 
-	//Owning ~half the oils or more is a good signal of winning and so is 40+ droids.
-	if (derrRatio >= 30 || countDroid(DROID_ANY) > 40)
+	//Owning 60% the oils or more is a good signal of winning
+	if (derrRatio >= 60)
 	{
 		return true;
 	}
 
 	points = (DERR_COUNT >= countStruct(structures.derricks, getMostHarmfulPlayer())) ? (points + 12) : (points - 12);
-	points = (countDroid(DROID_ANY) >= countDroid(DROID_ANY, getMostHarmfulPlayer()) - 4) ? (points + 21) : (points - 7);
+	points = (countDroid(DROID_ANY) >= countDroid(DROID_ANY, getMostHarmfulPlayer()) - 6) ? (points + 21) : (points - 7);
 	//team stuff
 	if (playerAlliance(true).length)
 	{
 		points = (findLivingEnemies().length <= playerAlliance(true).length + 1) ? (points + 15) : (points - 15);
 	}
 	//more
-	points += random(8) + Math.floor(DERR_COUNT / 2);
+	points += random(8) + Math.floor(DERR_COUNT / 5);
 	points += countDroid(DROID_ANY) < 8 ? -5 : 5;
+
+	if (countDroid(DROID_ANY, getMostHarmfulPlayer()) > 1.8 * countDroid(DROID_ANY))
+	{
+		points -= 25;
+	}
 
 	return (points > -1);
 }

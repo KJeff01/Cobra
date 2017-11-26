@@ -142,9 +142,9 @@ function freeForAll()
 
 		if (CACHE_FRIENDS)
 		{
-			if (isDefined(getScavengerNumber()) && allianceExistsBetween(getScavengerNumber(), me))
+			if (isDefined(scavengerPlayer) && allianceExistsBetween(scavengerPlayer, me))
 			{
-				setAlliance(getScavengerNumber(), me, false);
+				setAlliance(scavengerPlayer, me, false);
 			}
 
 			for (var i = 0; i < CACHE_FRIENDS; ++i)

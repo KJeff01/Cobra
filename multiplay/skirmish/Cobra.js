@@ -39,8 +39,8 @@ const ESSENTIALS = [
 ];
 const ESSENTIALS_2 = [
 	"R-Vehicle-Prop-Halftracks",
-	"R-Vehicle-Body05",
 	"R-Struc-RprFac-Upgrade01",
+	"R-Vehicle-Body05",
 	"R-Vehicle-Prop-Hover",
 ];
 const SYSTEM_UPGRADES = [
@@ -56,15 +56,17 @@ const FLAMER = [
 	"R-Wpn-Flamer-Damage09",
 ];
 const SENSOR_TECH = [
-	"R-Sys-ECM-Upgrade02",
-	"R-Sys-Sensor-WS",
+	"R-Sys-Sensor-UpLink",
 	"R-Sys-RadarDetector01",
-	"R-Wpn-LasSat",
 ];
 const DEFENSE_UPGRADES = [
+	"R-Vehicle-Metals05",
+	"R-Cyborg-Metals05",
 	"R-Sys-Resistance-Circuits",
-	"R-Defense-WallUpgrade12",
+	"R-Sys-ECM-Upgrade02",
+	"R-Wpn-LasSat",
 	"R-Struc-Materials09",
+	"R-Defense-WallUpgrade12",
 ];
 const BODY_RESEARCH = [
 	"R-Vehicle-Body11",
@@ -77,7 +79,7 @@ const VTOL_RES = [
 	"R-Wpn-Bomb02",
 	"R-Wpn-Bomb-Accuracy03",
 	"R-Struc-VTOLPad-Upgrade06",
-	"R-Wpn-Bomb04",
+	"R-Wpn-Bomb05",
 	"R-Wpn-Bomb06",
 ];
 const LATE_EARLY_GAME_TECH = [
@@ -120,14 +122,6 @@ const REPAIR_TURRETS = [
 
 
 //List of Cobra personalities:
-//AC: Cannon/Gauss/howitzer.
-//AR: Flamer/Gauss/howitzer.
-//AB: Missile/Gauss/rockets_Arty
-//AM: Machine-gun/howitzer/lasers.
-//AL: Lasers/Gauss/fireMortars. *Strictly a T3 personality.
-//All personalities use laser technology. This includes the plasma cannon.
-//The secondary weapon has low priority.
-//TODO: Stop producing primaryWeapon when secondary is available.
 const SUB_PERSONALITIES =
 {
 	AC:
@@ -135,11 +129,11 @@ const SUB_PERSONALITIES =
 		"primaryWeapon": weaponStats.cannons,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.howitzers,
-		"antiAir": weaponStats.cannons_AA,
+		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 10,
 		"vtolPriority": 20,
-		"systemPriority": 30,
+		"systemPriority": 35,
 		"alloyPriority": 20,
 		"res": [
 			"R-Wpn-Cannon-Damage02",
@@ -155,7 +149,7 @@ const SUB_PERSONALITIES =
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 20,
 		"vtolPriority": 40,
-		"systemPriority": 20,
+		"systemPriority": 80,
 		"alloyPriority": 25,
 		"res": [
 			"R-Wpn-Flamer-Damage03",
@@ -169,9 +163,9 @@ const SUB_PERSONALITIES =
 		"artillery": weaponStats.rockets_Arty,
 		"antiAir": weaponStats.rockets_AA,
 		"factoryOrder": [FACTORY, VTOL_FACTORY, CYBORG_FACTORY],
-		"defensePriority": 60,
+		"defensePriority": 70,
 		"vtolPriority": 90,
-		"systemPriority": 15,
+		"systemPriority": 30,
 		"alloyPriority": 15,
 		"res": [
 			"R-Wpn-MG2Mk1",
@@ -188,7 +182,7 @@ const SUB_PERSONALITIES =
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 30,
 		"vtolPriority": 80,
-		"systemPriority": 45,
+		"systemPriority": 55,
 		"alloyPriority": 45,
 		"res": [
 			"R-Wpn-MG2Mk1",
@@ -197,7 +191,7 @@ const SUB_PERSONALITIES =
 	AA:
 	{
 		"primaryWeapon": weaponStats.mortars,
-		"secondaryWeapon": weaponStats.gauss,
+		"secondaryWeapon": weaponStats.AS,
 		"artillery": weaponStats.fireMortars,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
@@ -218,7 +212,7 @@ const SUB_PERSONALITIES =
 		"factoryOrder": [VTOL_FACTORY, FACTORY, CYBORG_FACTORY],
 		"defensePriority": 10,
 		"vtolPriority": 100,
-		"systemPriority": 40,
+		"systemPriority": 45,
 		"alloyPriority": 10,
 		"res": [
 			"R-Wpn-Mortar-Incenediary",
@@ -246,7 +240,7 @@ var researchComplete; //Check if done with research.
 var turnOffMG; //This is only used for when the personalities don't have their weapons researched.
 var useArti;
 var useVtol;
-var recycled; //Wheather recycling is done.
+var lastAttackedByScavs;
 
 // -- Weapon research list (initializeResearchLists).
 var techlist;

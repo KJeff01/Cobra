@@ -434,7 +434,9 @@ function buildDefenseNearTruck(truck, type)
 // a location to build a defense structure near it.
 function buildDefenses(truck)
 {
-	if ((gameTime > 180000) && (getRealPower() > MIN_BUILD_POWER))
+	var isDefensive = SUB_PERSONALITIES[personality].defensePriority >= 50;
+	var pow = getRealPower();
+	if ((gameTime > 180000) && (pow > MIN_BUILD_POWER || (isDefensive && (pow > MIN_BUILD_POWER - 35))))
 	{
 		if (isDefined(truck))
 		{
@@ -442,6 +444,11 @@ function buildDefenses(truck)
 		}
 
 		if (protectUnguardedDerricks())
+		{
+			return true;
+		}
+
+		if (buildSensors())
 		{
 			return true;
 		}
@@ -456,71 +463,93 @@ function buildDefenses(truck)
 	return false;
 }
 
-//Build the basics when available.
+//Build the basics when available. Has a different build order if NTW.
 function buildPhase1()
 {
-	if (countAndBuild(FACTORY, 1))
+	if (mapOilLevel() !== "HIGH")
 	{
-		return true;
+		if (countAndBuild(FACTORY, 1))
+		{
+			return true;
+		}
+		if (!researchComplete && countAndBuild(structures.labs, 1))
+		{
+			return true;
+		}
+		if (countAndBuild(structures.hqs, 1))
+		{
+			return true;
+		}
+		if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
+		{
+			return true;
+		}
+		if (!researchComplete && countAndBuild(structures.factories, 2))
+		{
+			return true;
+		}
+		if (!researchComplete && countAndBuild(structures.labs, 3))
+		{
+			return true;
+		}
 	}
-	if (!researchComplete && countAndBuild(structures.labs, 1))
+	else
 	{
-		return true;
-	}
-	if (countAndBuild(structures.hqs, 1))
-	{
-		return true;
-	}
-
-	if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
-	{
-		return true;
-	}
-
-	if (!researchComplete && countAndBuild(structures.factories, 2))
-	{
-		return true;
-	}
-	if (!researchComplete && countAndBuild(structures.labs, 3))
-	{
-		return true;
+		if (!researchComplete && countAndBuild(structures.labs, 1))
+		{
+			return true;
+		}
+		if (countAndBuild(FACTORY, 2))
+		{
+			return true;
+		}
+		if (countAndBuild(structures.gens, 2))
+		{
+			return true;
+		}
+		if (countAndBuild(structures.hqs, 1))
+		{
+			return true;
+		}
+		if (!researchComplete && countAndBuild(structures.labs, 5))
+		{
+			return true;
+		}
+		if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
+		{
+			return true;
+		}
 	}
 
 	return false;
 }
 
-//Build at least one of each factory and then pursue the favorite factory.
-function factoryBuildOrder()
+//Build factories.
+function factoryBuildOrder(limit)
 {
-	for (var x = 0; x < 2; ++x)
+	if (!isDefined(limit))
 	{
-		//Always build at least one of each factory, if allowed.
-		if (x && (getRealPower() < MIN_BUILD_POWER))
+		limit = 5;
+	}
+
+	for (var i = 0; i < 3; ++i)
+	{
+		var fac = SUB_PERSONALITIES[personality].factoryOrder[i];
+		if ((fac === VTOL_FACTORY && !useVtol) || (fac === CYBORG_FACTORY && (turnOffCyborgs || forceHover)))
 		{
-			break;
+			continue;
 		}
 
-		var num = (!x) ? 1 : 5;
-		for (var i = 0; i < 3; ++i)
+		if (countAndBuild(fac, limit))
 		{
-			var fac = SUB_PERSONALITIES[personality].factoryOrder[i];
-			if ((fac === VTOL_FACTORY && !useVtol) || (fac === CYBORG_FACTORY && (turnOffCyborgs || forceHover)))
-			{
-				continue;
-			}
-
-			if (countAndBuild(fac, num))
-			{
-				return true;
-			}
+			return true;
 		}
 	}
 
 	return false;
 }
 
-//Build all research labs and one of each factory and pursue the decided factory order.
-//Build repair bays when possible.
+//Build minimum requirements of base structures.
 function buildPhase2()
 {
 	if (!countStruct(structures.gens))
@@ -528,20 +557,12 @@ function buildPhase2()
 		return true;
 	}
 
-	if (!(getRealPower() < MIN_BUILD_POWER))
+	if (!researchComplete && countAndBuild(structures.labs, 4))
 	{
-		if (!researchComplete && countAndBuild(structures.labs, 5))
-		{
-			return true;
-		}
-
-		if (countAndBuild(structures.extras[0], 5))
-		{
-			return true;
-		}
+		return true;
 	}
 
-	if (factoryBuildOrder())
+	if (factoryBuildOrder(2))
 	{
 		return true;
 	}
@@ -571,12 +592,7 @@ function buildExtras()
 		return false;
 	}
 	//Build the minimum repair facilities.
-	if (countAndBuild(structures.extras[0], 1 + (countStruct(structures.gens) > 1)))
-	{
-		return true;
-	}
-
-	if (buildSensors())
+	if (countAndBuild(structures.extras[0], 2))
 	{
 		return true;
 	}
@@ -588,61 +604,95 @@ function buildExtras()
 	}
 }
 
+function buildPhase3()
+{
+	if (!(getRealPower() < MIN_BUILD_POWER))
+	{
+		if (!researchComplete && countAndBuild(structures.labs, 5))
+		{
+			return true;
+		}
+
+		if (countAndBuild(structures.extras[0], 5))
+		{
+			return true;
+		}
+
+		if (factoryBuildOrder(5))
+		{
+			return true;
+		}
+	}
+}
+
 //Cobra's unique build decisions
 function buildOrderCobra()
 {
 	if (!findIdleTrucks().length) { return; }
 	if (checkUnfinishedStructures()) { return; }
-	if (maintenance()) { return; }
 	if (buildPhase1()) { return; }
 	if (buildSpecialStructures()) { return; }
 	if (buildAAForPersonality()) { return; }
 	if (buildExtras()) { return; }
+	if (maintenance()) { return; }
 	if (buildPhase2()) { return; }
+	if (buildPhase3()) { return; }
 	buildDefenses();
 }
 
 //Check if a building has modules to be built
 function maintenance()
 {
-	const LIST = ["A0PowMod1", "A0ResearchModule1", "A0FacMod1", "A0FacMod1"];
-	const MODS = [1, 1, 2, 2]; //Number of modules paired with list above
-	var struct = null, module = "", structList = [];
-
 	if (!countStruct(structures.gens) || (countStruct(structures.derricks) < 4))
 	{
 		return false;
 	}
 
-	for (var i = 0, l = LIST.length; i < l; ++i)
+	var modList;
+	var struct = null;
+	var module = "";
+	var structList = [];
+	if (mapOilLevel() === "HIGH")
 	{
-		if (isStructureAvailable(LIST[i]))
+		modList = [
+			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
+			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
+			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
+			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens}
+		];
+	}
+	else
+	{
+		modList = [
+			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
+			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
+			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
+			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY}
+		];
+	}
+
+	for (var i = 0, l = modList.length; i < l; ++i)
+	{
+		if (isStructureAvailable(modList[i].mod))
 		{
+			structList = enumStruct(me, modList[i].structure).sort(distanceToBase).reverse();
+			for (var c = 0, s = structList.length; c < s; ++c)
+			{
+				if (structList[c].modules < modList[i].amount)
+				{
+					struct = structList[c];
+					module = modList[i].mod;
+					break;
+				}
+			}
 			if (struct !== null)
 			{
 				break;
 			}
-			switch (i) {
-				case 0: { structList = enumStruct(me, structures.gens).sort(distanceToBase);  break; }
-				case 1: { structList = enumStruct(me, structures.labs).sort(distanceToBase);  break; }
-				case 2: { structList = enumStruct(me, FACTORY).sort(distanceToBase);  break; }
-				case 3: { structList = enumStruct(me, VTOL_FACTORY).sort(distanceToBase);  break; }
-				default: { break; }
-			}
-
-			for (var c = 0, s = structList.length; c < s; ++c)
-			{
-				if (structList[c].modules < MODS[i])
-				{
-					struct = structList[c];
-					module = LIST[i];
-					break;
-				}
-			}
 		}
 	}
 
-	if (((getRealPower() > MIN_POWER) || (module === LIST[0])) && struct && buildStuff(struct, module))
+	if (((getRealPower() > MIN_POWER) || (module === modList[0].mod)) && struct && buildStuff(struct, module))
 	{
 		return true;
 	}

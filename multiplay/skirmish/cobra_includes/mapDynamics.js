@@ -1,9 +1,4 @@
 
-function getScavengerNumber()
-{
-	return scavengerPlayer;
-}
-
 //Figure out if we are on a hover map. This is determined by checking if a
 //ground only propulsion fails to reach a target (checking if it is a vtol only player
 //or map spotter pits) and doing similar checks for hover propulsion.
@@ -91,18 +86,18 @@ function countAllResources()
 {
 	function uncached()
 	{
-		var resources = enumFeature(-1, OIL_RES);
+		var amount = enumFeature(-1, OIL_RES).length;
 		for (var i = 0; i < maxPlayers; ++i)
 		{
-			resources.concat(enumStruct(i, structures.derricks));
+			amount += enumStruct(i, structures.derricks).length;
 		}
 
-		if (isDefined(getScavengerNumber()))
+		if (isDefined(scavengerPlayer))
 		{
-			resources.concat(enumStruct(getScavengerNumber(), structures.derricks));
+			amount += enumStruct(scavengerPlayer, structures.derricks).length;
 		}
 
-		return resources.length;
+		return amount;
 	}
 
 	return cacheThis(uncached, [], undefined, Infinity);
