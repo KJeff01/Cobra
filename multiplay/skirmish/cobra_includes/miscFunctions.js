@@ -82,7 +82,7 @@ function distanceToBase(obj1, obj2)
 {
 	var dist1 = distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, obj1.x, obj1.y);
 	var dist2 = distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, obj2.x, obj2.y);
-	return dist1 - dist2;
+	return (dist1 - dist2);
 }
 
 function addDroidsToGroup(group, droids)

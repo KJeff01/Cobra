@@ -129,9 +129,13 @@ function mapOilLevel()
 		{
 			str = "MEDIUM";
 		}
-		else
+		else if ((perPlayer > 16) && (perPlayer < 40))
 		{
 			str = "HIGH";
+		}
+		else
+		{
+			str = "NTW";
 		}
 
 		return str;

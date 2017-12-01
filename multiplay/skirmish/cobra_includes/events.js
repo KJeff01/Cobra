@@ -51,6 +51,7 @@ function eventStartLevel()
 	turnOffCyborgs = forceHover;
 	choosePersonality();
 	turnOffMG = CheckStartingBases();
+	startedWithTech = CheckStartingBases();
 	useArti = true;
 	useVtol = true;
 	lastAttackedByScavs = 0;
@@ -96,7 +97,7 @@ function eventStructureBuilt(structure, droid)
 				return ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
 			});
 
-			if ((gameTime > 120000) && !isDefined(numDefenses[0]))
+			if ((gameTime > 120000) && (random(101) < SUB_PERSONALITIES[personality].defensePriority))
 			{
 				protectUnguardedDerricks(droid);
 			}
@@ -107,58 +108,58 @@ function eventStructureBuilt(structure, droid)
 //Make droids attack hidden close by enemy object.
 function eventDroidIdle(droid)
 {
-	if (isDefined(droid) && ((droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid)))
+	if (shouldCobraAttack() && (droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid))
 	{
-		var enemyObjects = enumRange(droid.x, droid.y, 14, ENEMIES, false);
+		var enemyObjects = enumRange(droid.x, droid.y, 6, ENEMIES, false);
 		if (isDefined(enemyObjects[0]))
 		{
 			enemyObjects = enemyObjects.sort(distanceToBase);
 			attackThisObject(droid.id, objectInformation(enemyObjects[0]));
 		}
 	}
+	else if (droid.droidType === DROID_CONSTRUCT)
+	{
+		checkUnfinishedStructures(droid.id);
+	}
 }
 
 //Groups droid types.
 function eventDroidBuilt(droid, struct)
 {
-	if (droid)
+	if (isConstruct(droid.id))
 	{
-		if (isConstruct(droid))
+		//Combat engineesr are always base builders.
+		if (droid.body !== "CyborgLightBody" && enumGroup(oilGrabberGroup).length < MIN_TRUCKS - 2)
 		{
-			//Combat engineesr are always base builders.
-			if (droid.body !== "CyborgLightBody" && enumGroup(oilGrabberGroup).length < 4)
-			{
-				groupAdd(oilGrabberGroup, droid);
-			}
-			else
-			{
-				groupAdd(constructGroup, droid);
-				queue("checkUnfinishedStructures", 800);
-			}
+			groupAdd(oilGrabberGroup, droid);
 		}
-		else if (droid.droidType === DROID_SENSOR)
+		else
 		{
-			groupAdd(sensorGroup, droid);
+			groupAdd(constructGroup, droid);
 		}
-		else if (droid.droidType === DROID_REPAIR)
+	}
+	else if (droid.droidType === DROID_SENSOR)
+	{
+		groupAdd(sensorGroup, droid);
+	}
+	else if (droid.droidType === DROID_REPAIR)
+	{
+		groupAdd(repairGroup, droid);
+	}
+	else if (isVTOL(droid))
+	{
+		groupAdd(vtolGroup, droid);
+	}
+	else if (droid.droidType === DROID_WEAPON || droid.droidType === DROID_CYBORG)
+	{
+		//Anything with splash damage or CB abiliities go here.
+		if (droid.isCB || droid.hasIndirect)
 		{
-			groupAdd(repairGroup, droid);
+			groupAdd(artilleryGroup, droid);
 		}
-		else if (isVTOL(droid))
+		else
 		{
-			groupAdd(vtolGroup, droid);
-		}
-		else if (droid.droidType === DROID_WEAPON || droid.droidType === DROID_CYBORG)
-		{
-			//Anything with splash damage or CB abiliities go here.
-			if (droid.isCB || droid.hasIndirect)
-			{
-				groupAdd(artilleryGroup, droid);
-			}
-			else
-			{
-				groupAdd(attackGroup, droid);
-			}
+			groupAdd(attackGroup, droid);
 		}
 	}
 }
@@ -187,7 +188,7 @@ function eventAttacked(victim, attacker)
 		if ((victim.type === DROID) && countStruct(structures.extras[0]))
 		{
 			//System units are timid.
-			if ((victim.droidType === DROID_SENSOR) || isConstruct(victim) || (victim.droidType === DROID_REPAIR))
+			if ((victim.droidType === DROID_SENSOR) || isConstruct(victim.id) || (victim.droidType === DROID_REPAIR))
 			{
 				orderDroid(victim, DORDER_RTR);
 			}
@@ -292,22 +293,19 @@ function eventObjectTransfer(obj, from)
 //Increase grudge counter for closest enemy.
 function eventDestroyed(object)
 {
-	if (object.player === me)
+	if (object.type === DROID && object.order !== DORDER_RECYCLE)
 	{
-		if (object.type === DROID && object.order !== DORDER_RECYCLE)
+		if (!stopExecution("throttleDestroyed", 12000))
 		{
-			if (!stopExecution("throttleDestroyed", 12000))
-			{
-				addBeacon(object.x, object.y, ALLIES);
-			}
+			addBeacon(object.x, object.y, ALLIES);
 		}
+	}
 
-		var enemies = enumRange(object.x, object.y, 5, ENEMIES, false);
-		var enemy = enemies[0];
-		if (isDefined(enemy) && enemy.player < maxPlayers && grudgeCount[enemy.player] < MAX_GRUDGE)
-		{
-			grudgeCount[enemy.player] = grudgeCount[enemy.player] + 5;
-		}
+	var enemies = enumRange(object.x, object.y, 5, ENEMIES, false);
+	var enemy = enemies[0];
+	if (isDefined(enemy) && enemy.player < maxPlayers && grudgeCount[enemy.player] < MAX_GRUDGE)
+	{
+		grudgeCount[enemy.player] = grudgeCount[enemy.player] + 5;
 	}
 }
 

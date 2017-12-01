@@ -48,9 +48,13 @@ function adaptToMap() {
 	const MAP_OIL_LEVEL = mapOilLevel();
 	const T3_MATCH = isDesignable("Howitzer03-Rot");
 
-	if (!T3_MATCH && (((maxPlayers - 1) === 1) || ((MAP_OIL_LEVEL === "LOW") && !ALLY_COUNT)))
+	if (!startedWithTech && !componentAvailable("hover01") && MAP_OIL_LEVEL === "NTW")
 	{
-		personal = ["AM", "AR", "AB"];
+		choice = "AB";
+	}
+	else if (!T3_MATCH && (((maxPlayers - 1) === 1) || ((MAP_OIL_LEVEL === "LOW") && !ALLY_COUNT)))
+	{
+		personal = ["AM", "AR", "AB", "AC"];
 		choice = personal[random(3)];
 	}
 	else if ((MAP_OIL_LEVEL === "MEDIUM") || ALLY_COUNT)

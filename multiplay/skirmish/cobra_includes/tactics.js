@@ -393,9 +393,8 @@ function attackEnemyOil()
 function battleTacticsCobra()
 {
 	donateSomePower();
-	enemyUnitsInBase()
 
-	if (shouldCobraAttack())
+	if (enemyUnitsInBase() || shouldCobraAttack())
 	{
 		var target = rangeStep();
 		if (isDefined(target))
@@ -414,7 +413,7 @@ function recycleForHoverCobra()
 {
 	const MIN_FACTORY = 1;
 	var systems = enumDroid(me).filter(function(dr) {
-		return isConstruct(dr);
+		return isConstruct(dr.id);
 	});
 	systems.concat(enumDroid(me, DROID_SENSOR));
 	systems.concat(enumDroid(me, DROID_REPAIR));
@@ -595,40 +594,56 @@ function donateSomePower()
 	}
 }
 
+//Move between cobra base and an enemy.
+function prepareAssault()
+{
+	var eBase = startPositions[getMostHarmfulPlayer()];
+	if (!isDefined(eBase))
+	{
+		return;
+	}
+	var attackers = enumDroid(me).filter(function(dr) {
+		return dr.droidType !== DROID_CONSTRUCT && !isVTOL(dr);
+	});
+
+	for (var i = 0, l = attackers.length; i < l; ++i)
+	{
+		orderDroidLoc(attackers[i], DORDER_SCOUT, (MY_BASE.x + eBase.x) / 2, (MY_BASE.y + eBase.y) / 5);
+	}
+}
+
 //Does Cobra believe it is winning or could win?
 function confidenceThreshold()
 {
 	const DERR_COUNT = countStruct(structures.derricks);
+	const DROID_COUNT = countDroid(DROID_ANY);
 	var points = 0;
 	var derrRatio = Math.floor(DERR_COUNT / countAllResources()) * 100;
 
-	//Owning 60% the oils or more is a good signal of winning
-	if (derrRatio >= 60)
+	points += DERR_COUNT >= countStruct(structures.derricks, getMostHarmfulPlayer()) ? 2 : -2;
+
+	if (DROID_COUNT < 90 && (countDroid(DROID_ANY, getMostHarmfulPlayer()) > DROID_COUNT + 5))
 	{
-		return true;
+		points -= 3;
 	}
 
-	points = (DERR_COUNT >= countStruct(structures.derricks, getMostHarmfulPlayer())) ? (points + 12) : (points - 12);
-	points = (countDroid(DROID_ANY) >= countDroid(DROID_ANY, getMostHarmfulPlayer()) - 6) ? (points + 21) : (points - 7);
-	//team stuff
-	if (playerAlliance(true).length)
-	{
-		points = (findLivingEnemies().length <= playerAlliance(true).length + 1) ? (points + 15) : (points - 15);
-	}
-	//more
-	points += random(8) + Math.floor(DERR_COUNT / 5);
-	points += countDroid(DROID_ANY) < 8 ? -5 : 5;
-
-	if (countDroid(DROID_ANY, getMostHarmfulPlayer()) > 1.8 * countDroid(DROID_ANY))
-	{
-		points -= 25;
-	}
-
-	return (points > -1);
+	return points > -1;
 }
 
 //Check if our forces are large enough to take on the most harmful player.
 function shouldCobraAttack()
 {
-	return confidenceThreshold();
+	var confident = confidenceThreshold();
+	if (confident)
+	{
+		return true;
+	}
+	else
+	{
+		if (mapOilLevel() === "NTW") // NTW
+		{
+			prepareAssault();
+		}
+		return false;
+	}
 }

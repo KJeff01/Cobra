@@ -11,7 +11,6 @@ const FACTORY = "A0LightFactory";
 const CYBORG_FACTORY = "A0CyborgFactory";
 const VTOL_FACTORY = "A0VTolFactory1";
 const MY_BASE = startPositions[me];
-const MIN_TRUCKS = 6;
 const OIL_RES = "OilResource";
 const MIN_POWER = 180;
 const MIN_BUILD_POWER = 230;
@@ -76,9 +75,9 @@ const BODY_RESEARCH = [
 	"R-Vehicle-Body14",
 ];
 const VTOL_RES = [
+	"R-Struc-VTOLPad-Upgrade06",
 	"R-Wpn-Bomb02",
 	"R-Wpn-Bomb-Accuracy03",
-	"R-Struc-VTOLPad-Upgrade06",
 	"R-Wpn-Bomb05",
 	"R-Wpn-Bomb06",
 ];
@@ -131,10 +130,12 @@ const SUB_PERSONALITIES =
 		"artillery": weaponStats.howitzers,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
-		"defensePriority": 10,
+		"defensePriority": 30,
 		"vtolPriority": 20,
-		"systemPriority": 35,
-		"alloyPriority": 20,
+		"systemPriority": 30,
+		"alloyPriority": 30,
+		"useLasers": false,
+		"resPath": "generic",
 		"res": [
 			"R-Wpn-Cannon-Damage02",
 			"R-Wpn-Cannon-ROF02",
@@ -149,8 +150,10 @@ const SUB_PERSONALITIES =
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 20,
 		"vtolPriority": 40,
-		"systemPriority": 80,
+		"systemPriority": 60,
 		"alloyPriority": 25,
+		"useLasers": false,
+		"resPath": "offensive",
 		"res": [
 			"R-Wpn-Flamer-Damage03",
 			"R-Wpn-Flamer-ROF01",
@@ -162,28 +165,31 @@ const SUB_PERSONALITIES =
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.rockets_Arty,
 		"antiAir": weaponStats.rockets_AA,
-		"factoryOrder": [FACTORY, VTOL_FACTORY, CYBORG_FACTORY],
+		"factoryOrder": [VTOL_FACTORY, FACTORY, CYBORG_FACTORY],
 		"defensePriority": 70,
-		"vtolPriority": 90,
+		"vtolPriority": 50,
 		"systemPriority": 30,
-		"alloyPriority": 15,
+		"alloyPriority": 10,
+		"useLasers": false,
+		"resPath": "air",
 		"res": [
 			"R-Wpn-MG2Mk1",
 			"R-Wpn-Rocket02-MRL",
-			"R-Wpn-Rocket01-LtAT",
 		],
 	},
 	AM:
 	{
 		"primaryWeapon": weaponStats.machineguns,
-		"secondaryWeapon": weaponStats.lasers,
+		"secondaryWeapon": weaponStats.machineguns,
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
-		"defensePriority": 30,
-		"vtolPriority": 80,
+		"defensePriority": 50,
+		"vtolPriority": 40,
 		"systemPriority": 55,
 		"alloyPriority": 45,
+		"useLasers": false,
+		"resPath": "generic",
 		"res": [
 			"R-Wpn-MG2Mk1",
 		],
@@ -197,10 +203,12 @@ const SUB_PERSONALITIES =
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 70,
 		"vtolPriority": 15,
-		"systemPriority": 100,
-		"alloyPriority": 60,
+		"systemPriority": 20,
+		"alloyPriority": 15,
+		"useLasers": false,
+		"resPath": "offensive",
 		"res": [
-			"R-Defense-HvyMor",
+			"R-Wpn-Mortar01Lt",
 		],
 	},
 	AL:
@@ -214,6 +222,8 @@ const SUB_PERSONALITIES =
 		"vtolPriority": 100,
 		"systemPriority": 45,
 		"alloyPriority": 10,
+		"useLasers": true,
+		"resPath": "offensive",
 		"res": [
 			"R-Wpn-Mortar-Incenediary",
 			"R-Wpn-Laser01",
@@ -241,6 +251,7 @@ var turnOffMG; //This is only used for when the personalities don't have their w
 var useArti;
 var useVtol;
 var lastAttackedByScavs;
+var startedWithTech;
 
 // -- Weapon research list (initializeResearchLists).
 var techlist;
@@ -271,3 +282,5 @@ include(COBRA_INCLUDES + "research.js");
 include(COBRA_INCLUDES + "events.js");
 include(COBRA_INCLUDES + "chat.js");
 include(COBRA_INCLUDES + "adaption.js");
+
+const MIN_TRUCKS = mapOilLevel() !== "NTW" ? 6 : 9;

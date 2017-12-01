@@ -30,7 +30,7 @@ function chooseRandomWeapon()
 	{
 		case 0: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
 		case 1: if (useArti) { weaps = SUB_PERSONALITIES[personality].artillery; } break;
-		case 2: weaps = weaponStats.lasers; break;
+		case 2: if (SUB_PERSONALITIES[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
 		case 3: weaps = SUB_PERSONALITIES[personality].secondaryWeapon; break;
 		case 4: weaps = weaponStats.AS; break;
 		default: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
@@ -85,7 +85,7 @@ function chooseRandomCyborgWeapon()
 	switch (random(4))
 	{
 		case 0: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
-		case 1: weaps = weaponStats.lasers; break;
+		case 1: if (SUB_PERSONALITIES[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
 		case 2: weaps = SUB_PERSONALITIES[personality].secondaryWeapon; break;
 		case 3: if(!componentAvailable("Mortar3ROTARYMk1") && useArti) { weaps = SUB_PERSONALITIES[personality].artillery; } break;
 		default: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
@@ -103,11 +103,11 @@ function chooseRandomVTOLWeapon()
 	switch (random(5))
 	{
 		case 0: if((returnPrimaryAlias() !== "mg") && (returnPrimaryAlias() !== "fl")) { weaps = SUB_PERSONALITIES[personality].primaryWeapon; } break;
-		case 1: weaps = weaponStats.lasers; break;
+		case 1: if (SUB_PERSONALITIES[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
 		case 2: weaps = SUB_PERSONALITIES[personality].secondaryWeapon; break;
 		case 3: weaps = weaponStats.bombs; break;
 		case 4: weaps = weaponStats.empBomb; isEMP = true; break;
-		default: weaps = weaponStats.lasers; break;
+		default: weaps = weaponStats.bombs; break;
 	}
 
 	if (!isDefined(weaps) || (!isEMP && (weaps.vtols.length - 1 <= 0)))
