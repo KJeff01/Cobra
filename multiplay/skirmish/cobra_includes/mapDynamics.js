@@ -108,7 +108,7 @@ function averageOilPerPlayer()
 {
 	function uncached()
 	{
-		return (countAllResources() / maxPlayers);
+		return Math.floor(countAllResources() / maxPlayers);
 	}
 
 	return cacheThis(uncached, [],  undefined, Infinity);
@@ -129,7 +129,7 @@ function mapOilLevel()
 		{
 			str = "MEDIUM";
 		}
-		else if ((perPlayer > 16) && (perPlayer < 40))
+		else if ((perPlayer > 16) && (perPlayer < 34))
 		{
 			str = "HIGH";
 		}

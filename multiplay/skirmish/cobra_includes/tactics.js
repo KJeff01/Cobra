@@ -340,7 +340,7 @@ function attackStuff(attacker)
 }
 
 //Sensors know all your secrets. They will observe what is closest to Cobra base.
-function artilleryTacticsCobra()
+function repairDroidTactics()
 {
 	if (!shouldCobraAttack())
 	{
@@ -390,7 +390,7 @@ function attackEnemyOil()
 }
 
 //Defend or attack.
-function battleTacticsCobra()
+function groundTactics()
 {
 	donateSomePower();
 
@@ -409,7 +409,7 @@ function battleTacticsCobra()
 }
 
 //Recycle units when certain conditions are met.
-function recycleForHoverCobra()
+function recycleForHover()
 {
 	const MIN_FACTORY = 1;
 	var systems = enumDroid(me).filter(function(dr) {
@@ -435,7 +435,7 @@ function recycleForHoverCobra()
 
 		if (!forceHover && !NON_HOVER_SYSTEMS)
 		{
-			removeThisTimer("recycleForHoverCobra");
+			removeThisTimer("recycleForHover");
 		}
 
 		if (forceHover)
@@ -449,14 +449,14 @@ function recycleForHoverCobra()
 
 			if (!(NON_HOVER_TANKS + NON_HOVER_SYSTEMS))
 			{
-				removeThisTimer("recycleForHoverCobra");
+				removeThisTimer("recycleForHover");
 			}
 		}
 	}
 }
 
 //Tell the repair group to go repair other droids.
-function repairDroidTacticsCobra()
+function repairDroidTactics()
 {
 	var reps = enumGroup(repairGroup);
 	const LEN = reps.length;
@@ -506,7 +506,7 @@ function targetPlayer(playerNumber)
 }
 
 //VTOL units do there own form of tactics.
-function vtolTacticsCobra()
+function vtolTactics()
 {
 	const MIN_VTOLS = 5;
 	var vtols = enumGroup(vtolGroup).filter(function(dr) {

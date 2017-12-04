@@ -365,13 +365,14 @@ function removeThisTimer(timer)
 }
 
 //Stop the non auto-remove timers if Cobra died.
-function stopTimersCobra()
+function stopTimers()
 {
 	if (!(countDroid(DROID_ANY) || countStruct(FACTORY) || countStruct(CYBORG_FACTORY)))
 	{
 		var timers = [
-			"buildOrderCobra", "repairDroidTacticsCobra", "CobraProduce", "battleTacticsCobra",
-			"artilleryTacticsCobra", "stopTimersCobra", "researchCobra", "lookForOil",
+			"buildOrders", "repairDroidTactics", "produce", "groundTactics",
+			"repairDroidTactics", "stopTimers", "research", "lookForOil",
+			"vtolTactics",
 		];
 
 		removeThisTimer(timers);

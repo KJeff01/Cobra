@@ -5,6 +5,7 @@ const COBRA_RULESETS = "/multiplay/skirmish/cobra_rulesets/";
 //Rulesets here.
 include(COBRA_RULESETS + "CobraStandard.js");
 
+const DEBUG_LOG_ON = true; //NOTE: slow!
 const MAX_GRUDGE = 50000;
 const MIN_ATTACK_DROIDS = 8;
 const FACTORY = "A0LightFactory";
@@ -153,7 +154,7 @@ const SUB_PERSONALITIES =
 		"systemPriority": 60,
 		"alloyPriority": 25,
 		"useLasers": false,
-		"resPath": "offensive",
+		"resPath": "generic",
 		"res": [
 			"R-Wpn-Flamer-Damage03",
 			"R-Wpn-Flamer-ROF01",
@@ -270,7 +271,11 @@ var secondaryWeaponExtra;
 var defenseTech;
 var standardDefenseTech;
 
+// -- Debug var stuff
+var resHistory;
+
 //Now include everthing else.
+include(COBRA_INCLUDES + "debug.js");
 include(COBRA_INCLUDES + "performance.js");
 include(COBRA_INCLUDES + "array.js");
 include(COBRA_INCLUDES + "miscFunctions.js");
@@ -283,4 +288,4 @@ include(COBRA_INCLUDES + "events.js");
 include(COBRA_INCLUDES + "chat.js");
 include(COBRA_INCLUDES + "adaption.js");
 
-const MIN_TRUCKS = mapOilLevel() !== "NTW" ? 6 : 9;
+const MIN_TRUCKS = mapOilLevel() !== "NTW" ? 7 : 9;

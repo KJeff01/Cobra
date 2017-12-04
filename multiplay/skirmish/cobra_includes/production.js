@@ -360,7 +360,7 @@ function analyzeQueuedSystems()
 
 
 //Produce a unit when factories allow it.
-function CobraProduce()
+function produce()
 {
 	if (countDroid(DROID_ANY) >= 150)
 	{

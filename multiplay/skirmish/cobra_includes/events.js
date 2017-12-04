@@ -55,23 +55,28 @@ function eventStartLevel()
 	useArti = true;
 	useVtol = true;
 	lastAttackedByScavs = 0;
+	resHistory = [];
 
-	recycleForHoverCobra();
-	buildOrderCobra(); //Start building right away.
+	recycleForHover();
+	buildOrders(); //Start building right away.
 
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
-	setTimer("CobraProduce", THINK_LONGER + 700 + 3 * random(70));
+	setTimer("produce", THINK_LONGER + 700 + 3 * random(70));
 	setTimer("checkAllForRepair", THINK_LONGER + 900 + 3 * random(60));
-	setTimer("buildOrderCobra", THINK_LONGER + 1100 + 3 * random(60));
-	setTimer("researchCobra", THINK_LONGER + 1200 + 3 * random(70));
+	setTimer("buildOrders", THINK_LONGER + 1100 + 3 * random(60));
+	setTimer("research", THINK_LONGER + 1200 + 3 * random(70));
 	setTimer("lookForOil", THINK_LONGER + 1600 + 3 * random(60))
-	setTimer("repairDroidTacticsCobra", THINK_LONGER + 2500 + 4 * random(60));
-	setTimer("artilleryTacticsCobra", THINK_LONGER + 4500 + 4 * random(60));
-	setTimer("vtolTacticsCobra", THINK_LONGER + 5600 + 3 * random(70));
-	setTimer("battleTacticsCobra", THINK_LONGER + 7000 + 5 * random(60));
+	setTimer("repairDroidTactics", THINK_LONGER + 2500 + 4 * random(60));
+	setTimer("repairDroidTactics", THINK_LONGER + 4500 + 4 * random(60));
+	setTimer("vtolTactics", THINK_LONGER + 5600 + 3 * random(70));
+	setTimer("groundTactics", THINK_LONGER + 7000 + 5 * random(60));
 	setTimer("switchOffMG", THINK_LONGER + 10000 + 3 * random(70));
-	setTimer("recycleForHoverCobra", THINK_LONGER + 15000 + 2 * random(60));
-	setTimer("stopTimersCobra", THINK_LONGER + 100000 + 5 * random(70));
+	setTimer("recycleForHover", THINK_LONGER + 15000 + 2 * random(60));
+	setTimer("stopTimers", THINK_LONGER + 100000 + 5 * random(70));
+	if (DEBUG_LOG_ON)
+	{
+		setTimer("debugLogAtEnd", 150000 + 5 * random(70));
+	}
 }
 
 //This is meant to check for nearby oil resources next to the construct. also

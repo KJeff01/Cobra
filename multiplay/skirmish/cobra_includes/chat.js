@@ -121,21 +121,20 @@ function eventChat(from, to, message)
 function freeForAll()
 {
 	var won = true;
-	for (var p = 0; p < maxPlayers; ++p)
+	var enemies = findLivingEnemies();
+	for (var p = 0, l = enemies.length; p < l; ++p)
 	{
-		if (p !== me && !allianceExistsBetween(p, me))
+		var e = enemies[p];
+		var factories = countStruct("A0LightFactory", e) + countStruct("A0CyborgFactory", e);
+		var droids = countDroid(DROID_CONSTRUCT, e);
+		if (droids + factories)
 		{
-			var factories = countStruct("A0LightFactory", p) + countStruct("A0CyborgFactory", p);
-			var droids = countDroid(DROID_ANY, p);
-			if (droids + factories)
-			{
-				won = false;
-				break;
-			}
+			won = false;
+			break;
 		}
 	}
 
-	if (won === true)
+	if (won)
 	{
 		const FRIENDS = playerAlliance(true);
 		const CACHE_FRIENDS = FRIENDS.length;
@@ -155,4 +154,6 @@ function freeForAll()
 			}
 		}
 	}
+
+	return won;
 }

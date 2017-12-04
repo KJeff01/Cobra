@@ -468,17 +468,18 @@ function buildDefenses(truck)
 //Build the basics when available. Has a different build order if NTW.
 function buildPhase1()
 {
+	const GOOD_POWER_LEVEL = getRealPower() > 190;
 	if (mapOilLevel() !== "NTW")
 	{
 		if (countAndBuild(FACTORY, 1))
 		{
 			return true;
 		}
-		if (!researchComplete && countAndBuild(structures.labs, 1))
+		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 2))
 		{
 			return true;
 		}
-		if (countAndBuild(structures.hqs, 1))
+		if (GOOD_POWER_LEVEL && countAndBuild(structures.hqs, 1))
 		{
 			return true;
 		}
@@ -486,18 +487,17 @@ function buildPhase1()
 		{
 			return true;
 		}
-		if (!researchComplete && countAndBuild(structures.factories, 2))
+		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.factories, 3))
 		{
 			return true;
 		}
-		if (!researchComplete && countAndBuild(structures.labs, 3))
+		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 3))
 		{
 			return true;
 		}
 	}
 	else
 	{
-		const GOOD_POWER_LEVEL = getRealPower() > 190;
 		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 2))
 		{
 			return true;
@@ -620,12 +620,12 @@ function buildPhase3()
 			return true;
 		}
 
-		if (countAndBuild(structures.extras[0], 5))
+		if (factoryBuildOrder(5))
 		{
 			return true;
 		}
 
-		if (factoryBuildOrder(5))
+		if (countAndBuild(structures.extras[0], 5))
 		{
 			return true;
 		}
@@ -633,7 +633,7 @@ function buildPhase3()
 }
 
 //Cobra's unique build decisions
-function buildOrderCobra()
+function buildOrders()
 {
 	var isNTW = mapOilLevel() === "NTW";
 
@@ -665,9 +665,9 @@ function maintenance()
 	if (mapOilLevel() === "NTW")
 	{
 		modList = [
-			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
 			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
 			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
+			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
 		];
 	}
