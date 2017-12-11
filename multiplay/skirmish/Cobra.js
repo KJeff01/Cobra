@@ -36,6 +36,7 @@ const ESSENTIALS = [
 	"R-Struc-PowerModuleMk1",
 	"R-Struc-Research-Upgrade09",
 	"R-Struc-Power-Upgrade03a",
+	"R-Sys-Autorepair-General",
 ];
 const ESSENTIALS_2 = [
 	"R-Vehicle-Prop-Halftracks",
@@ -46,7 +47,6 @@ const ESSENTIALS_2 = [
 ];
 const SYSTEM_UPGRADES = [
 	"R-Vehicle-Prop-Hover",
-	"R-Sys-Autorepair-General",
 	"R-Struc-RprFac-Upgrade06",
 	"R-Struc-Factory-Upgrade09",
 ];
@@ -172,7 +172,7 @@ var subPersonalities =
 		"systemPriority": 30,
 		"alloyPriority": 10,
 		"useLasers": false,
-		"resPath": "offensive",
+		"resPath": "generic",
 		"res": [
 			"R-Wpn-Rocket02-MRL",
 		],
@@ -208,7 +208,10 @@ var subPersonalities =
 		"useLasers": false,
 		"resPath": "offensive",
 		"res": [
-			"R-Wpn-Mortar01Lt",
+			"R-Wpn-Mortar02Hvy",
+			"R-Wpn-Mortar-ROF02",
+			"R-Wpn-Mortar-Acc01",
+			"R-Wpn-Mortar-Damage03",
 		],
 	},
 	AL:

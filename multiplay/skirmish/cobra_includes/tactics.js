@@ -646,7 +646,7 @@ function confidenceThreshold()
 
 	points += DERR_COUNT >= countStruct(structures.derricks, getMostHarmfulPlayer()) ? 2 : -2;
 
-	if (DROID_COUNT < 90 && (countDroid(DROID_ANY, getMostHarmfulPlayer()) > DROID_COUNT + 5))
+	if (DROID_COUNT < 40 && (countDroid(DROID_ANY, getMostHarmfulPlayer()) > DROID_COUNT + 6))
 	{
 		points -= 3;
 	}

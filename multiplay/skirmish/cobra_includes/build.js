@@ -570,6 +570,11 @@ function buildPhase2()
 		return true;
 	}
 
+	if (getRealPower() < 250)
+	{
+		return true;
+	}
+
 	if (factoryBuildOrder(2))
 	{
 		return true;

@@ -173,15 +173,12 @@ function research()
 
 				if (!found)
 				{
-					found = evalResearch(lab, standardDefenseTech);
+					found = pursueResearch(lab, standardDefenseTech);
 					if (!found && useArti)
-						found = evalResearch(lab, defenseTech);
+						found = pursueResearch(lab, defenseTech);
 					if (!found)
-						found = evalResearch(lab, DEFENSE_UPGRADES);
+						found = pursueResearch(lab, DEFENSE_UPGRADES);
 				}
-
-				if (!found)
-					found = evalResearch(lab, SENSOR_TECH);
 
 				if (!found && (random(101) < subPersonalities[personality].systemPriority))
 				{
@@ -191,12 +188,14 @@ function research()
 						found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 				}
 
-				if (!found && useArti)
+				if (!found && random(2) && useArti)
 					found = evalResearch(lab, artillExtra);
 				if (!found && useArti)
 					found = evalResearch(lab, artilleryTech);
+				if (!found)
+					found = evalResearch(lab, SENSOR_TECH);
 
-				if (!found && (random(101) < 40))
+				if (!found)
 				{
 					if (!turnOffCyborgs && countStruct(CYBORG_FACTORY) && random(2))
 					{
