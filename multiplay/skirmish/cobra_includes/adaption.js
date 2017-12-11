@@ -15,7 +15,7 @@ function switchOffMG()
 }
 
 
-//Choose the personality as described in the global SUB_PERSONALITIES.
+//Choose the personality as described in the global subPersonalities.
 //When called from chat it will switch to that one directly.
 function choosePersonality(chatEvent)
 {

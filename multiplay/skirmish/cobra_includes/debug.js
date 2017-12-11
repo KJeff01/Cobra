@@ -29,7 +29,7 @@ function debugLogAtEnd()
           log(wonDebug ? TAB + "YES" : TAB + "NO");
 
           log("--RESEARCH PATH--");
-          log(TAB + SUB_PERSONALITIES[personality].resPath);
+          log(TAB + subPersonalities[personality].resPath);
 
           log("--RESEARCH HISTORY--");
           for (var i = 0, l = resHistory.length; i < l; ++i)

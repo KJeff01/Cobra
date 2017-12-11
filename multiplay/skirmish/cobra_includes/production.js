@@ -28,12 +28,12 @@ function chooseRandomWeapon()
 
 	switch (random(5))
 	{
-		case 0: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
-		case 1: if (useArti) { weaps = SUB_PERSONALITIES[personality].artillery; } break;
-		case 2: if (SUB_PERSONALITIES[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
-		case 3: weaps = SUB_PERSONALITIES[personality].secondaryWeapon; break;
+		case 0: weaps = subPersonalities[personality].primaryWeapon; break;
+		case 1: if (useArti) { weaps = subPersonalities[personality].artillery; } break;
+		case 2: if (subPersonalities[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
+		case 3: weaps = subPersonalities[personality].secondaryWeapon; break;
 		case 4: weaps = weaponStats.AS; break;
-		default: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
+		default: weaps = subPersonalities[personality].primaryWeapon; break;
 	}
 
 	if (!isDefined(weaps))
@@ -84,11 +84,11 @@ function chooseRandomCyborgWeapon()
 	//access to pepperpot. They are too weak after that.
 	switch (random(4))
 	{
-		case 0: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
-		case 1: if (SUB_PERSONALITIES[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
-		case 2: weaps = SUB_PERSONALITIES[personality].secondaryWeapon; break;
-		case 3: if(!componentAvailable("Mortar3ROTARYMk1") && useArti) { weaps = SUB_PERSONALITIES[personality].artillery; } break;
-		default: weaps = SUB_PERSONALITIES[personality].primaryWeapon; break;
+		case 0: weaps = subPersonalities[personality].primaryWeapon; break;
+		case 1: if (subPersonalities[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
+		case 2: weaps = subPersonalities[personality].secondaryWeapon; break;
+		case 3: if(!componentAvailable("Mortar3ROTARYMk1") && useArti) { weaps = subPersonalities[personality].artillery; } break;
+		default: weaps = subPersonalities[personality].primaryWeapon; break;
 	}
 
 	return weaps;
@@ -102,9 +102,9 @@ function chooseRandomVTOLWeapon()
 
 	switch (random(5))
 	{
-		case 0: if((returnPrimaryAlias() !== "mg") && (returnPrimaryAlias() !== "fl")) { weaps = SUB_PERSONALITIES[personality].primaryWeapon; } break;
-		case 1: if (SUB_PERSONALITIES[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
-		case 2: weaps = SUB_PERSONALITIES[personality].secondaryWeapon; break;
+		case 0: if((returnPrimaryAlias() !== "mg") && (returnPrimaryAlias() !== "fl")) { weaps = subPersonalities[personality].primaryWeapon; } break;
+		case 1: if (subPersonalities[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
+		case 2: weaps = subPersonalities[personality].secondaryWeapon; break;
 		case 3: weaps = weaponStats.bombs; break;
 		case 4: weaps = weaponStats.empBomb; isEMP = true; break;
 		default: weaps = weaponStats.bombs; break;
@@ -380,7 +380,7 @@ function produce()
 	//Loop through factories in the order the personality likes.
 	for (var i = 0; i < 3; ++i)
 	{
-		var facType = SUB_PERSONALITIES[personality].factoryOrder[i];
+		var facType = subPersonalities[personality].factoryOrder[i];
 		var fac = enumStruct(me, facType);
 
 		if (!((facType === CYBORG_FACTORY) && !forceHover && turnOffCyborgs))
@@ -389,7 +389,7 @@ function produce()
 			for (var x = 0, l = fac.length; x < l; ++x)
 			{
 				const FC = fac[x];
-				if (FC && structureIdle(FC) && (getRealPower() > MIN_POWER))
+				if (FC && structureIdle(FC) && (getRealPower() > MIN_POWER + (3 * i)))
 				{
 
 					if (facType === FACTORY)

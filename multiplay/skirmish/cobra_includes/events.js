@@ -67,7 +67,7 @@ function eventStartLevel()
 	setTimer("research", THINK_LONGER + 1200 + 3 * random(70));
 	setTimer("lookForOil", THINK_LONGER + 1600 + 3 * random(60))
 	setTimer("repairDroidTactics", THINK_LONGER + 2500 + 4 * random(60));
-	setTimer("repairDroidTactics", THINK_LONGER + 4500 + 4 * random(60));
+	setTimer("artilleryTactics", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("vtolTactics", THINK_LONGER + 5600 + 3 * random(70));
 	setTimer("groundTactics", THINK_LONGER + 7000 + 5 * random(60));
 	setTimer("switchOffMG", THINK_LONGER + 10000 + 3 * random(70));
@@ -102,7 +102,7 @@ function eventStructureBuilt(structure, droid)
 				return ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
 			});
 
-			if ((gameTime > 120000) && (random(101) < SUB_PERSONALITIES[personality].defensePriority))
+			if ((gameTime > 120000) && (random(101) < subPersonalities[personality].defensePriority))
 			{
 				protectUnguardedDerricks(droid);
 			}
@@ -207,7 +207,7 @@ function eventAttacked(victim, attacker)
 				else
 				{
 					//Fuzzy repair algorithm.
-					repairDroid(victim, false);
+					repairDroid(victim.id);
 				}
 			}
 		}
@@ -236,8 +236,8 @@ function eventAttacked(victim, attacker)
 
 		units = units.filter(function(dr) {
 			return (dr.id !== victim.id
-				&& ((isVTOL(dr) && droidReady(dr))
-				|| (!repairDroid(dr)) && droidCanReach(dr, attacker.x, attacker.y))
+				&& ((isVTOL(dr) && droidReady(dr.id))
+				|| (!repairDroid(dr.id)) && droidCanReach(dr, attacker.x, attacker.y))
 			);
 		});
 		const CACHE_UNITS = units.length;
@@ -331,7 +331,7 @@ function eventStructureReady(structure)
 		}
 	}
 
-	var fac = returnClosestEnemyFactory();
+	var fac = returnClosestEnemyFactory().reverse();
 	if (isDefined(fac))
 	{
 		activateStructure(structure, getObject(fac.typeInfo, fac.playerInfo, fac.idInfo));

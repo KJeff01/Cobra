@@ -1,13 +1,19 @@
 
 //Droids that are attacking should not be pulled away until
 //they destroy whatever thay are attacking or need repair.
-function droidReady(droid)
+function droidReady(droidID)
 {
-	return (!repairDroid(droid, false)
+	var droid = getObject(DROID, me, droidID);
+	if (droid === null)
+	{
+		return false;
+	}
+
+	return (!repairDroid(droidID)
 		&& droid.order !== DORDER_ATTACK
 		&& droid.order !== DORDER_RTR
 		&& droid.order !== DORDER_RECYCLE
-		&& vtolReady(droid) //True for non-VTOL units
+		&& vtolReady(droidID) //True for non-VTOL units
 	);
 }
 
@@ -101,11 +107,17 @@ function getClosestEnemyTruck(enemyNumber)
 }
 
 //Should the vtol attack when ammo is high enough?
-function vtolReady(droid)
+function vtolReady(droidID)
 {
+	var droid = getObject(DROID, me, droidID);
+	if (droid === null)
+	{
+		return true;  //Pretend it is busy
+	}
+
 	if (!isVTOL(droid))
 	{
-		return true; //See droidReady(droid).
+		return true; //See droidReady().
 	}
 
 	const ARMED_PERCENT = 1;
@@ -126,15 +138,21 @@ function vtolReady(droid)
 }
 
 //Repair a droid with the option of forcing it to.
-function repairDroid(droid, force)
+function repairDroid(droidID, force)
 {
+	var droid = getObject(DROID, me, droidID);
+	if (droid === null)
+	{
+		return true; //pretend it is busy
+	}
+
 	const FORCE_REPAIR_PERCENT = 48;
 	const EXPERIENCE_DIVISOR = 22;
 	const HEALTH_TO_REPAIR = 58 + Math.floor(droid.experience / EXPERIENCE_DIVISOR);
 
 	if (!isDefined(force))
 	{
-		force = false;
+		force = droid.health < 50;
 	}
 
 	if (Math.floor(droid.health) <= FORCE_REPAIR_PERCENT)
@@ -167,15 +185,14 @@ function checkAllForRepair()
 	var droids = enumGroup(attackGroup);
 	for (var i = 0, l = droids.length; i < l; ++i)
 	{
-		var droid = droids[i];
-		repairDroid(droid, Math.floor(droid.health) < 48);
+		repairDroid(droids[i].id);
 	}
 }
 
 //choose land attackers.
 function chooseGroup()
 {
-	return enumGroup(attackGroup).filter(function(dr) { return droidReady(dr); });
+	return enumGroup(attackGroup).filter(function(dr) { return droidReady(dr.id); });
 }
 
 //Find the closest enemy derrick information. If no player is defined, then all of them are checked.
@@ -340,14 +357,14 @@ function attackStuff(attacker)
 }
 
 //Sensors know all your secrets. They will observe what is closest to Cobra base.
-function repairDroidTactics()
+function artilleryTactics()
 {
 	if (!shouldCobraAttack())
 	{
 		return;
 	}
 	var sensors = enumGroup(sensorGroup).filter(function(dr) {
-		return droidReady(dr);
+		return droidReady(dr.id);
 	});
 	const ARTILLERY_UNITS = enumGroup(artilleryGroup);
 	const ARTI_LEN = ARTILLERY_UNITS.length;
@@ -510,7 +527,7 @@ function vtolTactics()
 {
 	const MIN_VTOLS = 5;
 	var vtols = enumGroup(vtolGroup).filter(function(dr) {
-		return droidReady(dr);
+		return droidReady(dr.id);
 	});
 	const LEN = vtols.length;
 
@@ -538,8 +555,15 @@ function attackThisObject(droidID, target)
 	}
 
 	var t = getObject(target.typeInfo, target.playerInfo, target.idInfo);
-	if ((d !== null) && droidReady(d) && (t !== null) && droidCanReach(d, t.x, t.y))
+	var isScav = isDefined(scavengerPlayer) && t.player === scavengerPlayer;
+	if ((d !== null) && droidReady(droidID) && (t !== null) && droidCanReach(d, t.x, t.y))
 	{
+		if (isScav && getMostHarmfulPlayer() !== scavengerPlayer)
+		{
+			orderDroid(d, DORDER_HOLD); //quick reset
+			return;
+		}
+
 		if (!((t.type === DROID) && isVTOL(t) && (isVTOL(d) && !d.weapons[0].canHitAir)))
 		{
 			if (!isPlasmaCannon(d.weapons[0].name) && (t.type === DROID || (t.type === STRUCTURE && t.stattype !== WALL)))
@@ -587,7 +611,7 @@ function donateSomePower()
 	if (LEN && ALIVE_ENEMIES)
 	{
 		var ally = ALLY_PLAYERS[random(LEN)]
-		if (getRealPower() > 100 && (playerPower(me) > 2 * playerPower(ally)))
+		if (playerPower(me) > 150 && (playerPower(me) > 2 * playerPower(ally)))
 		{
 			donatePower(playerPower(me) / 2, ally);
 		}
@@ -608,7 +632,7 @@ function prepareAssault()
 
 	for (var i = 0, l = attackers.length; i < l; ++i)
 	{
-		orderDroidLoc(attackers[i], DORDER_SCOUT, (MY_BASE.x + eBase.x) / 2, (MY_BASE.y + eBase.y) / 5);
+		orderDroidLoc(attackers[i], DORDER_SCOUT, (MY_BASE.x + eBase.x) / 2, (MY_BASE.y + eBase.y) / 2);
 	}
 }
 
@@ -631,11 +655,18 @@ function confidenceThreshold()
 }
 
 //Check if our forces are large enough to take on the most harmful player.
+//If it thinks it is losing it will go to a defensive research path.
 function shouldCobraAttack()
 {
 	var confident = confidenceThreshold();
 	if (confident)
 	{
+		//Ok, restore the previous research path if necessary
+		if (isDefined(prevResPath))
+		{
+			subPersonalities[personality].resPath = prevResPath;
+			prevResPath = undefined;
+		}
 		return true;
 	}
 	else
@@ -643,6 +674,11 @@ function shouldCobraAttack()
 		if (mapOilLevel() === "NTW") // NTW
 		{
 			prepareAssault();
+		}
+		if (subPersonalities[personality].resPath !== "defensive")
+		{
+			prevResPath = subPersonalities[personality].resPath;
+			subPersonalities[personality].resPath = "defensive";
 		}
 		return false;
 	}

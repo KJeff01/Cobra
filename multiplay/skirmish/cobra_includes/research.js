@@ -29,21 +29,21 @@ function updateResearchList(stat, len)
 //Call this again when manually changing a personality.
 function initializeResearchLists()
 {
-	techlist = SUB_PERSONALITIES[personality].res;
-	antiAirTech = updateResearchList(SUB_PERSONALITIES[personality].antiAir.defenses);
-	antiAirExtras = updateResearchList(SUB_PERSONALITIES[personality].antiAir.extras);
+	techlist = subPersonalities[personality].res;
+	antiAirTech = updateResearchList(subPersonalities[personality].antiAir.defenses);
+	antiAirExtras = updateResearchList(subPersonalities[personality].antiAir.extras);
 	extremeLaserTech = updateResearchList(weaponStats.AS.extras);
 	laserTech = updateResearchList(weaponStats.lasers.weapons);
 	laserExtra = updateResearchList(weaponStats.lasers.extras);
-	weaponTech = updateResearchList(SUB_PERSONALITIES[personality].primaryWeapon.weapons);
-	artilleryTech = updateResearchList(SUB_PERSONALITIES[personality].artillery.weapons);
-	artillExtra = updateResearchList(SUB_PERSONALITIES[personality].artillery.extras);
-	extraTech = updateResearchList(SUB_PERSONALITIES[personality].primaryWeapon.extras);
-	secondaryWeaponTech = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.weapons);
-	secondaryWeaponExtra = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.extras);
-	defenseTech = updateResearchList(SUB_PERSONALITIES[personality].artillery.defenses);
-	standardDefenseTech = updateResearchList(SUB_PERSONALITIES[personality].primaryWeapon.defenses)
-	cyborgWeaps = updateResearchList(SUB_PERSONALITIES[personality].primaryWeapon.templates);
+	weaponTech = updateResearchList(subPersonalities[personality].primaryWeapon.weapons);
+	artilleryTech = updateResearchList(subPersonalities[personality].artillery.weapons);
+	artillExtra = updateResearchList(subPersonalities[personality].artillery.extras);
+	extraTech = updateResearchList(subPersonalities[personality].primaryWeapon.extras);
+	secondaryWeaponTech = updateResearchList(subPersonalities[personality].secondaryWeapon.weapons);
+	secondaryWeaponExtra = updateResearchList(subPersonalities[personality].secondaryWeapon.extras);
+	defenseTech = updateResearchList(subPersonalities[personality].artillery.defenses);
+	standardDefenseTech = updateResearchList(subPersonalities[personality].primaryWeapon.defenses)
+	cyborgWeaps = updateResearchList(subPersonalities[personality].primaryWeapon.templates);
 }
 
 //This function aims to more cleanly discover available research topics
@@ -77,18 +77,20 @@ function research()
 	for (var i = 0, a = labList.length; i < a; ++i)
 	{
 		var lab = labList[i];
-		var found = evalResearch(lab, ESSENTIALS);
+		var found = !random(2) && evalResearch(lab, ESSENTIALS);
 
 		if (!found)
 			found = evalResearch(lab, techlist);
-		if (!found)
+		if (!found && !random(2))
 			found = evalResearch(lab, ESSENTIALS_2);
+		if (!found && forceHover)
+			found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
 
 		if (!found && getRealPower() > MIN_POWER + (2 * i))
 		{
-			if (SUB_PERSONALITIES[personality].resPath === "generic")
+			if (subPersonalities[personality].resPath === "generic")
 			{
-				if (!found && (random(101) < SUB_PERSONALITIES[personality].alloyPriority))
+				if (!found && (random(101) < subPersonalities[personality].alloyPriority))
 				{
 					if (!turnOffCyborgs && countStruct(CYBORG_FACTORY) && random(2))
 					{
@@ -100,14 +102,6 @@ function research()
 
 				if (!found && !random(3))
 					found = evalResearch(lab, extraTech);
-
-				if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
-				{
-					if (!found)
-						found = evalResearch(lab, SYSTEM_UPGRADES);
-					if (!found)
-						found = evalResearch(lab, LATE_EARLY_GAME_TECH);
-				}
 
 				//Use default AA until stormbringer.
 				if (!random(2) && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
@@ -125,6 +119,14 @@ function research()
 				if (!found && useArti && !random(3))
 					found = evalResearch(lab, artilleryTech);
 
+				if (!found && (random(101) < subPersonalities[personality].systemPriority))
+				{
+					if (!found)
+						found = evalResearch(lab, SYSTEM_UPGRADES);
+					if (!found)
+						found = evalResearch(lab, LATE_EARLY_GAME_TECH);
+				}
+
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
 				if (!found && useArti)
@@ -134,7 +136,7 @@ function research()
 					found = evalResearch(lab, BODY_RESEARCH);
 
 
-				if (!found && (random(101) < SUB_PERSONALITIES[personality].defensePriority))
+				if (!found && (random(101) < subPersonalities[personality].defensePriority))
 				{
 					found = evalResearch(lab, standardDefenseTech);
 					if (!found && useArti)
@@ -143,9 +145,9 @@ function research()
 						found = evalResearch(lab, DEFENSE_UPGRADES);
 				}
 
-				var cyborgSecondary = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates);
-				var len = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length - 1;
-				if (isDesignable(SUB_PERSONALITIES[personality].primaryWeapon.weapons[len].stat))
+				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
+				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
+				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
 					if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
 						found = pursueResearch(lab, cyborgSecondary);
@@ -155,19 +157,11 @@ function research()
 						found = evalResearch(lab, secondaryWeaponTech);
 				}
 
-				if (!found && useVtol && (random(101) < SUB_PERSONALITIES[personality].vtolPriority))
+				if (!found && useVtol && (random(101) < subPersonalities[personality].vtolPriority))
 					found = evalResearch(lab, VTOL_RES);
 			}
-			else if (SUB_PERSONALITIES[personality].resPath === "defensive")
+			else if (subPersonalities[personality].resPath === "defensive")
 			{
-				if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
-				{
-					if (!found)
-						found = evalResearch(lab, SYSTEM_UPGRADES);
-					if (!found)
-						found = evalResearch(lab, LATE_EARLY_GAME_TECH);
-				}
-
 				//Use default AA until stormbringer.
 				if (!random(2) && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
 				{
@@ -177,7 +171,7 @@ function research()
 						found = evalResearch(lab, antiAirExtras);
 				}
 
-				if (!found && (random(101) < 70))
+				if (!found)
 				{
 					found = evalResearch(lab, standardDefenseTech);
 					if (!found && useArti)
@@ -189,12 +183,20 @@ function research()
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
 
+				if (!found && (random(101) < subPersonalities[personality].systemPriority))
+				{
+					if (!found)
+						found = evalResearch(lab, SYSTEM_UPGRADES);
+					if (!found)
+						found = evalResearch(lab, LATE_EARLY_GAME_TECH);
+				}
+
 				if (!found && useArti)
 					found = evalResearch(lab, artillExtra);
 				if (!found && useArti)
 					found = evalResearch(lab, artilleryTech);
 
-				if (!found && (random(101) < 70))
+				if (!found && (random(101) < 40))
 				{
 					if (!turnOffCyborgs && countStruct(CYBORG_FACTORY) && random(2))
 					{
@@ -204,7 +206,7 @@ function research()
 						found = evalResearch(lab, TANK_ARMOR);
 				}
 
-				if (!found && useVtol && (random(101) < SUB_PERSONALITIES[personality].vtolPriority))
+				if (!found && useVtol && (random(101) < subPersonalities[personality].vtolPriority))
 					found = evalResearch(lab, VTOL_RES);
 
 				if (!found)
@@ -217,9 +219,9 @@ function research()
 				if (!found)
 					found = evalResearch(lab, weaponTech);
 
-				var cyborgSecondary = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates);
-				var len = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length - 1;
-				if (isDesignable(SUB_PERSONALITIES[personality].primaryWeapon.weapons[len].stat))
+				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
+				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
+				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
 					if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
 						found = pursueResearch(lab, cyborgSecondary);
@@ -229,18 +231,10 @@ function research()
 						found = evalResearch(lab, secondaryWeaponTech);
 				}
 			}
-			else if (SUB_PERSONALITIES[personality].resPath === "offensive")
+			else if (subPersonalities[personality].resPath === "offensive")
 			{
-				if (!found && random(2))
+				if (!found)
 					found = evalResearch(lab, extraTech);
-
-				if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
-				{
-					if (!found)
-						found = evalResearch(lab, SYSTEM_UPGRADES);
-					if (!found)
-						found = evalResearch(lab, LATE_EARLY_GAME_TECH);
-				}
 
 				if (!found && !turnOffCyborgs)
 					found = evalResearch(lab, cyborgWeaps);
@@ -249,6 +243,14 @@ function research()
 				if (!found && useArti && random(2))
 					found = evalResearch(lab, artilleryTech);
 
+				if (!found && (random(101) < subPersonalities[personality].systemPriority))
+				{
+					if (!found)
+						found = evalResearch(lab, SYSTEM_UPGRADES);
+					if (!found)
+						found = evalResearch(lab, LATE_EARLY_GAME_TECH);
+				}
+
 				//Use default AA until stormbringer.
 				if (!random(2) && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
 				{
@@ -263,7 +265,7 @@ function research()
 				if (!found && useArti)
 					found = evalResearch(lab, artilleryTech);
 
-				if (!found && useVtol && (random(101) < SUB_PERSONALITIES[personality].vtolPriority))
+				if (!found && useVtol && (random(101) < subPersonalities[personality].vtolPriority))
 					found = evalResearch(lab, VTOL_RES);
 
 				if (!found && (random(101) < 70))
@@ -276,9 +278,9 @@ function research()
 						found = evalResearch(lab, TANK_ARMOR);
 				}
 
-				var cyborgSecondary = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates);
-				var len = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length - 1;
-				if (isDesignable(SUB_PERSONALITIES[personality].primaryWeapon.weapons[len].stat))
+				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
+				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
+				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
 					if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
 						found = pursueResearch(lab, cyborgSecondary);
@@ -291,7 +293,7 @@ function research()
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
 
-				if (!found && ((random(101) < SUB_PERSONALITIES[personality].defensePriority)))
+				if (!found && ((random(101) < subPersonalities[personality].defensePriority)))
 				{
 					found = evalResearch(lab, standardDefenseTech);
 					if (!found && useArti)
@@ -304,7 +306,7 @@ function research()
 					found = evalResearch(lab, BODY_RESEARCH);
 
 			}
-			else if (SUB_PERSONALITIES[personality].resPath === "air")
+			else if (subPersonalities[personality].resPath === "air")
 			{
 				if (!useVtol)
 					useVtol = true;
@@ -323,7 +325,7 @@ function research()
 						found = evalResearch(lab, antiAirExtras);
 				}
 
-				if (!found && (random(101) < SUB_PERSONALITIES[personality].systemPriority))
+				if (!found && (random(101) < subPersonalities[personality].systemPriority))
 				{
 					if (!found)
 						found = evalResearch(lab, SYSTEM_UPGRADES);
@@ -341,7 +343,7 @@ function research()
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
 
-				if (!found && (random(101) < SUB_PERSONALITIES[personality].alloyPriority))
+				if (!found && (random(101) < subPersonalities[personality].alloyPriority))
 				{
 					if (!turnOffCyborgs && countStruct(CYBORG_FACTORY) && random(2))
 					{
@@ -357,9 +359,9 @@ function research()
 				if (!found)
 					found = evalResearch(lab, BODY_RESEARCH);
 
-				var cyborgSecondary = updateResearchList(SUB_PERSONALITIES[personality].secondaryWeapon.templates);
-				var len = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length - 1;
-				if (isDesignable(SUB_PERSONALITIES[personality].primaryWeapon.weapons[len].stat))
+				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
+				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
+				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
 					if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
 						found = pursueResearch(lab, cyborgSecondary);
@@ -370,7 +372,7 @@ function research()
 				}
 
 
-				if (!found && (random(101) < SUB_PERSONALITIES[personality].defensePriority))
+				if (!found && (random(101) < subPersonalities[personality].defensePriority))
 				{
 					found = evalResearch(lab, standardDefenseTech);
 					if (!found && useArti)
@@ -391,7 +393,7 @@ function research()
 			}
 
 			// Lasers
-			if (SUB_PERSONALITIES[personality].useLasers === true)
+			if (subPersonalities[personality].useLasers === true)
 			{
 				var aa = returnAntiAirAlias();
 				if (!found && !turnOffCyborgs)

@@ -68,10 +68,10 @@ function CheckStartingBases()
 
 	if (componentAvailable("Body11ABT"))
 	{
-		const CACHE_WEAPONS = SUB_PERSONALITIES[personality].primaryWeapon.weapons.length;
+		const CACHE_WEAPONS = subPersonalities[personality].primaryWeapon.weapons.length;
 		for (var i = 0; i < CACHE_WEAPONS; ++i)
 		{
-			if (isDesignable(SUB_PERSONALITIES[personality].primaryWeapon.weapons[i].stat))
+			if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[i].stat))
 			{
 				return true;
 			}

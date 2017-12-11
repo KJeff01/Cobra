@@ -64,6 +64,30 @@ function eventChat(from, to, message)
 	{
 		useVtol = !useVtol;
 	}
+	else if (message === "resG" || message === "resO" || message === "resD" || message === "resA")
+	{
+		var pth = "";
+		if (message === "resG")
+		{
+			pth = "generic";
+		}
+		else if (message === "resO")
+		{
+			pth = "offensive";
+		}
+		else if (message === "resD")
+		{
+			pth = "defensive";
+		}
+		else if (message === "resA")
+		{
+			pth = "air";
+		}
+
+		prevResPath = subPersonalities[personality].resPath;
+		subPersonalities[personality].resPath = pth;
+		sendChatMessage("research path changed to: " + pth, ALLIES);
+	}
 
 
 	//Do not execute these statements if from is me or enemy.

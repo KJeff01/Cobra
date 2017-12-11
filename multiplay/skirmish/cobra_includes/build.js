@@ -56,7 +56,7 @@ function conCanHelp(mydroidID, bx, by)
 		&& mydroid.order !== DORDER_LINEBUILD
 		&& mydroid.order !== DORDER_RECYCLE
 		&& mydroid.busy !== true
-		&& !repairDroid(mydroid)
+		&& !repairDroid(mydroidID)
 		&& droidCanReach(mydroid, bx, by)
 	);
 }
@@ -347,7 +347,7 @@ function buildAAForPersonality()
 	}
 	else
 	{
-		var aaType = SUB_PERSONALITIES[personality].antiAir.defenses;
+		var aaType = subPersonalities[personality].antiAir.defenses;
 		for (var i = aaType.length - 1; i >= 0; --i)
 		{
 			if (countAndBuild(aaType[i].stat, Math.floor(VTOL_COUNT / 3)))
@@ -370,7 +370,7 @@ function returnDefense(type)
 	}
 
 	const ELECTRONIC_CHANCE = 67;
-	var defenses = (type === 0) ? SUB_PERSONALITIES[personality].primaryWeapon.defenses : SUB_PERSONALITIES[personality].artillery.defenses;
+	var defenses = (type === 0) ? subPersonalities[personality].primaryWeapon.defenses : subPersonalities[personality].artillery.defenses;
 	var bestDefense = "Emplacement-MortarEMP"; //default
 
 	//Choose a random electronic warfare defense if possible.
@@ -436,7 +436,7 @@ function buildDefenseNearTruck(truck, type)
 // a location to build a defense structure near it.
 function buildDefenses(truck)
 {
-	var isDefensive = SUB_PERSONALITIES[personality].defensePriority >= 50;
+	var isDefensive = subPersonalities[personality].defensePriority >= 50;
 	var pow = getRealPower();
 	if ((gameTime > 180000) && (pow > MIN_BUILD_POWER || (isDefensive && (pow > MIN_BUILD_POWER - 40))))
 	{
@@ -484,10 +484,6 @@ function buildPhase1()
 			return true;
 		}
 		if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
-		{
-			return true;
-		}
-		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.factories, 3))
 		{
 			return true;
 		}
@@ -541,7 +537,7 @@ function factoryBuildOrder(limit)
 
 	for (var i = 0; i < 3; ++i)
 	{
-		var fac = SUB_PERSONALITIES[personality].factoryOrder[i];
+		var fac = subPersonalities[personality].factoryOrder[i];
 		if ((fac === VTOL_FACTORY && !useVtol) || (fac === CYBORG_FACTORY && (turnOffCyborgs || forceHover)))
 		{
 			continue;
@@ -565,6 +561,11 @@ function buildPhase2()
 	}
 
 	if (!researchComplete && countAndBuild(structures.labs, 4))
+	{
+		return true;
+	}
+
+	if (buildExtras())
 	{
 		return true;
 	}
@@ -594,7 +595,7 @@ function buildSpecialStructures()
 //Build the minimum repairs and any vtol pads.
 function buildExtras()
 {
-	if (!isStructureAvailable("A0PowMod1") || (gameTime < 80000))
+	if (!isStructureAvailable("A0PowMod1"))
 	{
 		return false;
 	}
@@ -635,16 +636,12 @@ function buildPhase3()
 //Cobra's unique build decisions
 function buildOrders()
 {
-	var isNTW = mapOilLevel() === "NTW";
-
 	if (!findIdleTrucks().length) { return; }
 	if (checkUnfinishedStructures()) { return; }
-	if (isNTW && maintenance()) { return; }
+	if (maintenance()) { return; }
 	if (buildPhase1()) { return; }
 	if (buildSpecialStructures()) { return; }
 	if (buildAAForPersonality()) { return; }
-	if (!isNTW && maintenance()) { return; }
-	if (buildExtras()) { return; }
 	if (buildPhase2()) { return; }
 	if (buildPhase3()) { return; }
 	buildDefenses();

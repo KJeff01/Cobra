@@ -3,7 +3,7 @@ A Skirmish AI for warzone2100 with a dynamic build and research order for all Te
 
 Cobra uses a "grudge counter" to determine who it attacks. It contains a number for each player that increments with each aggressive act an enemy player makes towards it. The enemy with the highest number assigned to it is the one it attacks. The specific number for each enemy can easily be influenced by allied Cobra AI and, under the right circumstance, allows allied Cobra to take action against a specific player. This feature is very helpful in determining who is the biggest threat on the map and more or less balances the skirmish by keeping pressure on the most aggressive player (that it has encountered) until one of them is defeated.
 
-There are five personalities so far (all use lasers and plasma cannon when it can):
+There are five personalities so far (all use lasers and plasma cannon when it can or is enabled to):
 
 1. AC: Cannon/Gauss/Howitzer.
 2. AR: Flamer/Gauss/Howitzer.
@@ -27,6 +27,7 @@ chat commands include:
 8. stats -- Which player Cobra is currently targeting.
 9. toggle arti -- Enable or disable artillery production/research.
 10. toggle vtol -- Enable or disable VTOL production/research.
+11. resG/resO/resD/resA -- Switch research paths to generic, offensive, defensive, and air.
 
 Press alt + h to drop a beacon and Cobra units will try making their way over to it if possible.
 

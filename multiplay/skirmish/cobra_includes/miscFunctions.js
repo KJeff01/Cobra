@@ -44,25 +44,25 @@ function sortAndReverseDistance(arr)
 //Return the alias of the primary weapon.
 function returnPrimaryAlias()
 {
-	return SUB_PERSONALITIES[personality].primaryWeapon.alias;
+	return subPersonalities[personality].primaryWeapon.alias;
 }
 
 //Return the alias of the secondary weapon.
 function returnSecondaryAlias()
 {
-	return SUB_PERSONALITIES[personality].secondaryWeapon.alias;
+	return subPersonalities[personality].secondaryWeapon.alias;
 }
 
 //Return the alias of the anti-air weaponry.
 function returnAntiAirAlias()
 {
-	return SUB_PERSONALITIES[personality].antiAir.alias;
+	return subPersonalities[personality].antiAir.alias;
 }
 
 //Return the alias of the artillery weapon.
 function returnArtilleryAlias()
 {
-	return SUB_PERSONALITIES[personality].artillery.alias;
+	return subPersonalities[personality].artillery.alias;
 }
 
 //Dump some text.
@@ -371,7 +371,7 @@ function stopTimers()
 	{
 		var timers = [
 			"buildOrders", "repairDroidTactics", "produce", "groundTactics",
-			"repairDroidTactics", "stopTimers", "research", "lookForOil",
+			"artilleryTactics", "stopTimers", "research", "lookForOil",
 			"vtolTactics",
 		];
 

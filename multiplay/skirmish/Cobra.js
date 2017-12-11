@@ -5,7 +5,7 @@ const COBRA_RULESETS = "/multiplay/skirmish/cobra_rulesets/";
 //Rulesets here.
 include(COBRA_RULESETS + "CobraStandard.js");
 
-const DEBUG_LOG_ON = true; //NOTE: slow!
+const DEBUG_LOG_ON = false; //NOTE: slow!
 const MAX_GRUDGE = 50000;
 const MIN_ATTACK_DROIDS = 8;
 const FACTORY = "A0LightFactory";
@@ -14,7 +14,7 @@ const VTOL_FACTORY = "A0VTolFactory1";
 const MY_BASE = startPositions[me];
 const OIL_RES = "OilResource";
 const MIN_POWER = 180;
-const MIN_BUILD_POWER = 230;
+const MIN_BUILD_POWER = 220;
 const ELECTRONIC_DEFENSES = [
 	"Sys-SpyTower",
 	"WallTower-EMP",
@@ -41,14 +41,14 @@ const ESSENTIALS_2 = [
 	"R-Vehicle-Prop-Halftracks",
 	"R-Struc-RprFac-Upgrade01",
 	"R-Vehicle-Body05",
-	"R-Vehicle-Prop-Hover",
-];
-const SYSTEM_UPGRADES = [
 	"R-Sys-Sensor-Upgrade03",
 	"R-Sys-MobileRepairTurretHvy",
+];
+const SYSTEM_UPGRADES = [
+	"R-Vehicle-Prop-Hover",
 	"R-Sys-Autorepair-General",
-	"R-Struc-Factory-Upgrade09",
 	"R-Struc-RprFac-Upgrade06",
+	"R-Struc-Factory-Upgrade09",
 ];
 const FLAMER = [
 	"R-Wpn-Flame2",
@@ -122,7 +122,7 @@ const REPAIR_TURRETS = [
 
 
 //List of Cobra personalities:
-const SUB_PERSONALITIES =
+var subPersonalities =
 {
 	AC:
 	{
@@ -172,9 +172,8 @@ const SUB_PERSONALITIES =
 		"systemPriority": 30,
 		"alloyPriority": 10,
 		"useLasers": false,
-		"resPath": "air",
+		"resPath": "offensive",
 		"res": [
-			"R-Wpn-MG2Mk1",
 			"R-Wpn-Rocket02-MRL",
 		],
 	},
@@ -224,7 +223,7 @@ const SUB_PERSONALITIES =
 		"systemPriority": 45,
 		"alloyPriority": 10,
 		"useLasers": true,
-		"resPath": "offensive",
+		"resPath": "air",
 		"res": [
 			"R-Wpn-Mortar-Incenediary",
 			"R-Wpn-Laser01",
@@ -253,6 +252,7 @@ var useArti;
 var useVtol;
 var lastAttackedByScavs;
 var startedWithTech;
+var prevResPath; // previous personality research path. volatile.
 
 // -- Weapon research list (initializeResearchLists).
 var techlist;
