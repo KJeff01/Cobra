@@ -263,24 +263,6 @@ function eventAttacked(victim, attacker)
 	}
 }
 
-//Target player closest to beacon.
-function eventBeacon(x, y, from, to, message)
-{
-	if (stopExecution("throttleBeacon", 20000) || !shouldCobraAttack())
-	{
-		return;
-	}
-
-	if (allianceExistsBetween(from, to) || (to === from))
-	{
-		var enemyObject = enumRange(x, y, 4, ENEMIES, false)[0];
-		if (isDefined(enemyObject))
-		{
-			chatTactic(enemyObject.player);
-		}
-	}
-}
-
 function eventObjectTransfer(obj, from)
 {
 	if (from !== me)
@@ -292,25 +274,6 @@ function eventObjectTransfer(obj, from)
 				eventDroidBuilt(obj, null);
 			}
 		}
-	}
-}
-
-//Increase grudge counter for closest enemy.
-function eventDestroyed(object)
-{
-	if (object.type === DROID && object.order !== DORDER_RECYCLE)
-	{
-		if (!stopExecution("throttleDestroyed", 12000))
-		{
-			addBeacon(object.x, object.y, ALLIES);
-		}
-	}
-
-	var enemies = enumRange(object.x, object.y, 5, ENEMIES, false);
-	var enemy = enemies[0];
-	if (isDefined(enemy) && enemy.player < maxPlayers && grudgeCount[enemy.player] < MAX_GRUDGE)
-	{
-		grudgeCount[enemy.player] = grudgeCount[enemy.player] + 5;
 	}
 }
 
@@ -331,7 +294,7 @@ function eventStructureReady(structure)
 		}
 	}
 
-	var fac = returnClosestEnemyFactory().reverse();
+	var fac = returnClosestEnemyFactory();
 	if (isDefined(fac))
 	{
 		activateStructure(structure, getObject(fac.typeInfo, fac.playerInfo, fac.idInfo));
