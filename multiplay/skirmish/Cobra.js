@@ -41,13 +41,15 @@ const ESSENTIALS = [
 const ESSENTIALS_2 = [
 	"R-Vehicle-Prop-Halftracks",
 	"R-Struc-RprFac-Upgrade01",
-	"R-Vehicle-Body05",
-	"R-Sys-Sensor-Upgrade03",
-	"R-Sys-MobileRepairTurretHvy",
+	"R-Vehicle-Body11",
+	"R-Sys-Sensor-Upgrade01",
 ];
 const SYSTEM_UPGRADES = [
 	"R-Vehicle-Prop-Hover",
+	"R-Vehicle-Body12",
 	"R-Struc-RprFac-Upgrade06",
+	"R-Sys-Sensor-Upgrade03",
+	"R-Sys-MobileRepairTurretHvy",
 	"R-Struc-Factory-Upgrade09",
 ];
 const FLAMER = [
@@ -69,8 +71,6 @@ const DEFENSE_UPGRADES = [
 	"R-Defense-WallUpgrade12",
 ];
 const BODY_RESEARCH = [
-	"R-Vehicle-Body11",
-	"R-Vehicle-Body12",
 	"R-Vehicle-Body06",
 	"R-Vehicle-Body10",
 	"R-Vehicle-Body14",
@@ -133,8 +133,7 @@ var subPersonalities =
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 30,
 		"vtolPriority": 20,
-		"systemPriority": 30,
-		"alloyPriority": 30,
+		"alloyPriority": 20,
 		"useLasers": false,
 		"resPath": "generic",
 		"res": [
@@ -151,7 +150,6 @@ var subPersonalities =
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 20,
 		"vtolPriority": 40,
-		"systemPriority": 60,
 		"alloyPriority": 25,
 		"useLasers": false,
 		"resPath": "generic",
@@ -169,7 +167,6 @@ var subPersonalities =
 		"factoryOrder": [VTOL_FACTORY, FACTORY, CYBORG_FACTORY],
 		"defensePriority": 70,
 		"vtolPriority": 50,
-		"systemPriority": 30,
 		"alloyPriority": 10,
 		"useLasers": false,
 		"resPath": "generic",
@@ -186,8 +183,7 @@ var subPersonalities =
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 50,
 		"vtolPriority": 40,
-		"systemPriority": 55,
-		"alloyPriority": 45,
+		"alloyPriority": 15,
 		"useLasers": false,
 		"resPath": "generic",
 		"res": [
@@ -203,7 +199,6 @@ var subPersonalities =
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 70,
 		"vtolPriority": 15,
-		"systemPriority": 20,
 		"alloyPriority": 15,
 		"useLasers": false,
 		"resPath": "offensive",
@@ -223,7 +218,6 @@ var subPersonalities =
 		"factoryOrder": [VTOL_FACTORY, FACTORY, CYBORG_FACTORY],
 		"defensePriority": 10,
 		"vtolPriority": 100,
-		"systemPriority": 45,
 		"alloyPriority": 10,
 		"useLasers": true,
 		"resPath": "air",

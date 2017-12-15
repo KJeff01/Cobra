@@ -559,22 +559,28 @@ function factoryBuildOrder(limit)
 //Build minimum requirements of base structures.
 function buildPhase2()
 {
+	//Build the minimum repair facilities.
+	if (countAndBuild(structures.extras[0], 2))
+	{
+		return true;
+	}
+
 	if (!countStruct(structures.gens))
 	{
 		return true;
 	}
 
-	if (factoryBuildOrder(2))
-	{
-		return true;
-	}
-
-	if (!researchComplete && countAndBuild(structures.labs, 5))
-	{
-		return true;
-	}
-
 	if (buildExtras())
+	{
+		return true;
+	}
+
+	if (!researchComplete && countAndBuild(structures.labs, 4))
+	{
+		return true;
+	}
+
+	if (factoryBuildOrder(3))
 	{
 		return true;
 	}
@@ -602,11 +608,6 @@ function buildExtras()
 	if (!isStructureAvailable("A0PowMod1"))
 	{
 		return false;
-	}
-	//Build the minimum repair facilities.
-	if (countAndBuild(structures.extras[0], 2))
-	{
-		return true;
 	}
 
 	var needVtolPads = ((2 * countStruct(structures.vtolPads)) < enumGroup(vtolGroup).length);

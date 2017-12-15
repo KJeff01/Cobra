@@ -642,11 +642,10 @@ function confidenceThreshold()
 	const DERR_COUNT = countStruct(structures.derricks);
 	const DROID_COUNT = countDroid(DROID_ANY);
 	var points = 0;
-	var derrRatio = Math.floor(DERR_COUNT / countAllResources()) * 100;
 
 	points += DERR_COUNT >= countStruct(structures.derricks, getMostHarmfulPlayer()) ? 2 : -2;
 
-	if (DROID_COUNT < 40 && (countDroid(DROID_ANY, getMostHarmfulPlayer()) > DROID_COUNT + 6))
+	if (DROID_COUNT < 40 && (countDroid(DROID_ANY, getMostHarmfulPlayer()) > DROID_COUNT + 3))
 	{
 		points -= 3;
 	}

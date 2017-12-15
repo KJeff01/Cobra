@@ -119,13 +119,10 @@ function research()
 				if (!found && useArti && !random(3))
 					found = evalResearch(lab, artilleryTech);
 
-				if (!found && (random(101) < subPersonalities[personality].systemPriority))
-				{
-					if (!found)
-						found = evalResearch(lab, SYSTEM_UPGRADES);
-					if (!found)
-						found = evalResearch(lab, LATE_EARLY_GAME_TECH);
-				}
+				if (!found)
+					found = evalResearch(lab, SYSTEM_UPGRADES);
+				if (!found)
+					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
@@ -180,13 +177,10 @@ function research()
 						found = pursueResearch(lab, DEFENSE_UPGRADES);
 				}
 
-				if (!found && (random(101) < subPersonalities[personality].systemPriority))
-				{
-					if (!found)
-						found = evalResearch(lab, SYSTEM_UPGRADES);
-					if (!found)
-						found = evalResearch(lab, LATE_EARLY_GAME_TECH);
-				}
+				if (!found)
+					found = evalResearch(lab, SYSTEM_UPGRADES);
+				if (!found)
+					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 
 				if (!found && random(2) && useArti)
 					found = evalResearch(lab, artillExtra);
@@ -242,13 +236,10 @@ function research()
 				if (!found && useArti && random(2))
 					found = evalResearch(lab, artilleryTech);
 
-				if (!found && (random(101) < subPersonalities[personality].systemPriority))
-				{
-					if (!found)
-						found = evalResearch(lab, SYSTEM_UPGRADES);
-					if (!found)
-						found = evalResearch(lab, LATE_EARLY_GAME_TECH);
-				}
+				if (!found)
+					found = evalResearch(lab, SYSTEM_UPGRADES);
+				if (!found)
+					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 
 				//Use default AA until stormbringer.
 				if (!random(2) && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
@@ -324,13 +315,10 @@ function research()
 						found = evalResearch(lab, antiAirExtras);
 				}
 
-				if (!found && (random(101) < subPersonalities[personality].systemPriority))
-				{
-					if (!found)
-						found = evalResearch(lab, SYSTEM_UPGRADES);
-					if (!found)
-						found = evalResearch(lab, LATE_EARLY_GAME_TECH);
-				}
+				if (!found)
+					found = evalResearch(lab, SYSTEM_UPGRADES);
+				if (!found)
+					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 
 				if (!found)
 					found = evalResearch(lab, VTOL_RES);
