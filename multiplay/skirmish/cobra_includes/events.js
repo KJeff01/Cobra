@@ -134,7 +134,7 @@ function eventDroidBuilt(droid, struct)
 	if (isConstruct(droid.id))
 	{
 		//Combat engineesr are always base builders.
-		if (droid.body !== "CyborgLightBody" && enumGroup(oilGrabberGroup).length < MIN_TRUCKS - 2)
+		if (droid.body !== "CyborgLightBody" && enumGroup(oilGrabberGroup).length < MIN_TRUCKS - 3)
 		{
 			groupAdd(oilGrabberGroup, droid);
 		}

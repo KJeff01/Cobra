@@ -661,12 +661,14 @@ function shouldCobraAttack()
 	var confident = confidenceThreshold();
 	if (confident)
 	{
+		/*
 		//Ok, restore the previous research path if necessary
 		if (isDefined(prevResPath))
 		{
 			subPersonalities[personality].resPath = prevResPath;
 			prevResPath = undefined;
 		}
+		*/
 		return true;
 	}
 	else
@@ -675,11 +677,13 @@ function shouldCobraAttack()
 		{
 			prepareAssault();
 		}
+		/*
 		if (subPersonalities[personality].resPath !== "defensive")
 		{
 			prevResPath = subPersonalities[personality].resPath;
 			subPersonalities[personality].resPath = "defensive";
 		}
+		*/
 		return false;
 	}
 }

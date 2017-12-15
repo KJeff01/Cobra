@@ -487,6 +487,10 @@ function buildPhase1()
 		{
 			return true;
 		}
+		if (countAndBuild(FACTORY, 2))
+		{
+			return true;
+		}
 		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 3))
 		{
 			return true;
@@ -560,22 +564,17 @@ function buildPhase2()
 		return true;
 	}
 
-	if (!researchComplete && countAndBuild(structures.labs, 4))
+	if (factoryBuildOrder(2))
+	{
+		return true;
+	}
+
+	if (!researchComplete && countAndBuild(structures.labs, 5))
 	{
 		return true;
 	}
 
 	if (buildExtras())
-	{
-		return true;
-	}
-
-	if (getRealPower() < 250)
-	{
-		return true;
-	}
-
-	if (factoryBuildOrder(2))
 	{
 		return true;
 	}
@@ -619,19 +618,19 @@ function buildExtras()
 
 function buildPhase3()
 {
+	if (gameTime < 60000 * 8)
+	{
+		return true;
+	}
+
 	if (!(getRealPower() < MIN_BUILD_POWER))
 	{
-		if (!researchComplete && countAndBuild(structures.labs, 5))
+		if (countAndBuild(structures.extras[0], 5))
 		{
 			return true;
 		}
 
 		if (factoryBuildOrder(5))
-		{
-			return true;
-		}
-
-		if (countAndBuild(structures.extras[0], 5))
 		{
 			return true;
 		}
