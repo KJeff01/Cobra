@@ -433,7 +433,7 @@ function produce()
 							}
 							else
 							{
-								if (useVtol)
+								if (useVtol && facType === VTOL_FACTORY)
 								{
 									buildVTOL(FC.id);
 								}
