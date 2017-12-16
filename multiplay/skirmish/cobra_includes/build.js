@@ -570,7 +570,7 @@ function buildPhase2()
 		return true;
 	}
 
-	if (buildExtras())
+	if (countAndBuild(FACTORY, 3))
 	{
 		return true;
 	}
@@ -580,7 +580,12 @@ function buildPhase2()
 		return true;
 	}
 
-	if (factoryBuildOrder(3))
+	if (countAndBuild(CYBORG_FACTORY, 2))
+	{
+		return true;
+	}
+
+	if (buildExtras())
 	{
 		return true;
 	}
@@ -626,6 +631,11 @@ function buildPhase3()
 
 	if (!(getRealPower() < MIN_BUILD_POWER))
 	{
+		if (!researchComplete && countAndBuild(structures.labs, 5))
+		{
+			return true;
+		}
+
 		if (countAndBuild(structures.extras[0], 5))
 		{
 			return true;

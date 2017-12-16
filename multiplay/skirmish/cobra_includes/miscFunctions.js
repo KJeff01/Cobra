@@ -176,10 +176,6 @@ function diffPerks()
 			break;
 		case INSANE: //Fall through
 		case HARD:
-			if (!isStructureAvailable("A0PowMod1"))
-			{
-				completeRequiredResearch("R-Sys-Engineering01");
-			}
 			makeComponentAvailable("PlasmaHeavy", me);
 			makeComponentAvailable("MortarEMP", me);
 			break;
