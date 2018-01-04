@@ -1,8 +1,8 @@
 //This file contains generic events. Chat and research events are split into
 //their own seperate files.
 
-//Initialize groups
-function eventGameInit()
+//Initialze global variables and setup timers.
+function eventStartLevel()
 {
 	attackGroup = newGroup();
 	vtolGroup = newGroup();
@@ -39,11 +39,7 @@ function eventGameInit()
 			}
 		}
 	}
-}
 
-//Initialze global variables and setup timers.
-function eventStartLevel()
-{
 	researchComplete = false;
 	initializeGrudgeCounter();
 	diffPerks();
