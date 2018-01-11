@@ -146,13 +146,13 @@ function repairDroid(droidID, force)
 		return true; //pretend it is busy
 	}
 
-	const FORCE_REPAIR_PERCENT = 48;
-	const EXPERIENCE_DIVISOR = 22;
-	const HEALTH_TO_REPAIR = 58 + Math.floor(droid.experience / EXPERIENCE_DIVISOR);
+	const FORCE_REPAIR_PERCENT = 55;
+	const EXPERIENCE_DIVISOR = 26;
+	const HEALTH_TO_REPAIR = 67 + Math.floor(droid.experience / EXPERIENCE_DIVISOR);
 
 	if (!isDefined(force))
 	{
-		force = droid.health < 50;
+		force = droid.health < FORCE_REPAIR_PERCENT;
 	}
 
 	if (Math.floor(droid.health) <= FORCE_REPAIR_PERCENT)
@@ -644,8 +644,9 @@ function confidenceThreshold()
 	var points = 0;
 
 	points += DERR_COUNT >= countStruct(structures.derricks, getMostHarmfulPlayer()) ? 2 : -2;
+	points += countDroid(DROID_ANY, getMostHarmfulPlayer()) < DROID_COUNT + 16 ? 2 : -2;
 
-	if (DROID_COUNT < 40 && (countDroid(DROID_ANY, getMostHarmfulPlayer()) > DROID_COUNT + 3))
+	if ((DROID_COUNT < 20 && (countDroid(DROID_ANY, getMostHarmfulPlayer()) > DROID_COUNT + 5)))
 	{
 		points -= 3;
 	}
@@ -660,14 +661,13 @@ function shouldCobraAttack()
 	var confident = confidenceThreshold();
 	if (confident)
 	{
-		/*
 		//Ok, restore the previous research path if necessary
 		if (isDefined(prevResPath))
 		{
 			subPersonalities[personality].resPath = prevResPath;
 			prevResPath = undefined;
 		}
-		*/
+
 		return true;
 	}
 	else
@@ -676,13 +676,13 @@ function shouldCobraAttack()
 		{
 			prepareAssault();
 		}
-		/*
+
 		if (subPersonalities[personality].resPath !== "defensive")
 		{
 			prevResPath = subPersonalities[personality].resPath;
 			subPersonalities[personality].resPath = "defensive";
 		}
-		*/
+
 		return false;
 	}
 }

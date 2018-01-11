@@ -71,7 +71,7 @@ function research()
 	}
 
 	var labList = enumStruct(me, structures.labs).filter(function(lb) {
-		return ((lb.status === BUILT) && structureIdle(lb));
+		return (lb.status === BUILT && structureIdle(lb));
 	});
 
 	for (var i = 0, a = labList.length; i < a; ++i)
@@ -79,12 +79,12 @@ function research()
 		var lab = labList[i];
 		var found = !random(2) && evalResearch(lab, ESSENTIALS);
 
+		if (!found && forceHover)
+			found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
 		if (!found)
 			found = evalResearch(lab, techlist);
 		if (!found && !random(2))
 			found = evalResearch(lab, ESSENTIALS_2);
-		if (!found && forceHover)
-			found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
 
 		if (!found && getRealPower() > MIN_POWER + (2 * i))
 		{

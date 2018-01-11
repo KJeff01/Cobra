@@ -42,14 +42,14 @@ const ESSENTIALS_2 = [
 	"R-Vehicle-Prop-Halftracks",
 	"R-Struc-RprFac-Upgrade01",
 	"R-Vehicle-Body11",
-	"R-Sys-Sensor-Upgrade01",
+	"R-Sys-Sensor-Upgrade02",
+	"R-Sys-MobileRepairTurretHvy",
 ];
 const SYSTEM_UPGRADES = [
 	"R-Vehicle-Prop-Hover",
 	"R-Vehicle-Body12",
 	"R-Struc-RprFac-Upgrade06",
 	"R-Sys-Sensor-Upgrade03",
-	"R-Sys-MobileRepairTurretHvy",
 	"R-Struc-Factory-Upgrade09",
 ];
 const FLAMER = [
@@ -95,6 +95,7 @@ const TANK_BODY = [
 	"Body7ABT",  // Retribution
 	"Body12SUP", // Mantis
 	"Body6SUPP", // Panther
+	"Body11ABT", // Python
 	"Body8MBT",  // Scorpion
 	"Body5REC",  // Cobra
 	"Body1REC",  // Viper

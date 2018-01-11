@@ -33,12 +33,12 @@ function unfinishedStructures()
 {
 	const SAFE_DIST = 30;
 	var unfinished = [];
-	var stuff = enumStruct(me);
+	var stuff = enumStruct(me).filter(function(obj) { return obj.status !== BUILT && obj.stattype !== RESOURCE_EXTRACTOR; });
 
 	for (var i = 0, l = stuff.length; i < l; ++i)
 	{
 		var s = stuff[i];
-		if (s.status !== BUILT && s.stattype !== RESOURCE_EXTRACTOR && distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, s.x, s.y) < SAFE_DIST)
+		if (distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, s.x, s.y) < SAFE_DIST)
 		{
 			unfinished.push(s.id);
 		}
@@ -491,10 +491,6 @@ function buildPhase1()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 3))
-		{
-			return true;
-		}
 	}
 	else
 	{
@@ -518,7 +514,7 @@ function buildPhase1()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && factoryBuildOrder(5))
+		if (GOOD_POWER_LEVEL && factoryBuildOrder())
 		{
 			return true;
 		}
@@ -532,13 +528,10 @@ function buildPhase1()
 }
 
 //Build factories.
-function factoryBuildOrder(limit)
+function factoryBuildOrder()
 {
-	if (!isDefined(limit))
-	{
-		limit = 5;
-	}
-
+	const MIN_FACTORY_COUNT = 2;
+	const MAX_FACTORY_COUNT = 5;
 	for (var i = 0; i < 3; ++i)
 	{
 		var fac = subPersonalities[personality].factoryOrder[i];
@@ -547,7 +540,8 @@ function factoryBuildOrder(limit)
 			continue;
 		}
 
-		if (countAndBuild(fac, limit))
+		//Try building two of each before finishing on of the factoryOrder paths.
+		if ((getRealPower() > MIN_POWER || countStruct(fac) < MIN_FACTORY_COUNT) && countStruct(fac) < MAX_FACTORY_COUNT && countAndBuild(fac, countStruct(structures.gens)))
 		{
 			return true;
 		}
@@ -556,38 +550,44 @@ function factoryBuildOrder(limit)
 	return false;
 }
 
+function researchBuildOrder()
+{
+	var gens = countStruct(structures.gens);
+	var labs = countStruct(structures.labs);
+	var seaMap = turnOffCyborgs || forceHover;
+	if (getRealPower() > MIN_POWER && !researchComplete && countStruct(structures.labs) < 5)
+	{
+		if ((!seaMap && countAndBuild(structures.labs, gens + 1)) || (seaMap && countAndBuild(structures.labs, gens + 2)))
+		{
+			return true;
+		}
+		//We have a lot of power, so build more.
+		if (getRealPower() > 280 && gameTime > 180000 && countAndBuild(structures.labs, labs + 1))
+		{
+			return true;
+		}
+
+	}
+
+	return false;
+}
+
 //Build minimum requirements of base structures.
 function buildPhase2()
 {
-	//Build the minimum repair facilities.
-	if (countAndBuild(structures.extras[0], 2))
+	if (!countStruct(structures.gens) || getRealPower() < MIN_POWER)
 	{
 		return true;
 	}
 
-	if (!countStruct(structures.gens))
+	if (researchBuildOrder())
 	{
 		return true;
 	}
 
-	if (countAndBuild(FACTORY, 3))
+	if (factoryBuildOrder())
 	{
-		return true;
-	}
-
-	if (!researchComplete && countAndBuild(structures.labs, 4))
-	{
-		return true;
-	}
-
-	if (countAndBuild(CYBORG_FACTORY, 2))
-	{
-		return true;
-	}
-
-	if (buildExtras())
-	{
-		return true;
+		return;
 	}
 
 	return false;
@@ -615,6 +615,12 @@ function buildExtras()
 		return false;
 	}
 
+	var gens = countStruct(structures.gens);
+	if (getRealPower() > MIN_POWER && countStruct(structures.extras[0]) < 5 && countAndBuild(structures.extras[0], gens + 1))
+	{
+		return true;
+	}
+
 	var needVtolPads = ((2 * countStruct(structures.vtolPads)) < enumGroup(vtolGroup).length);
 	if (needVtolPads && buildStuff(structures.vtolPads))
 	{
@@ -622,43 +628,18 @@ function buildExtras()
 	}
 }
 
-function buildPhase3()
-{
-	if (gameTime < 60000 * 8)
-	{
-		return true;
-	}
-
-	if (!(getRealPower() < MIN_BUILD_POWER))
-	{
-		if (!researchComplete && countAndBuild(structures.labs, 5))
-		{
-			return true;
-		}
-
-		if (countAndBuild(structures.extras[0], 5))
-		{
-			return true;
-		}
-
-		if (factoryBuildOrder(5))
-		{
-			return true;
-		}
-	}
-}
 
 //Cobra's unique build decisions
 function buildOrders()
 {
 	if (!findIdleTrucks().length) { return; }
 	if (checkUnfinishedStructures()) { return; }
+	if (buildExtras()) { return; }
 	if (maintenance()) { return; }
 	if (buildPhase1()) { return; }
 	if (buildSpecialStructures()) { return; }
 	if (buildAAForPersonality()) { return; }
 	if (buildPhase2()) { return; }
-	if (buildPhase3()) { return; }
 	buildDefenses();
 }
 

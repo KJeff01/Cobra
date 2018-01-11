@@ -362,7 +362,7 @@ function analyzeQueuedSystems()
 //Produce a unit when factories allow it.
 function produce()
 {
-	if (countDroid(DROID_ANY) >= 150)
+	if ((getRealPower() < MIN_POWER) || (countDroid(DROID_ANY) >= 150))
 	{
 		return; //Stop spamming about having the droid limit reached.
 	}
