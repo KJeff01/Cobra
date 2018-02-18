@@ -436,9 +436,9 @@ function buildDefenseNearTruck(truck, type)
 // a location to build a defense structure near it.
 function buildDefenses(truck)
 {
-	var isDefensive = subPersonalities[personality].defensePriority >= 50;
+	var isDefensive = subPersonalities[personality].defensePriority >= 50 || subPersonalities[personality].resPath === "defensive";
 	var pow = getRealPower();
-	if ((gameTime > 180000) && (pow > MIN_BUILD_POWER || (isDefensive && (pow > MIN_BUILD_POWER - 40))))
+	if ((gameTime > 180000) && (pow > MIN_BUILD_POWER || (isDefensive && (pow > MIN_BUILD_POWER - 25))))
 	{
 		if (isDefined(truck))
 		{

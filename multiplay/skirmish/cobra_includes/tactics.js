@@ -611,7 +611,7 @@ function donateSomePower()
 	if (LEN && ALIVE_ENEMIES)
 	{
 		var ally = ALLY_PLAYERS[random(LEN)]
-		if (playerPower(me) > 150 && (playerPower(me) > 2 * playerPower(ally)))
+		if (getRealPower() > 100 && (getRealPower() > Math.floor(1.5 * getRealPower(ally))))
 		{
 			donatePower(playerPower(me) / 2, ally);
 		}

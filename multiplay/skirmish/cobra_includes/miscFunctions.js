@@ -204,10 +204,14 @@ function checkLowPower(pow)
 }
 
 //return real power levels.
-function getRealPower()
+function getRealPower(player)
 {
-	const POWER = playerPower(me) - queuedPower(me);
-	if (playerAlliance(true).length && (POWER < 50))
+	if (!isDefined(player))
+	{
+		player = me;
+	}
+	const POWER = playerPower(player) - queuedPower(player);
+	if (playerAlliance(true).length && player === me && POWER < 50)
 	{
 		sendChatMessage("need Power", ALLIES);
 	}

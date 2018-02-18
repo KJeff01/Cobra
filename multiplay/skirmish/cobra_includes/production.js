@@ -264,7 +264,7 @@ function buildAttacker(id)
 				secondary = "EMP-Cannon";
 			}
 
-			return buildDroid(fac, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
+			return getRealPower() > MIN_POWER && buildDroid(fac, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
 		}
 	}
 
@@ -306,7 +306,7 @@ function buildCyborg(id, useEngineer)
 			prop = weaponLine.templates[x].prop;
 			weap = weaponLine.templates[x].weapons[0];
 
-			if (buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap))
+			if (getRealPower() > MIN_POWER && buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap))
 			{
 				return true;
 			}
@@ -321,7 +321,7 @@ function buildVTOL(id)
 {
 	var weap = choosePersonalityWeapon("VTOL");
 	var fac = getObject(STRUCTURE, me, id);
-	return (fac !== null && isDefined(weap) && buildDroid(fac, "VTOL unit", VTOL_BODY, "V-Tol", "", "", weap, weap));
+	return (getRealPower() > MIN_POWER && fac !== null && isDefined(weap) && buildDroid(fac, "VTOL unit", VTOL_BODY, "V-Tol", "", "", weap, weap));
 }
 
 //Check what system units are queued in a regular factory. Returns an object
@@ -362,7 +362,7 @@ function analyzeQueuedSystems()
 //Produce a unit when factories allow it.
 function produce()
 {
-	if ((getRealPower() < MIN_POWER) || (countDroid(DROID_ANY) >= 150))
+	if (countDroid(DROID_ANY) >= 150)
 	{
 		return; //Stop spamming about having the droid limit reached.
 	}
@@ -371,8 +371,8 @@ function produce()
 	var useCybEngineer = countStruct(CYBORG_FACTORY) && (enumGroup(constructGroup).length < 4);
 	var systems = analyzeQueuedSystems();
 
-	var attackers = enumGroup(attackGroup);
-	var allowSpecialSystems = isDefined(attackers[7]);
+	var attackers = groupSizes[attackGroup];
+	var allowSpecialSystems = attackers > 10;
 	var buildSensors = ((enumGroup(sensorGroup).length + systems.sensor) < MIN_SENSORS);
 	var buildRepairs = ((enumGroup(repairGroup).length + systems.repair) < MIN_REPAIRS);
 	var buildTrucks = ((enumGroup(constructGroup).length + enumGroup(oilGrabberGroup).length + systems.truck) < MIN_TRUCKS);
@@ -382,16 +382,17 @@ function produce()
 	{
 		var facType = subPersonalities[personality].factoryOrder[i];
 		var fac = enumStruct(me, facType);
-
 		if (!((facType === CYBORG_FACTORY) && !forceHover && turnOffCyborgs))
 		{
-
+			if (facType !== FACTORY && !countDroid(DROID_CONSTRUCT))
+			{
+				continue;
+			}
 			for (var x = 0, l = fac.length; x < l; ++x)
 			{
 				const FC = fac[x];
-				if (FC && structureIdle(FC) && (getRealPower() > MIN_POWER + (3 * i)))
+				if (FC && FC.status === BUILT && structureIdle(FC))
 				{
-
 					if (facType === FACTORY)
 					{
 						if (buildTrucks)
