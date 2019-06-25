@@ -473,7 +473,7 @@ function buildPhase1()
 		{
 			return true;
 		}
-		if (countAndBuild(FACTORY, 1))
+		if (countAndBuild(FACTORY, 2))
 		{
 			return true;
 		}
@@ -481,15 +481,15 @@ function buildPhase1()
 		{
 			return true;
 		}
-		if (countAndBuild(FACTORY, 2))
-		{
-			return true;
-		}
-		if (countAndBuild(structures.hqs, 1))
+		if (countAndBuild(structures.gens, 1))
 		{
 			return true;
 		}
 		if (!researchComplete && countAndBuild(structures.labs, 2))
+		{
+			return true;
+		}
+		if (countAndBuild(structures.hqs, 1))
 		{
 			return true;
 		}
@@ -640,11 +640,11 @@ function buildOrders()
 {
 	if (!findIdleTrucks().length) { return; }
 	if (checkUnfinishedStructures()) { return; }
-	if (buildExtras()) { return; }
 	if (maintenance()) { return; }
 	if (buildPhase1()) { return; }
 	if (buildSpecialStructures()) { return; }
 	if (buildAAForPersonality()) { return; }
+	if (buildExtras()) { return; }
 	if (buildPhase2()) { return; }
 	buildDefenses();
 }
@@ -710,7 +710,7 @@ function maintenance()
 		return false;
 	}
 
-	if (((getRealPower() > MIN_POWER) || (module === modList[0].mod)) && struct && buildStuff(struct, module))
+	if (((getRealPower() > SUPER_LOW_POWER) || (module === modList[0].mod)) && struct && buildStuff(struct, module))
 	{
 		return true;
 	}
