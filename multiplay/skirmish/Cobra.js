@@ -65,7 +65,7 @@ const DEFENSE_UPGRADES = [
 	"R-Vehicle-Metals05",
 	"R-Cyborg-Metals05",
 	"R-Sys-Resistance-Circuits",
-	"R-Sys-ECM-Upgrade02",
+	//"R-Sys-ECM-Upgrade02",
 	"R-Wpn-LasSat",
 	"R-Struc-Materials09",
 	"R-Defense-WallUpgrade12",

@@ -110,7 +110,7 @@ function countAndBuild(stat, count)
 	return false;
 }
 
-//Find the closest derrick that is not guarded a defense or ECM tower.
+//Find the closest derrick that is not guarded a defense.
 function protectUnguardedDerricks(droid)
 {
 	var derrs = enumStruct(me, structures.derricks);
@@ -304,14 +304,13 @@ function lookForOil()
 	return false;
 }
 
-// Build CB, Wide-Spectrum, radar detector, or ECM.
+// Build CB, Wide-Spectrum or radar detector
 // TODO: Find a way to space these out.
 function buildSensors()
 {
 	const CB_TOWER = "Sys-CB-Tower01";
 	const WS_TOWER = "Sys-SensoTowerWS";
 	const RADAR_DETECTOR = "Sys-RadarDetector01";
-	const ECM = "ECM1PylonMk1";
 
 	if (countAndBuild(WS_TOWER, 1))
 	{
@@ -324,11 +323,6 @@ function buildSensors()
 	}
 
 	if (countAndBuild(RADAR_DETECTOR, 1))
-	{
-		return true;
-	}
-
-	if (countAndBuild(ECM, 3))
 	{
 		return true;
 	}
