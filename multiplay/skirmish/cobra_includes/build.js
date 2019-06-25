@@ -15,6 +15,11 @@ function needPowerGenerator()
 function isConstruct(objID, countCybEng)
 {
 	var dr = getObject(DROID, me, objID);
+	if (dr === null)
+	{
+		return false;
+	}
+
 	if ((dr.droidType === DROID_SENSOR) || (dr.droidType === DROID_REPAIR) || (dr.droidType === DROID_COMMAND))
 	{
 		return false;

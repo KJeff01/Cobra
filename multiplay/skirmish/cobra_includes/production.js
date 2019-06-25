@@ -291,6 +291,11 @@ function buildCyborg(id, useEngineer)
 	var prop = "CyborgLegs";
 	var fac = getObject(STRUCTURE, me, id);
 
+	if (fac === null)
+	{
+		return false;
+	}
+
 	//Build combat engineer if requested.
 	if (isDefined(useEngineer) && (useEngineer === true))
 	{
@@ -298,7 +303,7 @@ function buildCyborg(id, useEngineer)
 	}
 
 	var weaponLine = choosePersonalityWeapon("CYBORG");
-	if (isDefined(weaponLine) && fac !== null)
+	if (isDefined(weaponLine))
 	{
 		for (var x = weaponLine.templates.length - 1; x >= 0; --x)
 		{
