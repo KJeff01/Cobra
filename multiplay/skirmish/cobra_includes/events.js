@@ -57,9 +57,9 @@ function eventStartLevel()
 	buildOrders(); //Start building right away.
 
 	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
+	setTimer("buildOrders", THINK_LONGER + 400 + 3 * random(60));
 	setTimer("produce", THINK_LONGER + 700 + 3 * random(70));
 	setTimer("checkAllForRepair", THINK_LONGER + 900 + 3 * random(60));
-	setTimer("buildOrders", THINK_LONGER + 1100 + 3 * random(60));
 	setTimer("research", THINK_LONGER + 1200 + 3 * random(70));
 	setTimer("lookForOil", THINK_LONGER + 1600 + 3 * random(60));
 	setTimer("repairDroidTactics", THINK_LONGER + 2500 + 4 * random(60));

@@ -88,6 +88,9 @@ function research()
 
 		if (!found && getRealPower() > MIN_POWER)
 		{
+			if (!found && random(100) < 20)
+				found = evalResearch(lab, BODY_RESEARCH);
+
 			if (subPersonalities[personality].resPath === "generic")
 			{
 				if (!found && !random(3))
@@ -126,9 +129,6 @@ function research()
 					found = evalResearch(lab, SENSOR_TECH);
 				if (!found && useArti)
 					found = evalResearch(lab, artillExtra);
-
-				if (!found)
-					found = evalResearch(lab, BODY_RESEARCH);
 
 
 				if (!found && (random(101) < subPersonalities[personality].defensePriority))
@@ -177,8 +177,6 @@ function research()
 
 				if (!found)
 					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
-				if (!found)
-					found = evalResearch(lab, BODY_RESEARCH);
 
 				if (!found && random(2) && useArti)
 					found = evalResearch(lab, artillExtra);
@@ -289,10 +287,6 @@ function research()
 					if (!found)
 						found = evalResearch(lab, DEFENSE_UPGRADES);
 				}
-
-				if (!found)
-					found = evalResearch(lab, BODY_RESEARCH);
-
 			}
 			else if (subPersonalities[personality].resPath === "air")
 			{
@@ -340,9 +334,6 @@ function research()
 
 				if (!found && useArti)
 					found = evalResearch(lab, artillExtra);
-
-				if (!found)
-					found = evalResearch(lab, BODY_RESEARCH);
 
 				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
