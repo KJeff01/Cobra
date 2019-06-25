@@ -44,13 +44,13 @@ const ESSENTIALS_2 = [
 	"R-Struc-RprFac-Upgrade01",
 	"R-Sys-Sensor-Upgrade01",
 	"R-Vehicle-Body11",
+	"R-Struc-Factory-Upgrade09",
+	"R-Vehicle-Prop-Hover",
 ];
 const SYSTEM_UPGRADES = [
-	"R-Vehicle-Prop-Hover",
 	"R-Vehicle-Body12",
 	"R-Sys-MobileRepairTurretHvy",
 	"R-Struc-RprFac-Upgrade06",
-	"R-Struc-Factory-Upgrade09",
 	"R-Sys-Sensor-Upgrade03",
 ];
 const FLAMER = [
