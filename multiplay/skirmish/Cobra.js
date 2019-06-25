@@ -35,17 +35,18 @@ const ESSENTIALS = [
 	"R-Sys-Engineering01",
 	"R-Defense-Tower01",
 	"R-Struc-PowerModuleMk1",
-	"R-Struc-Power-Upgrade03a",
-	"R-Struc-Research-Upgrade09",
-	"R-Sys-Autorepair-General",
+	"R-Struc-Research-Upgrade01",
 ];
 const ESSENTIALS_2 = [
 	"R-Vehicle-Prop-Halftracks",
 	"R-Struc-RprFac-Upgrade01",
 	"R-Sys-Sensor-Upgrade01",
 	"R-Vehicle-Body11",
-	"R-Struc-Factory-Upgrade09",
+	"R-Struc-Power-Upgrade03a",
+	"R-Struc-Research-Upgrade09",
+	"R-Sys-Autorepair-General",
 	"R-Vehicle-Prop-Hover",
+	"R-Struc-Factory-Upgrade09",
 ];
 const SYSTEM_UPGRADES = [
 	"R-Vehicle-Body12",

@@ -55,7 +55,7 @@ function eventStartLevel()
 
 	recycleForHover();
 	buildOrders(); //Start building right away.
-	
+
 	setTimer("buildOrders", 300);
 	setTimer("produce", 400);
 	setTimer("checkAllForRepair", 600);
@@ -97,7 +97,7 @@ function eventStructureBuilt(structure, droid)
 				return ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
 			});
 
-			if ((gameTime > 120000) && (random(101) < subPersonalities[personality].defensePriority))
+			if ((gameTime > 120000) && (random(100) < subPersonalities[personality].defensePriority))
 			{
 				protectUnguardedDerricks(droid);
 			}

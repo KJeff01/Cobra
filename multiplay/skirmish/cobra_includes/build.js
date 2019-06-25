@@ -377,7 +377,7 @@ function returnDefense(type)
 	var bestDefense = "Emplacement-MortarEMP"; //default
 
 	//Choose a random electronic warfare defense if possible.
-	if (random(101) < ELECTRONIC_CHANCE)
+	if (random(100) < ELECTRONIC_CHANCE)
 	{
 		var avail = 0;
 		for (var i = 0, t = ELECTRONIC_DEFENSES.length; i < t; ++i)
@@ -627,7 +627,7 @@ function buildExtras()
 	}
 
 	var gens = countStruct(structures.gens);
-	if (getRealPower() > MIN_POWER && countStruct(structures.extras[0]) < 5 && countAndBuild(structures.extras[0], gens + 1))
+	if (getRealPower() > SUPER_LOW_POWER && countStruct(structures.extras[0]) < 5 && countAndBuild(structures.extras[0], gens + 1))
 	{
 		return true;
 	}

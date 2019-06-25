@@ -63,7 +63,7 @@ function chooseWeaponType(weaps)
 {
 	var weaponType = weaps;
 
-	if (isDefined(weaps.fastFire) && (random(101) < 50))
+	if (isDefined(weaps.fastFire) && (random(100) < 50))
 	{
 		weaponType = weaps.fastFire;
 	}
@@ -139,7 +139,7 @@ function choosePersonalityWeapon(type)
 		weaponList = shuffleWeaponList(chooseWeaponType(weaps));
 
 		//on hard difficulty and above.
-		if (componentAvailable("tracked01") && (random(101) <= 1))
+		if (componentAvailable("tracked01") && (random(100) <= 1))
 		{
 			if((difficulty === HARD) || (difficulty === INSANE))
 			{
@@ -200,18 +200,18 @@ function useHover(weap)
 
 		if ((NAME === "Rocket-LtA-T") || (NAME === "Rocket-HvyA-T") || (NAME === "Missile-A-T"))
 		{
-			useHover = (random(101) <= 75);
+			useHover = (random(100) <= 75);
 			break;
 		}
 
 		if ((NAME === "Laser3BEAMMk1") || (NAME === "Laser2PULSEMk1") || (NAME === "HeavyLaser"))
 		{
-			useHover = (random(101) <= 55);
+			useHover = (random(100) <= 55);
 			break;
 		}
 	}
 
-	return (((useHover === true) || (random(101) <= 15)) && (weap[0] !== "Laser4-PlasmaCannon"));
+	return (((useHover === true) || (random(100) <= 15)) && (weap[0] !== "Laser4-PlasmaCannon"));
 }
 
 //Choose our ground propulsion. Non-hover units will have a preference for tracks.
@@ -229,7 +229,7 @@ function pickPropulsion(weap)
 		"wheeled01", // wheels
 	];
 
-	if ((random(101) < 45) || (gameTime < TIME_FOR_HALF_TRACKS))
+	if ((random(100) < 45) || (gameTime < TIME_FOR_HALF_TRACKS))
 	{
 		tankProp.shift();
 	}

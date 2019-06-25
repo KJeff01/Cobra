@@ -77,13 +77,13 @@ function research()
 	for (var i = 0, a = labList.length; i < a; ++i)
 	{
 		var lab = labList[i];
-		var found = !random(4) && evalResearch(lab, ESSENTIALS);
+		var found = evalResearch(lab, ESSENTIALS);
 
 		if (!found && forceHover)
 			found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
 		if (!found)
 			found = evalResearch(lab, techlist);
-		if (!found && !random(4))
+		if (!found && random(100) < 25)
 			found = evalResearch(lab, ESSENTIALS_2);
 
 		if (!found && getRealPower() > MIN_POWER)
@@ -93,11 +93,11 @@ function research()
 
 			if (subPersonalities[personality].resPath === "generic")
 			{
-				if (!found && !random(3))
+				if (!found && random(100) < 33)
 					found = evalResearch(lab, extraTech);
 
 				//Use default AA until stormbringer.
-				if (!random(2) && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
+				if (random(100) < 50 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
 				{
 					if (!found)
 						found = evalResearch(lab, antiAirTech);
@@ -107,9 +107,9 @@ function research()
 
 				if (!found && !turnOffCyborgs)
 					found = evalResearch(lab, cyborgWeaps);
-				if (!found && !random(2))
+				if (!found && random(100) < 50)
 					found = evalResearch(lab, weaponTech);
-				if (!found && useArti && !random(2))
+				if (!found && useArti && random(100) < 50)
 					found = evalResearch(lab, artilleryTech);
 
 				if (!found)
@@ -117,7 +117,7 @@ function research()
 				if (!found)
 					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 
-				if (!found && (random(101) < subPersonalities[personality].alloyPriority))
+				if (!found && (random(100) < subPersonalities[personality].alloyPriority))
 				{
 					if (!turnOffCyborgs && countStruct(CYBORG_FACTORY) && random(2))
 						found = evalResearch(lab, CYBORG_ARMOR);
@@ -131,7 +131,7 @@ function research()
 					found = evalResearch(lab, artillExtra);
 
 
-				if (!found && (random(101) < subPersonalities[personality].defensePriority))
+				if (!found && (random(100) < subPersonalities[personality].defensePriority))
 				{
 					found = evalResearch(lab, standardDefenseTech);
 					if (!found && useArti)
@@ -152,13 +152,13 @@ function research()
 						found = evalResearch(lab, secondaryWeaponTech);
 				}
 
-				if (!found && useVtol && (random(101) < subPersonalities[personality].vtolPriority))
+				if (!found && useVtol && (random(100) < subPersonalities[personality].vtolPriority))
 					found = evalResearch(lab, VTOL_RES);
 			}
 			else if (subPersonalities[personality].resPath === "defensive")
 			{
 				//Use default AA until stormbringer.
-				if (!random(2) && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
+				if (random(100) < 50 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
 				{
 					if (!found)
 						found = evalResearch(lab, antiAirTech);
@@ -178,7 +178,7 @@ function research()
 				if (!found)
 					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 
-				if (!found && random(2) && useArti)
+				if (!found && random(100) < 50 && useArti)
 					found = evalResearch(lab, artillExtra);
 				if (!found)
 					found = evalResearch(lab, SYSTEM_UPGRADES);
@@ -198,7 +198,7 @@ function research()
 						found = evalResearch(lab, TANK_ARMOR);
 				}
 
-				if (!found && useVtol && (random(101) < subPersonalities[personality].vtolPriority))
+				if (!found && useVtol && (random(100) < subPersonalities[personality].vtolPriority))
 					found = evalResearch(lab, VTOL_RES);
 
 				if (!found)
@@ -227,9 +227,9 @@ function research()
 
 				if (!found && !turnOffCyborgs && random(2))
 					found = evalResearch(lab, cyborgWeaps);
-				if (!found && random(2))
+				if (!found && random(100) < 50)
 					found = evalResearch(lab, weaponTech);
-				if (!found && useArti && random(2))
+				if (!found && useArti && random(100) < 50)
 					found = evalResearch(lab, artilleryTech);
 
 				if (!found)
@@ -238,7 +238,7 @@ function research()
 					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 
 				//Use default AA until stormbringer.
-				if (!random(2) && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
+				if (random(100) < 50 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
 				{
 					if (!found)
 						found = evalResearch(lab, antiAirTech);
@@ -251,10 +251,10 @@ function research()
 				if (!found && useArti)
 					found = evalResearch(lab, artilleryTech);
 
-				if (!found && useVtol && (random(101) < subPersonalities[personality].vtolPriority))
+				if (!found && useVtol && (random(100) < subPersonalities[personality].vtolPriority))
 					found = evalResearch(lab, VTOL_RES);
 
-				if (!found && (random(101) < 70))
+				if (!found && (random(100) < 70))
 				{
 					if (!turnOffCyborgs && countStruct(CYBORG_FACTORY) && random(2))
 					{
@@ -279,7 +279,7 @@ function research()
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
 
-				if (!found && ((random(101) < subPersonalities[personality].defensePriority)))
+				if (!found && ((random(100) < subPersonalities[personality].defensePriority)))
 				{
 					found = evalResearch(lab, standardDefenseTech);
 					if (!found && useArti)
@@ -293,13 +293,13 @@ function research()
 				if (!useVtol)
 					useVtol = true;
 
-				if (!found && !random(2))
+				if (!found && random(100) < 50)
 					found = evalResearch(lab, extraTech);
-				if (!found && useArti && !random(2))
+				if (!found && useArti && random(100) < 50)
 					found = evalResearch(lab, artilleryTech);
 
 				//Use default AA until stormbringer.
-				if (!random(2) && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
+				if (random(100) < 50 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
 				{
 					if (!found)
 						found = evalResearch(lab, antiAirTech);
@@ -322,7 +322,7 @@ function research()
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
 
-				if (!found && (random(101) < subPersonalities[personality].alloyPriority))
+				if (!found && (random(100) < subPersonalities[personality].alloyPriority))
 				{
 					if (!turnOffCyborgs && countStruct(CYBORG_FACTORY) && random(2))
 					{
@@ -348,7 +348,7 @@ function research()
 				}
 
 
-				if (!found && (random(101) < subPersonalities[personality].defensePriority))
+				if (!found && (random(100) < subPersonalities[personality].defensePriority))
 				{
 					found = evalResearch(lab, standardDefenseTech);
 					if (!found && useArti)
