@@ -71,7 +71,7 @@ function returnClosestEnemyFactory(enemyNumber)
 		facs.concat(enumStruct(enemyNumber, CYBORG_FACTORY));
 		facs.concat(enumStruct(enemyNumber, VTOL_FACTORY));
 
-		if (isDefined(facs[0]))
+		if (facs.length > 0)
 		{
 			facs = facs.sort(distanceToBase);
 			return objectInformation(facs[0]);
@@ -94,7 +94,7 @@ function getClosestEnemyTruck(enemyNumber)
 		}
 
 		var trucks = enumDroid(enemyNumber, DROID_CONSTRUCT);
-		if (isDefined(trucks[0]))
+		if (trucks.length > 0)
 		{
 			trucks.sort(distanceToBase);
 			return objectInformation(trucks[0]);
@@ -221,7 +221,7 @@ function findEnemyDerricks(playerNumber)
 		}
 
 		derrs = derrs.sort(distanceToBase);
-		if (isDefined(derrs[0]))
+		if (derrs.length > 0)
 		{
 			return objectInformation(derrs[0]);
 		}
@@ -244,10 +244,10 @@ function findNearestEnemyDroid(enemy)
 		}
 
 		var badDroids = enumDroid(enemy);
-		if (isDefined(badDroids[0]))
+		if (badDroids.length > 0)
 		{
 			var temp = badDroids.filter(function(dr) { return !isVTOL(dr); });
-			if (!isDefined(temp[0]))
+			if (temp.length === 0)
 			{
 				temp = badDroids;
 			}
@@ -273,12 +273,12 @@ function findNearestEnemyStructure(enemy)
 		}
 
 		var s = enumStruct(enemy).filter(function(obj) { return (obj.stattype !== WALL); });
-		if (!isDefined(s[0]))
+		if (s.length === 0)
 		{
 			s = enumStruct(enemy);
 		}
 
-		if (isDefined(s[0]))
+		if (s.length > 0)
 		{
 			s = s.sort(distanceToBase);
 			return objectInformation(s[0]);
@@ -302,7 +302,7 @@ function attackWithGroup(enemy, targets)
 			enemy = getMostHarmfulPlayer();
 		}
 
-		if (isDefined(targets) && isDefined(targets[0]))
+		if (isDefined(targets) && targets.length > 0)
 		{
 			targets = targets.sort(distanceToBase);
 			target = objectInformation(targets[0]);
@@ -484,7 +484,7 @@ function repairDroidTactics()
 			return dr.order !== DORDER_RTR;
 		});
 
-		if (isDefined(myDroids[0]))
+		if (myDroids.length > 0)
 		{
 			myDroids = myDroids.sort(sortDroidsByHealth);
 			var weakest = myDroids[0];
@@ -493,7 +493,7 @@ function repairDroidTactics()
 			for (var i = 0; i < LEN; ++i)
 			{
 				const REPAIR_UNIT = reps[i];
-				if (isDefined(REPAIR_UNIT) && (REPAIR_UNIT.order !== dorder_droidrepair) && isDefined(weakest) && (Math.ceil(weakest.health) < 100))
+				if ((REPAIR_UNIT.order !== dorder_droidrepair) && (Math.ceil(weakest.health) < 100))
 				{
 					orderDroidLoc(weakest, DORDER_MOVE, REPAIR_UNIT.x, REPAIR_UNIT.y);
 					orderDroidObj(REPAIR_UNIT, dorder_droidrepair, weakest);

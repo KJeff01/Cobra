@@ -87,7 +87,7 @@ function demolishThis(object)
 	for (var i = 0, t = DROID_LIST.length; i < t; i++)
 	{
 		var truck = getObject(DROID, me, DROID_LIST[i]);
-		if(isDefined(truck) && orderDroidObj(truck, DORDER_DEMOLISH, object))
+		if (truck !== null && orderDroidObj(truck, DORDER_DEMOLISH, object))
 		{
 			success = true;
 		}
@@ -116,7 +116,7 @@ function protectUnguardedDerricks(droid)
 	var derrs = enumStruct(me, structures.derricks);
 	const LEN = derrs.length;
 
-	if (isDefined(droid))
+	if (droid)
 	{
 		if (buildStructure(droid, returnDefense(), droid, 0))
 		{
@@ -151,7 +151,7 @@ function protectUnguardedDerricks(droid)
 			}
 		}
 
-		if (isDefined(undefended[0]))
+		if (undefended.length > 0)
 		{
 			if (buildStuff(returnDefense(), undefined, undefended[0], 0, true))
 			{
@@ -178,7 +178,7 @@ function buildStructure(droid, stat, defendThis, blocking)
 	}
 
 	var loc;
-	if (isDefined(droid))
+	if (droid)
 	{
 		if (isDefined(defendThis))
 		{
@@ -191,12 +191,12 @@ function buildStructure(droid, stat, defendThis, blocking)
 
 		if (isDefined(loc))
 		{
-			if (isDefined(droid) && (droid.order !== DORDER_RTB) && !safeDest(me, loc.x, loc.y))
+			if ((droid.order !== DORDER_RTB) && !safeDest(me, loc.x, loc.y))
 			{
 				orderDroid(droid, DORDER_RTB);
 				return false;
 			}
-			if (isDefined(droid) && orderDroidBuild(droid, DORDER_BUILD, stat, loc.x, loc.y))
+			if (orderDroidBuild(droid, DORDER_BUILD, stat, loc.x, loc.y))
 			{
 				return true;
 			}
@@ -218,28 +218,29 @@ function buildStuff(struc, module, defendThis, blocking, oilGroup)
 	if (freeTrucks.length)
 	{
 		var truck = getObject(DROID, me, freeTrucks[0]);
-		if (isDefined(module) && isDefined(truck))
+		if (truck === null)
+		{
+			return false;
+		}
+		if (isDefined(module))
 		{
 			if (orderDroidBuild(truck, DORDER_BUILD, module, struc.x, struc.y))
 			{
 				return true;
 			}
 		}
-		if (isDefined(truck))
+		if (isDefined(defendThis))
 		{
-			if (isDefined(defendThis))
+			if (buildStructure(truck, struc, defendThis, blocking))
 			{
-				if (buildStructure(truck, struc, defendThis, blocking))
-				{
-					return true;
-				}
+				return true;
 			}
-			else
+		}
+		else
+		{
+			if (buildStructure(truck, struc, undefined, blocking))
 			{
-				if (buildStructure(truck, struc, undefined, blocking))
-				{
-					return true;
-				}
+				return true;
 			}
 		}
 	}
@@ -260,7 +261,7 @@ function checkUnfinishedStructures(droidID)
 		{
 			var t = getObject(DROID, me, def ? droidID : trucks[0]);
 			var s = getObject(STRUCTURE, me, structs[0]);
-			if (isDefined(t) && isDefined(s) && orderDroidObj(t, DORDER_HELPBUILD, s))
+			if (t !== null && s !== null && orderDroidObj(t, DORDER_HELPBUILD, s))
 			{
 				return true;
 			}
@@ -282,9 +283,8 @@ function lookForOil()
 		for (var j = 0, drLen = droids.length; j < drLen; j++)
 		{
 			var dist = distBetweenTwoPoints(droids[j].x, droids[j].y, oils[i].x, oils[i].y);
-			var unsafe = enumRange(oils[i].x, oils[i].y, 6, ENEMIES, false);
-			unsafe = unsafe.filter(isUnsafeEnemyObject);
-			if (!isDefined(unsafe[0]) && bestDist > dist && conCanHelp(droids[j].id, oils[i].x, oils[i].y))
+			var unsafe = enumRange(oils[i].x, oils[i].y, 6, ENEMIES, false).filter(isUnsafeEnemyObject);
+			if (unsafe.length === 0 && bestDist > dist && conCanHelp(droids[j].id, oils[i].x, oils[i].y))
 			{
 				bestDroid = droids[j];
 				bestDist = dist;
@@ -434,7 +434,7 @@ function buildDefenses(truck)
 	var pow = getRealPower();
 	if ((gameTime > 180000) && (pow > MIN_BUILD_POWER || (isDefensive && (pow > MIN_BUILD_POWER - 25))))
 	{
-		if (isDefined(truck))
+		if (truck)
 		{
 			return buildDefenseNearTruck(truck, 0);
 		}
@@ -465,23 +465,31 @@ function buildPhase1()
 	const GOOD_POWER_LEVEL = getRealPower() > 190;
 	if (mapOilLevel() !== "NTW")
 	{
+		if (!GOOD_POWER_LEVEL && countAndBuild(structures.gens, 1))
+		{
+			return true;
+		}
 		if (countAndBuild(FACTORY, 1))
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 2))
-		{
-			return true;
-		}
-		if (GOOD_POWER_LEVEL && countAndBuild(structures.hqs, 1))
-		{
-			return true;
-		}
-		if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
+		if (!researchComplete && countAndBuild(structures.labs, 1))
 		{
 			return true;
 		}
 		if (countAndBuild(FACTORY, 2))
+		{
+			return true;
+		}
+		if (countAndBuild(structures.hqs, 1))
+		{
+			return true;
+		}
+		if (!researchComplete && countAndBuild(structures.labs, 2))
+		{
+			return true;
+		}
+		if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
 		{
 			return true;
 		}

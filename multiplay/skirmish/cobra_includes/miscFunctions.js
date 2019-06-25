@@ -107,16 +107,16 @@ function rangeStep(player)
 		var struc = findNearestEnemyStructure(player);
 		var droid = findNearestEnemyDroid(player);
 
-		if (isDefined(struc))
+		if (struc)
 		{
 			targets.push(getObject(struc.typeInfo, struc.playerInfo, struc.idInfo));
 		}
-		if (isDefined(droid))
+		if (droid)
 		{
 			targets.push(getObject(droid.typeInfo, droid.playerInfo, droid.idInfo));
 		}
 
-		if (isDefined(targets[0]))
+		if (targets.length > 0)
 		{
 			targets = targets.sort(distanceToBase);
 			return objectInformation(targets[0]);

@@ -49,8 +49,8 @@ const SYSTEM_UPGRADES = [
 	"R-Vehicle-Body12",
 	"R-Sys-MobileRepairTurretHvy",
 	"R-Struc-RprFac-Upgrade06",
-	"R-Sys-Sensor-Upgrade03",
 	"R-Struc-Factory-Upgrade09",
+	"R-Sys-Sensor-Upgrade03",
 ];
 const FLAMER = [
 	"R-Wpn-Flame2",
@@ -58,6 +58,8 @@ const FLAMER = [
 	"R-Wpn-Flamer-Damage09",
 ];
 const SENSOR_TECH = [
+	"R-Sys-CBSensor-Tower01",
+	"R-Sys-Sensor-WSTower",
 	"R-Sys-Sensor-UpLink",
 	"R-Sys-RadarDetector01",
 ];
@@ -65,7 +67,6 @@ const DEFENSE_UPGRADES = [
 	"R-Vehicle-Metals05",
 	"R-Cyborg-Metals05",
 	"R-Sys-Resistance-Circuits",
-	//"R-Sys-ECM-Upgrade02",
 	"R-Wpn-LasSat",
 	"R-Struc-Materials09",
 	"R-Defense-WallUpgrade12",

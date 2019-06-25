@@ -144,7 +144,7 @@ function research()
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
 				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
-					if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
+					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
 					if(!found)
 						found = evalResearch(lab, secondaryWeaponExtra);
@@ -214,7 +214,7 @@ function research()
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
 				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
-					if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
+					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
 					if(!found)
 						found = evalResearch(lab, secondaryWeaponExtra);
@@ -270,7 +270,7 @@ function research()
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
 				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
-					if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
+					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
 					if(!found)
 						found = evalResearch(lab, secondaryWeaponExtra);
@@ -348,7 +348,7 @@ function research()
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
 				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
-					if(!found && !turnOffCyborgs && isDefined(cyborgSecondary[0]))
+					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
 					if(!found)
 						found = evalResearch(lab, secondaryWeaponExtra);

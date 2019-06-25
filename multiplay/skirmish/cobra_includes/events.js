@@ -87,7 +87,7 @@ function eventStructureBuilt(structure, droid)
 		nearbyOils = nearbyOils.sort(distanceToBase);
 		droid.busy = false;
 
-		if (isDefined(nearbyOils[0]))
+		if (nearbyOils.length > 0)
 		{
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
 		}
@@ -112,7 +112,7 @@ function eventDroidIdle(droid)
 	if (shouldCobraAttack() && (droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid))
 	{
 		var enemyObjects = enumRange(droid.x, droid.y, 6, ENEMIES, false);
-		if (isDefined(enemyObjects[0]))
+		if (enemyObjects.length > 0)
 		{
 			enemyObjects = enemyObjects.sort(distanceToBase);
 			attackThisObject(droid.id, objectInformation(enemyObjects[0]));
@@ -243,7 +243,7 @@ function eventAttacked(victim, attacker)
 			var defend = (distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, attacker.x, attacker.y) < 18);
 			for (var i = 0; i < CACHE_UNITS; i++)
 			{
-				if ((random(3) || defend) && isDefined(units[i]) && isDefined(attacker))
+				if (random(3) || defend)
 				{
 					if (defend)
 					{
@@ -276,10 +276,10 @@ function eventObjectTransfer(obj, from)
 //Basic Laser Satellite support.
 function eventStructureReady(structure)
 {
-	if (!isDefined(structure))
+	if (!structure)
 	{
 		const LASER = enumStruct(me, structures.extras[2]);
-		if (isDefined(LASER[0]))
+		if (LASER.length > 0)
 		{
 			structure = LASER[0];
 		}
@@ -291,7 +291,7 @@ function eventStructureReady(structure)
 	}
 
 	var fac = returnClosestEnemyFactory();
-	if (isDefined(fac))
+	if (fac)
 	{
 		activateStructure(structure, getObject(fac.typeInfo, fac.playerInfo, fac.idInfo));
 	}
