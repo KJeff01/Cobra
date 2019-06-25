@@ -42,7 +42,7 @@ function initializeResearchLists()
 	secondaryWeaponTech = updateResearchList(subPersonalities[personality].secondaryWeapon.weapons);
 	secondaryWeaponExtra = updateResearchList(subPersonalities[personality].secondaryWeapon.extras);
 	defenseTech = updateResearchList(subPersonalities[personality].artillery.defenses);
-	standardDefenseTech = updateResearchList(subPersonalities[personality].primaryWeapon.defenses)
+	standardDefenseTech = updateResearchList(subPersonalities[personality].primaryWeapon.defenses);
 	cyborgWeaps = updateResearchList(subPersonalities[personality].primaryWeapon.templates);
 }
 

@@ -34,9 +34,9 @@ function cacheThis(func, funcParameters, cachedItem, time)
 	var t = arguments.callee.caller.cachedTimes[cachedItem];
      var obj = arguments.callee.caller.cachedValues[cachedItem];
      var def = isDefined(obj);
-	if (!def
-          || (def && isDefined(obj.typeInfo) && (getObject(obj.typeInfo, obj.playerInfo, obj.idInfo) === null))
-          || ((gameTime - t) >= REFRESH_TIME))
+	if (!def ||
+          (def && isDefined(obj.typeInfo) && (getObject(obj.typeInfo, obj.playerInfo, obj.idInfo) === null)) ||
+          ((gameTime - t) >= REFRESH_TIME))
      {
 		arguments.callee.caller.cachedValues[cachedItem] = callFuncWithArgs(func, funcParameters);
 		arguments.callee.caller.cachedTimes[cachedItem] = gameTime;

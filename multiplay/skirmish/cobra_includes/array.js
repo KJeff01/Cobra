@@ -8,7 +8,7 @@ Array.prototype.randomElement = function()
      {
 		return this[random(this.length)];
      }
-}
+};
 
 // Pop multiple elements from an array.
 Array.prototype.popMultiple = function(num)
@@ -27,7 +27,7 @@ Array.prototype.popMultiple = function(num)
 	}
 
 	return this;
-}
+};
 
 // Return the last element in an array.
 Array.prototype.last = function()
@@ -36,7 +36,7 @@ Array.prototype.last = function()
      {
 		return this[this.length - 1];
      }
-}
+};
 
 // Fisher-Yates shuffle on an array.
 Array.prototype.shuffle = function()
@@ -52,4 +52,4 @@ Array.prototype.shuffle = function()
      }
 
      return this;
-}
+};

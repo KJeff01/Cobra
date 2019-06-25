@@ -399,24 +399,24 @@ function produce()
 						{
 							buildSys(FC.id, "Spade1Mk1");
 						}
-						else if (buildSensors
-							&& enumGroup(artilleryGroup).length
-							&& componentAvailable("SensorTurret1Mk1"))
+						else if (buildSensors &&
+							enumGroup(artilleryGroup).length &&
+							componentAvailable("SensorTurret1Mk1"))
 						{
 							buildSys(FC.id);
 						}
-						else if (allowSpecialSystems
-							&& buildRepairs
-							&& isDesignable("LightRepair1"))
+						else if (allowSpecialSystems &&
+							buildRepairs &&
+							isDesignable("LightRepair1"))
 						{
 							buildSys(FC.id, REPAIR_TURRETS);
 						}
 						else
 						{
 							//Do not produce weak body units if we can give this factory a module.
-							if (!countStruct(structures.gens)
-								|| (FC.modules < 1
-								&& componentAvailable("Body12SUP")))
+							if (!countStruct(structures.gens) ||
+								(FC.modules < 1 &&
+								componentAvailable("Body12SUP")))
 							{
 								continue;
 							}

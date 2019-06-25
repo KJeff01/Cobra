@@ -61,7 +61,7 @@ function eventStartLevel()
 	setTimer("checkAllForRepair", THINK_LONGER + 900 + 3 * random(60));
 	setTimer("buildOrders", THINK_LONGER + 1100 + 3 * random(60));
 	setTimer("research", THINK_LONGER + 1200 + 3 * random(70));
-	setTimer("lookForOil", THINK_LONGER + 1600 + 3 * random(60))
+	setTimer("lookForOil", THINK_LONGER + 1600 + 3 * random(60));
 	setTimer("repairDroidTactics", THINK_LONGER + 2500 + 4 * random(60));
 	setTimer("artilleryTactics", THINK_LONGER + 4500 + 4 * random(60));
 	setTimer("vtolTactics", THINK_LONGER + 5600 + 3 * random(70));
@@ -231,9 +231,9 @@ function eventAttacked(victim, attacker)
 		}
 
 		units = units.filter(function(dr) {
-			return (dr.id !== victim.id
-				&& ((isVTOL(dr) && droidReady(dr.id))
-				|| (!repairDroid(dr.id)) && droidCanReach(dr, attacker.x, attacker.y))
+			return (dr.id !== victim.id &&
+				((isVTOL(dr) && droidReady(dr.id)) ||
+				(!repairDroid(dr.id)) && droidCanReach(dr, attacker.x, attacker.y))
 			);
 		});
 		const CACHE_UNITS = units.length;

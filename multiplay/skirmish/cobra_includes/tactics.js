@@ -9,11 +9,11 @@ function droidReady(droidID)
 		return false;
 	}
 
-	return (!repairDroid(droidID)
-		&& droid.order !== DORDER_ATTACK
-		&& droid.order !== DORDER_RTR
-		&& droid.order !== DORDER_RECYCLE
-		&& vtolReady(droidID) //True for non-VTOL units
+	return (!repairDroid(droidID) &&
+		droid.order !== DORDER_ATTACK &&
+		droid.order !== DORDER_RTR &&
+		droid.order !== DORDER_RECYCLE &&
+		vtolReady(droidID) //True for non-VTOL units
 	);
 }
 
@@ -583,10 +583,7 @@ function enemyUnitsInBase()
 {
 	var area = initialTerritory();
 	var enemyUnits = enumArea(area.x1, area.y1, area.x2, area.y2, ENEMIES, false).filter(function(obj) {
-		return (obj.type === DROID
-			&& (obj.droidType === DROID_WEAPON
-			|| obj.droidType === DROID_CYBORG)
-		);
+		return (obj.type === DROID && (obj.droidType === DROID_WEAPON || obj.droidType === DROID_CYBORG));
 	});
 
 	var enemyNearBase = enemyUnits.sort(distanceToBase);
@@ -610,7 +607,7 @@ function donateSomePower()
 
 	if (LEN && ALIVE_ENEMIES)
 	{
-		var ally = ALLY_PLAYERS[random(LEN)]
+		var ally = ALLY_PLAYERS[random(LEN)];
 		if (getRealPower() > 100 && (getRealPower() > Math.floor(1.5 * getRealPower(ally))))
 		{
 			donatePower(playerPower(me) / 2, ally);

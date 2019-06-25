@@ -52,12 +52,16 @@ function unfinishedStructures()
 function conCanHelp(mydroidID, bx, by)
 {
 	var mydroid = getObject(DROID, me, mydroidID);
-	return (mydroid.order !== DORDER_BUILD
-		&& mydroid.order !== DORDER_LINEBUILD
-		&& mydroid.order !== DORDER_RECYCLE
-		&& mydroid.busy !== true
-		&& !repairDroid(mydroidID)
-		&& droidCanReach(mydroid, bx, by)
+	if (mydroid === null)
+	{
+		return false;
+	}
+	return (mydroid.order !== DORDER_BUILD &&
+		mydroid.order !== DORDER_LINEBUILD &&
+		mydroid.order !== DORDER_RECYCLE &&
+		mydroid.busy !== true &&
+		!repairDroid(mydroidID) &&
+		droidCanReach(mydroid, bx, by)
 	);
 }
 

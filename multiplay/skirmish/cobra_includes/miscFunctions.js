@@ -28,11 +28,7 @@ function sortDroidsByHealth(a, b)
 //Used for deciding if a truck will capture oil.
 function isUnsafeEnemyObject(obj)
 {
-	return ((obj.type === DROID)
-		|| ((obj.type === STRUCTURE)
-		&& (obj.stattype === DEFENSE)
-		&& (obj.status === BUILT))
-	);
+	return ((obj.type === DROID) || ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE) && (obj.status === BUILT)));
 }
 
 //Sort by distance to base and reverse.

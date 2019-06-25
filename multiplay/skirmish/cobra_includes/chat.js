@@ -24,12 +24,12 @@ function eventChat(from, to, message)
 	}
 
 	//Here are all chat messages that can be executed by itself.
-	if (message === "AC"
-		|| message === "AR"
-		|| message === "AB"
-		|| message === "AM"
-		|| message === "AA"
-		|| message === "AL")
+	if (message === "AC" ||
+		message === "AR" ||
+		message === "AB" ||
+		message === "AM" ||
+		message === "AA" ||
+		message === "AL")
 	{
 		if (personality !== message)
 		{
