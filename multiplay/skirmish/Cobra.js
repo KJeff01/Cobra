@@ -13,8 +13,8 @@ const CYBORG_FACTORY = "A0CyborgFactory";
 const VTOL_FACTORY = "A0VTolFactory1";
 const MY_BASE = startPositions[me];
 const OIL_RES = "OilResource";
-const MIN_POWER = 180;
-const SUPER_LOW_POWER = -120;
+const MIN_POWER = 150;
+const SUPER_LOW_POWER = 80;
 const MIN_BUILD_POWER = 220;
 const ELECTRONIC_DEFENSES = [
 	"Sys-SpyTower",

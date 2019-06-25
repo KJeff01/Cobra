@@ -55,23 +55,22 @@ function eventStartLevel()
 
 	recycleForHover();
 	buildOrders(); //Start building right away.
-
-	const THINK_LONGER = (difficulty === EASY) ? 4000 + ((1 + random(4)) * random(1200)) : 0;
-	setTimer("buildOrders", THINK_LONGER + 400 + 3 * random(60));
-	setTimer("produce", THINK_LONGER + 700 + 3 * random(70));
-	setTimer("checkAllForRepair", THINK_LONGER + 900 + 3 * random(60));
-	setTimer("research", THINK_LONGER + 1200 + 3 * random(70));
-	setTimer("lookForOil", THINK_LONGER + 1600 + 3 * random(60));
-	setTimer("repairDroidTactics", THINK_LONGER + 2500 + 4 * random(60));
-	setTimer("artilleryTactics", THINK_LONGER + 4500 + 4 * random(60));
-	setTimer("vtolTactics", THINK_LONGER + 5600 + 3 * random(70));
-	setTimer("groundTactics", THINK_LONGER + 7000 + 5 * random(60));
-	setTimer("switchOffMG", THINK_LONGER + 10000 + 3 * random(70));
-	setTimer("recycleForHover", THINK_LONGER + 15000 + 2 * random(60));
-	setTimer("stopTimers", THINK_LONGER + 100000 + 5 * random(70));
+	
+	setTimer("buildOrders", 300);
+	setTimer("produce", 400);
+	setTimer("checkAllForRepair", 600);
+	setTimer("research", 800);
+	setTimer("lookForOil", 1000);
+	setTimer("repairDroidTactics", 1200);
+	setTimer("artilleryTactics", 1400);
+	setTimer("vtolTactics", 1600);
+	setTimer("groundTactics", 2000);
+	setTimer("switchOffMG", 5000);
+	setTimer("recycleForHover", 8000);
+	setTimer("stopTimers", 9000);
 	if (DEBUG_LOG_ON)
 	{
-		setTimer("debugLogAtEnd", 150000 + 5 * random(70));
+		setTimer("debugLogAtEnd", 100000);
 	}
 }
 

@@ -264,7 +264,7 @@ function buildAttacker(id)
 				secondary = "EMP-Cannon";
 			}
 
-			return getRealPower() > MIN_POWER && buildDroid(fac, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
+			return getRealPower() > SUPER_LOW_POWER && buildDroid(fac, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
 		}
 	}
 
@@ -311,7 +311,7 @@ function buildCyborg(id, useEngineer)
 			prop = weaponLine.templates[x].prop;
 			weap = weaponLine.templates[x].weapons[0];
 
-			if (getRealPower() > MIN_POWER && buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap))
+			if (getRealPower() > SUPER_LOW_POWER && buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap))
 			{
 				return true;
 			}
@@ -326,7 +326,7 @@ function buildVTOL(id)
 {
 	var weap = choosePersonalityWeapon("VTOL");
 	var fac = getObject(STRUCTURE, me, id);
-	return (getRealPower() > MIN_POWER && fac !== null && isDefined(weap) && buildDroid(fac, "VTOL unit", VTOL_BODY, "V-Tol", "", "", weap, weap));
+	return (getRealPower() > SUPER_LOW_POWER && fac !== null && isDefined(weap) && buildDroid(fac, "VTOL unit", VTOL_BODY, "V-Tol", "", "", weap, weap));
 }
 
 //Check what system units are queued in a regular factory. Returns an object
