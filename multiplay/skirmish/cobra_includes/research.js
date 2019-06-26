@@ -83,10 +83,10 @@ function research()
 			found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
 		if (!found)
 			found = evalResearch(lab, techlist);
-		if (!found && random(100) < 25)
+		if (!found && random(100) < 20)
 			found = evalResearch(lab, ESSENTIALS_2);
 
-		if (!found && getRealPower() > MIN_POWER)
+		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : SUPER_LOW_POWER))
 		{
 			if (!found && random(100) < 20)
 				found = evalResearch(lab, BODY_RESEARCH);

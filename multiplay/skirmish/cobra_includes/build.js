@@ -482,19 +482,19 @@ function buildPhase1()
 		{
 			return true;
 		}
-		if (!researchComplete && countAndBuild(structures.labs, 1))
-		{
-			return true;
-		}
-		if (countAndBuild(structures.gens, 1))
-		{
-			return true;
-		}
 		if (!researchComplete && countAndBuild(structures.labs, 2))
 		{
 			return true;
 		}
+		if (countAndBuild(structures.gens, 2))
+		{
+			return true;
+		}
 		if (countAndBuild(structures.hqs, 1))
+		{
+			return true;
+		}
+		if (!researchComplete && countAndBuild(structures.labs, 3))
 		{
 			return true;
 		}
@@ -541,18 +541,47 @@ function buildPhase1()
 //Build factories.
 function factoryBuildOrder()
 {
-	const MIN_FACTORY_COUNT = 2;
+	if (getRealPower() < MIN_POWER)
+	{
+		return false;
+	}
+
+	const MIN_FACTORY_COUNT = 1;
 	const MAX_FACTORY_COUNT = 5;
+
 	for (var i = 0; i < 3; ++i)
 	{
 		var fac = subPersonalities[personality].factoryOrder[i];
+
 		if ((fac === VTOL_FACTORY && !useVtol) || (fac === CYBORG_FACTORY && (turnOffCyborgs || forceHover)))
 		{
 			continue;
 		}
 
-		//Try building two of each before finishing on of the factoryOrder paths.
-		if ((getRealPower() > MIN_POWER || countStruct(fac) < MIN_FACTORY_COUNT) && countStruct(fac) < MAX_FACTORY_COUNT && countAndBuild(fac, countStruct(structures.gens)))
+		var derrNum = countStruct(structures.derricks);
+		var facNum = countStruct(fac);
+		if (derrNum >= 20)
+		{
+			num = 5;
+		}
+		else if (derrNum >= 16)
+		{
+			num = 4;
+		}
+		else if (derrNum >= 12)
+		{
+			num = 3;
+		}
+		else if (derrNum >= 8)
+		{
+			num = 2;
+		}
+		else
+		{
+			num = MIN_FACTORY_COUNT;
+		}
+
+		if (facNum < num && facNum < MAX_FACTORY_COUNT && countAndBuild(fac, countStruct(structures.gens)))
 		{
 			return true;
 		}
@@ -563,21 +592,27 @@ function factoryBuildOrder()
 
 function researchBuildOrder()
 {
-	var gens = countStruct(structures.gens);
 	var labs = countStruct(structures.labs);
 	var seaMap = turnOffCyborgs || forceHover;
-	if (getRealPower() > MIN_POWER && !researchComplete && countStruct(structures.labs) < 5)
-	{
-		if ((!seaMap && countAndBuild(structures.labs, gens + 1)) || (seaMap && countAndBuild(structures.labs, gens + 2)))
-		{
-			return true;
-		}
-		//We have a lot of power, so build more.
-		if (getRealPower() > 280 && gameTime > 180000 && countAndBuild(structures.labs, labs + 1))
-		{
-			return true;
-		}
+	const MAX_LAB_COUNT = 5;
 
+	if (getRealPower() > MIN_POWER && !researchComplete && labs < MAX_LAB_COUNT)
+	{
+		var amount = 3;
+		var derrCount = countStruct(structures.derricks);
+
+		if (derrCount >= 12)
+		{
+			amount = 5;
+		}
+		else if (amount >= 7)
+		{
+			amount = 4;
+		}
+		if (labs < amount && countAndBuild(structures.labs, amount))
+		{
+			return true;
+		}
 	}
 
 	return false;
@@ -679,6 +714,7 @@ function maintenance()
 	{
 		modList = [
 			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
+			{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
 			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
 			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},

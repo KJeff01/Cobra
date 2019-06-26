@@ -129,13 +129,13 @@ function eventDroidBuilt(droid, struct)
 	if (isConstruct(droid.id))
 	{
 		//Combat engineesr are always base builders.
-		if (droid.body !== "CyborgLightBody" && enumGroup(oilGrabberGroup).length < MIN_TRUCKS - 3)
+		if (droid.body === "CyborgLightBody" || enumGroup(constructGroup).length < Math.floor(MIN_TRUCKS  / 2))
 		{
-			groupAdd(oilGrabberGroup, droid);
+			groupAdd(constructGroup, droid);
 		}
 		else
 		{
-			groupAdd(constructGroup, droid);
+			groupAdd(oilGrabberGroup, droid);
 		}
 	}
 	else if (droid.droidType === DROID_SENSOR)
