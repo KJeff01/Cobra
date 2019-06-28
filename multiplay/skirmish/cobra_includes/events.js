@@ -94,14 +94,14 @@ function eventStructureBuilt(structure, droid)
 		}
 		else
 		{
-			var numDefenses = enumRange(droid.x, droid.y, 10, me, false);
+			var numDefenses = enumRange(droid.x, droid.y, 8, me, false);
 			numDefenses = numDefenses.filter(function(obj) {
 				return ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
 			});
 
-			if ((gameTime > 120000) && (random(100) < subPersonalities[personality].defensePriority))
+			if (numDefenses === 0)
 			{
-				protectUnguardedDerricks(droid);
+				buildDefenses(droid);
 			}
 		}
 	}

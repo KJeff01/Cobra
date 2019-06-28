@@ -122,7 +122,7 @@ function countAndBuild(stat, count)
 //Find the closest derrick that is not guarded a defense.
 function protectUnguardedDerricks(droid)
 {
-	var derrs = enumStruct(me, structures.derricks);
+	var derrs = enumStruct(me, structures.derricks).sort(distanceToBase);
 	const LEN = derrs.length;
 
 	if (droid)
@@ -138,7 +138,6 @@ function protectUnguardedDerricks(droid)
 	if (LEN)
 	{
 		var undefended = [];
-		derrs = sortAndReverseDistance(derrs);
 
 		for (var i = 0; i < LEN; ++i)
 		{
@@ -435,14 +434,15 @@ function buildDefenses(truck)
 {
 	var isDefensive = subPersonalities[personality].defensePriority >= 50 || subPersonalities[personality].resPath === "defensive";
 	var pow = getRealPower();
-	if ((gameTime > 180000) && (pow > MIN_BUILD_POWER || (isDefensive && (pow > MIN_BUILD_POWER - 25))))
+
+	if ((gameTime > 120000) && (pow > SUPER_LOW_POWER || (isDefensive && (pow > MIN_POWER - 25))))
 	{
 		if (truck)
 		{
 			return buildDefenseNearTruck(truck, 0);
 		}
 
-		if (protectUnguardedDerricks())
+		if (protectUnguardedDerricks() && pow > MIN_POWER)
 		{
 			return true;
 		}
@@ -453,7 +453,7 @@ function buildDefenses(truck)
 		}
 
 		var def = returnDefense();
-		if (isDefined(def))
+		if (isDefined(def) && pow > MIN_BUILD_POWER)
 		{
 			return countAndBuild(def, Infinity);
 		}
@@ -615,7 +615,7 @@ function researchBuildOrder()
 //Build minimum requirements of base structures.
 function buildPhase2()
 {
-	if (!countStruct(structures.gens) || getRealPower() < MIN_POWER)
+	if (!countStruct(structures.gens))
 	{
 		return true;
 	}
@@ -627,7 +627,7 @@ function buildPhase2()
 
 	if (factoryBuildOrder())
 	{
-		return;
+		return true;
 	}
 
 	return false;
@@ -666,6 +666,8 @@ function buildExtras()
 	{
 		return true;
 	}
+
+	return false;
 }
 
 
@@ -679,7 +681,7 @@ function buildOrders()
 	if (buildSpecialStructures()) { return; }
 	if (buildAAForPersonality()) { return; }
 	if (buildExtras()) { return; }
-	if (buildPhase2()) { return; }
+	buildPhase2();
 	buildDefenses();
 }
 
