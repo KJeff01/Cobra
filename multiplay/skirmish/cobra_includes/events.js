@@ -207,37 +207,21 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (stopExecution("throttleEventAttacked2", 750) || !shouldCobraAttack())
+		if (stopExecution("throttleEventAttacked1", 300))
 		{
 			return;
 		}
 
-		var units;
-		if (victim.type === STRUCTURE)
-		{
-			units = chooseGroup();
-		}
-		else
-		{
-			units = enumRange(victim.x, victim.y, 18, me, false).filter(function(d) {
-				return (d.type === DROID) && ((d.droidType === DROID_WEAPON) || (d.droidType === DROID_CYBORG) || isVTOL(d));
-			});
-
-			if (units.length < 2)
-			{
-				units = chooseGroup();
-			}
-		}
-
-		units = units.filter(function(dr) {
+		var units = chooseGroup().filter(function(dr) {
 			return (dr.id !== victim.id &&
 				((isVTOL(dr) && droidReady(dr.id)) ||
 				(!repairDroid(dr.id)) && droidCanReach(dr, attacker.x, attacker.y))
 			);
 		});
+
 		const CACHE_UNITS = units.length;
 
-		if (CACHE_UNITS >= 20)
+		if (CACHE_UNITS >= MIN_ATTACK_DROIDS && shouldCobraAttack())
 		{
 			var defend = (distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, attacker.x, attacker.y) < 18);
 			for (var i = 0; i < CACHE_UNITS; i++)

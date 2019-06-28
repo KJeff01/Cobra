@@ -7,7 +7,7 @@ include(COBRA_RULESETS + "CobraStandard.js");
 
 const DEBUG_LOG_ON = false; //NOTE: slow!
 const MAX_GRUDGE = 50000;
-const MIN_ATTACK_DROIDS = 8;
+const MIN_ATTACK_DROIDS = 6;
 const FACTORY = "A0LightFactory";
 const CYBORG_FACTORY = "A0CyborgFactory";
 const VTOL_FACTORY = "A0VTolFactory1";
@@ -35,23 +35,22 @@ const ESSENTIALS = [
 	"R-Wpn-MG-Damage01",
 	"R-Defense-Tower01",
 	"R-Wpn-MG2Mk1",
-	"R-Wpn-MG-Damage02",
 	"R-Struc-PowerModuleMk1",
+	"R-Wpn-MG-Damage02",
 	"R-Struc-Research-Upgrade01",
 ];
 const ESSENTIALS_2 = [
+	"R-Vehicle-Body11",
 	"R-Vehicle-Prop-Halftracks",
 	"R-Struc-RprFac-Upgrade01",
-	"R-Vehicle-Body11",
+	"R-Struc-Power-Upgrade03a",
 	"R-Vehicle-Prop-Hover",
 	"R-Sys-Sensor-Upgrade01",
-	"R-Struc-Power-Upgrade03a",
 	"R-Struc-Research-Upgrade09",
 	"R-Sys-Autorepair-General",
 	"R-Struc-Factory-Upgrade09",
 ];
 const SYSTEM_UPGRADES = [
-	"R-Vehicle-Body12",
 	"R-Sys-MobileRepairTurretHvy",
 	"R-Struc-RprFac-Upgrade06",
 	"R-Sys-Sensor-Upgrade03",
@@ -75,8 +74,11 @@ const DEFENSE_UPGRADES = [
 	"R-Struc-Materials09",
 	"R-Defense-WallUpgrade12",
 ];
-const BODY_RESEARCH = [
-	"R-Vehicle-Body06",
+const BODY_RESEARCH_1 = [
+	"R-Vehicle-Body12",
+	"R-Vehicle-Body09",
+];
+const BODY_RESEARCH_2 = [
 	"R-Vehicle-Body10",
 	"R-Vehicle-Body14",
 ];
@@ -98,6 +100,7 @@ const TANK_BODY = [
 	"Body13SUP", // Wyvern
 	"Body10MBT", // Vengeance
 	"Body7ABT",  // Retribution
+	"Body9REC",
 	"Body12SUP", // Mantis
 	"Body6SUPP", // Panther
 	"Body11ABT", // Python
@@ -171,11 +174,11 @@ var subPersonalities =
 		"artillery": weaponStats.rockets_Arty,
 		"antiAir": weaponStats.rockets_AA,
 		"factoryOrder": [VTOL_FACTORY, FACTORY, CYBORG_FACTORY],
-		"defensePriority": 70,
+		"defensePriority": 10,
 		"vtolPriority": 50,
 		"alloyPriority": 10,
 		"useLasers": false,
-		"resPath": "generic",
+		"resPath": "offensive",
 		"res": [
 			"R-Wpn-Rocket02-MRL",
 		],
