@@ -681,7 +681,7 @@ function buildOrders()
 	if (buildSpecialStructures()) { return; }
 	if (buildAAForPersonality()) { return; }
 	if (buildExtras()) { return; }
-	buildPhase2();
+	if (buildPhase2()) { return; }
 	buildDefenses();
 }
 
