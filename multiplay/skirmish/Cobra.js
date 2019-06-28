@@ -64,7 +64,6 @@ const SENSOR_TECH = [
 	"R-Sys-CBSensor-Tower01",
 	"R-Sys-Sensor-WSTower",
 	"R-Sys-Sensor-UpLink",
-	"R-Sys-RadarDetector01",
 ];
 const DEFENSE_UPGRADES = [
 	"R-Vehicle-Metals05",

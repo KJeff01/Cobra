@@ -319,7 +319,6 @@ function buildSensors()
 {
 	const CB_TOWER = "Sys-CB-Tower01";
 	const WS_TOWER = "Sys-SensoTowerWS";
-	const RADAR_DETECTOR = "Sys-RadarDetector01";
 
 	if (countAndBuild(WS_TOWER, 1))
 	{
@@ -327,11 +326,6 @@ function buildSensors()
 	}
 
 	if (countAndBuild(CB_TOWER, 1))
-	{
-		return true;
-	}
-
-	if (countAndBuild(RADAR_DETECTOR, 1))
 	{
 		return true;
 	}
