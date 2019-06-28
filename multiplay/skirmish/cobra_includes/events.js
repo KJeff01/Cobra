@@ -56,21 +56,23 @@ function eventStartLevel()
 	recycleForHover();
 	buildOrders(); //Start building right away.
 
-	setTimer("buildOrders", 300);
-	setTimer("produce", 400);
-	setTimer("checkAllForRepair", 600);
-	setTimer("research", 800);
-	setTimer("lookForOil", 1000);
-	setTimer("repairDroidTactics", 1200);
-	setTimer("artilleryTactics", 1400);
-	setTimer("vtolTactics", 1600);
-	setTimer("groundTactics", 2000);
-	setTimer("switchOffMG", 5000);
-	setTimer("recycleForHover", 8000);
-	setTimer("stopTimers", 9000);
+	//That (me * 100) part is to help reduce multiple Cobra AI's from coinciding stuff on the same frame. Of course,
+	//higher "me"s may impact the bot in some, hopefully, minimal manner.
+	setTimer("buildOrders", 300 + (me * 100));
+	setTimer("produce", 400 + (me * 100));
+	setTimer("checkAllForRepair", 600 + (me * 100));
+	setTimer("research", 800 + (me * 100));
+	setTimer("lookForOil", 1000 + (me * 100));
+	setTimer("repairDroidTactics", 1200 + (me * 100));
+	setTimer("artilleryTactics", 1400 + (me * 100));
+	setTimer("vtolTactics", 1600 + (me * 100));
+	setTimer("groundTactics", 2000 + (me * 100));
+	setTimer("switchOffMG", 5000 + (me * 100));
+	setTimer("recycleForHover", 8000 + (me * 100));
+	setTimer("stopTimers", 9000 + (me * 100));
 	if (DEBUG_LOG_ON)
 	{
-		setTimer("debugLogAtEnd", 100000);
+		setTimer("debugLogAtEnd", 100000 + (me * 100));
 	}
 }
 
