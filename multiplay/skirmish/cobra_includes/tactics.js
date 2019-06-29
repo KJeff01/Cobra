@@ -146,7 +146,7 @@ function repairDroid(droidID, force)
 		return true; //pretend it is busy
 	}
 
-	const FORCE_REPAIR_PERCENT = 55;
+	const FORCE_REPAIR_PERCENT = 66;
 	const EXPERIENCE_DIVISOR = 26;
 	const HEALTH_TO_REPAIR = 67 + Math.floor(droid.experience / EXPERIENCE_DIVISOR);
 
@@ -720,7 +720,7 @@ function retreatTactics()
 	{
 		var droid = droids[i];
 
-		if (enumRange(droid.x, droid.y, SCAN_RADIUS, ENEMIES, false).length !== 0)
+		if (enumRange(droid.x, droid.y, SCAN_RADIUS, ENEMIES, true).length !== 0)
 		{
 			orderDroidLoc(droid, DORDER_MOVE, MY_BASE.x, MY_BASE.y);
 		}

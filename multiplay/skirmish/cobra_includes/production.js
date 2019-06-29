@@ -280,7 +280,7 @@ function buildSys(id, weap)
 		weap = ["Sensor-WideSpec", "SensorTurret1Mk1"];
 	}
 
-	return (fac !== null && getRealPower() > PRODUCTION_POWER && buildDroid(fac, "System unit", random(2) ? SYSTEM_BODY : VTOL_BODY, SYSTEM_PROPULSION, "", "", weap));
+	return (fac !== null && buildDroid(fac, "System unit", random(2) ? SYSTEM_BODY : VTOL_BODY, SYSTEM_PROPULSION, "", "", weap));
 }
 
 //Create a cyborg with available research. Expects a boolean for useEngineer or can undefined.

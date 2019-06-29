@@ -16,7 +16,7 @@ const OIL_RES = "OilResource";
 const MIN_POWER = 150;
 const SUPER_LOW_POWER = 80;
 const MIN_BUILD_POWER = 220;
-const PRODUCTION_POWER = Math.floor(SUPER_LOW_POWER / 3);
+const PRODUCTION_POWER = SUPER_LOW_POWER;
 const ELECTRONIC_DEFENSES = [
 	"Sys-SpyTower",
 	"WallTower-EMP",
