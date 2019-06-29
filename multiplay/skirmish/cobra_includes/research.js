@@ -83,12 +83,14 @@ function research()
 			found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
 		if (!found)
 			found = evalResearch(lab, techlist);
-		if (!found && random(100) < 15)
+		if (!found && random(100) < 20)
 			found = evalResearch(lab, ESSENTIALS_2);
+		if (!found && random(100) < 10)
+			found = evalResearch(lab, ESSENTIALS_3);
 
 		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : SUPER_LOW_POWER))
 		{
-			if (!found && random(100) < 15)
+			if (!found && gameTime > 1200000 && random(100) < 20)
 			{
 				found = evalResearch(lab, BODY_RESEARCH_1);
 
@@ -121,8 +123,6 @@ function research()
 
 				if (!found)
 					found = evalResearch(lab, SYSTEM_UPGRADES);
-				if (!found)
-					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 
 				if (!found && (random(100) < subPersonalities[personality].alloyPriority))
 				{
@@ -182,9 +182,6 @@ function research()
 						found = evalResearch(lab, standardDefenseTech);
 				}
 
-				if (!found)
-					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
-
 				if (!found && random(100) < 50 && useArti)
 					found = evalResearch(lab, artillExtra);
 				if (!found)
@@ -241,8 +238,6 @@ function research()
 
 				if (!found)
 					found = evalResearch(lab, SYSTEM_UPGRADES);
-				if (!found)
-					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 
 				//Use default AA until stormbringer.
 				if (random(100) < 50 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
@@ -316,8 +311,6 @@ function research()
 
 				if (!found)
 					found = evalResearch(lab, SYSTEM_UPGRADES);
-				if (!found)
-					found = evalResearch(lab, LATE_EARLY_GAME_TECH);
 
 				if (!found)
 					found = evalResearch(lab, VTOL_RES);

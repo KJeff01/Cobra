@@ -680,8 +680,8 @@ function buildOrders()
 	if (buildPhase1()) { return; }
 	if (buildSpecialStructures()) { return; }
 	if (buildAAForPersonality()) { return; }
-	if (buildExtras()) { return; }
 	if (buildPhase2()) { return; }
+	if (buildExtras()) { return; }
 	buildDefenses();
 }
 

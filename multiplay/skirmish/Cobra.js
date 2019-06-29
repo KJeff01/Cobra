@@ -7,7 +7,7 @@ include(COBRA_RULESETS + "CobraStandard.js");
 
 const DEBUG_LOG_ON = false; //NOTE: slow!
 const MAX_GRUDGE = 50000;
-const MIN_ATTACK_DROIDS = 6;
+const MIN_ATTACK_DROIDS = 4;
 const FACTORY = "A0LightFactory";
 const CYBORG_FACTORY = "A0CyborgFactory";
 const VTOL_FACTORY = "A0VTolFactory1";
@@ -16,6 +16,7 @@ const OIL_RES = "OilResource";
 const MIN_POWER = 150;
 const SUPER_LOW_POWER = 80;
 const MIN_BUILD_POWER = 220;
+const PRODUCTION_POWER = Math.floor(SUPER_LOW_POWER / 3);
 const ELECTRONIC_DEFENSES = [
 	"Sys-SpyTower",
 	"WallTower-EMP",
@@ -33,25 +34,31 @@ const CYBORG_ARMOR = [
 ];
 const ESSENTIALS = [
 	"R-Wpn-MG-Damage01",
+	"R-Sys-Engineering01",
 	"R-Defense-Tower01",
 	"R-Wpn-MG2Mk1",
-	"R-Struc-PowerModuleMk1",
 	"R-Wpn-MG-Damage02",
+	"R-Struc-PowerModuleMk1",
 	"R-Struc-Research-Upgrade01",
+	"R-Vehicle-Metals01",
+	"R-Cyborg-Metals01",
 ];
 const ESSENTIALS_2 = [
-	"R-Vehicle-Body11",
 	"R-Vehicle-Prop-Halftracks",
 	"R-Struc-RprFac-Upgrade01",
-	"R-Struc-Power-Upgrade03a",
-	"R-Vehicle-Prop-Hover",
+	"R-Vehicle-Body11",
 	"R-Sys-Sensor-Upgrade01",
-	"R-Struc-Research-Upgrade09",
-	"R-Sys-Autorepair-General",
+	"R-Vehicle-Prop-Hover",
 	"R-Struc-Factory-Upgrade09",
 ];
+const ESSENTIALS_3 = [
+	"R-Struc-Power-Upgrade03a",
+	"R-Struc-Research-Upgrade09",
+	"R-Sys-Autorepair-General",
+]
 const SYSTEM_UPGRADES = [
 	"R-Sys-MobileRepairTurretHvy",
+	"R-Vehicle-Prop-Tracks",
 	"R-Struc-RprFac-Upgrade06",
 	"R-Sys-Sensor-Upgrade03",
 ];
@@ -87,10 +94,6 @@ const VTOL_RES = [
 	"R-Wpn-Bomb-Accuracy03",
 	"R-Wpn-Bomb05",
 	"R-Wpn-Bomb06",
-];
-const LATE_EARLY_GAME_TECH = [
-	"R-Vehicle-Body12",
-	"R-Vehicle-Prop-Tracks",
 ];
 
 //Production constants
@@ -244,6 +247,7 @@ var repairGroup;
 var artilleryGroup;
 var constructGroup;
 var oilGrabberGroup;
+var retreatGroup;
 
 var grudgeCount; //See who bullies this bot the most and act on it. DO NOT let this use the scavenger player number.
 var personality; //What personality is this instance of Cobra using.
@@ -293,4 +297,4 @@ include(COBRA_INCLUDES + "events.js");
 include(COBRA_INCLUDES + "chat.js");
 include(COBRA_INCLUDES + "adaption.js");
 
-const MIN_TRUCKS = mapOilLevel() !== "NTW" ? 7 : 9;
+const MIN_TRUCKS = mapOilLevel() !== "NTW" ? 6 : 8;

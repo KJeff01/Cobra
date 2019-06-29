@@ -11,6 +11,7 @@ function eventStartLevel()
 	artilleryGroup = newGroup();
 	constructGroup = newGroup();
 	oilGrabberGroup = newGroup();
+	retreatGroup = newGroup();
 	lastMsg = "eventGameInit";
 
 	addDroidsToGroup(attackGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return !obj.isCB; }));
@@ -66,6 +67,7 @@ function eventStartLevel()
 	setTimer("repairDroidTactics", 1200 + (me * 100));
 	setTimer("artilleryTactics", 1400 + (me * 100));
 	setTimer("vtolTactics", 1600 + (me * 100));
+	setTimer("retreatTactics", 1800 + (me * 100));
 	setTimer("groundTactics", 2000 + (me * 100));
 	setTimer("switchOffMG", 5000 + (me * 100));
 	setTimer("recycleForHover", 8000 + (me * 100));
@@ -168,9 +170,31 @@ function eventDroidBuilt(droid, struct)
 
 function eventAttacked(victim, attacker)
 {
-	if ((attacker === null) || (victim.player !== me) || allianceExistsBetween(attacker.player, victim.player))
+	if ((attacker === null) || (victim === null) || (victim.player !== me) || allianceExistsBetween(attacker.player, victim.player))
 	{
 		return;
+	}
+
+	const GROUP_SCAN_RADIUS = 7;
+	var nearbyUnits = enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, me, false).filter(function(obj) {
+		return obj.type === DROID;
+	});
+
+	//Custom SemperFi-JS's localized regrouping code to be used to retreat away from highly outnumbered contests.
+	if (victim.type === DROID && victim.player === me)
+	{
+		if (isVTOL(victim))
+		{
+			droidReady(victim.id);
+		}
+		else if (victim.order !== DORDER_RTR &&
+			victim.order !== DORDER_RECYCLE &&
+			!repairDroid(victim.id) &&
+			nearbyUnits.length < enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, ENEMIES, false).length)
+		{
+			orderDroidLoc(victim, DORDER_MOVE, MY_BASE.x, MY_BASE.y); //Move now
+			groupAdd(retreatGroup, victim);
+		}
 	}
 
 	if (isDefined(scavengerPlayer) && (attacker.player === scavengerPlayer))
@@ -179,7 +203,7 @@ function eventAttacked(victim, attacker)
 		return;
 	}
 
-	if (attacker && victim && (attacker.player !== me) && !allianceExistsBetween(attacker.player, victim.player))
+	if (attacker.player !== me && !allianceExistsBetween(attacker.player, victim.player))
 	{
 		if (grudgeCount[attacker.player] < MAX_GRUDGE)
 		{
@@ -187,7 +211,7 @@ function eventAttacked(victim, attacker)
 		}
 
 		//Check if a droid needs repair.
-		if ((victim.type === DROID) && countStruct(structures.extras[0]))
+		if ((victim.type === DROID) && !isVTOL(victim) && countStruct(structures.extras[0]))
 		{
 			//System units are timid.
 			if ((victim.droidType === DROID_SENSOR) || isConstruct(victim.id) || (victim.droidType === DROID_REPAIR))
@@ -209,13 +233,14 @@ function eventAttacked(victim, attacker)
 			}
 		}
 
-		if (stopExecution("throttleEventAttacked1", 300))
+		if (stopExecution("throttleEventAttacked1", 1000))
 		{
 			return;
 		}
 
-		var units = chooseGroup().filter(function(dr) {
+		var units = nearbyUnits.filter(function(dr) {
 			return (dr.id !== victim.id &&
+				dr.group !== retreatGroup &&
 				((isVTOL(dr) && droidReady(dr.id)) ||
 				(!repairDroid(dr.id)) && droidCanReach(dr, attacker.x, attacker.y))
 			);

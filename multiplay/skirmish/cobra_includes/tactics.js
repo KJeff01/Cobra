@@ -200,24 +200,24 @@ function findEnemyDerricks(playerNumber)
 {
 	function uncached(playerNumber)
 	{
-		var derr = [];
+		var derrs = [];
 		if (!isDefined(playerNumber))
 		{
 			const ENEMY_PLAYERS = findLivingEnemies();
 			for (var i = 0, e = ENEMY_PLAYERS.length; i < e; ++i)
 			{
-				derr.concat(enumStruct(ENEMY_PLAYERS[i], structures.derricks));
+				derrs.concat(enumStruct(ENEMY_PLAYERS[i], structures.derricks));
 			}
 
 			//Include scavenger owned derricks if they exist
 			if (isDefined(scavengerPlayer) && !allianceExistsBetween(scavengerPlayer, me))
 			{
-				derr.concat(enumStruct(scavengerPlayer, structures.derricks));
+				derrs.concat(enumStruct(scavengerPlayer, structures.derricks));
 			}
 		}
 		else
 		{
-			derr = enumStruct(playerNumber, structures.derricks);
+			derrs = enumStruct(playerNumber, structures.derricks);
 		}
 
 		derrs = derrs.sort(distanceToBase);
@@ -392,6 +392,7 @@ function attackEnemyOil()
 {
 	const WHO = chooseGroup();
 	const LEN = WHO.length;
+	var success = false;
 
 	if (LEN >= MIN_ATTACK_DROIDS)
 	{
@@ -401,9 +402,12 @@ function attackEnemyOil()
 			for (var i = 0; i < LEN; ++i)
 			{
 				attackThisObject(WHO[i].id, derr);
+				success = true;
 			}
 		}
 	}
+
+	return success;
 }
 
 //Defend or attack.
@@ -413,10 +417,21 @@ function groundTactics()
 
 	if (enemyUnitsInBase() || shouldCobraAttack())
 	{
+		/*
+		if (attackEnemyOil())
+		{
+			return;
+		}
+		*/
+
 		var target = rangeStep();
 		if (isDefined(target))
 		{
 			const WHO = chooseGroup();
+			if (WHO.length < MIN_ATTACK_DROIDS)
+			{
+				return;
+			}
 			for (var i = 0, l = WHO.length; i < l; ++i)
 			{
 				attackThisObject(WHO[i].id, target);
@@ -636,16 +651,26 @@ function prepareAssault()
 //Does Cobra believe it is winning or could win?
 function confidenceThreshold()
 {
+	if (gameTime < 1200000)
+	{
+		return true;
+	}
+
 	const DERR_COUNT = countStruct(structures.derricks);
 	const DROID_COUNT = countDroid(DROID_ANY);
 	var points = 0;
 
-	points += DERR_COUNT >= countStruct(structures.derricks, getMostHarmfulPlayer()) ? 2 : -2;
+	points += DERR_COUNT >= Math.floor(countStruct(structures.derricks, getMostHarmfulPlayer()) / 2) ? 2 : -2;
 	points += countDroid(DROID_ANY, getMostHarmfulPlayer()) < DROID_COUNT + 16 ? 2 : -2;
 
 	if ((DROID_COUNT < 20 && (countDroid(DROID_ANY, getMostHarmfulPlayer()) > DROID_COUNT + 5)))
 	{
 		points -= 3;
+	}
+
+	if (points < 0 && random(100) < 25)
+	{
+		points = -points;
 	}
 
 	return points > -1;
@@ -681,5 +706,28 @@ function shouldCobraAttack()
 		}
 
 		return false;
+	}
+}
+
+//Controls how long localized group retreat happens. See also eventAttacked.
+function retreatTactics()
+{
+	const SCAN_RADIUS = 7
+	var droids = enumGroup(retreatGroup);
+
+	//Flee!
+	for (var i = 0, len = droids.length; i < len; ++i)
+	{
+		var droid = droids[i];
+
+		if (enumRange(droid.x, droid.y, SCAN_RADIUS, ENEMIES, false).length !== 0)
+		{
+			orderDroidLoc(droid, DORDER_MOVE, MY_BASE.x, MY_BASE.y);
+		}
+		else
+		{
+			//Only flee as long as we see enemies.
+			eventDroidBuilt(droid, null);
+		}
 	}
 }

@@ -264,7 +264,7 @@ function buildAttacker(id)
 				secondary = "EMP-Cannon";
 			}
 
-			return getRealPower() > SUPER_LOW_POWER && buildDroid(fac, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
+			return getRealPower() > PRODUCTION_POWER && buildDroid(fac, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
 		}
 	}
 
@@ -280,7 +280,7 @@ function buildSys(id, weap)
 		weap = ["Sensor-WideSpec", "SensorTurret1Mk1"];
 	}
 
-	return (fac !== null && buildDroid(fac, "System unit", random(2) ? SYSTEM_BODY : VTOL_BODY, SYSTEM_PROPULSION, "", "", weap));
+	return (fac !== null && getRealPower() > PRODUCTION_POWER && buildDroid(fac, "System unit", random(2) ? SYSTEM_BODY : VTOL_BODY, SYSTEM_PROPULSION, "", "", weap));
 }
 
 //Create a cyborg with available research. Expects a boolean for useEngineer or can undefined.
@@ -311,7 +311,7 @@ function buildCyborg(id, useEngineer)
 			prop = weaponLine.templates[x].prop;
 			weap = weaponLine.templates[x].weapons[0];
 
-			if (getRealPower() > SUPER_LOW_POWER && buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap))
+			if (getRealPower() > PRODUCTION_POWER && buildDroid(fac, weap + " Cyborg", body, prop, "", "", weap))
 			{
 				return true;
 			}
@@ -326,7 +326,7 @@ function buildVTOL(id)
 {
 	var weap = choosePersonalityWeapon("VTOL");
 	var fac = getObject(STRUCTURE, me, id);
-	return (getRealPower() > SUPER_LOW_POWER && fac !== null && isDefined(weap) && buildDroid(fac, "VTOL unit", VTOL_BODY, "V-Tol", "", "", weap, weap));
+	return (getRealPower() > PRODUCTION_POWER && fac !== null && isDefined(weap) && buildDroid(fac, "VTOL unit", VTOL_BODY, "V-Tol", "", "", weap, weap));
 }
 
 //Check what system units are queued in a regular factory. Returns an object
@@ -371,8 +371,8 @@ function produce()
 	{
 		return; //Stop spamming about having the droid limit reached.
 	}
-	const MIN_SENSORS = 2;
-	const MIN_REPAIRS = 3;
+	const MIN_SENSORS = 1;
+	const MIN_REPAIRS = 2;
 	var useCybEngineer = countStruct(CYBORG_FACTORY) && (enumGroup(constructGroup).length < 4);
 	var systems = analyzeQueuedSystems();
 
@@ -419,9 +419,7 @@ function produce()
 						else
 						{
 							//Do not produce weak body units if we can give this factory a module.
-							if (!countStruct(structures.gens) ||
-								(FC.modules < 1 &&
-								componentAvailable("Body12SUP")))
+							if (!countStruct(structures.gens))
 							{
 								continue;
 							}
