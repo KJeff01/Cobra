@@ -132,7 +132,7 @@ function eventDroidBuilt(droid, struct)
 {
 	if (isConstruct(droid.id))
 	{
-		//Combat engineesr are always base builders.
+		//Combat engineers are always base builders.
 		if (droid.body === "CyborgLightBody" || enumGroup(constructGroup).length < Math.floor(MIN_TRUCKS  / 2))
 		{
 			groupAdd(constructGroup, droid);

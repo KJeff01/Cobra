@@ -373,7 +373,7 @@ function produce()
 	}
 	const MIN_SENSORS = 1;
 	const MIN_REPAIRS = 2;
-	var useCybEngineer = countStruct(CYBORG_FACTORY) && (enumGroup(constructGroup).length < 4);
+	var useCybEngineer = false; //trucks are almost always better for a bot, so disabled for now.
 	var systems = analyzeQueuedSystems();
 
 	var attackers = groupSizes[attackGroup];
