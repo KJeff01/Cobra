@@ -1,8 +1,8 @@
 //This file contains generic events. Chat and research events are split into
 //their own seperate files.
 
-//Initialze global variables and setup timers.
-function eventStartLevel()
+//init vars
+function eventGameInit()
 {
 	attackGroup = newGroup();
 	vtolGroup = newGroup();
@@ -53,28 +53,33 @@ function eventStartLevel()
 	useVtol = true;
 	lastAttackedByScavs = 0;
 	resHistory = [];
+}
 
+//Setup timers mostly
+function eventStartLevel()
+{
 	recycleForHover();
 	buildOrders(); //Start building right away.
 
 	//That (me * 100) part is to help reduce multiple Cobra AI's from coinciding stuff on the same frame. Of course,
 	//higher "me"s may impact the bot in some, hopefully, minimal manner.
-	setTimer("buildOrders", 300 + (me * 100));
-	setTimer("produce", 400 + (me * 100));
-	setTimer("checkAllForRepair", 600 + (me * 100));
-	setTimer("research", 800 + (me * 100));
-	setTimer("lookForOil", 1000 + (me * 100));
-	setTimer("repairDroidTactics", 1200 + (me * 100));
-	setTimer("artilleryTactics", 1400 + (me * 100));
-	setTimer("vtolTactics", 1600 + (me * 100));
-	setTimer("retreatTactics", 1800 + (me * 100));
-	setTimer("groundTactics", 2000 + (me * 100));
-	setTimer("switchOffMG", 5000 + (me * 100));
-	setTimer("recycleForHover", 8000 + (me * 100));
-	setTimer("stopTimers", 9000 + (me * 100));
+	var delay = me * 100;
+	setTimer("buildOrders", 300 + delay);
+	setTimer("produce", 400 + delay);
+	setTimer("checkAllForRepair", 600 + delay);
+	setTimer("research", 800 + delay);
+	setTimer("lookForOil", 1000 + delay);
+	setTimer("repairDroidTactics", 1200 + delay);
+	setTimer("artilleryTactics", 1400 + delay);
+	setTimer("vtolTactics", 1600 + delay);
+	setTimer("retreatTactics", 1800 + delay);
+	setTimer("groundTactics", 2000 + delay);
+	setTimer("switchOffMG", 5000 + delay);
+	setTimer("recycleForHover", 8000 + delay);
+	setTimer("stopTimers", 9000 + delay);
 	if (DEBUG_LOG_ON)
 	{
-		setTimer("debugLogAtEnd", 100000 + (me * 100));
+		setTimer("debugLogAtEnd", 100000 + delay);
 	}
 }
 
@@ -112,7 +117,7 @@ function eventStructureBuilt(structure, droid)
 //Make droids attack hidden close by enemy object.
 function eventDroidIdle(droid)
 {
-	if (shouldCobraAttack() && (droid.droidType === DROID_WEAPON) || (droid.droidType === DROID_CYBORG) || isVTOL(droid))
+	if (shouldCobraAttack() && (droid.droidType === DROID_WEAPON || droid.droidType === DROID_CYBORG || isVTOL(droid)))
 	{
 		var enemyObjects = enumRange(droid.x, droid.y, 6, ENEMIES, false);
 		if (enemyObjects.length > 0)

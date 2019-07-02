@@ -66,7 +66,7 @@ function CheckStartingBases()
 		return true;
 	}
 
-	if (componentAvailable("Body11ABT"))
+	if (getMultiTechLevel() > 1)
 	{
 		const CACHE_WEAPONS = subPersonalities[personality].primaryWeapon.weapons.length;
 		for (var i = 0; i < CACHE_WEAPONS; ++i)

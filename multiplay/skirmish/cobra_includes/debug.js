@@ -1,5 +1,17 @@
 //Hold of the debug related stuff here.
 
+//Dump some text.
+function log(message)
+{
+	dump(gameTime + " : " + message);
+}
+
+//Dump information about an object and some text.
+function logObj(obj, message)
+{
+	dump(gameTime + " : [" + obj.name + " id=" + obj.id + "] > " + message);
+}
+
 function debugLogAtEnd()
 {
      if (!DEBUG_LOG_ON)

@@ -13,12 +13,6 @@ function isDefined(data)
 	return typeof(data) !== "undefined";
 }
 
-//Sort an array from smallest to largest in value.
-function sortArrayNumeric(a, b)
-{
-	return a - b;
-}
-
 //Sort an array from smallest to largest in terms of droid health.
 function sortDroidsByHealth(a, b)
 {
@@ -59,18 +53,6 @@ function returnAntiAirAlias()
 function returnArtilleryAlias()
 {
 	return subPersonalities[personality].artillery.alias;
-}
-
-//Dump some text.
-function log(message)
-{
-	dump(gameTime + " : " + message);
-}
-
-//Dump information about an object and some text.
-function logObj(obj, message)
-{
-	dump(gameTime + " : [" + obj.name + " id=" + obj.id + "] > " + message);
 }
 
 //Distance between an object and the Cobra base.
@@ -165,8 +147,6 @@ function diffPerks()
 	switch (difficulty)
 	{
 		case EASY:
-			//This is handled in eventStartLevel().
-			break;
 		case MEDIUM:
 			//Do nothing
 			break;
@@ -175,28 +155,9 @@ function diffPerks()
 			makeComponentAvailable("PlasmaHeavy", me);
 			makeComponentAvailable("MortarEMP", me);
 			break;
+		default:
+			break;
 	}
-}
-
-//See if power levels are low. This takes account of only the power obtained from the generators.
-function checkLowPower(pow)
-{
-	if (!isDefined(pow))
-	{
-		pow = 25;
-	}
-
-	if (playerPower(me) < pow)
-	{
-		if (playerAlliance(true).length)
-		{
-			sendChatMessage("need Power", ALLIES);
-		}
-
-		return true;
-	}
-
-	return false;
 }
 
 //return real power levels.
@@ -275,24 +236,6 @@ function getMostHarmfulPlayer()
 	}
 
 	return cacheThis(uncached, [], undefined, 12000);
-}
-
-//Removes duplicate items from something.
-function removeDuplicateItems(temp)
-{
-	var prims = {"boolean":{}, "number":{}, "string":{}}, objs = [];
-	return temp.filter(function(item)
-	{
-		var type = typeof item;
-		if (type in prims)
-		{
-			return prims[type].hasOwnProperty(item) ? false : (prims[type][item] = true);
-		}
-		else
-		{
-			return objs.indexOf(item) >= 0 ? false : objs.push(item);
-		}
-	});
 }
 
 //Set the initial grudge counter to target a random enemy.

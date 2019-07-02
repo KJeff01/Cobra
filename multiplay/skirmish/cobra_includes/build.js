@@ -87,24 +87,6 @@ function findIdleTrucks(type)
 	return droidlist;
 }
 
-// Demolish an object.
-function demolishThis(object)
-{
-	var success = false;
-	const DROID_LIST = findIdleTrucks();
-
-	for (var i = 0, t = DROID_LIST.length; i < t; i++)
-	{
-		var truck = getObject(DROID, me, DROID_LIST[i]);
-		if (truck !== null && orderDroidObj(truck, DORDER_DEMOLISH, object))
-		{
-			success = true;
-		}
-	}
-
-	return success;
-}
-
 //Build a certain number of something
 function countAndBuild(stat, count)
 {

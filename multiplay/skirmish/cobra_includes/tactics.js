@@ -195,43 +195,6 @@ function chooseGroup()
 	return enumGroup(attackGroup).filter(function(dr) { return droidReady(dr.id); });
 }
 
-//Find the closest enemy derrick information. If no player is defined, then all of them are checked.
-function findEnemyDerricks(playerNumber)
-{
-	function uncached(playerNumber)
-	{
-		var derrs = [];
-		if (!isDefined(playerNumber))
-		{
-			const ENEMY_PLAYERS = findLivingEnemies();
-			for (var i = 0, e = ENEMY_PLAYERS.length; i < e; ++i)
-			{
-				derrs.concat(enumStruct(ENEMY_PLAYERS[i], structures.derricks));
-			}
-
-			//Include scavenger owned derricks if they exist
-			if (isDefined(scavengerPlayer) && !allianceExistsBetween(scavengerPlayer, me))
-			{
-				derrs.concat(enumStruct(scavengerPlayer, structures.derricks));
-			}
-		}
-		else
-		{
-			derrs = enumStruct(playerNumber, structures.derricks);
-		}
-
-		derrs = derrs.sort(distanceToBase);
-		if (derrs.length > 0)
-		{
-			return objectInformation(derrs[0]);
-		}
-
-		return undefined;
-	}
-
-	return cacheThis(uncached, [playerNumber]);
-}
-
 //Find information about the closest enemy droid. Returns undefined otherwise. Do not target VTOLs
 //unless they are the only remaining droids.
 function findNearestEnemyDroid(enemy)
@@ -387,29 +350,6 @@ function artilleryTactics()
 	}
 }
 
-//Attack enemy oil when if attacking group is large enough.
-function attackEnemyOil()
-{
-	const WHO = chooseGroup();
-	const LEN = WHO.length;
-	var success = false;
-
-	if (LEN >= MIN_ATTACK_DROIDS)
-	{
-		var derr = findEnemyDerricks();
-		if (isDefined(derr))
-		{
-			for (var i = 0; i < LEN; ++i)
-			{
-				attackThisObject(WHO[i].id, derr);
-				success = true;
-			}
-		}
-	}
-
-	return success;
-}
-
 //Defend or attack.
 function groundTactics()
 {
@@ -417,13 +357,6 @@ function groundTactics()
 
 	if (enemyUnitsInBase() || shouldCobraAttack())
 	{
-		/*
-		if (attackEnemyOil())
-		{
-			return;
-		}
-		*/
-
 		var target = rangeStep();
 		if (isDefined(target))
 		{
@@ -630,24 +563,6 @@ function donateSomePower()
 	}
 }
 
-//Move between cobra base and an enemy.
-function prepareAssault()
-{
-	var eBase = startPositions[getMostHarmfulPlayer()];
-	if (!isDefined(eBase))
-	{
-		return;
-	}
-	var attackers = enumDroid(me).filter(function(dr) {
-		return dr.droidType !== DROID_CONSTRUCT && !isVTOL(dr);
-	});
-
-	for (var i = 0, l = attackers.length; i < l; ++i)
-	{
-		orderDroidLoc(attackers[i], DORDER_SCOUT, (MY_BASE.x + eBase.x) / 2, (MY_BASE.y + eBase.y) / 2);
-	}
-}
-
 //Does Cobra believe it is winning or could win?
 function confidenceThreshold()
 {
@@ -694,11 +609,6 @@ function shouldCobraAttack()
 	}
 	else
 	{
-		if (mapOilLevel() === "NTW") // NTW
-		{
-			prepareAssault();
-		}
-
 		if (subPersonalities[personality].resPath !== "defensive")
 		{
 			prevResPath = subPersonalities[personality].resPath;
