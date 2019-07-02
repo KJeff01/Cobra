@@ -535,11 +535,6 @@ function buildPhase1()
 //Build factories.
 function factoryBuildOrder()
 {
-	if (getRealPower() < MIN_POWER)
-	{
-		return false;
-	}
-
 	const MIN_FACTORY_COUNT = 1;
 	const MAX_FACTORY_COUNT = 5;
 
@@ -554,25 +549,30 @@ function factoryBuildOrder()
 
 		var derrNum = countStruct(structures.derricks);
 		var facNum = countStruct(fac);
-		if (derrNum >= 20)
+		if (derrNum >= 18)
 		{
 			num = 5;
 		}
-		else if (derrNum >= 16)
+		else if (derrNum >= 14)
 		{
 			num = 4;
 		}
-		else if (derrNum >= 12)
+		else if (derrNum >= 9)
 		{
 			num = 3;
 		}
-		else if (derrNum >= 8)
+		else if (derrNum >= 6)
 		{
 			num = 2;
 		}
 		else
 		{
 			num = MIN_FACTORY_COUNT;
+		}
+
+		if (num !== MIN_FACTORY_COUNT && getRealPower() < MIN_POWER)
+		{
+			break;
 		}
 
 		if (facNum < num && facNum < MAX_FACTORY_COUNT && countAndBuild(fac, countStruct(structures.gens)))
@@ -595,11 +595,11 @@ function researchBuildOrder()
 		var amount = 3;
 		var derrCount = countStruct(structures.derricks);
 
-		if (derrCount >= 12)
+		if (derrCount >= 10)
 		{
 			amount = 5;
 		}
-		else if (amount >= 7)
+		else if (amount >= 6)
 		{
 			amount = 4;
 		}
