@@ -373,7 +373,7 @@ function produce()
 	}
 	const MIN_SENSORS = 1;
 	const MIN_REPAIRS = 2;
-	var useCybEngineer = false; //trucks are almost always better for a bot, so disabled for now.
+	var useCybEngineer = !countStruct(structures.factories); //use them if we have no factory
 	var systems = analyzeQueuedSystems();
 
 	var attackers = groupSizes[attackGroup];
