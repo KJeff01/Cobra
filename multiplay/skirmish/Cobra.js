@@ -286,7 +286,6 @@ var resHistory;
 //Now include everthing else.
 include(COBRA_INCLUDES + "debug.js");
 include(COBRA_INCLUDES + "performance.js");
-include(COBRA_INCLUDES + "array.js");
 include(COBRA_INCLUDES + "miscFunctions.js");
 include(COBRA_INCLUDES + "build.js");
 include(COBRA_INCLUDES + "production.js");
