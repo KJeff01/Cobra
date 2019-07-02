@@ -478,6 +478,14 @@ function buildPhase1()
 		{
 			return true;
 		}
+		if (countAndBuild(CYBORG_FACTORY, 1))
+		{
+			return true;
+		}
+		if (countAndBuild(VTOL_FACTORY, 1))
+		{
+			return true;
+		}
 	}
 	else
 	{
@@ -520,7 +528,7 @@ function factoryBuildOrder()
 	const MIN_FACTORY_COUNT = 1;
 	const MAX_FACTORY_COUNT = 5;
 
-	for (var i = 0; i < 3; ++i)
+	for (var i = 0; i < subPersonalities[personality].factoryOrder.length; ++i)
 	{
 		var fac = subPersonalities[personality].factoryOrder[i];
 
@@ -552,12 +560,7 @@ function factoryBuildOrder()
 			num = MIN_FACTORY_COUNT;
 		}
 
-		if (num !== MIN_FACTORY_COUNT && getRealPower() < MIN_POWER)
-		{
-			break;
-		}
-
-		if (facNum < num && facNum < MAX_FACTORY_COUNT && countAndBuild(fac, countStruct(structures.gens)))
+		if (facNum < num && facNum < MAX_FACTORY_COUNT && countAndBuild(fac, num))
 		{
 			return true;
 		}
@@ -658,8 +661,8 @@ function buildOrders()
 {
 	if (!findIdleTrucks().length) { return; }
 	if (checkUnfinishedStructures()) { return; }
-	if (maintenance()) { return; }
 	if (buildPhase1()) { return; }
+	if (maintenance()) { return; }
 	if (buildSpecialStructures()) { return; }
 	if (buildAAForPersonality()) { return; }
 	if (buildPhase2()) { return; }
@@ -711,7 +714,7 @@ function maintenance()
 				continue;
 			}
 
-			var structList = enumStruct(me, modObj.structure);
+			var structList = enumStruct(me, modObj.structure).sort(distanceToBase).reverse();
 			for (var c = 0, s = structList.length; c < s; ++c)
 			{
 				if (structList[c].modules < modObj.amount)
