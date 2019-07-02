@@ -465,10 +465,10 @@ function buildDefenses(truck)
 //Build the basics when available. Has a different build order if NTW.
 function buildPhase1()
 {
-	const GOOD_POWER_LEVEL = getRealPower() > 190;
+	const GOOD_POWER_LEVEL = getRealPower() > 250;
 	if (mapOilLevel() !== "NTW")
 	{
-		if (!GOOD_POWER_LEVEL && countAndBuild(structures.gens, 1))
+		if ((!GOOD_POWER_LEVEL || getMultiTechLevel() > 1) && countAndBuild(structures.gens, 1))
 		{
 			return true;
 		}
