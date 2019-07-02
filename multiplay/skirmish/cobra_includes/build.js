@@ -696,7 +696,6 @@ function maintenance()
 	var modList;
 	var struct = null;
 	var module = "";
-	var structList = [];
 	if (mapOilLevel() === "NTW")
 	{
 		modList = [
@@ -719,19 +718,24 @@ function maintenance()
 
 	for (var i = 0, l = modList.length; i < l; ++i)
 	{
-		if (isStructureAvailable(modList[i].mod))
+		var modObj = modList[i];
+
+		if (isStructureAvailable(modObj.mod))
 		{
-			structList = enumStruct(me, modList[i].structure).sort(distanceToBase);
-			if (mapOilLevel() !== "NTW")
+			if (modObj.structure === VTOL_FACTORY && !isStructureAvailable(structures.vtolFactories))
 			{
-				structList = structList.reverse();
+				//Stop wasting power on upgrading VTOL factories if we don't have them
+				//researched yet (from some maps).
+				continue;
 			}
+
+			var structList = enumStruct(me, modObj.structure);
 			for (var c = 0, s = structList.length; c < s; ++c)
 			{
-				if (structList[c].modules < modList[i].amount)
+				if (structList[c].modules < modObj.amount)
 				{
 					struct = structList[c];
-					module = modList[i].mod;
+					module = modObj.mod;
 					break;
 				}
 			}
