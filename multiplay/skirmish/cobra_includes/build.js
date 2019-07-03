@@ -445,7 +445,7 @@ function buildDefenses(truck)
 }
 
 //Build the basics when available. Has a different build order if NTW.
-function buildPhase1()
+function buildBaseStructures()
 {
 	const GOOD_POWER_LEVEL = getRealPower() > 250;
 	if (mapOilLevel() !== "NTW")
@@ -519,6 +519,12 @@ function buildPhase1()
 		}
 	}
 
+	//Build 1 repair facility
+	if (countAndBuild(structures.extras[0], 1))
+	{
+		return true;
+	}
+
 	return false;
 }
 
@@ -560,6 +566,11 @@ function factoryBuildOrder()
 			num = MIN_FACTORY_COUNT;
 		}
 
+		if (num >= 3 && getRealPower() < MIN_POWER)
+		{
+			num = 2;
+		}
+
 		if (facNum < num && facNum < MAX_FACTORY_COUNT && countAndBuild(fac, num))
 		{
 			return true;
@@ -575,7 +586,7 @@ function researchBuildOrder()
 	var seaMap = turnOffCyborgs || forceHover;
 	const MAX_LAB_COUNT = 5;
 
-	if (getRealPower() > MIN_POWER && !researchComplete && labs < MAX_LAB_COUNT)
+	if (!researchComplete && labs < MAX_LAB_COUNT)
 	{
 		var amount = 3;
 		var derrCount = countStruct(structures.derricks);
@@ -584,10 +595,11 @@ function researchBuildOrder()
 		{
 			amount = 5;
 		}
-		else if (amount >= 6)
+		else if (derrCount >= 6 || seaMap === true)
 		{
 			amount = 4;
 		}
+
 		if (labs < amount && countAndBuild(structures.labs, amount))
 		{
 			return true;
@@ -598,7 +610,7 @@ function researchBuildOrder()
 }
 
 //Build minimum requirements of base structures.
-function buildPhase2()
+function buildBaseStructures2()
 {
 	if (!countStruct(structures.gens))
 	{
@@ -635,11 +647,6 @@ function buildSpecialStructures()
 //Build the minimum repairs and any vtol pads.
 function buildExtras()
 {
-	if (!isStructureAvailable("A0PowMod1"))
-	{
-		return false;
-	}
-
 	var gens = countStruct(structures.gens);
 	if (getRealPower() > SUPER_LOW_POWER && countStruct(structures.extras[0]) < 5 && countAndBuild(structures.extras[0], gens + 1))
 	{
@@ -661,11 +668,11 @@ function buildOrders()
 {
 	if (!findIdleTrucks().length) { return; }
 	if (checkUnfinishedStructures()) { return; }
-	if (buildPhase1()) { return; }
+	if (buildBaseStructures()) { return; }
 	if (maintenance()) { return; }
 	if (buildSpecialStructures()) { return; }
-	if (buildAAForPersonality()) { return; }
-	if (buildPhase2()) { return; }
+	if (buildBaseStructures2()) { return; }
+	if (random(100) < 33 && buildAAForPersonality()) { return; }
 	if (buildExtras()) { return; }
 	buildDefenses();
 }
