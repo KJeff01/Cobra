@@ -419,12 +419,18 @@ function buildDefenseNearTruck(truck, type)
 
 // Passing a truck will instruct that truck to pick
 // a location to build a defense structure near it.
-function buildDefenses(truck)
+function buildDefenses(truck, urgent)
 {
 	var isDefensive = subPersonalities[personality].defensePriority >= 50 || subPersonalities[personality].resPath === "defensive";
 	var pow = getRealPower();
+	var enoughPower = (pow > SUPER_LOW_POWER || (isDefensive && (pow > SUPER_LOW_POWER - 25)));
 
-	if ((gameTime > 120000) && (pow > SUPER_LOW_POWER || (isDefensive && (pow > MIN_POWER - 25))))
+	if (!isDefined(urgent))
+	{
+		urgent = false;
+	}
+
+	if ((gameTime > 120000) && (urgent || enoughPower))
 	{
 		if (truck)
 		{
@@ -684,7 +690,7 @@ function buildOrders()
 	if (buildBaseStructures2()) { return; }
 	if (random(100) < 33 && buildAAForPersonality()) { return; }
 	if (buildExtras()) { return; }
-	buildDefenses();
+	buildDefenses(undefined, false);
 }
 
 //Check if a building has modules to be built
