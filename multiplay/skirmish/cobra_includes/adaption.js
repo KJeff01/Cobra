@@ -46,27 +46,28 @@ function adaptToMap() {
 	var offset;
 	const ALLY_COUNT = playerAlliance(true).length - 1;
 	const MAP_OIL_LEVEL = mapOilLevel();
-	const T3_MATCH = getMultiTechLevel() === 3;
+	const HIGH_TECH_LEVEL = getMultiTechLevel() >= 2;
 
 	if (!startedWithTech && !componentAvailable("hover01") && MAP_OIL_LEVEL === "NTW")
 	{
-		choice = "AB";
+		personal = ["AB", "AC", "AA"];
+		choice = personal[random(personal.length)];
 	}
-	else if (!T3_MATCH && (((maxPlayers - 1) === 1) || ((MAP_OIL_LEVEL === "LOW") && !ALLY_COUNT)))
+	else if (!HIGH_TECH_LEVEL && (((maxPlayers - 1) === 1) || ((MAP_OIL_LEVEL === "LOW") && !ALLY_COUNT)))
 	{
 		personal = ["AM", "AR", "AB", "AC"];
 		choice = personal[random(personal.length)];
 	}
 	else if ((MAP_OIL_LEVEL === "MEDIUM") || ALLY_COUNT)
 	{
-		personal = ["AR", "AB", "AC", "AA", "AL"];
-		offset = (T3_MATCH && (baseType !== CAMP_CLEAN)) ? 5 : 4;
+		personal = ["AM", "AR", "AB", "AC", "AA", "AL"];
+		offset = (HIGH_TECH_LEVEL && (baseType !== CAMP_CLEAN)) ? 6 : 5;
 		choice = personal[random(offset)];
 	}
 	else
 	{
-		personal = ["AC", "AA", "AL"];
-		offset = (T3_MATCH && (baseType !== CAMP_CLEAN)) ? 3 : 2;
+		personal = ["AC", "AB", "AA", "AL"];
+		offset = (HIGH_TECH_LEVEL && (baseType !== CAMP_CLEAN)) ? 4 : 3;
 		choice = personal[random(offset)];
 	}
 
