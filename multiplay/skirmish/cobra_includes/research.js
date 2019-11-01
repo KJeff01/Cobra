@@ -87,10 +87,12 @@ function research()
 			found = evalResearch(lab, ESSENTIALS_2);
 		if (!found && random(100) < 10)
 			found = evalResearch(lab, ESSENTIALS_3);
+		if (!found && componentAvailable("V-Tol"))
+			found = evalResearch(lab, VTOL_ESSENTIALS)
 
 		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : SUPER_LOW_POWER))
 		{
-			if ((gameTime > ((playerAlliance(true).length > 0) ? 600000 : 1200000)) && random(100) < 20)
+			if ((gameTime > ((playerAlliance(true).length > 0 || ) ? 600000 : 1200000)) && random(100) < 20)
 			{
 				found = evalResearch(lab, BODY_RESEARCH_1);
 
@@ -132,6 +134,9 @@ function research()
 						found = evalResearch(lab, TANK_ARMOR);
 				}
 
+				if (!found && useVtol && (random(100) < subPersonalities[personality].vtolPriority))
+					found = evalResearch(lab, VTOL_RES);
+
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
 				if (!found && useArti)
@@ -158,9 +163,6 @@ function research()
 					if(!found)
 						found = evalResearch(lab, secondaryWeaponTech);
 				}
-
-				if (!found && useVtol && (random(100) < subPersonalities[personality].vtolPriority))
-					found = evalResearch(lab, VTOL_RES);
 			}
 			else if (subPersonalities[personality].resPath === "defensive")
 			{
