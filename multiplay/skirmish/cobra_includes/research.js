@@ -65,7 +65,7 @@ function evalResearch(lab, list)
 
 function research()
 {
-	if (!countDroid(DROID_CONSTRUCT) || !(isDefined(techlist) && isDefined(turnOffCyborgs)))
+	if (currently_dead || !countDroid(DROID_CONSTRUCT) || !(isDefined(techlist) && isDefined(turnOffCyborgs)))
 	{
 		return;
 	}

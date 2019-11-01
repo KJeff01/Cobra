@@ -1,62 +1,15 @@
 //This file contains generic events. Chat and research events are split into
 //their own seperate files.
 
-//init vars
 function eventGameInit()
 {
-	attackGroup = newGroup();
-	vtolGroup = newGroup();
-	sensorGroup = newGroup();
-	repairGroup = newGroup();
-	artilleryGroup = newGroup();
-	constructGroup = newGroup();
-	oilGrabberGroup = newGroup();
-	retreatGroup = newGroup();
-	lastMsg = "eventGameInit";
-
-	addDroidsToGroup(attackGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return !obj.isCB; }));
-	addDroidsToGroup(attackGroup, enumDroid(me, DROID_CYBORG));
-	addDroidsToGroup(vtolGroup, enumDroid(me).filter(function(obj) { return isVTOL(obj); }));
-	addDroidsToGroup(sensorGroup, enumDroid(me, DROID_SENSOR));
-	addDroidsToGroup(repairGroup, enumDroid(me, DROID_REPAIR));
-	addDroidsToGroup(artilleryGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return obj.isCB; }));
-
-	var cons = enumDroid(me, DROID_CONSTRUCT);
-	for (var i = 0, l = cons.length; i < l; ++i)
-	{
-		if (l < MIN_TRUCKS)
-		{
-			!countStruct(FACTORY) ? groupAdd(constructGroup, cons[i]) : groupAdd(oilGrabberGroup, cons[i]);
-		}
-		else
-		{
-			if (i < Math.floor(l / 2))
-			{
-				groupAdd(constructGroup, cons[i]);
-			}
-			else
-			{
-				groupAdd(oilGrabberGroup, cons[i]);
-			}
-		}
-	}
-
-	researchComplete = false;
-	initializeGrudgeCounter();
-	forceHover = checkIfSeaMap();
-	turnOffCyborgs = forceHover;
-	choosePersonality();
-	turnOffMG = CheckStartingBases();
-	startedWithTech = CheckStartingBases();
-	useArti = true;
-	useVtol = true;
-	lastAttackedByScavs = 0;
-	resHistory = [];
+	initCobraGroups();
 }
 
 //Setup timers mostly
 function eventStartLevel()
 {
+	initCobraVars();
 	recycleForHover();
 	buildOrders(); //Start building right away.
 
@@ -78,7 +31,7 @@ function eventStartLevel()
 	setTimer("groundTactics", 2000 + delay);
 	setTimer("switchOffMG", 5000 + delay);
 	setTimer("recycleForHover", 8000 + delay);
-	setTimer("stopTimers", 9000 + delay);
+	setTimer("checkIfDead", 9000 + delay);
 	if (DEBUG_LOG_ON)
 	{
 		setTimer("debugLogAtEnd", 100000 + delay);

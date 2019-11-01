@@ -366,7 +366,7 @@ function analyzeQueuedSystems()
 //Produce a unit when factories allow it.
 function produce()
 {
-	if (countDroid(DROID_ANY) >= 150)
+	if ((countDroid(DROID_ANY) >= 150) || currently_dead)
 	{
 		return; //Stop spamming about having the droid limit reached.
 	}

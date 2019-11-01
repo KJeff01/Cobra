@@ -266,7 +266,8 @@ var useArti;
 var useVtol;
 var lastAttackedByScavs;
 var startedWithTech;
-var prevResPath; // previous personality research path. volatile.
+var prevResPath; // Previous personality research path. Volatile.
+var currently_dead; // Used to detect if Cobra is, basically, dead. If true, the script is put in a very low perf impact state.
 
 // -- Weapon research list (initializeResearchLists).
 var techlist;

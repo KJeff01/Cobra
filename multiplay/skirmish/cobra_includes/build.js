@@ -263,6 +263,11 @@ function checkUnfinishedStructures(droidID)
 
 function lookForOil()
 {
+	if (currently_dead)
+	{
+		return;
+	}
+
 	var droids = enumGroup(oilGrabberGroup);
 	var oils = enumFeature(-1, OIL_RES).sort(distanceToBase);
 
@@ -670,6 +675,7 @@ function buildExtras()
 //Cobra's unique build decisions
 function buildOrders()
 {
+	if (currently_dead) { return; }
 	if (!findIdleTrucks().length) { return; }
 	if (checkUnfinishedStructures()) { return; }
 	if (buildBaseStructures()) { return; }

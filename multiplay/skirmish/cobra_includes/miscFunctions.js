@@ -284,31 +284,94 @@ function removeThisTimer(timer)
 	}
 }
 
-//Stop the non auto-remove timers if Cobra died.
-function stopTimers()
+//Check if Cobra is "alive". If not, the script is put in a very low perf impact state.
+function checkIfDead()
 {
 	if (!(countDroid(DROID_ANY) || countStruct(FACTORY) || countStruct(CYBORG_FACTORY)))
 	{
-		var timers = [
-			"buildOrders", "repairDroidTactics", "produce", "groundTactics",
-			"artilleryTactics", "stopTimers", "research", "lookForOil",
-			"vtolTactics",
-		];
+		currently_dead = true;
 
-		removeThisTimer(timers);
-		donateAllPower();
+		// Remind players to help me... (other Cobra allies will respond)
+		if (playerAlliance(true).length > 0)
+		{
+			const GOOD_POWER_SUPPLY = 1200;
+
+			if (playerPower(me) < GOOD_POWER_SUPPLY)
+			{
+				sendChatMessage("need power", ALLIES);
+			}
+			else
+			{
+				sendChatMessage("need truck", ALLIES);
+			}
+		}
+	}
+	else
+	{
+		currently_dead = false;
 	}
 }
 
-//Give a player all of Cobra's power. one use is if it dies, then it gives
-//all of its power to an ally.
-function donateAllPower()
+function initCobraGroups()
 {
-	const ALLY_PLAYERS = playerAlliance(true);
-	const LEN = ALLY_PLAYERS.length;
+	attackGroup = newGroup();
+	vtolGroup = newGroup();
+	sensorGroup = newGroup();
+	repairGroup = newGroup();
+	artilleryGroup = newGroup();
+	constructGroup = newGroup();
+	oilGrabberGroup = newGroup();
+	retreatGroup = newGroup();
 
-	if (LEN && playerPower(me) > 0)
+	addDroidsToGroup(attackGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return !obj.isCB; }));
+	addDroidsToGroup(attackGroup, enumDroid(me, DROID_CYBORG));
+	addDroidsToGroup(vtolGroup, enumDroid(me).filter(function(obj) { return isVTOL(obj); }));
+	addDroidsToGroup(sensorGroup, enumDroid(me, DROID_SENSOR));
+	addDroidsToGroup(repairGroup, enumDroid(me, DROID_REPAIR));
+	addDroidsToGroup(artilleryGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return obj.isCB; }));
+
+	var cons = enumDroid(me, DROID_CONSTRUCT);
+	for (var i = 0, l = cons.length; i < l; ++i)
 	{
-		donatePower(playerPower(me), ALLY_PLAYERS[random(LEN)]);
+		var con = cons[i];
+		if (l < MIN_TRUCKS)
+		{
+			if (!countStruct(FACTORY))
+			{
+				groupAdd(constructGroup, con);
+			}
+			else
+			{
+				groupAdd(oilGrabberGroup, con);
+			}
+		}
+		else
+		{
+			if (i < Math.floor(l / 2))
+			{
+				groupAdd(constructGroup, con);
+			}
+			else
+			{
+				groupAdd(oilGrabberGroup, con);
+			}
+		}
 	}
+}
+
+function initCobraVars()
+{
+	lastMsg = "eventStartLevel";
+	currently_dead = false;
+	researchComplete = false;
+	initializeGrudgeCounter();
+	forceHover = checkIfSeaMap();
+	turnOffCyborgs = forceHover;
+	choosePersonality();
+	turnOffMG = CheckStartingBases();
+	startedWithTech = CheckStartingBases();
+	useArti = true;
+	useVtol = true;
+	lastAttackedByScavs = 0;
+	resHistory = [];
 }

@@ -256,7 +256,7 @@ function findNearestEnemyStructure(enemy)
 //Sensors know all your secrets. They will observe what is closest to Cobra base.
 function artilleryTactics()
 {
-	if (!shouldCobraAttack())
+	if (currently_dead || !shouldCobraAttack())
 	{
 		return;
 	}
@@ -289,7 +289,7 @@ function groundTactics()
 {
 	donateSomePower();
 
-	if (enemyUnitsInBase() || shouldCobraAttack())
+	if (!currently_dead && (enemyUnitsInBase() || shouldCobraAttack()))
 	{
 		var target = rangeStep();
 		if (isDefined(target))
@@ -310,6 +310,11 @@ function groundTactics()
 //Recycle units when certain conditions are met.
 function recycleForHover()
 {
+	if (currently_dead)
+	{
+		return;
+	}
+
 	const MIN_FACTORY = 1;
 	var systems = enumDroid(me).filter(function(dr) {
 		return isConstruct(dr.id);
@@ -357,6 +362,11 @@ function recycleForHover()
 //Tell the repair group to go repair other droids.
 function repairDroidTactics()
 {
+	if (currently_dead)
+	{
+		return;
+	}
+
 	var reps = enumGroup(repairGroup);
 	const LEN = reps.length;
 
@@ -407,6 +417,11 @@ function targetPlayer(playerNumber)
 //VTOL units do there own form of tactics.
 function vtolTactics()
 {
+	if (currently_dead)
+	{
+		return;
+	}
+
 	const MIN_VTOLS = 5;
 	var vtols = enumGroup(vtolGroup).filter(function(dr) {
 		return droidReady(dr.id);
@@ -488,6 +503,11 @@ function enemyUnitsInBase()
 //Donate my power to allies if I have too much.
 function donateSomePower()
 {
+	if (currently_dead)
+	{
+		return;
+	}
+	
 	const ALLY_PLAYERS = playerAlliance(true);
 	const LEN = ALLY_PLAYERS.length;
 	const ALIVE_ENEMIES = findLivingEnemies().length;
