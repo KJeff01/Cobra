@@ -130,12 +130,14 @@ function choosePersonalityWeapon(type)
 
 	if (type === "TANK")
 	{
+		var skip = false;
 		weaps = chooseRandomWeapon();
 		weaponList = shuffleWeaponList(chooseWeaponType(weaps));
 
 		//randomly choose an unbalanced and overpowered weapon if on hard or insane difficulty.
 		if (difficulty >= HARD && componentAvailable("tracked01") && (random(100) <= 2))
 		{
+			skip = true;
 			if (difficulty >= INSANE && random(100) <= 50)
 			{
 				weaponList.push("MortarEMP");
@@ -146,12 +148,15 @@ function choosePersonalityWeapon(type)
 			}
 		}
 
-		if (!turnOffMG && !isDesignable(weaponList))
+		if (!skip && !turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100)))
 		{
 			weaponList = [];
- 			for (var i = weaponStats.machineguns.weapons.length - 1; i >= 0; --i)
+			var generalAntiCyborgWeapons = weaponStats.machineguns.weapons;
+
+ 			for (var i = generalAntiCyborgWeapons.length - 1; i >= 0; --i)
 			{
- 				weaponList.push(weaponStats.machineguns.weapons[i].stat);
+				var weapObj = generalAntiCyborgWeapons[i];
+ 				weaponList.push(weapObj.stat);
  			}
 		}
 	}

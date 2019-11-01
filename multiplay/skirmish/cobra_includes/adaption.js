@@ -1,17 +1,36 @@
-//If starting with a low tech level, then disable Machine-guns when the
-//personality can design its last primary weapon.
+//Decide when it is safe for a personality to use the optional machinegun line
+//for anti-cyborg measures.
 function switchOffMG()
 {
-	if (turnOffMG || (returnPrimaryAlias() === "mg"))
+	var cyborgThreat = playerCyborgRatio(getMostHarmfulPlayer()) >= subPersonalities[personality].cyborgThreatPercentage;
+	if (cyborgThreat && !useLasersForCyborgControl())
 	{
-		removeThisTimer("switchOffMG");
-		return;
+		turnOffMG = false;
 	}
-
-	if (componentAvailable("Body5REC"))
+	else
 	{
 		turnOffMG = true;
 	}
+}
+
+function useLasersForCyborgControl()
+{
+	return (componentAvailable("Body12SUP") || isStructureAvailable(structures.vtolPads));
+}
+
+function playerCyborgRatio(player)
+{
+	if (!isDefined(player))
+	{
+		player = getMostHarmfulPlayer();
+	}
+
+	function uncached(player)
+	{
+		return enumDroid(player, DROID_CYBORG).length / (enumDroid(player).length + 1);
+	}
+
+	return cacheThis(uncached, [player], undefined, 8000);
 }
 
 

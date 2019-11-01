@@ -150,7 +150,8 @@ var subPersonalities =
 		"defensePriority": 30,
 		"vtolPriority": 20,
 		"alloyPriority": 20,
-		"useLasers": false,
+		"useLasers": true,
+		"cyborgThreatPercentage": 0.20,
 		"resPath": "generic",
 		"res": [
 			"R-Wpn-Cannon-Damage02",
@@ -167,7 +168,8 @@ var subPersonalities =
 		"defensePriority": 20,
 		"vtolPriority": 40,
 		"alloyPriority": 25,
-		"useLasers": false,
+		"useLasers": true,
+		"cyborgThreatPercentage": 0.60,
 		"resPath": "generic",
 		"res": [
 			"R-Wpn-Flamer-Damage03",
@@ -184,8 +186,9 @@ var subPersonalities =
 		"defensePriority": 10,
 		"vtolPriority": 50,
 		"alloyPriority": 10,
-		"useLasers": false,
+		"useLasers": true,
 		"resPath": "offensive",
+		"cyborgThreatPercentage": 0.30,
 		"res": [
 			"R-Wpn-Rocket02-MRL",
 		],
@@ -200,8 +203,9 @@ var subPersonalities =
 		"defensePriority": 50,
 		"vtolPriority": 40,
 		"alloyPriority": 15,
-		"useLasers": false,
+		"useLasers": true,
 		"resPath": "generic",
+		"cyborgThreatPercentage": 100,
 		"res": [
 			"R-Wpn-MG2Mk1",
 		],
@@ -216,8 +220,9 @@ var subPersonalities =
 		"defensePriority": 70,
 		"vtolPriority": 15,
 		"alloyPriority": 15,
-		"useLasers": false,
+		"useLasers": true,
 		"resPath": "offensive",
+		"cyborgThreatPercentage": 0.50,
 		"res": [
 			"R-Wpn-Mortar02Hvy",
 			"R-Wpn-Mortar-ROF02",
@@ -236,6 +241,7 @@ var subPersonalities =
 		"vtolPriority": 100,
 		"alloyPriority": 10,
 		"useLasers": true,
+		"cyborgThreatPercentage": 0.80,
 		"resPath": "air",
 		"res": [
 			"R-Wpn-Mortar-Incenediary",
@@ -285,6 +291,8 @@ var secondaryWeaponTech;
 var secondaryWeaponExtra;
 var defenseTech;
 var standardDefenseTech;
+var machinegunWeaponTech;
+var machinegunWeaponExtra;
 
 // -- Debug var stuff
 var resHistory;
