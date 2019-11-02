@@ -83,29 +83,6 @@ function returnClosestEnemyFactory(enemyNumber)
 	return cacheThis(uncached, [enemyNumber]);
 }
 
-//Return information about the closest enemy truck for an enemy. Undefined if none.
-function getClosestEnemyTruck(enemyNumber)
-{
-	function uncached(enemyNumber)
-	{
-		if (!isDefined(enemyNumber))
-		{
-			enemyNumber = getMostHarmfulPlayer();
-		}
-
-		var trucks = enumDroid(enemyNumber, DROID_CONSTRUCT);
-		if (trucks.length > 0)
-		{
-			trucks.sort(distanceToBase);
-			return objectInformation(trucks[0]);
-		}
-
-		return undefined;
-	}
-
-	return cacheThis(uncached, [enemyNumber]);
-}
-
 //Should the vtol attack when ammo is high enough?
 function vtolReady(droidID)
 {
@@ -507,7 +484,7 @@ function donateSomePower()
 	{
 		return;
 	}
-	
+
 	const ALLY_PLAYERS = playerAlliance(true);
 	const LEN = ALLY_PLAYERS.length;
 	const ALIVE_ENEMIES = findLivingEnemies().length;
