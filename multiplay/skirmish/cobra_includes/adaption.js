@@ -3,7 +3,8 @@
 function switchOffMG()
 {
 	var cyborgThreat = playerCyborgRatio(getMostHarmfulPlayer()) >= subPersonalities[personality].cyborgThreatPercentage;
-	if (cyborgThreat && !useLasersForCyborgControl())
+	// Will keep using machineguns until the basic laser is available.
+	if (cyborgThreat && !isDesignable("Laser3BEAMMk1"))
 	{
 		turnOffMG = false;
 	}
@@ -58,7 +59,6 @@ function myPersonality()
 }
 
 //Choose personality based on map oil/ally count or technology. Called from eventStartLevel().
-//isDesignable("Howitzer03-Rot") checks if it a T3 match and allows personality AL to be used (must have bases).
 function adaptToMap() {
 	var choice = "";
 	var personal;
