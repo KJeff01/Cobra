@@ -708,6 +708,7 @@ function maintenance()
 	{
 		modList = [
 			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
+			{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
 			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
 			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
@@ -719,6 +720,7 @@ function maintenance()
 			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
 			{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
 			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
+			{"mod": "A0FacMod1", "amount": 1, "structure": VTOL_FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
 		];
@@ -752,11 +754,6 @@ function maintenance()
 				break;
 			}
 		}
-	}
-
-	if (mapOilLevel() === "NTW" && module === "A0PowMod1" && getRealPower() > 400)
-	{
-		return false;
 	}
 
 	if (((getRealPower() > SUPER_LOW_POWER) || (module === modList[0].mod)) && struct && buildStuff(struct, module))

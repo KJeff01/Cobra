@@ -34,6 +34,32 @@ function playerCyborgRatio(player)
 	return cacheThis(uncached, [player], undefined, 8000);
 }
 
+//Count how many Enemy VTOL units are on the map.
+function countEnemyVTOL()
+{
+	function uncached()
+	{
+		const ENEMY_PLAYERS = findLivingEnemies();
+		var enemyVtolCount = 0;
+		for (var x = 0, e = ENEMY_PLAYERS.length; x < e; ++x)
+		{
+			var playerDroids = enumDroid(ENEMY_PLAYERS[x]);
+			for (var c = 0, l = playerDroids.length; c < l; ++c)
+			{
+				var prop = playerDroids[c].propulsion;
+				if (prop === "V-Tol" || prop === "Helicopter")
+				{
+					++enemyVtolCount;
+				}
+			}
+		}
+
+		return enemyVtolCount;
+	}
+
+	return cacheThis(uncached, []);
+}
+
 
 //Choose the personality as described in the global subPersonalities.
 //When called from chat it will switch to that one directly.

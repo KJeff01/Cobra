@@ -113,7 +113,7 @@ function research()
 					found = evalResearch(lab, extraTech);
 
 				//Use default AA until stormbringer.
-				if (random(100) < 50 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
+				if (random(100) < 40 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
 				{
 					if (!found)
 						found = evalResearch(lab, antiAirTech);
@@ -185,7 +185,7 @@ function research()
 			else if (subPersonalities[personality].resPath === "defensive")
 			{
 				//Use default AA until stormbringer.
-				if (random(100) < 50 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
+				if (random(100) < 40 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
 				{
 					if (!found)
 						found = evalResearch(lab, antiAirTech);
@@ -286,7 +286,7 @@ function research()
 					found = evalResearch(lab, SYSTEM_UPGRADES);
 
 				//Use default AA until stormbringer.
-				if (random(100) < 50 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
+				if (random(100) < 40 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
 				{
 					if (!found)
 						found = evalResearch(lab, antiAirTech);
@@ -347,7 +347,7 @@ function research()
 					found = evalResearch(lab, artilleryTech);
 
 				//Use default AA until stormbringer.
-				if (random(100) < 50 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
+				if (random(100) < 40 && countEnemyVTOL() && !isStructureAvailable("P0-AASite-Laser"))
 				{
 					if (!found)
 						found = evalResearch(lab, antiAirTech);
