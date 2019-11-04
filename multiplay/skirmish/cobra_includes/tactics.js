@@ -532,7 +532,7 @@ function shouldCobraAttack()
 //Controls how long localized group retreat happens. See also eventAttacked.
 function retreatTactics()
 {
-	const SCAN_RADIUS = 7
+	const SCAN_RADIUS = 7;
 	var droids = enumGroup(retreatGroup);
 
 	//Flee!

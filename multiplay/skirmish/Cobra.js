@@ -55,7 +55,7 @@ const ESSENTIALS_3 = [
 	"R-Struc-Power-Upgrade03a",
 	"R-Struc-Research-Upgrade09",
 	"R-Sys-Autorepair-General",
-]
+];
 const SYSTEM_UPGRADES = [
 	"R-Sys-MobileRepairTurretHvy",
 	"R-Vehicle-Prop-Tracks",

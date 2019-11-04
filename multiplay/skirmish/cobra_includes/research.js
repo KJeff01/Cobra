@@ -93,7 +93,7 @@ function research()
 		if (!found && random(100) < 10)
 			found = evalResearch(lab, ESSENTIALS_3);
 		if (!found && componentAvailable("V-Tol"))
-			found = evalResearch(lab, VTOL_ESSENTIALS)
+			found = evalResearch(lab, VTOL_ESSENTIALS);
 
 		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : SUPER_LOW_POWER))
 		{
