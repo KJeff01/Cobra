@@ -3,8 +3,9 @@
 function switchOffMG()
 {
 	var cyborgThreat = playerCyborgRatio(getMostHarmfulPlayer()) >= subPersonalities[personality].cyborgThreatPercentage;
-	// Will keep using machineguns until the basic laser is available.
-	if (cyborgThreat && !isDesignable("Laser3BEAMMk1"))
+	// Will keep using machineguns until the basic laser is available or if the myPersonality
+	// doesn't have the first of its primary weapon line available.
+	if ((cyborgThreat || !isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat)) && !isDesignable("Laser3BEAMMk1"))
 	{
 		turnOffMG = false;
 	}
@@ -93,12 +94,7 @@ function adaptToMap() {
 	const MAP_OIL_LEVEL = mapOilLevel();
 	const HIGH_TECH_LEVEL = getMultiTechLevel() >= 2;
 
-	if (!startedWithTech && !componentAvailable("hover01") && MAP_OIL_LEVEL === "NTW")
-	{
-		personal = ["AB", "AC", "AA"];
-		choice = personal[random(personal.length)];
-	}
-	else if (!HIGH_TECH_LEVEL && (((maxPlayers - 1) === 1) || ((MAP_OIL_LEVEL === "LOW") && !ALLY_COUNT)))
+	if (!HIGH_TECH_LEVEL && (((maxPlayers - 1) === 1) || ((MAP_OIL_LEVEL === "LOW") && !ALLY_COUNT)))
 	{
 		personal = ["AM", "AR", "AB", "AC"];
 		choice = personal[random(personal.length)];

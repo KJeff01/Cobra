@@ -243,8 +243,8 @@ var subPersonalities =
 		"cyborgThreatPercentage": 0.80,
 		"resPath": "air",
 		"res": [
-			"R-Wpn-Mortar-Incenediary",
 			"R-Wpn-Laser01",
+			"R-Wpn-Mortar-Incenediary",
 		],
 	},
 };
@@ -270,7 +270,6 @@ var turnOffMG; //This is only used for when the personalities don't have their w
 var useArti;
 var useVtol;
 var lastAttackedByScavs;
-var startedWithTech;
 var prevResPath; // Previous personality research path. Volatile.
 var currently_dead; // Used to detect if Cobra is, basically, dead. If true, the script is put in a very low perf impact state.
 

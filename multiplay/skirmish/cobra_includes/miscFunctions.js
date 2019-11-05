@@ -368,8 +368,7 @@ function initCobraVars()
 	forceHover = checkIfSeaMap();
 	turnOffCyborgs = forceHover;
 	choosePersonality();
-	turnOffMG = CheckStartingBases();
-	startedWithTech = CheckStartingBases();
+	turnOffMG = false;
 	useArti = true;
 	useVtol = true;
 	lastAttackedByScavs = 0;

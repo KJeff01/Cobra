@@ -57,30 +57,6 @@ function checkIfSeaMap()
 	return hoverMap;
 }
 
-//Turn off Machine-guns on T2 and T3
-//Very cheap analysis done here.
-function CheckStartingBases()
-{
-	if (personality === "AL")
-	{
-		return true;
-	}
-
-	if (getMultiTechLevel() > 1)
-	{
-		const CACHE_WEAPONS = subPersonalities[personality].primaryWeapon.weapons.length;
-		for (var i = 0; i < CACHE_WEAPONS; ++i)
-		{
-			if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[i].stat))
-			{
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
 //All derricks and all oil resources to find the map total.
 function countAllResources()
 {
