@@ -19,15 +19,14 @@ Hard/insane difficulty enables Heavy Plasma Launcher for Cobra (very small chanc
 chat commands include:
 1. need power/truck/tank/cyborg/vtol.
 2. AC/AR/AB/AM/AL/AA -- make it switch personalities.
-3. FFA -- after a team skirmish is won, break alliance and fight it (does not count as win/loss either way).
-4. toggle cyborg -- disable/enable cyborg use.
-5. toggle hover -- force Cobra to use hover propulsion for all tanks.
-6. oil level -- Ask what the oil count of the whole map is with a response of low, medium, or high.
-7. targetX -- Ask Cobra to focus on enemy player X.
-8. stats -- Which player Cobra is currently targeting.
-9. toggle arti -- Enable or disable artillery production/research.
-10. toggle vtol -- Enable or disable VTOL production/research.
-11. resG/resO/resD/resA -- Switch research paths to generic, offensive, defensive, and air.
+3. toggle cyborg -- disable/enable cyborg use.
+4. toggle hover -- force Cobra to use hover propulsion for all tanks.
+5. oil level -- Ask what the oil count of the whole map is with a response of low, medium, or high.
+6. targetX -- Ask Cobra to focus on enemy player X.
+7. stats -- Which player Cobra is currently targeting.
+8. toggle arti -- Enable or disable artillery production/research.
+9. toggle vtol -- Enable or disable VTOL production/research.
+10. resG/resO/resD/resA -- Switch research paths to generic, offensive, defensive, and air.
 
 Press alt + h to drop a beacon and Cobra units will try making their way over to it if possible.
 

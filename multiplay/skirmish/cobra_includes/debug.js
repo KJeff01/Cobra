@@ -20,7 +20,7 @@ function debugLogAtEnd()
      }
 
      var wonDebug = countStruct("A0LightFactory", me) + countStruct("A0CyborgFactory", me) + countDroid(DROID_ANY);
-     if (freeForAll() || ((gameTime > 90000) && !wonDebug))
+     if ((gameTime > 90000) && !wonDebug)
      {
           const TAB = "     ";
           log("**DEBUG_SESSION**");
