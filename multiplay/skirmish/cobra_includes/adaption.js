@@ -3,7 +3,7 @@
 function switchOffMG()
 {
 	var cyborgThreat = playerCyborgRatio(getMostHarmfulPlayer()) >= subPersonalities[personality].cyborgThreatPercentage;
-	// Will keep using machineguns until the basic laser is available or if the myPersonality
+	// Will keep using machineguns until the basic laser is available or if the personality
 	// doesn't have the first of its primary weapon line available.
 	if ((cyborgThreat || !isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat)) && !isDesignable("Laser3BEAMMk1"))
 	{

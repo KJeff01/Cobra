@@ -65,6 +65,42 @@ function evalResearch(lab, list)
 	return false;
 }
 
+// Funky time magic that seems to yield good times to allow research of non-grey bodies.
+function timeToResearchAdvancedBody()
+{
+	var time = 0;
+
+	switch (getMultiTechLevel())
+	{
+		case 1:
+			time = 900000;
+			if (baseType === CAMP_BASE)
+			{
+				time = 420000;
+			}
+			else if (baseType === CAMP_WALLS)
+			{
+				time = 280000;
+			}
+			break;
+		case 2:
+			time = 180000;
+			break;
+		case 3:
+			time = 120000;
+			break;
+		default:
+			time = 900000;
+	}
+
+	if (playerAlliance(true).length > 0)
+	{
+		time = Math.floor(time / 2);
+	}
+
+	return time;
+}
+
 function research()
 {
 	if (currently_dead || !countDroid(DROID_CONSTRUCT) || !(isDefined(techlist) && isDefined(turnOffCyborgs)))
@@ -97,11 +133,11 @@ function research()
 
 		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : SUPER_LOW_POWER))
 		{
-			if ((gameTime > (((playerAlliance(true).length > 0) || (baseType !== CAMP_CLEAN)) ? 520000 : 900000)) && random(100) < 20)
+			if (gameTime > timeToResearchAdvancedBody() && random(100) < 20)
 			{
 				found = evalResearch(lab, BODY_RESEARCH_1);
 
-				if (!found && random(100) < 10)
+				if (!found && random(100) < 15)
 				{
 					found = evalResearch(lab, BODY_RESEARCH_2);
 				}
@@ -446,7 +482,7 @@ function research()
 			}
 
 			//Very likely going to be done with research by now.
-			if (!found && componentAvailable("Body14SUP") && isDesignable("EMP-Cannon") && isStructureAvailable(structures.extras[2]))
+			if ((getMultiTechLevel() === 4) || (!found && componentAvailable("Body14SUP") && isDesignable("EMP-Cannon") && isStructureAvailable(structures.extras[2])))
 			{
 				researchComplete = true;
 			}
