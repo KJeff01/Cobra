@@ -150,7 +150,7 @@ function choosePersonalityWeapon(type)
 		}
 
 		// Choose an anti-air weapon instead... checks target player and then total player vtols.
-		if (((playerVtolRatio(getMostHarmfulPlayer()) >= 0.20) || (countEnemyVTOL() > 40)) && random(100) < 20)
+		if (((playerVtolRatio(getMostHarmfulPlayer()) >= 0.15) || (countEnemyVTOL() > 30)) && random(100) < 20)
 		{
 			weaponList = [];
 
