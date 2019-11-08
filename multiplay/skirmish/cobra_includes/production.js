@@ -325,12 +325,26 @@ function buildCyborg(id, useEngineer)
 	return false;
 }
 
-//Create a vtol fighter with a medium body.
+//Create a vtol fighter with a medium/large body.
 function buildVTOL(id)
 {
+	if (getRealPower() < PRODUCTION_POWER)
+	{
+		return false;
+	}
+
 	var weap = choosePersonalityWeapon("VTOL");
+	var weap2 = choosePersonalityWeapon("VTOL");
 	var fac = getObject(STRUCTURE, me, id);
-	return (getRealPower() > PRODUCTION_POWER && fac !== null && isDefined(weap) && buildDroid(fac, "VTOL unit", VTOL_BODY, "V-Tol", "", "", weap, weap));
+
+	if (fac !== null && isDefined(weap) && isDefined(weap2))
+	{
+		var body = (random(100) < 60) ? VTOL_BODY : TANK_BODY;
+
+		return buildDroid(fac, "VTOL unit", body, "V-Tol", "", "", weap, weap2);
+	}
+
+	return false
 }
 
 //Check what system units are queued in a regular factory. Returns an object

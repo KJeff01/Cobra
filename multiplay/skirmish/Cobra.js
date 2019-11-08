@@ -106,7 +106,7 @@ const TANK_BODY = [
 	"Body13SUP", // Wyvern
 	"Body10MBT", // Vengeance
 	"Body7ABT",  // Retribution
-	"Body9REC",
+	"Body9REC",  // Tiger
 	"Body12SUP", // Mantis
 	"Body6SUPP", // Panther
 	"Body11ABT", // Python
@@ -168,7 +168,7 @@ var subPersonalities =
 		"vtolPriority": 40,
 		"alloyPriority": 25,
 		"useLasers": true,
-		"cyborgThreatPercentage": 0.60,
+		"cyborgThreatPercentage": 0.40,
 		"resPath": "generic",
 		"res": [
 			"R-Wpn-Flamer-Damage03",
@@ -187,7 +187,7 @@ var subPersonalities =
 		"alloyPriority": 10,
 		"useLasers": true,
 		"resPath": "offensive",
-		"cyborgThreatPercentage": 0.30,
+		"cyborgThreatPercentage": 0.10,
 		"res": [
 			"R-Wpn-Rocket02-MRL",
 		],
@@ -221,7 +221,7 @@ var subPersonalities =
 		"alloyPriority": 15,
 		"useLasers": true,
 		"resPath": "offensive",
-		"cyborgThreatPercentage": 0.50,
+		"cyborgThreatPercentage": 0.30,
 		"res": [
 			"R-Wpn-Mortar02Hvy",
 			"R-Wpn-Mortar-ROF02",
@@ -240,7 +240,7 @@ var subPersonalities =
 		"vtolPriority": 100,
 		"alloyPriority": 10,
 		"useLasers": true,
-		"cyborgThreatPercentage": 0.80,
+		"cyborgThreatPercentage": 0.10,
 		"resPath": "air",
 		"res": [
 			"R-Wpn-Laser01",
