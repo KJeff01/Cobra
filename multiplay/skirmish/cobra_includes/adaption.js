@@ -36,15 +36,16 @@ function playerCyborgRatio(player)
 }
 
 //Count how many Enemy VTOL units are on the map.
-function countEnemyVTOL()
+function countEnemyVTOL(player)
 {
-	function uncached()
+	function uncached(player)
 	{
-		const ENEMY_PLAYERS = findLivingEnemies();
+		var enemies = isDefined(player) ? [player] : findLivingEnemies();
 		var enemyVtolCount = 0;
-		for (var x = 0, e = ENEMY_PLAYERS.length; x < e; ++x)
+
+		for (var x = 0, e = enemies.length; x < e; ++x)
 		{
-			var playerDroids = enumDroid(ENEMY_PLAYERS[x]);
+			var playerDroids = enumDroid(enemies[x]);
 			for (var c = 0, l = playerDroids.length; c < l; ++c)
 			{
 				var prop = playerDroids[c].propulsion;
@@ -58,7 +59,22 @@ function countEnemyVTOL()
 		return enemyVtolCount;
 	}
 
-	return cacheThis(uncached, []);
+	return cacheThis(uncached, [player], undefined, 9000);
+}
+
+function playerVtolRatio(player)
+{
+	if (!isDefined(player))
+	{
+		player = getMostHarmfulPlayer();
+	}
+
+	function uncached(player)
+	{
+		return countEnemyVTOL(player) / (enumDroid(player).length + 1);
+	}
+
+	return cacheThis(uncached, [player], undefined, 6000);
 }
 
 

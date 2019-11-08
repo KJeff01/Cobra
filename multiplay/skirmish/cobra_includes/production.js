@@ -137,6 +137,7 @@ function choosePersonalityWeapon(type)
 		//randomly choose an unbalanced and overpowered weapon if on hard or insane difficulty.
 		if (difficulty >= HARD && componentAvailable("tracked01") && (random(100) <= 2))
 		{
+			weaponList = [];
 			skip = true;
 			if (difficulty >= INSANE && random(100) <= 50)
 			{
@@ -146,6 +147,30 @@ function choosePersonalityWeapon(type)
 			{
 				weaponList.push("PlasmaHeavy");
 			}
+		}
+
+		// Choose an anti-air weapon instead... checks target player and then total player vtols.
+		if (((playerVtolRatio(getMostHarmfulPlayer()) >= 0.20) || (countEnemyVTOL() > 40)) && random(100) < 20)
+		{
+			weaponList = [];
+
+			// The lasers are the most powerful...
+			if (componentAvailable(weaponStats.lasers_AA.weapons[0].stat) && (random(100) <= 50))
+			{
+				var lasers = weaponStats.lasers_AA.weapons;
+				for (var i = lasers.length - 1; i >= 0; --i)
+				{
+					var weapObj = lasers[i];
+	 				weaponList.push(weapObj.stat);
+	 			}
+			}
+
+			var aa = subPersonalities[personality].antiAir.weapons;
+ 			for (var i = aa.length - 1; i >= 0; --i)
+			{
+				var weapObj = aa[i];
+ 				weaponList.push(weapObj.stat);
+ 			}
 		}
 
 		if (!skip && !turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100)))
