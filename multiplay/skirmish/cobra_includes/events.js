@@ -93,8 +93,13 @@ function eventDroidBuilt(droid, struct)
 {
 	if (isConstruct(droid.id))
 	{
+		var baseBuilderLen = enumGroup(constructGroup).length;
+		var halfOfMin = Math.floor(MIN_TRUCKS  / 2);
+
 		//Combat engineers are always base builders.
-		if (droid.body === "CyborgLightBody" || enumGroup(constructGroup).length < Math.floor(MIN_TRUCKS  / 2))
+		if ((droid.body === "CyborgLightBody") ||
+			((baseBuilderLen < halfOfMin) ||
+			((mapOilLevel() === "NTW") && (gameTime > 180000) && (baseBuilderLen < halfOfMin + 2))))
 		{
 			groupAdd(constructGroup, droid);
 		}
