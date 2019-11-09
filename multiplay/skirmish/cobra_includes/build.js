@@ -537,11 +537,11 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 1))
+		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 4))
 		{
 			return true;
 		}
-		if ((getRealPower() > 500) && (random(100) < 75) && factoryBuildOrder())
+		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 2))
 		{
 			return true;
 		}
@@ -550,6 +550,11 @@ function buildBaseStructures()
 			return true;
 		}
 		if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
+		{
+			return true;
+		}
+		//Build 3 repair facilities
+		if (countAndBuild(structures.extras[0], 3))
 		{
 			return true;
 		}
@@ -694,15 +699,37 @@ function buildExtras()
 	return false;
 }
 
+function buildNTWPhase2()
+{
+	if (countAndBuild(FACTORY, 5))
+	{
+		return true;
+	}
+	if (countAndBuild(CYBORG_FACTORY, 3))
+	{
+		return true;
+	}
+	if (countAndBuild(VTOL_FACTORY, 3))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 
 //Cobra's unique build decisions
 function buildOrders()
 {
 	if (currently_dead) { return; }
+
+	var isNTW = mapOilLevel() === "NTW";
+
 	if (!findIdleTrucks().length) { return; }
 	if (checkUnfinishedStructures()) { return; }
 	if (buildBaseStructures()) { return; }
 	if (maintenance()) { return; }
+	if (isNTW && buildNTWPhase2()) { return true; }
 	if (buildSpecialStructures()) { return; }
 	if (buildBaseStructures2()) { return; }
 	if (random(100) < 33 && buildAAForPersonality()) { return; }
@@ -725,13 +752,25 @@ function maintenance()
 	var module = "";
 	if (isNTW)
 	{
-		modList = [
-			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
-			{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
-			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
-			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
-			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
-		];
+		if (getRealPower() > 250)
+		{
+			modList = [
+				{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
+				{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
+				{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
+				{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
+				{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
+			];
+		}
+		else
+		{
+			modList = [
+				{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
+				{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
+				{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
+				{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
+			];
+		}
 	}
 	else
 	{
@@ -775,7 +814,7 @@ function maintenance()
 		}
 	}
 
-	if (((getRealPower() > SUPER_LOW_POWER) || (module === modList[0].mod)) && struct && buildStuff(struct, module))
+	if (((getRealPower() > SUPER_LOW_POWER) || (module === "A0PowMod1")) && struct && buildStuff(struct, module))
 	{
 		return true;
 	}

@@ -150,9 +150,10 @@ function choosePersonalityWeapon(type)
 		}
 
 		// Choose an anti-air weapon instead... checks target player and then total player vtols.
-		if (((playerVtolRatio(getMostHarmfulPlayer()) >= 0.15) || (countEnemyVTOL() > 30)) && random(100) < 20)
+		if (!skip && ((playerVtolRatio(getMostHarmfulPlayer()) >= 0.15) || (countEnemyVTOL() > 30)) && random(100) < 20)
 		{
 			weaponList = [];
+			skip = true;
 
 			// The lasers are the most powerful...
 			if (componentAvailable(weaponStats.lasers_AA.weapons[0].stat) && (random(100) <= 50))
@@ -173,7 +174,8 @@ function choosePersonalityWeapon(type)
  			}
 		}
 
-		if (!skip && !turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100)))
+		if (!skip && ((!turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100))) ||
+			!isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat)))
 		{
 			weaponList = [];
 			var generalAntiCyborgWeapons = weaponStats.machineguns.weapons;
@@ -462,7 +464,7 @@ function produce()
 						else
 						{
 							//Do not produce weak body units if we can give this factory a module.
-							if (!countStruct(structures.gens))
+							if ((mapOilLevel() !== "NTW") || !countStruct(structures.gens))
 							{
 								continue;
 							}
