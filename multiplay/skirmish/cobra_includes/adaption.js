@@ -9,6 +9,10 @@ function switchOffMG()
 	{
 		turnOffMG = false;
 	}
+	else if (getMultiTechLevel() === 1 && gameTime <= 600000)
+	{
+		turnOffMG = false;
+	}
 	else
 	{
 		turnOffMG = true;
