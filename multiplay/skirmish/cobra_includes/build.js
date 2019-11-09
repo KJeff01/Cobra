@@ -502,19 +502,15 @@ function buildBaseStructures()
 	}
 	else
 	{
-		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 2))
+		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 1))
 		{
 			return true;
 		}
-		if (countAndBuild(FACTORY, 1))
+		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 1))
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && countAndBuild(structures.hqs, 1))
-		{
-			return true;
-		}
-		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 5))
+		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 2))
 		{
 			return true;
 		}
@@ -522,11 +518,31 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && factoryBuildOrder())
+		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 3))
 		{
 			return true;
 		}
-		if (!GOOD_POWER_LEVEL && needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
+		if (countAndBuild(structures.gens, 3))
+		{
+			return true;
+		}
+		if (GOOD_POWER_LEVEL && countAndBuild(structures.hqs, 1))
+		{
+			return true;
+		}
+		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 1))
+		{
+			return true;
+		}
+		if ((getRealPower() > 500) && (random(100) < 75) && factoryBuildOrder())
+		{
+			return true;
+		}
+		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 5))
+		{
+			return true;
+		}
+		if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
 		{
 			return true;
 		}
@@ -701,10 +717,12 @@ function maintenance()
 		return false;
 	}
 
+	var isNTW = mapOilLevel() === "NTW";
+
 	var modList;
 	var struct = null;
 	var module = "";
-	if (mapOilLevel() === "NTW")
+	if (isNTW)
 	{
 		modList = [
 			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
@@ -739,7 +757,7 @@ function maintenance()
 				continue;
 			}
 
-			var structList = enumStruct(me, modObj.structure).sort(distanceToBase).reverse();
+			var structList = isNTW ? enumStruct(me, modObj.structure).sort(distanceToBase) : enumStruct(me, modObj.structure).sort(distanceToBase).reverse();
 			for (var c = 0, s = structList.length; c < s; ++c)
 			{
 				if (structList[c].modules < modObj.amount)

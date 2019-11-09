@@ -308,4 +308,4 @@ include(COBRA_INCLUDES + "events.js");
 include(COBRA_INCLUDES + "chat.js");
 include(COBRA_INCLUDES + "adaption.js");
 
-const MIN_TRUCKS = mapOilLevel() !== "NTW" ? 6 : 8;
+const MIN_TRUCKS = mapOilLevel() !== "NTW" ? 6 : 10;

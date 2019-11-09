@@ -101,11 +101,11 @@ function mapOilLevel()
 		{
 			str = "LOW";
 		}
-		else if ((perPlayer > 8) && (perPlayer <= 16))
+		else if ((perPlayer > 8) && (perPlayer < 16))
 		{
 			str = "MEDIUM";
 		}
-		else if ((perPlayer > 16) && (perPlayer < 34))
+		else if ((perPlayer >= 16) && (perPlayer < 24))
 		{
 			str = "HIGH";
 		}
