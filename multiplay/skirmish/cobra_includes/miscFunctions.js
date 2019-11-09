@@ -200,8 +200,15 @@ function getMostHarmfulPlayer()
 	{
 		var mostHarmful = 0;
 		var enemies = findLivingEnemies();
-		if (!enemies.length)
+		var allEnemies = playerAlliance(false);
+
+		if (enemies.length == 0)
 		{
+			if (allEnemies.length > 0)
+			{
+				return allEnemies[0]; //just focus on a dead enemy then.
+			}
+			// shouldn't really happen unless someone is doing something really strange.
 			return 0; //If nothing to attack, then attack player 0 (happens only after winning).
 		}
 
@@ -213,10 +220,17 @@ function getMostHarmfulPlayer()
 			}
 	 	}
 
+		// Don't have an enemy yet, so pick one randomly (likely start of the game or the counters are all the same).
+		if (((me === mostHarmful) || allianceExistsBetween(me, mostHarmful)) && enemies.length > 0)
+		{
+			mostHarmful = enemies[random(enemies.length)];
+			grudgeCount[mostHarmful] += 1;
+		}
+
 		return mostHarmful;
 	}
 
-	return cacheThis(uncached, [], undefined, 12000);
+	return cacheThis(uncached, [], undefined, 7000);
 }
 
 //Set the initial grudge counter to target a random enemy.
