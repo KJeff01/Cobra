@@ -499,6 +499,11 @@ function buildBaseStructures()
 		{
 			return true;
 		}
+		//Build 1 repair facility
+		if (countAndBuild(structures.extras[0], 1))
+		{
+			return true;
+		}
 	}
 	else
 	{
@@ -546,12 +551,6 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-	}
-
-	//Build 1 repair facility
-	if (countAndBuild(structures.extras[0], 1))
-	{
-		return true;
 	}
 
 	return false;
