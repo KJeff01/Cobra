@@ -243,7 +243,7 @@ function groundTactics()
 {
 	donateSomePower();
 
-	if (!currently_dead && (enemyUnitsInBase() || shouldCobraAttack()))
+	if (!currently_dead && shouldCobraAttack())
 	{
 		var target = rangeStep();
 		if (isDefined(target))
@@ -432,7 +432,7 @@ function attackThisObject(droidID, target)
 //Check if enemy units are in or around Cobra base.
 function enemyUnitsInBase()
 {
-	var area = initialTerritory();
+	var area = cobraBaseArea();
 	var enemyUnits = enumArea(area.x1, area.y1, area.x2, area.y2, ENEMIES, false).filter(function(obj) {
 		return (obj.type === DROID && (obj.droidType === DROID_WEAPON || obj.droidType === DROID_CYBORG));
 	});
@@ -504,7 +504,7 @@ function confidenceThreshold()
 function shouldCobraAttack()
 {
 	var confident = confidenceThreshold();
-	if (confident)
+	if (confident || enemyUnitsInBase())
 	{
 		//Ok, restore the previous research path if necessary
 		if (isDefined(prevResPath))
