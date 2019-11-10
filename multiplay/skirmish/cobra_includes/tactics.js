@@ -218,7 +218,7 @@ function artilleryTactics()
 	const ARTI_LEN = ARTILLERY_UNITS.length;
 	const SENS_LEN = sensors.length;
 
-	if (SENS_LEN * ARTI_LEN)
+	if (SENS_LEN + ARTI_LEN > 0)
 	{
 		sensors = sortAndReverseDistance(sensors);
 		var obj = rangeStep();
@@ -226,7 +226,10 @@ function artilleryTactics()
 		if (isDefined(obj))
 		{
 			var tempObj = getObject(obj.typeInfo, obj.playerInfo, obj.idInfo);
-			orderDroidObj(sensors[0], DORDER_OBSERVE, tempObj);
+			if (SENS_LEN)
+			{
+				orderDroidObj(sensors[0], DORDER_OBSERVE, tempObj);
+			}
 			for (var i = 0; i < ARTI_LEN; ++i)
 			{
 				attackThisObject(ARTILLERY_UNITS[i].id, obj);
