@@ -143,7 +143,7 @@ function research()
 					{
 						// just in case cyborg armor was ignored too much. Likely
 						// true for personalities without super cyborgs.
-						found = pursueResearch(lab, "R-Cyborg-Metals04");
+						found = pursueResearch(lab, "R-Cyborg-Metals03");
 					}
 					if (!found)
 					{
