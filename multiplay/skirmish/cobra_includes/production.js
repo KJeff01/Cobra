@@ -334,6 +334,14 @@ function buildCyborg(id, useEngineer)
 	}
 
 	var weaponLine = choosePersonalityWeapon("CYBORG");
+
+	//Choose MG instead if enemy has enough cyborgs.
+	if ((!turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100))) ||
+		!isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat))
+	{
+		weaponLine = weaponStats.machineguns;
+	}
+
 	if (isDefined(weaponLine))
 	{
 		for (var x = weaponLine.templates.length - 1; x >= 0; --x)
