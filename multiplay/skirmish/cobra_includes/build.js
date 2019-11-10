@@ -45,7 +45,7 @@ function unfinishedStructures()
 		var s = stuff[i];
 		if (s.stattype === DEFENSE && distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, s.x, s.y) < SAFE_DIST)
 		{
-			continue
+			continue;
 		}
 
 		unfinished.push(s.id);

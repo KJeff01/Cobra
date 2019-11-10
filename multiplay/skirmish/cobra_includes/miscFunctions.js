@@ -202,7 +202,7 @@ function getMostHarmfulPlayer()
 		var enemies = findLivingEnemies();
 		var allEnemies = playerAlliance(false);
 
-		if (enemies.length == 0)
+		if (enemies.length === 0)
 		{
 			if (allEnemies.length > 0)
 			{
