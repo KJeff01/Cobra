@@ -400,7 +400,7 @@ function returnDefense(type)
 		}
 	}
 
-	if (!isDefined(bestDefense))
+	if (!isStructureAvailable(bestDefense))
 	{
 		return "GuardTower1"; //hmg tower
 	}

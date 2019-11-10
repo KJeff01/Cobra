@@ -267,12 +267,7 @@ function recycleForHover()
 	}
 
 	const MIN_FACTORY = 1;
-	var systems = enumDroid(me).filter(function(dr) {
-		return isConstruct(dr.id);
-	});
-	systems.concat(enumDroid(me, DROID_SENSOR));
-	systems.concat(enumDroid(me, DROID_REPAIR));
-	systems = systems.filter(function(dr) {
+	var systems = enumDroid(me, DROID_CONSTRUCT).concat(enumDroid(me, DROID_SENSOR)).concat(enumDroid(me, DROID_REPAIR)).filter(function(dr) {
 		return (dr.body !== "CyborgLightBody" && dr.propulsion !== "hover01");
 	});
 	var unfinished = unfinishedStructures();
