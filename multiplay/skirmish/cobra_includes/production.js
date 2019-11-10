@@ -371,7 +371,7 @@ function buildVTOL(id)
 		return buildDroid(fac, "VTOL unit", body, "V-Tol", "", "", weap, weap2);
 	}
 
-	return false
+	return false;
 }
 
 //Check what system units are queued in a regular factory. Returns an object
@@ -446,7 +446,8 @@ function produce()
 					if (facType === FACTORY)
 					{
 						var enoughAttackers = attackers >= MIN_ATTACK_DROIDS;
-						if ((enoughAttackers || !isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat)) && buildTrucks)
+						var highTechCrazyCase = getMultiTechLevel() > 1 && baseType === CAMP_CLEAN;
+						if ((enoughAttackers || !isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat) || highTechCrazyCase) && buildTrucks)
 						{
 							buildSys(FC.id, "Spade1Mk1");
 						}

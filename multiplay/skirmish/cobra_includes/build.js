@@ -470,6 +470,10 @@ function buildBaseStructures()
 	const GOOD_POWER_LEVEL = getRealPower() > 250;
 	if (mapOilLevel() !== "NTW")
 	{
+		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 1))
+		{
+			return true;
+		}
 		if ((!GOOD_POWER_LEVEL || getMultiTechLevel() > 1) && countAndBuild(structures.gens, 1))
 		{
 			return true;
@@ -729,7 +733,7 @@ function buildOrders()
 	if (currently_dead) { return; }
 
 	var isNTW = mapOilLevel() === "NTW";
-	if (protectUnguardedDerricks()) { return true; } //oil group does this
+	protectUnguardedDerricks(); //oil group does this
 	if (!findIdleTrucks().length) { return; }
 	if (checkUnfinishedStructures()) { return; }
 	if (buildBaseStructures()) { return; }
