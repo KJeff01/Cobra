@@ -46,6 +46,7 @@ function initializeResearchLists()
 	cyborgWeaps = updateResearchList(subPersonalities[personality].primaryWeapon.templates);
 	machinegunWeaponTech = updateResearchList(weaponStats.machineguns.weapons);
 	machinegunWeaponExtra = updateResearchList(weaponStats.machineguns.extras);
+	empWeapons = updateResearchList(weaponStats.nexusTech.weapons);
 }
 
 //This function aims to more cleanly discover available research topics
@@ -458,6 +459,9 @@ function research()
 						found = evalResearch(lab, DEFENSE_UPGRADES);
 				}
 			}
+
+			if (!found)
+				found = evalResearch(lab, empWeapons);
 
 			if (!found)
 				found = pursueResearch(lab, "R-Wpn-PlasmaCannon");

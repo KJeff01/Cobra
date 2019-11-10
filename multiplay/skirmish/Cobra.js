@@ -292,6 +292,7 @@ var defenseTech;
 var standardDefenseTech;
 var machinegunWeaponTech;
 var machinegunWeaponExtra;
+var empWeapons;
 
 // -- Debug var stuff
 var resHistory;

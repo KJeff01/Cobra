@@ -26,13 +26,14 @@ function chooseRandomWeapon()
 {
 	var weaps;
 
-	switch (random(5))
+	switch (random(6))
 	{
 		case 0: weaps = subPersonalities[personality].primaryWeapon; break;
 		case 1: if (useArti) { weaps = subPersonalities[personality].artillery; } break;
 		case 2: if (subPersonalities[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
 		case 3: weaps = subPersonalities[personality].secondaryWeapon; break;
 		case 4: weaps = weaponStats.AS; break;
+		case 5: weaps = weaponStats.nexusTech; break;
 		default: weaps = subPersonalities[personality].primaryWeapon; break;
 	}
 
@@ -58,7 +59,7 @@ function shuffleWeaponList(weaps)
 	return weaponList;
 }
 
-//Either fastFire or normal.
+//Either fastFire, normal, or emp-like.
 function chooseWeaponType(weaps)
 {
 	var weaponType = weaps.weapons;
