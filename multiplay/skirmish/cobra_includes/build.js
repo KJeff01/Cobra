@@ -43,7 +43,7 @@ function unfinishedStructures()
 	for (var i = 0, l = stuff.length; i < l; ++i)
 	{
 		var s = stuff[i];
-		if (s.stattype === DEFENSE && distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, s.x, s.y) < SAFE_DIST)
+		if (s.stattype === DEFENSE && distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, s.x, s.y) > SAFE_DIST)
 		{
 			continue;
 		}
