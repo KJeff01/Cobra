@@ -108,10 +108,11 @@ function protectUnguardedDerricks(droid)
 {
 	var derrs = enumStruct(me, structures.derricks);
 	const LEN = derrs.length;
+	const MAX_BLOCKING = 1;
 
 	if (droid)
 	{
-		if (buildStructure(droid, returnDefense(), droid, 0))
+		if (buildStructure(droid, returnDefense(), droid, MAX_BLOCKING))
 		{
 			return true;
 		}
@@ -150,7 +151,7 @@ function protectUnguardedDerricks(droid)
 				return enumRange(obj.x, obj.y, 4, ENEMIES, false).length === 0;
 			}).sort(distanceToBase).reverse();
 
-			if (undefended.length > 0 && buildStuff(returnDefense(), undefined, undefended[0], 0, true))
+			if (undefended.length > 0 && buildStuff(returnDefense(), undefined, undefended[0], MAX_BLOCKING, true))
 			{
 				return true;
 			}
