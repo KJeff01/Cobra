@@ -452,7 +452,7 @@ function produce()
 							buildSys(FC.id, "Spade1Mk1");
 						}
 						else if (buildSensors &&
-							enumGroup(artilleryGroup).length &&
+							(enumGroup(artilleryGroup).length > 0) &&
 							componentAvailable("SensorTurret1Mk1"))
 						{
 							buildSys(FC.id);

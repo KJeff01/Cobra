@@ -149,7 +149,7 @@ function getRealPower(player)
 		player = me;
 	}
 	const POWER = playerPower(player) - queuedPower(player);
-	if (playerAlliance(true).length && player === me && POWER < 50)
+	if (playerAlliance(true).length > 0 && player === me && POWER < 50)
 	{
 		sendChatMessage("need Power", ALLIES);
 	}
@@ -165,7 +165,7 @@ function findLivingEnemies()
 		var alive = [];
 		for (var x = 0; x < maxPlayers; ++x)
 		{
-	 		if ((x !== me) && !allianceExistsBetween(x, me) && (countDroid(DROID_ANY, x).length || enumStruct(x).length))
+	 		if ((x !== me) && !allianceExistsBetween(x, me) && ((countDroid(DROID_ANY, x) > 0) || (enumStruct(x).length > 0)))
 			{
 				alive.push(x);
 			}

@@ -213,7 +213,7 @@ function buildStuff(struc, module, defendThis, blocking, oilGroup)
 	}
 
 	var freeTrucks = findIdleTrucks(oilGroup);
-	if (freeTrucks.length)
+	if (freeTrucks.length > 0)
 	{
 		var truck = getObject(DROID, me, freeTrucks[0]);
 		if (truck === null)
@@ -251,11 +251,11 @@ function buildStuff(struc, module, defendThis, blocking, oilGroup)
 function checkUnfinishedStructures(droidID)
 {
 	var structs = unfinishedStructures();
-	if (structs.length)
+	if (structs.length > 0)
 	{
 		var def = isDefined(droidID);
 		var trucks = findIdleTrucks();
-		if (trucks.length || def)
+		if ((trucks.length > 0) || def)
 		{
 			var t = getObject(DROID, me, def ? droidID : trucks[0]);
 			var s = getObject(STRUCTURE, me, structs[0]);
@@ -735,7 +735,7 @@ function buildOrders()
 
 	var isNTW = mapOilLevel() === "NTW";
 	protectUnguardedDerricks(); //oil group does this
-	if (!findIdleTrucks().length) { return; }
+	if (!findIdleTrucks().length === 0) { return; }
 	if (checkUnfinishedStructures()) { return; }
 	if (buildBaseStructures()) { return; }
 	if (maintenance()) { return; }

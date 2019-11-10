@@ -319,7 +319,7 @@ function repairDroidTactics()
 	var reps = enumGroup(repairGroup);
 	const LEN = reps.length;
 
-	if (LEN)
+	if (LEN > 0)
 	{
 		var myDroids = enumGroup(attackGroup).filter(function(dr) {
 			return dr.order !== DORDER_RTR;
@@ -441,7 +441,7 @@ function enemyUnitsInBase()
 
 	//The attack code automatically chooses the closest object of the
 	//most harmful player anyway so this should suffice for defense.
-	if (enemyNearBase.length)
+	if (enemyNearBase.length > 0)
 	{
 		targetPlayer(enemyUnits[0].player); //play rough.
 	}
@@ -461,7 +461,7 @@ function donateSomePower()
 	const LEN = ALLY_PLAYERS.length;
 	const ALIVE_ENEMIES = findLivingEnemies().length;
 
-	if (LEN && ALIVE_ENEMIES)
+	if (LEN > 0 && ALIVE_ENEMIES > 0)
 	{
 		var ally = ALLY_PLAYERS[random(LEN)];
 		if (getRealPower() > 100 && (getRealPower() > Math.floor(1.5 * getRealPower(ally))))
