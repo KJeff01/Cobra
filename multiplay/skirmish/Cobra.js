@@ -86,6 +86,7 @@ const BODY_RESEARCH_1 = [
 ];
 const BODY_RESEARCH_2 = [
 	"R-Vehicle-Body10",
+	"R-Vehicle-Engine09",
 	"R-Vehicle-Body14",
 ];
 const VTOL_ESSENTIALS = [

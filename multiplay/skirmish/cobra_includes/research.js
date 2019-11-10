@@ -137,9 +137,18 @@ function research()
 			{
 				found = evalResearch(lab, BODY_RESEARCH_1);
 
-				if (!found && random(100) < 15)
+				if (!found)
 				{
-					found = evalResearch(lab, BODY_RESEARCH_2);
+					if (!turnOffCyborgs && countStruct(CYBORG_FACTORY))
+					{
+						// just in case cyborg armor was ignored too much. Likely
+						// true for personalities without super cyborgs.
+						found = pursueResearch(lab, "R-Cyborg-Metals04");
+					}
+					if (!found)
+					{
+						found = evalResearch(lab, BODY_RESEARCH_2);
+					}
 				}
 			}
 
