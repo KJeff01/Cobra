@@ -824,7 +824,7 @@ function maintenance()
 		}
 	}
 
-	if (((getRealPower() > SUPER_LOW_POWER) || (module === "A0PowMod1")) && struct && buildStuff(struct, module))
+	if (((getRealPower() > SUPER_LOW_POWER) || (module === "A0PowMod1") || (module === modList[0].mod)) && struct && buildStuff(struct, module))
 	{
 		return true;
 	}
