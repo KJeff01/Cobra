@@ -445,11 +445,13 @@ function produce()
 				{
 					if (facType === FACTORY)
 					{
-						if (buildTrucks)
+						var enoughAttackers = attackers >= MIN_ATTACK_DROIDS;
+						if ((enoughAttackers || !isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat)) && buildTrucks)
 						{
 							buildSys(FC.id, "Spade1Mk1");
 						}
 						else if (buildSensors &&
+							enoughAttackers &&
 							enumGroup(artilleryGroup).length &&
 							componentAvailable("SensorTurret1Mk1"))
 						{
@@ -463,8 +465,7 @@ function produce()
 						}
 						else
 						{
-							//Do not produce weak body units if we can give this factory a module.
-							if ((mapOilLevel() !== "NTW") || !countStruct(structures.gens))
+							if (!countStruct(structures.gens))
 							{
 								continue;
 							}

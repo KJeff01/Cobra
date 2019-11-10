@@ -42,7 +42,7 @@ function eventStartLevel()
 //defend our derrick if possible.
 function eventStructureBuilt(structure, droid)
 {
-	if (structure.stattype === RESOURCE_EXTRACTOR)
+	if (structure.stattype === RESOURCE_EXTRACTOR && droid)
 	{
 		var nearbyOils = enumRange(droid.x, droid.y, 8, ALL_PLAYERS, false);
 		nearbyOils = nearbyOils.filter(function(obj) {
@@ -57,9 +57,8 @@ function eventStructureBuilt(structure, droid)
 		}
 		else
 		{
-			var numDefenses = enumRange(droid.x, droid.y, 8, me, false);
-			numDefenses = numDefenses.filter(function(obj) {
-				return ((obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
+			var numDefenses = enumRange(droid.x, droid.y, 3, me, false).filter(function(obj) {
+				return (allianceExistsBetween(me, obj.player) && (obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
 			});
 
 			if (numDefenses === 0)

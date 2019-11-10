@@ -106,7 +106,7 @@ function countAndBuild(stat, count)
 //Find the closest derrick that is not guarded a defense.
 function protectUnguardedDerricks(droid)
 {
-	var derrs = enumStruct(me, structures.derricks).sort(distanceToBase);
+	var derrs = enumStruct(me, structures.derricks);
 	const LEN = derrs.length;
 
 	if (droid)
@@ -119,7 +119,7 @@ function protectUnguardedDerricks(droid)
 		return false;
 	}
 
-	if (LEN)
+	if (LEN > 0)
 	{
 		var undefended = [];
 
@@ -145,7 +145,12 @@ function protectUnguardedDerricks(droid)
 
 		if (undefended.length > 0)
 		{
-			if (buildStuff(returnDefense(), undefined, undefended[0], 0, true))
+			//Don't defend it ATM if that derrick is surrounded by enemies.
+			undefended = undefended.filter(function(obj) {
+				return enumRange(obj.x, obj.y, 4, ENEMIES, false).length === 0;
+			}).sort(distanceToBase).reverse();
+
+			if (undefended.length > 0 && buildStuff(returnDefense(), undefined, undefended[0], 0, true))
 			{
 				return true;
 			}
@@ -394,6 +399,11 @@ function returnDefense(type)
 		}
 	}
 
+	if (!isDefined(bestDefense))
+	{
+		return "GuardTower1"; //hmg tower
+	}
+
 	return bestDefense;
 }
 
@@ -432,16 +442,11 @@ function buildDefenses(truck, urgent)
 		urgent = false;
 	}
 
-	if ((gameTime > 120000) && (urgent || enoughPower))
+	if (urgent || enoughPower)
 	{
 		if (truck)
 		{
 			return buildDefenseNearTruck(truck, 0);
-		}
-
-		if (protectUnguardedDerricks() && pow > MIN_POWER)
-		{
-			return true;
 		}
 
 		if (buildSensors())
@@ -724,7 +729,7 @@ function buildOrders()
 	if (currently_dead) { return; }
 
 	var isNTW = mapOilLevel() === "NTW";
-
+	if (protectUnguardedDerricks()) { return true; } //oil group does this
 	if (!findIdleTrucks().length) { return; }
 	if (checkUnfinishedStructures()) { return; }
 	if (buildBaseStructures()) { return; }
