@@ -36,7 +36,7 @@ function isConstruct(objID, countCybEng)
 //Returns unfinished structures in the form of IDs.
 function unfinishedStructures()
 {
-	const SAFE_DIST = 30;
+	const SAFE_DIST = 20;
 	var unfinished = [];
 	var stuff = enumStruct(me).filter(function(obj) { return obj.status !== BUILT && obj.stattype !== RESOURCE_EXTRACTOR; });
 
