@@ -456,7 +456,10 @@ function produce()
 					{
 						var enoughAttackers = attackers >= MIN_ATTACK_DROIDS;
 						var highTechCrazyCase = getMultiTechLevel() > 1 && baseType === CAMP_CLEAN;
-						if ((enoughAttackers || !isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat) || highTechCrazyCase) && buildTrucks)
+						if (buildTrucks && (enoughAttackers ||
+							(gameTime < 180000 && mapOilLevel() === "NTW") ||
+							!isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
+							highTechCrazyCase))
 						{
 							buildSys(FC.id, "Spade1Mk1");
 						}
