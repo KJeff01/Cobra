@@ -701,7 +701,8 @@ function buildExtras()
 	}
 
 	var needVtolPads = ((2 * countStruct(structures.vtolPads)) < enumGroup(vtolGroup).length);
-	if (needVtolPads && buildStuff(structures.vtolPads))
+	//Allow lots of blocking tiles.
+	if (needVtolPads && buildStuff(structures.vtolPads, undefined, undefined, 4, undefined))
 	{
 		return true;
 	}
