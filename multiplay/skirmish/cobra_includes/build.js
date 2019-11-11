@@ -543,7 +543,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && countAndBuild(structures.hqs, 1))
+		if (countAndBuild(structures.hqs, 1))
 		{
 			return true;
 		}
