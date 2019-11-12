@@ -119,10 +119,13 @@ function research()
 	{
 		var lab = labList[i];
 		var forceLaser = false;
-		var found = evalResearch(lab, ESSENTIALS);
+		var found = false;
 
-		if (!found && forceHover)
+		if (forceHover)
 			found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
+
+		if (!found)
+			found = evalResearch(lab, ESSENTIALS);
 		if (!found)
 			found = evalResearch(lab, techlist);
 		if (!found && random(100) < 20)

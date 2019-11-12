@@ -469,6 +469,12 @@ function buildDefenses(truck, urgent)
 function buildBaseStructures()
 {
 	const GOOD_POWER_LEVEL = getRealPower() > 250;
+
+	if (forceHover && GOOD_POWER_LEVEL && countAndBuild(structures.labs, 1))
+	{
+		return true;
+	}
+	
 	if (mapOilLevel() !== "NTW")
 	{
 		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 1))
