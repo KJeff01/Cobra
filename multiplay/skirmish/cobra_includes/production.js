@@ -430,8 +430,8 @@ function produce()
 	var useCybEngineer = !countStruct(structures.factories); //use them if we have no factory
 	var systems = analyzeQueuedSystems();
 
-	var attackers = groupSizes[attackGroup];
-	var allowSpecialSystems = attackers > 10;
+	var attackers = groupSize(attackGroup);
+	var allowSpecialSystems = isDefined(attackers) ? attackers > 10 : false;
 	var buildSensors = ((enumGroup(sensorGroup).length + systems.sensor) < MIN_SENSORS);
 	var buildRepairs = ((enumGroup(repairGroup).length + systems.repair) < MIN_REPAIRS);
 	var buildTrucks = ((enumGroup(constructGroup).length + enumGroup(oilGrabberGroup).length + systems.truck) < MIN_TRUCKS);
@@ -454,9 +454,25 @@ function produce()
 				{
 					if (facType === FACTORY)
 					{
-						var enoughAttackers = (attackers + groupSizes[artilleryGroup] + groupSizes[vtolGroup]) >= MIN_ATTACK_DROIDS;
 						var highTechCrazyCase = getMultiTechLevel() > 1 && baseType === CAMP_CLEAN;
-						if (buildTrucks && (enoughAttackers ||
+						var amountOfAttackers = 0; //beware NaN potential
+						var arti = groupSize(artilleryGroup);
+						var vtol = groupSize(vtolGroup);
+
+						if (isDefined(attackers))
+						{
+							amountOfAttackers += attackers;
+						}
+						if (isDefined(arti))
+						{
+							amountOfAttackers += arti;
+						}
+						if (isDefined(vtol))
+						{
+							amountOfAttackers += vtol;
+						}
+
+						if (buildTrucks && ((amountOfAttackers >= MIN_ATTACK_DROIDS) ||
 							(gameTime < 180000 && mapOilLevel() === "NTW") ||
 							!isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
 							highTechCrazyCase))
