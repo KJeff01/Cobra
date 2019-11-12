@@ -261,7 +261,7 @@ function checkUnfinishedStructures()
 			return false;
 		}
 
-		var trucks = findIdleTrucks((structure.stattype === DEFENSE) ? true : undefined);
+		var trucks = findIdleTrucks();
 		if (trucks.length > 0)
 		{
 			var truck = getObject(DROID, me, trucks[0]);
