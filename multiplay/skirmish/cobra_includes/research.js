@@ -220,7 +220,7 @@ function research()
 
 				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
-				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
+				if (componentAvailable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
 					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
@@ -294,7 +294,7 @@ function research()
 
 				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
-				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
+				if (componentAvailable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
 					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
@@ -360,7 +360,7 @@ function research()
 
 				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
-				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
+				if (componentAvailable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
 					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
@@ -442,7 +442,7 @@ function research()
 
 				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
-				if (isDesignable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
+				if (componentAvailable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
 					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
@@ -494,7 +494,7 @@ function research()
 			}
 
 			//Very likely going to be done with research by now.
-			if ((getMultiTechLevel() === 4) || (!found && componentAvailable("Body14SUP") && isDesignable("EMP-Cannon") && isStructureAvailable(structures.extras[2])))
+			if ((getMultiTechLevel() === 4) || (!found && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon") && isStructureAvailable(structures.extras[2])))
 			{
 				researchComplete = true;
 			}

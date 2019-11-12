@@ -176,7 +176,7 @@ function choosePersonalityWeapon(type)
 		}
 
 		if (!skip && ((!turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100))) ||
-			!isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat)))
+			!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat)))
 		{
 			weaponList = [];
 			var generalAntiCyborgWeapons = weaponStats.machineguns.weapons;
@@ -338,7 +338,7 @@ function buildCyborg(id, useEngineer)
 
 	//Choose MG instead if enemy has enough cyborgs.
 	if ((!turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100))) ||
-		!isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat))
+		!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat))
 	{
 		weaponLine = weaponStats.machineguns;
 	}
@@ -474,7 +474,7 @@ function produce()
 
 						if (buildTrucks && ((amountOfAttackers >= MIN_ATTACK_DROIDS) ||
 							(gameTime < 240000 && mapOilLevel() === "NTW") ||
-							!isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
+							!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
 							highTechCrazyCase))
 						{
 							buildSys(FC.id, "Spade1Mk1");
@@ -487,7 +487,7 @@ function produce()
 						}
 						else if (allowSpecialSystems &&
 							buildRepairs &&
-							isDesignable("LightRepair1"))
+							componentAvailable("LightRepair1"))
 						{
 							buildSys(FC.id, REPAIR_TURRETS);
 						}
