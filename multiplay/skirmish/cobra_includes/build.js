@@ -43,7 +43,9 @@ function unfinishedStructures()
 	for (var i = 0, l = stuff.length; i < l; ++i)
 	{
 		var s = stuff[i];
-		if (s.stattype === DEFENSE && ((gameTime < 300000) || (distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, s.x, s.y) > SAFE_DIST)))
+		if (s.stattype === DEFENSE &&
+			((gameTime < ((mapOilLevel() === "NTW") ? 600000 : 300000)) &&
+			(distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, s.x, s.y) > SAFE_DIST)))
 		{
 			continue;
 		}
@@ -248,18 +250,27 @@ function buildStuff(struc, module, defendThis, blocking, oilGroup)
 
 //Check for unfinished structures and help complete them. Specify a droid ID
 //and that droid will go help build something.
-function checkUnfinishedStructures(droidID)
+function checkUnfinishedStructures()
 {
 	var structs = unfinishedStructures();
 	if (structs.length > 0)
 	{
-		var def = isDefined(droidID);
-		var trucks = findIdleTrucks();
-		if ((trucks.length > 0) || def)
+		var structure = getObject(STRUCTURE, me, structs[0]);
+		if (structure === null)
 		{
-			var t = getObject(DROID, me, def ? droidID : trucks[0]);
-			var s = getObject(STRUCTURE, me, structs[0]);
-			if (t !== null && s !== null && orderDroidObj(t, DORDER_HELPBUILD, s))
+			return false;
+		}
+
+		var trucks = findIdleTrucks((structure.stattype === DEFENSE) ? true : undefined);
+		if (trucks.length > 0)
+		{
+			var truck = getObject(DROID, me, trucks[0]);
+			if (truck === null)
+			{
+				return false;
+			}
+
+			if (orderDroidObj(truck, DORDER_HELPBUILD, structure))
 			{
 				return true;
 			}
@@ -553,7 +564,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 4))
+		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 3))
 		{
 			return true;
 		}
@@ -561,15 +572,15 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.labs, 5))
-		{
-			return true;
-		}
-		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 4))
-		{
-			return true;
-		}
 		if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
+		{
+			return true;
+		}
+		if (countAndBuild(FACTORY, 4))
+		{
+			return true;
+		}
+		if (!researchComplete && countAndBuild(structures.labs, 5))
 		{
 			return true;
 		}
@@ -772,25 +783,13 @@ function maintenance()
 	var module = "";
 	if (isNTW)
 	{
-		if (getRealPower() > 250)
-		{
-			modList = [
-				{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
-				{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
-				{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
-				{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
-				{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
-			];
-		}
-		else
-		{
-			modList = [
-				{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
-				{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
-				{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
-				{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
-			];
-		}
+		modList = [
+			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
+			{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
+			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
+			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
+			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
+		];
 	}
 	else
 	{
@@ -814,6 +813,10 @@ function maintenance()
 			{
 				//Stop wasting power on upgrading VTOL factories if we don't have them
 				//researched yet (from some maps).
+				continue;
+			}
+			if (isNTW && (modObj.structure === structures.gens) && (getRealPower() > 250))
+			{
 				continue;
 			}
 

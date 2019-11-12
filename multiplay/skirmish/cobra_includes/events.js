@@ -81,10 +81,6 @@ function eventDroidIdle(droid)
 			attackThisObject(droid.id, objectInformation(enemyObjects[0]));
 		}
 	}
-	else if (droid.droidType === DROID_CONSTRUCT)
-	{
-		checkUnfinishedStructures(droid.id);
-	}
 }
 
 //Groups droid types.
