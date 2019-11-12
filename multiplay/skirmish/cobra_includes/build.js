@@ -474,7 +474,7 @@ function buildBaseStructures()
 	{
 		return true;
 	}
-	
+
 	if (mapOilLevel() !== "NTW")
 	{
 		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 1))

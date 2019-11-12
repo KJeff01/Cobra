@@ -473,7 +473,7 @@ function produce()
 						}
 
 						if (buildTrucks && ((amountOfAttackers >= MIN_ATTACK_DROIDS) ||
-							(gameTime < 180000 && mapOilLevel() === "NTW") ||
+							(gameTime < 240000 && mapOilLevel() === "NTW") ||
 							!isDesignable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
 							highTechCrazyCase))
 						{
