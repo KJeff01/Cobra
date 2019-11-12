@@ -454,7 +454,7 @@ function produce()
 				{
 					if (facType === FACTORY)
 					{
-						var enoughAttackers = attackers >= MIN_ATTACK_DROIDS;
+						var enoughAttackers = (attackers + groupSizes[artilleryGroup] + groupSizes[vtolGroup]) >= MIN_ATTACK_DROIDS;
 						var highTechCrazyCase = getMultiTechLevel() > 1 && baseType === CAMP_CLEAN;
 						if (buildTrucks && (enoughAttackers ||
 							(gameTime < 180000 && mapOilLevel() === "NTW") ||
