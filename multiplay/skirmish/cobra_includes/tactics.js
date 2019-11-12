@@ -300,7 +300,7 @@ function recycleForHover()
 				orderDroid(tanks[j], DORDER_RECYCLE);
 			}
 
-			if (!(NON_HOVER_TANKS + NON_HOVER_SYSTEMS))
+			if (NON_HOVER_TANKS + NON_HOVER_SYSTEMS === 0)
 			{
 				removeThisTimer("recycleForHover");
 			}
