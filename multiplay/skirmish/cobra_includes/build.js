@@ -565,6 +565,10 @@ function buildBaseStructures()
 		{
 			return true;
 		}
+		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 4))
+		{
+			return true;
+		}
 		if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
 		{
 			return true;
