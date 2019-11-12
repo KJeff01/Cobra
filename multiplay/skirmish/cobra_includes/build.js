@@ -44,7 +44,7 @@ function unfinishedStructures()
 	{
 		var s = stuff[i];
 		if (s.stattype === DEFENSE &&
-			((gameTime < ((mapOilLevel() === "NTW") ? 600000 : 300000)) &&
+			((gameTime < ((mapOilLevel() === "NTW") ? 600000 : 300000)) ||
 			(distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, s.x, s.y) > SAFE_DIST)))
 		{
 			continue;
@@ -756,7 +756,7 @@ function buildOrders()
 
 	var isNTW = mapOilLevel() === "NTW";
 	protectUnguardedDerricks(); //oil group does this
-	if (!findIdleTrucks().length === 0) { return; }
+	if (findIdleTrucks().length === 0) { return; }
 	if (checkUnfinishedStructures()) { return; }
 	if (buildBaseStructures()) { return; }
 	if (maintenance()) { return; }
@@ -784,9 +784,9 @@ function maintenance()
 	if (isNTW)
 	{
 		modList = [
+			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
 			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
 			{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
-			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
 			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
 		];
