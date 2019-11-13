@@ -375,12 +375,14 @@ function initCobraGroups()
 
 function initCobraVars()
 {
+	var isHoverMap = checkIfSeaMap();
+
 	lastMsg = "eventStartLevel";
 	currently_dead = false;
 	researchComplete = false;
 	initializeGrudgeCounter();
-	forceHover = checkIfSeaMap();
-	turnOffCyborgs = forceHover;
+	forceHover = isHoverMap;
+	turnOffCyborgs = isHoverMap;
 	choosePersonality();
 	turnOffMG = false;
 	useArti = true;
