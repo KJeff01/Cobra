@@ -5,7 +5,6 @@ const COBRA_RULESETS = "/multiplay/skirmish/cobra_rulesets/";
 //Rulesets here.
 include(COBRA_RULESETS + "CobraStandard.js");
 
-const DEBUG_LOG_ON = false; //NOTE: slow!
 const MAX_GRUDGE = 50000;
 const MIN_ATTACK_DROIDS = 4;
 const FACTORY = "A0LightFactory";
@@ -298,7 +297,6 @@ var empWeapons;
 var resHistory;
 
 //Now include everthing else.
-include(COBRA_INCLUDES + "debug.js");
 include(COBRA_INCLUDES + "performance.js");
 include(COBRA_INCLUDES + "miscFunctions.js");
 include(COBRA_INCLUDES + "build.js");

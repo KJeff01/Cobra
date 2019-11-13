@@ -32,10 +32,6 @@ function eventStartLevel()
 	setTimer("switchOffMG", 5000 + delay);
 	setTimer("recycleForHover", 8000 + delay);
 	setTimer("checkIfDead", 9000 + delay);
-	if (DEBUG_LOG_ON)
-	{
-		setTimer("debugLogAtEnd", 100000 + delay);
-	}
 }
 
 //This is meant to check for nearby oil resources next to the construct. also
