@@ -1,13 +1,4 @@
 
-//See what has been researched.
-function eventResearched(research)
-{
-	if (DEBUG_LOG_ON && isDefined(resHistory))
-	{
-		resHistory.push(research.fullname);
-	}
-}
-
 //updates a research list with whatever is passed to it.
 function updateResearchList(stat, len)
 {

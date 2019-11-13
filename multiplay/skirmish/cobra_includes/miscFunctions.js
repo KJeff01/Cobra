@@ -388,5 +388,4 @@ function initCobraVars()
 	useArti = true;
 	useVtol = true;
 	lastAttackedByScavs = 0;
-	resHistory = [];
 }

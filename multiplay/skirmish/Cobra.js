@@ -293,8 +293,6 @@ var machinegunWeaponTech;
 var machinegunWeaponExtra;
 var empWeapons;
 
-// -- Debug var stuff
-var resHistory;
 
 //Now include everthing else.
 include(COBRA_INCLUDES + "performance.js");
