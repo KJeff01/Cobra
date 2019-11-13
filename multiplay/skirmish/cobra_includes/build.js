@@ -38,14 +38,14 @@ function unfinishedStructures()
 {
 	const SAFE_DIST = 20;
 	var unfinished = [];
-	var stuff = enumStruct(me).filter(function(obj) { return obj.status !== BUILT && obj.stattype !== RESOURCE_EXTRACTOR; });
+	var stuff = enumStruct(me).filter(function(obj) {
+		return obj.status !== BUILT && obj.stattype !== RESOURCE_EXTRACTOR;
+	});
 
 	for (var i = 0, l = stuff.length; i < l; ++i)
 	{
 		var s = stuff[i];
-		if (s.stattype === DEFENSE &&
-			((gameTime < ((mapOilLevel() === "NTW") ? 600000 : 300000)) ||
-			(distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, s.x, s.y) > SAFE_DIST)))
+		if (s.stattype === DEFENSE && ((!componentAvailable("hover01") || (distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, s.x, s.y) > SAFE_DIST))))
 		{
 			continue;
 		}
@@ -150,8 +150,8 @@ function protectUnguardedDerricks(droid)
 		{
 			//Don't defend it ATM if that derrick is surrounded by enemies.
 			undefended = undefended.filter(function(obj) {
-				return enumRange(obj.x, obj.y, 4, ENEMIES, false).length === 0;
-			}).sort(distanceToBase).reverse();
+				return enumRange(obj.x, obj.y, 6, ENEMIES, false).length === 0;
+			}).sort(distanceToBase);
 
 			if (undefended.length > 0 && buildStuff(returnDefense(), undefined, undefended[0], MAX_BLOCKING, true))
 			{
@@ -290,6 +290,13 @@ function lookForOil()
 	var droids = enumGroup(oilGrabberGroup);
 	var oils = enumFeature(-1, OIL_RES).sort(distanceToBase);
 
+	var oilCount = mapOilLevel();
+
+	if ((oilCount === "LOW" || oilCount === "MEDIUM") && countStruct(structures.derricks) > 4)
+	{
+		protectUnguardedDerricks();
+	}
+
 	for (var i = 0, oilLen = oils.length; i < oilLen; i++)
 	{
 		var bestDroid;
@@ -315,6 +322,11 @@ function lookForOil()
 			orderDroidBuild(bestDroid, DORDER_BUILD, structures.derricks, oil.x, oil.y);
 			return true;
 		}
+	}
+
+	if (oilCount === "HIGH" || oilCount === "NTW")
+	{
+		protectUnguardedDerricks();
 	}
 
 	return false;
@@ -755,7 +767,6 @@ function buildOrders()
 	if (currently_dead) { return; }
 
 	var isNTW = mapOilLevel() === "NTW";
-	protectUnguardedDerricks(); //oil group does this
 	if (findIdleTrucks().length === 0) { return; }
 	if (checkUnfinishedStructures()) { return; }
 	if (buildBaseStructures()) { return; }
