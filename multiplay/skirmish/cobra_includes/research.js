@@ -481,7 +481,7 @@ function research()
 					foundLaser = evalResearch(lab, laserExtra);
 				//Rocket/missile AA does not need this. Still uses it if researched.
 				if (!foundLaser && (aa !== "rkta" && aa !== "missa"))
-					foundLaser = pursueResearch(lab, "R-Defense-AA-Laser");
+					pursueResearch(lab, "R-Defense-AA-Laser");
 			}
 
 			//Very likely going to be done with research by now.
