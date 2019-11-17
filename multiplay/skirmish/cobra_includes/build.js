@@ -110,7 +110,7 @@ function protectUnguardedDerricks(droid)
 {
 	var derrs = enumStruct(me, structures.derricks);
 	const LEN = derrs.length;
-	const MAX_BLOCKING = 1;
+	const MAX_BLOCKING = 4;
 
 	if (droid)
 	{
@@ -443,7 +443,8 @@ function buildDefenseNearTruck(truck, type)
 
 	if (isDefined(defense))
 	{
-		var result = pickStructLocation(truck, defense, truck.x, truck.y, 1);
+		const MAX_BLOCKING = 4;
+		var result = pickStructLocation(truck, defense, truck.x, truck.y, MAX_BLOCKING);
 		if (result)
 		{
 			return orderDroidBuild(truck, DORDER_BUILD, defense, result.x, result.y);
