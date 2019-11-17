@@ -454,6 +454,27 @@ function buildDefenseNearTruck(truck, type)
 	return false;
 }
 
+//Defend a random derrick with a defense. Does NOT include those close to base.
+function defendRandomDerrick()
+{
+	const MAX_DIST = 30;
+	var derrs = enumStruct(me, structures.derricks).filter(function(obj) {
+		return distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, obj.x, obj.y) > MAX_DIST;
+	});
+
+	if (derrs.length > 0)
+	{
+		const MAX_BLOCKING = 1;
+
+		if (buildStuff(returnDefense(), undefined, derrs[random(derrs.length)], MAX_BLOCKING, true))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 // Passing a truck will instruct that truck to pick
 // a location to build a defense structure near it.
 function buildDefenses(truck, urgent)
@@ -479,10 +500,9 @@ function buildDefenses(truck, urgent)
 			return true;
 		}
 
-		var def = returnDefense();
-		if (isDefined(def) && pow > MIN_BUILD_POWER)
+		if (pow > MIN_BUILD_POWER)
 		{
-			return countAndBuild(def, Infinity);
+			defendRandomDerrick();
 		}
 	}
 
