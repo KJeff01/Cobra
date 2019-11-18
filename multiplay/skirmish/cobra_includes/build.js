@@ -386,7 +386,9 @@ function returnDefense(type)
 	}
 
 	const ELECTRONIC_CHANCE = 67;
-	var defenses = (type === 0) ? subPersonalities[personality].primaryWeapon.defenses : subPersonalities[personality].artillery.defenses;
+	var standardDefenses = subPersonalities[personality].primaryWeapon.defenses;
+	var artilleryDefenses = subPersonalities[personality].artillery.defenses;
+	var defenses = (type === 0) ? artilleryDefenses.concat(standardDefenses) : standardDefenses.concat(artilleryDefenses);
 	var bestDefense = "Emplacement-MortarEMP"; //default
 
 	//Choose a random electronic warfare defense if possible.
