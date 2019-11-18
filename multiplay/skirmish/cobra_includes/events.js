@@ -138,7 +138,7 @@ function eventAttacked(victim, attacker)
 	}
 
 	const GROUP_SCAN_RADIUS = 7;
-	var nearbyUnits = enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, me, false).filter(function(obj) {
+	var nearbyUnits = enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, ALLIES, false).filter(function(obj) {
 		return obj.type === DROID;
 	});
 
