@@ -182,11 +182,13 @@ function buildStructure(droid, stat, defendThis, blocking)
 	{
 		if (isDefined(defendThis))
 		{
-			loc = pickStructLocation(droid, stat, defendThis.x, defendThis.y, blocking);
+			var tempDefPos = randomOffsetLocation({x: defendThis.x, y: defendThis.y});
+			loc = pickStructLocation(droid, stat, tempDefPos.x, tempDefPos.y, blocking);
 		}
 		else
 		{
-			loc = pickStructLocation(droid, stat, MY_BASE.x, MY_BASE.y, blocking);
+			var tempBasePos = randomOffsetLocation(MY_BASE);
+			loc = pickStructLocation(droid, stat, tempBasePos.x, tempBasePos.y, blocking);
 		}
 
 		if (isDefined(loc))
@@ -446,7 +448,8 @@ function buildDefenseNearTruck(truck, type)
 	if (isDefined(defense))
 	{
 		const MAX_BLOCKING = 4;
-		var result = pickStructLocation(truck, defense, truck.x, truck.y, MAX_BLOCKING);
+		var tempTruckPos =randomOffsetLocation({x: truck.x, y: truck.y});
+		var result = pickStructLocation(truck, defense, tempTruckPos.x, tempTruckPos.y, MAX_BLOCKING);
 		if (result)
 		{
 			return orderDroidBuild(truck, DORDER_BUILD, defense, result.x, result.y);

@@ -389,3 +389,37 @@ function initCobraVars()
 	useVtol = true;
 	lastAttackedByScavs = 0;
 }
+
+//Attempt to workaround a bug with pickStructLocation() failing to find valid locations
+//for base structures (or others) on some maps. Returns an object with a xy position pair.
+function randomOffsetLocation(location)
+{
+	function uncached(location)
+	{
+		const MAP_EDGE = 2;
+		const TILE_OFFSET_MAX = 3;
+		var newValueX = (random(100) < 50) ? location.x + random(TILE_OFFSET_MAX) : location.x - random(TILE_OFFSET_MAX);
+		var newValueY = (random(100) < 50) ? location.y + random(TILE_OFFSET_MAX) : location.y - random(TILE_OFFSET_MAX);
+
+		if (newValueX < MAP_EDGE)
+		{
+			newValueX = MAP_EDGE;
+		}
+		if (newValueY < MAP_EDGE)
+		{
+			newValueY = MAP_EDGE;
+		}
+		if (newValueX > mapWidth - MAP_EDGE)
+		{
+			newValueX = mapWidth - MAP_EDGE;
+		}
+		if (newValueY > mapHeight - MAP_EDGE)
+		{
+			newValueY = mapHeight - MAP_EDGE;
+		}
+
+		return {x: newValueX, y: newValueY};
+	}
+
+	return cacheThis(uncached, [location], undefined, 2000);
+}
