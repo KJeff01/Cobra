@@ -756,7 +756,7 @@ function buildExtras()
 		return true;
 	}
 
-	var needVtolPads = ((2 * countStruct(structures.vtolPads)) < enumGroup(vtolGroup).length);
+	var needVtolPads = Math.floor(1.5 * countStruct(structures.vtolPads)) < enumGroup(vtolGroup).length;
 	if (needVtolPads && buildStuff(structures.vtolPads))
 	{
 		return true;
