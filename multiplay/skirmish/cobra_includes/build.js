@@ -843,7 +843,7 @@ function maintenance()
 
 		if (isStructureAvailable(modObj.mod))
 		{
-			if (modObj.structure === VTOL_FACTORY && !isStructureAvailable(structures.vtolFactories))
+			if (modObj.structure === VTOL_FACTORY && !componentAvailable("V-Tol"))
 			{
 				//Stop wasting power on upgrading VTOL factories if we don't have them
 				//researched yet (from some maps).
