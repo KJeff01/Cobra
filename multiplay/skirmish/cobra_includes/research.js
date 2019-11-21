@@ -123,8 +123,17 @@ function research()
 			found = evalResearch(lab, ESSENTIALS_2);
 		if (!found && random(100) < 10)
 			found = evalResearch(lab, ESSENTIALS_3);
+
 		if (!found && componentAvailable("V-Tol"))
+		{
 			found = evalResearch(lab, VTOL_ESSENTIALS);
+
+			// Prepare the most basic AA defense.
+			if (!found && antiAirTech.length > 0)
+			{
+				found = pursueResearch(lab, antiAirTech[0]);
+			}
+		}
 
 		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : SUPER_LOW_POWER))
 		{
