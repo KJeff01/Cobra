@@ -182,8 +182,7 @@ function buildStructure(droid, stat, defendThis, blocking)
 	{
 		if (isDefined(defendThis))
 		{
-			var tempDefPos = randomOffsetLocation({x: defendThis.x, y: defendThis.y});
-			loc = pickStructLocation(droid, stat, tempDefPos.x, tempDefPos.y, blocking);
+			loc = pickStructLocation(droid, stat, defendThis.x, defendThis.y, blocking);
 		}
 		else
 		{

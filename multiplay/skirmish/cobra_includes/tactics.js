@@ -97,7 +97,7 @@ function repairDroid(droidID, force)
 		return true; //pretend it is busy
 	}
 
-	const SAFE_EXTREME_OIL_IGNORE_NUM = 60;
+	const SAFE_EXTREME_OIL_IGNORE_NUM = 80;
 	var highOil = highOilMap();
 
 	const FORCE_REPAIR_PERCENT = 66;
