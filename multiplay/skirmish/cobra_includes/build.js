@@ -448,7 +448,7 @@ function buildDefenseNearTruck(truck, type)
 	if (isDefined(defense))
 	{
 		const MAX_BLOCKING = 4;
-		var tempTruckPos =randomOffsetLocation({x: truck.x, y: truck.y});
+		var tempTruckPos = randomOffsetLocation({x: truck.x, y: truck.y});
 		var result = pickStructLocation(truck, defense, tempTruckPos.x, tempTruckPos.y, MAX_BLOCKING);
 		if (result)
 		{
@@ -797,7 +797,7 @@ function buildOrders()
 	if (checkUnfinishedStructures()) { return; }
 	if (buildBaseStructures()) { return; }
 	if (maintenance()) { return; }
-	if (isNTW && buildNTWPhase2()) { return true; }
+	if (isNTW && buildNTWPhase2()) { return; }
 	if (buildSpecialStructures()) { return; }
 	if (buildBaseStructures2()) { return; }
 	if (random(100) < 33 && buildAAForPersonality()) { return; }
