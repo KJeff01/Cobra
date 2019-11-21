@@ -120,6 +120,23 @@ function mapOilLevel()
 	return cacheThis(uncached, [], undefined, Infinity);
 }
 
+function highOilMap()
+{
+	function uncached()
+	{
+		var oil = mapOilLevel();
+
+		if (oil === "HIGH" || oil === "NTW")
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	return cacheThis(uncached, [], undefined, Infinity);
+}
+
 //Determine the base area that Cobra claims.
 function cobraBaseArea()
 {

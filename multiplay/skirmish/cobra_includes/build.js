@@ -292,9 +292,9 @@ function lookForOil()
 	var droids = enumGroup(oilGrabberGroup);
 	var oils = enumFeature(-1, OIL_RES).sort(distanceToBase);
 
-	var oilCount = mapOilLevel();
+	var manyOils = highOilMap();
 
-	if ((oilCount === "LOW" || oilCount === "MEDIUM") && countStruct(structures.derricks) > 4)
+	if (!manyOils && countStruct(structures.derricks) > 4)
 	{
 		protectUnguardedDerricks();
 	}
@@ -326,7 +326,7 @@ function lookForOil()
 		}
 	}
 
-	if (oilCount === "HIGH" || oilCount === "NTW")
+	if (manyOils)
 	{
 		protectUnguardedDerricks();
 	}

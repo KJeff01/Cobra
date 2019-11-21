@@ -40,7 +40,6 @@ function eventStructureBuilt(structure, droid)
 {
 	if (structure.stattype === RESOURCE_EXTRACTOR && droid)
 	{
-		var oilCount = mapOilLevel();
 		var nearbyOils = enumRange(droid.x, droid.y, 8, ALL_PLAYERS, false);
 		nearbyOils = nearbyOils.filter(function(obj) {
 			return (obj.type === FEATURE) && (obj.stattype === OIL_RESOURCE);
@@ -52,7 +51,7 @@ function eventStructureBuilt(structure, droid)
 		{
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
 		}
-		else if (oilCount !== "HIGH" && oilCount !== "NTW")
+		else if (!highOilMap())
 		{
 			var numDefenses = enumRange(droid.x, droid.y, 3, me, false).filter(function(obj) {
 				return (allianceExistsBetween(me, obj.player) && (obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
