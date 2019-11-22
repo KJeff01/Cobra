@@ -97,17 +97,17 @@ function repairDroid(droidID, force)
 		return true; //pretend it is busy
 	}
 
-	const SAFE_EXTREME_OIL_IGNORE_NUM = 80;
+	const SAFE_EXTREME_OIL_IGNORE_NUM = 100;
 	var highOil = highOilMap();
 
-	const FORCE_REPAIR_PERCENT = 66;
+	var forceRepairPercent = highOil ? 33 : 66; //Be more brave on super high oil maps.
 	const EXPERIENCE_DIVISOR = 26;
-	const HEALTH_TO_REPAIR = 67 + Math.floor(droid.experience / EXPERIENCE_DIVISOR);
+	const HEALTH_TO_REPAIR = forceRepairPercent + Math.floor(droid.experience / EXPERIENCE_DIVISOR);
 
 	//Ignore repairing combat units if one super high oil map if we have X amount of units.
 	if (countDroid(DROID_ANY, me) >= SAFE_EXTREME_OIL_IGNORE_NUM && highOilMap)
 	{
-		if ((droid.droidType === DROID_WEAPON || droid.droidType == DROID_CYBORG) && droid.health <= FORCE_REPAIR_PERCENT)
+		if ((droid.droidType === DROID_WEAPON || droid.droidType == DROID_CYBORG) && droid.health <= forceRepairPercent)
 		{
 			return false;
 		}
@@ -115,10 +115,10 @@ function repairDroid(droidID, force)
 
 	if (!isDefined(force))
 	{
-		force = droid.health < FORCE_REPAIR_PERCENT;
+		force = droid.health < forceRepairPercent;
 	}
 
-	if (Math.floor(droid.health) <= FORCE_REPAIR_PERCENT)
+	if (Math.floor(droid.health) <= forceRepairPercent)
 	{
 		force = true;
 	}
