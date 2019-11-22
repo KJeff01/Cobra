@@ -100,7 +100,7 @@ function repairDroid(droidID, force)
 	const SAFE_EXTREME_OIL_IGNORE_NUM = 100;
 	var highOil = highOilMap();
 
-	var forceRepairPercent = highOil ? 33 : 66; //Be more brave on super high oil maps.
+	var forceRepairPercent = highOil ? 50 : 66; //Be more brave on super high oil maps.
 	const EXPERIENCE_DIVISOR = 26;
 	const HEALTH_TO_REPAIR = forceRepairPercent + Math.floor(droid.experience / EXPERIENCE_DIVISOR);
 
@@ -465,6 +465,10 @@ function enemyUnitsInBase()
 function donateSomePower()
 {
 	if (currently_dead)
+	{
+		return;
+	}
+	if (!countStruct(structures.gens) || !countStruct(structures.derricks))
 	{
 		return;
 	}

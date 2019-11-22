@@ -10,6 +10,16 @@ function needPowerGenerator()
 	return cacheThis(uncached, [], undefined, 8000);
 }
 
+function minTruckCount()
+{
+	function uncached()
+	{
+		return (highOilMap() ? 3 : 2) * MIN_TRUCKS_PER_GROUP;
+	}
+
+	return cacheThis(uncached, [], undefined, Infinity);
+}
+
 //Determine if this is a constructor droid. Specify and optional second paramter
 //to find combat engineers.
 function isConstruct(objID, countCybEng)
@@ -68,23 +78,32 @@ function conCanHelp(mydroidID, bx, by)
 	return (mydroid.order !== DORDER_BUILD &&
 		mydroid.order !== DORDER_LINEBUILD &&
 		mydroid.order !== DORDER_RECYCLE &&
-		mydroid.busy !== true &&
 		!repairDroid(mydroidID) &&
 		droidCanReach(mydroid, bx, by)
 	);
 }
 
-//Return all idle constructs object IDs.
-function findIdleTrucks(type)
+//Return all idle constructs object IDs for a given group.
+function findIdleTrucks(group)
 {
-	const BUILDERS = isDefined(type) ? enumGroup(oilGrabberGroup) : enumGroup(constructGroup);
+	var builders;
 	var droidlist = [];
 
-	for (var i = 0, s = BUILDERS.length; i < s; i++)
+	if (!isDefined(group))
 	{
-		if (conCanHelp(BUILDERS[i].id, MY_BASE.x, MY_BASE.y))
+		builders = enumGroup(constructGroup);
+	}
+	else
+	{
+		builders = enumGroup(group);
+	}
+
+	for (var i = 0, s = builders.length; i < s; i++)
+	{
+		var con = builders[i];
+		if (conCanHelp(con.id, con.x, con.y))
 		{
-			droidlist.push(BUILDERS[i].id);
+			droidlist.push(con.id);
 		}
 	}
 
@@ -153,7 +172,7 @@ function protectUnguardedDerricks(droid)
 				return enumRange(obj.x, obj.y, 6, ENEMIES, false).length === 0;
 			}).sort(distanceToBase);
 
-			if (undefended.length > 0 && buildStuff(returnDefense(), undefined, undefended[0], MAX_BLOCKING, true))
+			if (undefended.length > 0 && buildStuff(returnDefense(), undefined, undefended[0], MAX_BLOCKING, oilGrabberGroup))
 			{
 				return true;
 			}
@@ -208,14 +227,15 @@ function buildStructure(droid, stat, defendThis, blocking)
 }
 
 //Build some object. Builds modules on structures also.
-function buildStuff(struc, module, defendThis, blocking, oilGroup)
+function buildStuff(struc, module, defendThis, blocking, group)
 {
 	if (!isDefined(blocking))
 	{
 		blocking = 0;
 	}
 
-	var freeTrucks = findIdleTrucks(oilGroup);
+	var freeTrucks = findIdleTrucks(isDefined(group) ? group : undefined);
+
 	if (freeTrucks.length > 0)
 	{
 		var truck = getObject(DROID, me, freeTrucks[0]);
@@ -251,21 +271,26 @@ function buildStuff(struc, module, defendThis, blocking, oilGroup)
 
 //Check for unfinished structures and help complete them. Specify a droid ID
 //and that droid will go help build something.
-function checkUnfinishedStructures()
+function checkUnfinishedStructures(group)
 {
-	var structs = unfinishedStructures();
-	if (structs.length > 0)
+	if (!isDefined(group))
 	{
-		var structure = getObject(STRUCTURE, me, structs[0]);
+		group = constructGroup;
+	}
+
+	var structs = unfinishedStructures();
+	for (var i = 0, len = structs.length; i < len; ++i)
+	{
+		var structure = getObject(STRUCTURE, me, structs[i]);
 		if (structure === null)
 		{
 			return false;
 		}
 
-		var trucks = findIdleTrucks();
-		if (trucks.length > 0)
+		var trucks = findIdleTrucks(group);
+		for (var j = 0, len2 = trucks.length; j < len2; ++j)
 		{
-			var truck = getObject(DROID, me, trucks[0]);
+			var truck = getObject(DROID, me, trucks[j]);
 			if (truck === null)
 			{
 				return false;
@@ -319,7 +344,6 @@ function lookForOil()
 
 		if (bestDroid && !stopExecution("oil" + oil.y * mapWidth * oil.x, 50000))
 		{
-			bestDroid.busy = true;
 			orderDroidBuild(bestDroid, DORDER_BUILD, structures.derricks, oil.x, oil.y);
 			return true;
 		}
@@ -470,7 +494,7 @@ function defendRandomDerrick()
 	{
 		const MAX_BLOCKING = 1;
 
-		if (buildStuff(returnDefense(), undefined, derrs[random(derrs.length)], MAX_BLOCKING, true))
+		if (buildStuff(returnDefense(), undefined, derrs[random(derrs.length)], MAX_BLOCKING, oilGrabberGroup))
 		{
 			return true;
 		}
@@ -523,7 +547,7 @@ function buildBaseStructures()
 		return true;
 	}
 
-	if (mapOilLevel() !== "NTW")
+	if (!highOilMap())
 	{
 		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 1))
 		{
@@ -609,20 +633,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
-		{
-			return true;
-		}
-		if (countAndBuild(FACTORY, 4))
-		{
-			return true;
-		}
-		if (!researchComplete && countAndBuild(structures.labs, 5))
-		{
-			return true;
-		}
-		//Build 3 repair facilities
-		if (countAndBuild(structures.extras[0], 3))
+		if (buildNTWPhase2())
 		{
 			return true;
 		}
@@ -769,15 +780,33 @@ function buildExtras()
 
 function buildNTWPhase2()
 {
-	if (countAndBuild(FACTORY, 5))
+	if (needPowerGenerator() && countAndBuild(structures.gens, 6))
 	{
 		return true;
 	}
-	if (countAndBuild(CYBORG_FACTORY, 3))
+	if (countAndBuild(FACTORY, 4))
 	{
 		return true;
 	}
-	if (countAndBuild(VTOL_FACTORY, 3))
+	if (!researchComplete && countAndBuild(structures.labs, 5))
+	{
+		return true;
+	}
+	if (countAndBuild(CYBORG_FACTORY, 4))
+	{
+		return true;
+	}
+	if (needPowerGenerator() && countAndBuild(structures.gens, 8))
+	{
+		return true;
+	}
+	if (countAndBuild(structures.extras[0], 3))
+	{
+		return true;
+	}
+
+	// Ignore spam building gens early game on true 40 oil maps
+	if (needPowerGenerator() && countAndBuild(structures.gens, countStruct(structures.gens) + 1))
 	{
 		return true;
 	}
@@ -791,28 +820,43 @@ function buildOrders()
 {
 	if (currently_dead) { return; }
 
-	var isNTW = mapOilLevel() === "NTW";
-	if (findIdleTrucks().length === 0) { return; }
-	if (checkUnfinishedStructures()) { return; }
+	var isNTW = highOilMap();
+	var skip = false;
+
+	if (findIdleTrucks(constructGroup).length === 0 && (!isNTW || (isNTW && findIdleTrucks(constructGroupNTWExtra).length === 0))) { return; }
+
+	if (checkUnfinishedStructures(constructGroup)) { skip = true; }
+	if (isNTW && checkUnfinishedStructures(constructGroupNTWExtra)) { skip = true; }
+	if (skip) { return; }
+
 	if (buildBaseStructures()) { return; }
-	if (maintenance()) { return; }
-	if (isNTW && buildNTWPhase2()) { return; }
+
+	if (maintenance(constructGroup)) { skip = true; }
+	if (isNTW && maintenance(constructGroupNTWExtra)) { skip = true; }
+	if (skip) { return; }
+
 	if (buildSpecialStructures()) { return; }
 	if (buildBaseStructures2()) { return; }
 	if (random(100) < 33 && buildAAForPersonality()) { return; }
 	if (buildExtras()) { return; }
+
 	buildDefenses(undefined, false);
 }
 
 //Check if a building has modules to be built
-function maintenance()
+function maintenance(group)
 {
 	if (!countStruct(structures.gens) || (countStruct(structures.derricks) < 4))
 	{
 		return false;
 	}
+	if (!isDefined(group))
+	{
+		group = constructGroup;
+	}
 
-	var isNTW = mapOilLevel() === "NTW";
+	var isNTW = highOilMap();
+	var goodNTWPower = getRealPower() > 250;
 
 	var modList;
 	var struct = null;
@@ -839,6 +883,11 @@ function maintenance()
 		];
 	}
 
+	if (isNTW && (group === constructGroupNTWExtra) && goodNTWPower)
+	{
+		modList = modList.reverse();
+	}
+
 	for (var i = 0, l = modList.length; i < l; ++i)
 	{
 		var modObj = modList[i];
@@ -851,7 +900,7 @@ function maintenance()
 				//researched yet (from some maps).
 				continue;
 			}
-			if (isNTW && (modObj.structure === structures.gens) && (getRealPower() > 250))
+			if (isNTW && (modObj.structure === structures.gens) && goodNTWPower && (group !== constructGroupNTWExtra))
 			{
 				continue;
 			}
@@ -873,7 +922,9 @@ function maintenance()
 		}
 	}
 
-	if (((getRealPower() > SUPER_LOW_POWER) || (module === "A0PowMod1") || (module === modList[0].mod)) && struct && buildStuff(struct, module))
+	if (((getRealPower() > SUPER_LOW_POWER) || (module === "A0PowMod1") || (module === modList[0].mod)) &&
+		struct &&
+		buildStuff(struct, module, undefined, 0, group))
 	{
 		return true;
 	}

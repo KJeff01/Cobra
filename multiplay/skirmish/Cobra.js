@@ -256,6 +256,7 @@ var sensorGroup;
 var repairGroup;
 var artilleryGroup;
 var constructGroup;
+var constructGroupNTWExtra;
 var oilGrabberGroup;
 var retreatGroup;
 
@@ -306,4 +307,4 @@ include(COBRA_INCLUDES + "events.js");
 include(COBRA_INCLUDES + "chat.js");
 include(COBRA_INCLUDES + "adaption.js");
 
-const MIN_TRUCKS = mapOilLevel() !== "NTW" ? 6 : 10;
+const MIN_TRUCKS_PER_GROUP = !highOilMap() ? 3 : 5;

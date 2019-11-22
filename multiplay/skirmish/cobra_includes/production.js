@@ -429,12 +429,17 @@ function produce()
 	const MIN_REPAIRS = 2;
 	var useCybEngineer = !countStruct(structures.factories); //use them if we have no factory
 	var systems = analyzeQueuedSystems();
+	var isHighOil = highOilMap();
+	var highOilAttackerExtra = 5;
 
 	var attackers = groupSize(attackGroup);
 	var allowSpecialSystems = isDefined(attackers) ? attackers > 10 : false;
 	var buildSensors = ((enumGroup(sensorGroup).length + systems.sensor) < MIN_SENSORS);
 	var buildRepairs = ((enumGroup(repairGroup).length + systems.repair) < MIN_REPAIRS);
-	var buildTrucks = ((enumGroup(constructGroup).length + enumGroup(oilGrabberGroup).length + systems.truck) < MIN_TRUCKS);
+	var buildTrucks = ((enumGroup(constructGroup).length +
+		enumGroup(oilGrabberGroup).length +
+		enumGroup(constructGroupNTWExtra).length +
+		systems.truck) < minTruckCount());
 
 	//Loop through factories in the order the personality likes.
 	for (var i = 0; i < 3; ++i)
@@ -443,7 +448,7 @@ function produce()
 		var fac = enumStruct(me, facType);
 		if (!((facType === CYBORG_FACTORY) && !forceHover && turnOffCyborgs))
 		{
-			if (facType !== FACTORY && !countDroid(DROID_CONSTRUCT))
+			if (facType === VTOL_FACTORY && !countDroid(DROID_CONSTRUCT))
 			{
 				continue;
 			}
@@ -472,8 +477,8 @@ function produce()
 							amountOfAttackers += vtol;
 						}
 
-						if (buildTrucks && ((amountOfAttackers >= MIN_ATTACK_DROIDS) ||
-							(gameTime < 240000 && mapOilLevel() === "NTW") ||
+						if (buildTrucks && ((amountOfAttackers >= (MIN_ATTACK_DROIDS + (isHighOil ? highOilAttackerExtra : 0))) ||
+							(gameTime < 240000 && isHighOil) ||
 							!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
 							highTechCrazyCase))
 						{

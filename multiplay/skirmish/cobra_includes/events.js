@@ -84,23 +84,27 @@ function eventDroidBuilt(droid, struct)
 {
 	if (isConstruct(droid.id))
 	{
-		var baseBuilderLen = enumGroup(constructGroup).length;
-		var halfOfMin = Math.floor(MIN_TRUCKS  / 2);
+		var isEngineer = droid.body === "CyborgLightBody";
 
-		if (droid.body !== "CyborgLightBody" && baseType === CAMP_CLEAN && getMultiTechLevel() > 1 && enumGroup(oilGrabberGroup).length === 0)
+		if (!isEngineer && baseType === CAMP_CLEAN && getMultiTechLevel() > 1 && enumGroup(oilGrabberGroup).length === 0)
 		{
 			groupAdd(oilGrabberGroup, droid); //Fix for crazy T2/T3/T4 no-bases config
 		}
-		//Combat engineers are always base builders.
-		else if ((droid.body === "CyborgLightBody") ||
-			((baseBuilderLen < halfOfMin) ||
-			((mapOilLevel() === "NTW") && (gameTime > 180000) && (baseBuilderLen < halfOfMin + 2))))
+		else if (enumGroup(constructGroup).length < MIN_TRUCKS_PER_GROUP)
 		{
 			groupAdd(constructGroup, droid);
 		}
-		else
+		else if (!isEngineer && (enumGroup(oilGrabberGroup).length < MIN_TRUCKS_PER_GROUP))
 		{
 			groupAdd(oilGrabberGroup, droid);
+		}
+		else if (highOilMap() && (enumGroup(constructGroupNTWExtra).length < MIN_TRUCKS_PER_GROUP))
+		{
+			groupAdd(constructGroupNTWExtra, droid);
+		}
+		else
+		{
+			groupAdd(constructGroup, droid);
 		}
 	}
 	else if (droid.droidType === DROID_SENSOR)

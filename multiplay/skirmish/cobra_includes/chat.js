@@ -94,11 +94,9 @@ function eventChat(from, to, message)
 
 	if (message === "need truck")
 	{
-		var droids = enumGroup(constructGroup).filter(function(dr) {
-			return (dr.health > 90);
-		});
+		var droids = enumGroup(constructGroup);
 		var cacheDroids = droids.length;
-		if (cacheDroids > 2)
+		if (cacheDroids >= Math.floor(MIN_TRUCKS_PER_GROUP / 2))
 		{
 			donateObject(droids[random(cacheDroids)], from);
 		}
