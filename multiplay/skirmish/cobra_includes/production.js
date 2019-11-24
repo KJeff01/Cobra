@@ -417,6 +417,36 @@ function analyzeQueuedSystems()
 	return { "truck": trucks, "sensor": sens, "repair": reps };
 }
 
+function attackerCountsGood(recycle)
+{
+	if (!isDefined(recycle))
+	{
+		recycle = false;
+	}
+
+	var highOilExtras = highOilMap ? 10 : 0;
+	var recycleExtras = recycle ? 8 : 0;
+
+	var amountOfAttackers = groupSize(attackGroup);
+	var arti = groupSize(artilleryGroup);
+	var vtol = groupSize(vtolGroup);
+
+	if (isDefined(attackers))
+	{
+		amountOfAttackers += attackers;
+	}
+	if (isDefined(arti))
+	{
+		amountOfAttackers += arti;
+	}
+	if (isDefined(vtol))
+	{
+		amountOfAttackers += vtol;
+	}
+
+	return amountOfAttackers >= (MIN_ATTACK_DROIDS + recycleExtras + highOilExtras);
+}
+
 
 //Produce a unit when factories allow it.
 function produce()
@@ -429,8 +459,6 @@ function produce()
 	const MIN_REPAIRS = 2;
 	var useCybEngineer = !countStruct(structures.factories); //use them if we have no factory
 	var systems = analyzeQueuedSystems();
-	var isHighOil = highOilMap();
-	var highOilAttackerExtra = 5;
 
 	var attackers = groupSize(attackGroup);
 	var allowSpecialSystems = isDefined(attackers) ? attackers > 10 : false;
@@ -460,25 +488,10 @@ function produce()
 					if (facType === FACTORY)
 					{
 						var highTechCrazyCase = getMultiTechLevel() > 1 && baseType === CAMP_CLEAN;
-						var amountOfAttackers = 0; //beware NaN potential
-						var arti = groupSize(artilleryGroup);
-						var vtol = groupSize(vtolGroup);
 
-						if (isDefined(attackers))
-						{
-							amountOfAttackers += attackers;
-						}
-						if (isDefined(arti))
-						{
-							amountOfAttackers += arti;
-						}
-						if (isDefined(vtol))
-						{
-							amountOfAttackers += vtol;
-						}
-
-						if (buildTrucks && ((amountOfAttackers >= (MIN_ATTACK_DROIDS + (isHighOil ? highOilAttackerExtra : 0))) ||
-							(gameTime < 240000 && isHighOil) ||
+						if (buildTrucks &&
+							(attackerCountsGood() ||
+							(gameTime < 240000 && highOilMap()) ||
 							!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
 							highTechCrazyCase))
 						{

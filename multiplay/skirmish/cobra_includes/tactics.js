@@ -276,7 +276,7 @@ function groundTactics()
 //Recycle units when certain conditions are met.
 function recycleForHover()
 {
-	if (currently_dead)
+	if (currently_dead || !attackerCountsGood())
 	{
 		return;
 	}
