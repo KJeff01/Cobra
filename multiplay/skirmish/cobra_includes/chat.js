@@ -44,7 +44,7 @@ function eventChat(from, to, message)
 	{
 		sendChatMessage(MostHarmfulPlayer(), to);
 	}
-	else if (message === "toggle hover")
+	else if (message === "toggle hover" && !checkIfSeaMap())
 	{
 		forceHover = !forceHover;
 	}

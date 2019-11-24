@@ -449,6 +449,11 @@ function analyzeQueuedSystems()
 
 function attackerCountsGood(recycle)
 {
+	if (checkIfSeaMap())
+	{
+		return true;
+	}
+
 	if (!isDefined(recycle))
 	{
 		recycle = false;
