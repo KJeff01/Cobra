@@ -134,6 +134,10 @@ const REPAIR_TURRETS = [
 	"HeavyRepair",
 	"LightRepair1",
 ];
+const ARTILLERY_SENSORS = [
+	"Sensor-WideSpec",
+	"SensorTurret1Mk1",
+];
 
 
 //List of Cobra personalities:

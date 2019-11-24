@@ -296,6 +296,16 @@ function buildAttacker(id)
 				secondary = "EMP-Cannon";
 			}
 
+			var body;
+			if (gameTime < 600000 && getMultiTechLevel() === 1)
+			{
+				body = (random(100) < 70) ? VTOL_BODY : SYSTEM_BODY;
+			}
+			else
+			{
+				body = TANK_BODY;
+			}
+
 			return getRealPower() > PRODUCTION_POWER && buildDroid(fac, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
 		}
 	}
@@ -303,16 +313,36 @@ function buildAttacker(id)
 	return false;
 }
 
-//Create trucks or sensors with a light/medium body. Default to a sensor.
+//Create trucks or sensors. Default to a sensor.
 function buildSys(id, weap)
 {
 	var fac = getObject(STRUCTURE, me, id);
-	if (!isDefined(weap))
+	if (fac === null)
 	{
-		weap = ["Sensor-WideSpec", "SensorTurret1Mk1"];
+		return false;
 	}
 
-	return (fac !== null && buildDroid(fac, "System unit", random(2) ? SYSTEM_BODY : VTOL_BODY, SYSTEM_PROPULSION, "", "", weap));
+	if (!isDefined(weap))
+	{
+		weap = ARTILLERY_SENSORS;
+	}
+
+	var body;
+	if (gameTime > 600000)
+	{
+		body = (random(100) < 80) ? VTOL_BODY : TANK_BODY;
+	}
+	else
+	{
+		body = (random(100) < 60) ? SYSTEM_BODY : VTOL_BODY;
+	}
+
+	if (buildDroid(fac, "System unit", body, SYSTEM_PROPULSION, "", "", weap))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 //Create a cyborg with available research. Expects a boolean for useEngineer or can undefined.
