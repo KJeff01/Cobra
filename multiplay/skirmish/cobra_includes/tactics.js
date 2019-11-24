@@ -490,7 +490,7 @@ function donateSomePower()
 //Does Cobra believe it is winning or could win?
 function confidenceThreshold()
 {
-	if (gameTime < 1200000)
+	if (gameTime < 480000)
 	{
 		return true;
 	}
@@ -546,7 +546,7 @@ function shouldCobraAttack()
 //Controls how long localized group retreat happens. See also eventAttacked.
 function retreatTactics()
 {
-	const SCAN_RADIUS = 7;
+	const SCAN_RADIUS = 8;
 	var droids = enumGroup(retreatGroup);
 
 	//Flee!

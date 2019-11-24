@@ -21,13 +21,13 @@ function eventStartLevel()
 
 	setTimer("buildOrders", 300 + delay + (2 * easyTimeDelay));
 	setTimer("produce", 400 + delay + easyTimeDelay);
+	setTimer("retreatTactics", 500 + delay);
 	setTimer("checkAllForRepair", 600 + delay + (4 * easyTimeDelay));
 	setTimer("research", 800 + delay + (3 * easyTimeDelay));
 	setTimer("lookForOil", 1000 + delay + (2 * easyTimeDelay));
 	setTimer("repairDroidTactics", 1200 + delay);
 	setTimer("artilleryTactics", 1400 + delay);
 	setTimer("vtolTactics", 1600 + delay);
-	setTimer("retreatTactics", 1800 + delay);
 	setTimer("groundTactics", 2000 + delay);
 	setTimer("switchOffMG", 5000 + delay);
 	setTimer("recycleForHover", 8000 + delay);
@@ -140,7 +140,7 @@ function eventAttacked(victim, attacker)
 		return;
 	}
 
-	const GROUP_SCAN_RADIUS = 7;
+	const GROUP_SCAN_RADIUS = 8;
 	var nearbyUnits = enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, ALLIES, false).filter(function(obj) {
 		return obj.type === DROID;
 	});
