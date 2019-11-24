@@ -459,7 +459,7 @@ function attackerCountsGood(recycle)
 		recycle = false;
 	}
 
-	var highOilExtras = highOilMap ? 10 : 0;
+	var highOilExtras = highOilMap() ? 10 : 0;
 	var recycleExtras = recycle ? 8 : 0;
 
 	var amountOfAttackers = groupSize(attackGroup) + groupSize(artilleryGroup) + groupSize(vtolGroup);
@@ -510,7 +510,7 @@ function produce()
 						var highTechCrazyCase = getMultiTechLevel() > 1 && baseType === CAMP_CLEAN;
 
 						if (buildTrucks &&
-							(attackerCountsGood() ||
+							(attackerCountsGood(false) ||
 							(gameTime < 240000 && highOilMap()) ||
 							!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
 							highTechCrazyCase))
