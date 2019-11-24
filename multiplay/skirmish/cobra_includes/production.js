@@ -457,22 +457,7 @@ function attackerCountsGood(recycle)
 	var highOilExtras = highOilMap ? 10 : 0;
 	var recycleExtras = recycle ? 8 : 0;
 
-	var amountOfAttackers = groupSize(attackGroup);
-	var arti = groupSize(artilleryGroup);
-	var vtol = groupSize(vtolGroup);
-
-	if (isDefined(attackers))
-	{
-		amountOfAttackers += attackers;
-	}
-	if (isDefined(arti))
-	{
-		amountOfAttackers += arti;
-	}
-	if (isDefined(vtol))
-	{
-		amountOfAttackers += vtol;
-	}
+	var amountOfAttackers = groupSize(attackGroup) + groupSize(artilleryGroup) + groupSize(vtolGroup);
 
 	return amountOfAttackers >= (MIN_ATTACK_DROIDS + recycleExtras + highOilExtras);
 }
