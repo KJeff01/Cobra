@@ -116,6 +116,7 @@ const TANK_BODY = [
 ];
 const SYSTEM_BODY = [
 	"Body3MBT",  // Retaliation
+	"Body2SUP",  // Leopard
 	"Body4ABT",  // Bug
 	"Body1REC",  // Viper
 ];

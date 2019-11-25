@@ -297,9 +297,9 @@ function buildAttacker(id)
 			}
 
 			var body;
-			if (gameTime < 600000 && getMultiTechLevel() === 1)
+			if ((gameTime < 600000 && getMultiTechLevel() === 1) || (!highOilMap() && gameTime < 1200000 && random(100) < 33 && getMultiTechLevel() <= 2))
 			{
-				body = (random(100) < 70) ? VTOL_BODY : SYSTEM_BODY;
+				body = VTOL_BODY;
 			}
 			else
 			{
