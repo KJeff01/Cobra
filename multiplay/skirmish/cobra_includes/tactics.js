@@ -152,12 +152,6 @@ function checkAllForRepair()
 	}
 }
 
-//choose land attackers.
-function chooseGroup()
-{
-	return enumGroup(attackGroup).filter(function(dr) { return droidReady(dr.id); });
-}
-
 //Find information about the closest enemy droid. Returns undefined otherwise. Do not target VTOLs
 //unless they are the only remaining droids.
 function findNearestEnemyDroid(enemy)
@@ -260,14 +254,17 @@ function groundTactics()
 		var target = rangeStep();
 		if (isDefined(target))
 		{
-			const WHO = chooseGroup();
-			if (WHO.length < MIN_ATTACK_DROIDS)
+			const UNITS = enumGroup(attackGroup).filter(function(dr) {
+				return droidReady(dr.id);
+			});
+
+			if (UNITS.length < MIN_ATTACK_DROIDS)
 			{
 				return;
 			}
-			for (var i = 0, l = WHO.length; i < l; ++i)
+			for (var i = 0, l = UNITS.length; i < l; ++i)
 			{
-				attackThisObject(WHO[i].id, target);
+				attackThisObject(UNITS[i].id, target);
 			}
 		}
 	}

@@ -178,24 +178,7 @@ function eventAttacked(victim, attacker)
 		//Check if a droid needs repair.
 		if ((victim.type === DROID) && !isVTOL(victim) && countStruct(structures.extras[0]))
 		{
-			//System units are timid.
-			if ((victim.droidType === DROID_SENSOR) || isConstruct(victim.id) || (victim.droidType === DROID_REPAIR))
-			{
-				orderDroid(victim, DORDER_RTR);
-			}
-			else
-			{
-				if (Math.floor(victim.health) < 42)
-				{
-					//Try to repair by force.
-					orderDroid(victim, DORDER_RTR);
-				}
-				else
-				{
-					//Fuzzy repair algorithm.
-					repairDroid(victim.id);
-				}
-			}
+			repairDroid(victim.id);
 		}
 
 		if (stopExecution("throttleEventAttacked1", 1000))
@@ -211,16 +194,15 @@ function eventAttacked(victim, attacker)
 			);
 		});
 
-		const CACHE_UNITS = units.length;
+		const UNIT_LEN = units.length;
 
-		if (CACHE_UNITS >= MIN_ATTACK_DROIDS && shouldCobraAttack())
+		if (UNIT_LEN >= MIN_ATTACK_DROIDS && shouldCobraAttack())
 		{
-			var defend = (distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, attacker.x, attacker.y) < 18);
-			for (var i = 0; i < CACHE_UNITS; i++)
+			for (var i = 0; i < UNIT_LEN; i++)
 			{
-				if (random(3) || defend)
+				if ((subPersonalities[personality].resPath === "offensive") || (random(100) < 33))
 				{
-					if (defend)
+					if (distBetweenTwoPoints(victim.x, victim.y, attacker.x, attacker.y) < (GROUP_SCAN_RADIUS + 4))
 					{
 						orderDroidObj(units[i], DORDER_ATTACK, attacker);
 					}
