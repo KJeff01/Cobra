@@ -306,7 +306,7 @@ function buildAttacker(id)
 				body = TANK_BODY;
 			}
 
-			return getRealPower() > PRODUCTION_POWER && buildDroid(fac, "Droid", TANK_BODY, pickPropulsion(weap), "", "", weap, secondary);
+			return getRealPower() > PRODUCTION_POWER && buildDroid(fac, "Droid", body, pickPropulsion(weap), "", "", weap, secondary);
 		}
 	}
 

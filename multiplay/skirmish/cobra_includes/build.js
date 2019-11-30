@@ -823,7 +823,7 @@ function buildOrders()
 	var isNTW = highOilMap();
 	var skip = false;
 
-	if (findIdleTrucks(constructGroup).length === 0 && (!isNTW || (isNTW && findIdleTrucks(constructGroupNTWExtra).length === 0))) { return; }
+	if (findIdleTrucks(constructGroup).length === 0 && (!isNTW || findIdleTrucks(constructGroupNTWExtra).length === 0)) { return; }
 
 	if (checkUnfinishedStructures(constructGroup)) { skip = true; }
 	if (isNTW && checkUnfinishedStructures(constructGroupNTWExtra)) { skip = true; }
