@@ -296,14 +296,25 @@ function buildAttacker(id)
 				secondary = "EMP-Cannon";
 			}
 
+			//Early-game now has a focus on small or medium body and will then shift
+			//a preference towards heavy or medium bodies (if power is relatively low).
+			//This helps keep things competitive among a player rushing with small/medium bodies.
+
 			var body;
-			if ((gameTime < 600000 && getMultiTechLevel() === 1) || (!highOilMap() && gameTime < 1200000 && random(100) < 33 && getMultiTechLevel() <= 2))
+			if (gameTime < 1000000 && random(100) < 75)
 			{
-				body = VTOL_BODY;
+				body = (random(100) < 50) ? VTOL_BODY : SYSTEM_BODY;
 			}
 			else
 			{
-				body = TANK_BODY;
+				if (getRealPower() < PRODUCTION_POWER + 150 && random(100) < 40)
+				{
+					body = VTOL_BODY;
+				}
+				else
+				{
+					body = TANK_BODY;
+				}
 			}
 
 			return getRealPower() > PRODUCTION_POWER && buildDroid(fac, "Droid", body, pickPropulsion(weap), "", "", weap, secondary);
@@ -503,56 +514,70 @@ function produce()
 			for (var x = 0, l = fac.length; x < l; ++x)
 			{
 				const FC = fac[x];
-				if (FC && FC.status === BUILT && structureIdle(FC))
+				if (!(FC && FC.status === BUILT))
 				{
-					if (facType === FACTORY)
+					continue;
+				}
+				//Now accounts for overproduction of trucks stalling combat unit production (only seen on higher oil based maps)
+				const VIR_DROID = getDroidProduction(FC);
+				if (!structureIdle(FC) &&
+					!(countDroid(DROID_CONSTRUCT) >= getDroidLimit(me, DROID_CONSTRUCT) &&
+					VIR_DROID !== null &&
+					VIR_DROID.droidType === DROID_CONSTRUCT))
+				{
+					continue;
+				}
+
+				if (facType === FACTORY)
+				{
+					var highTechCrazyCase = getMultiTechLevel() > 1 && baseType === CAMP_CLEAN;
+
+					if (buildTrucks &&
+						(attackerCountsGood(false) ||
+						(gameTime < 240000 && highOilMap()) ||
+						!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
+						highTechCrazyCase))
 					{
-						var highTechCrazyCase = getMultiTechLevel() > 1 && baseType === CAMP_CLEAN;
-
-						if (buildTrucks &&
-							(attackerCountsGood(false) ||
-							(gameTime < 240000 && highOilMap()) ||
-							!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
-							highTechCrazyCase))
-						{
-							buildSys(FC.id, "Spade1Mk1");
-						}
-						else if (buildSensors &&
-							(enumGroup(artilleryGroup).length > 0) &&
-							componentAvailable("SensorTurret1Mk1"))
-						{
-							buildSys(FC.id);
-						}
-						else if (allowSpecialSystems &&
-							buildRepairs &&
-							componentAvailable("LightRepair1"))
-						{
-							buildSys(FC.id, REPAIR_TURRETS);
-						}
-						else
-						{
-							if (!countStruct(structures.gens))
-							{
-								continue;
-							}
-
-							buildAttacker(FC.id);
-						}
+						buildSys(FC.id, "Spade1Mk1");
+					}
+					else if (buildSensors &&
+						(enumGroup(artilleryGroup).length > 0) &&
+						componentAvailable("SensorTurret1Mk1"))
+					{
+						buildSys(FC.id);
+					}
+					else if (allowSpecialSystems &&
+						buildRepairs &&
+						componentAvailable("LightRepair1"))
+					{
+						buildSys(FC.id, REPAIR_TURRETS);
 					}
 					else
 					{
-						if (countStruct(structures.gens))
+						if (!countStruct(structures.gens))
 						{
-							if (facType === CYBORG_FACTORY && (!turnOffCyborgs || !forceHover))
+							continue;
+						}
+
+						buildAttacker(FC.id);
+					}
+				}
+				else
+				{
+					var cyb = (facType === CYBORG_FACTORY);
+					//In some circumstances the bot could be left with no generators and no factories
+					//but still needs to produce combat engineers to, maybe, continue surviving.
+					if (countStruct(structures.gens) || (cyb && useCybEngineer && (gameTime > 480000)))
+					{
+						if (cyb && (!turnOffCyborgs || !forceHover))
+						{
+							buildCyborg(FC.id, useCybEngineer);
+						}
+						else
+						{
+							if (useVtol && facType === VTOL_FACTORY)
 							{
-								buildCyborg(FC.id, useCybEngineer);
-							}
-							else
-							{
-								if (useVtol && facType === VTOL_FACTORY)
-								{
-									buildVTOL(FC.id);
-								}
+								buildVTOL(FC.id);
 							}
 						}
 					}

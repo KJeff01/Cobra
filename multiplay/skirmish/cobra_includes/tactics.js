@@ -179,7 +179,7 @@ function findNearestEnemyDroid(enemy)
 		return undefined;
 	}
 
-	return cacheThis(uncached, [enemy], enemy, 16000);
+	return cacheThis(uncached, [enemy], enemy, 5000);
 }
 
 //Return information about the closest structure of an enemy. Returns undefined otherwise.
@@ -207,7 +207,7 @@ function findNearestEnemyStructure(enemy)
 		return undefined;
 	}
 
-	return cacheThis(uncached, [enemy], enemy, 16000);
+	return cacheThis(uncached, [enemy], enemy, 5000);
 }
 
 //Sensors know all your secrets. They will observe what is closest to Cobra base.
@@ -543,7 +543,7 @@ function shouldCobraAttack()
 //Controls how long localized group retreat happens. See also eventAttacked.
 function retreatTactics()
 {
-	const SCAN_RADIUS = 8;
+	const SCAN_RADIUS = subPersonalities[personality].retreatScanRange;
 	var droids = enumGroup(retreatGroup);
 
 	//Flee!

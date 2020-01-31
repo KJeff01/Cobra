@@ -185,7 +185,7 @@ function findLivingEnemies()
 		return alive;
 	}
 
-	return cacheThis(uncached, [], undefined, 10000);
+	return cacheThis(uncached, [], undefined, 8000);
 }
 
 //The enemy of which Cobra is focusing on.
@@ -230,7 +230,7 @@ function getMostHarmfulPlayer()
 		return mostHarmful;
 	}
 
-	return cacheThis(uncached, [], undefined, 7000);
+	return cacheThis(uncached, [], undefined, 5000);
 }
 
 //Set the initial grudge counter to target a random enemy.

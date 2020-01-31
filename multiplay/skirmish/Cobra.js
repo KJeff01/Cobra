@@ -156,6 +156,7 @@ var subPersonalities =
 		"alloyPriority": 20,
 		"useLasers": true,
 		"cyborgThreatPercentage": 0.20,
+		"retreatScanRange": 12,
 		"resPath": "generic",
 		"res": [
 			"R-Wpn-Cannon-Damage02",
@@ -174,6 +175,7 @@ var subPersonalities =
 		"alloyPriority": 25,
 		"useLasers": true,
 		"cyborgThreatPercentage": 0.40,
+		"retreatScanRange": 12,
 		"resPath": "offensive",
 		"res": [
 			"R-Wpn-Flamer-Damage03",
@@ -192,6 +194,7 @@ var subPersonalities =
 		"alloyPriority": 10,
 		"useLasers": true,
 		"resPath": "offensive",
+		"retreatScanRange": 12,
 		"cyborgThreatPercentage": 0.10,
 		"res": [
 			"R-Wpn-Rocket02-MRL",
@@ -209,6 +212,7 @@ var subPersonalities =
 		"alloyPriority": 15,
 		"useLasers": true,
 		"resPath": "generic",
+		"retreatScanRange": 12,
 		"cyborgThreatPercentage": 100,
 		"res": [
 			"R-Wpn-MG2Mk1",
@@ -226,6 +230,7 @@ var subPersonalities =
 		"alloyPriority": 15,
 		"useLasers": true,
 		"resPath": "offensive",
+		"retreatScanRange": 12,
 		"cyborgThreatPercentage": 0.30,
 		"res": [
 			"R-Wpn-Mortar02Hvy",
@@ -246,6 +251,7 @@ var subPersonalities =
 		"alloyPriority": 10,
 		"useLasers": true,
 		"cyborgThreatPercentage": 0.10,
+		"retreatScanRange": 12,
 		"resPath": "air",
 		"res": [
 			"R-Wpn-Laser01",

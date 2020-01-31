@@ -140,7 +140,7 @@ function eventAttacked(victim, attacker)
 		return;
 	}
 
-	const GROUP_SCAN_RADIUS = 8;
+	const GROUP_SCAN_RADIUS = subPersonalities[personality].retreatScanRange;
 	var nearbyUnits = enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, ALLIES, false).filter(function(obj) {
 		return obj.type === DROID;
 	});
