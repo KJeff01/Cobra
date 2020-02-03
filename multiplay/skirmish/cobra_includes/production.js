@@ -226,7 +226,7 @@ function useHover(weap)
 
 		if ((NAME === "Flame1Mk1") || (NAME === "Flame2") || (NAME === "PlasmiteFlamer"))
 		{
-			useHover = true;
+			useHover = (random(100) <= 60);
 			break;
 		}
 
