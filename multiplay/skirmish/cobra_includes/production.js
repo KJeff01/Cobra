@@ -301,9 +301,16 @@ function buildAttacker(id)
 			//This helps keep things competitive among a player rushing with small/medium bodies.
 
 			var body;
-			if (gameTime < 1000000 && random(100) < 75)
+			if (gameTime < 1000000 && random(100) < 80)
 			{
-				body = (random(100) < 50) ? VTOL_BODY : SYSTEM_BODY;
+				if (getRealPower() < PRODUCTION_POWER + 40 && random(100) < 75)
+				{
+					body = SYSTEM_BODY;
+				}
+				else
+				{
+					body = VTOL_BODY;
+				}
 			}
 			else
 			{
