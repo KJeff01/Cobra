@@ -170,10 +170,7 @@ function eventAttacked(victim, attacker)
 
 	if (attacker.player !== me && !allianceExistsBetween(attacker.player, victim.player))
 	{
-		if (grudgeCount[attacker.player] < MAX_GRUDGE)
-		{
-			grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 5;
-		}
+		grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 5;
 
 		//Check if a droid needs repair.
 		if ((victim.type === DROID) && !isVTOL(victim) && countStruct(structures.extras[0]))

@@ -5,7 +5,6 @@ const COBRA_RULESETS = "/multiplay/skirmish/cobra_rulesets/";
 //Rulesets here.
 include(COBRA_RULESETS + "CobraStandard.js");
 
-const MAX_GRUDGE = 50000;
 const MIN_ATTACK_DROIDS = 4;
 const FACTORY = "A0LightFactory";
 const CYBORG_FACTORY = "A0CyborgFactory";

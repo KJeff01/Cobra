@@ -353,10 +353,9 @@ function repairDroidTactics()
 	}
 }
 
-// Make Cobra focus on this player if asked. Chat command only.
+// Make Cobra focus on this player if asked.
 function targetPlayer(playerNumber)
 {
-	const INC = 100;
 	const PREVIOUS_TARGET = getMostHarmfulPlayer();
 	if (isDefined(scavengerPlayer) && ((playerNumber === scavengerPlayer) || (PREVIOUS_TARGET === scavengerPlayer)))
 	{
@@ -365,10 +364,8 @@ function targetPlayer(playerNumber)
 
 	if (playerNumber !== PREVIOUS_TARGET)
 	{
-		if ((grudgeCount[playerNumber] + INC) < MAX_GRUDGE)
-		{
-			grudgeCount[playerNumber] = grudgeCount[PREVIOUS_TARGET] + INC;
-		}
+		const INC = 400;
+		grudgeCount[playerNumber] = grudgeCount[PREVIOUS_TARGET] + INC;
 	}
 }
 
