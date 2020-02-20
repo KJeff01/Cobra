@@ -254,14 +254,14 @@ function pickPropulsion(weap)
 		return "hover01";
 	}
 
-	const TIME_FOR_HALF_TRACKS = 1200000;
+	const TIME_FOR_HALF_TRACKS = 600000;
 	var tankProp = [
 		"tracked01", // tracked01
 		"HalfTrack", // half-track
 		"wheeled01", // wheels
 	];
 
-	if ((random(100) < 45) || (gameTime < TIME_FOR_HALF_TRACKS))
+	if ((gameTime < TIME_FOR_HALF_TRACKS) || (!(getRealPower() >= PRODUCTION_POWER + 200) && random(100) < 40))
 	{
 		tankProp.shift();
 	}
@@ -303,7 +303,7 @@ function buildAttacker(id)
 			var body;
 			if (gameTime < 1000000 && random(100) < 80)
 			{
-				if (!(getRealPower() >= PRODUCTION_POWER + 200) && random(100) < 67)
+				if (!(getRealPower() >= PRODUCTION_POWER + 200) && random(100) < 40)
 				{
 					body = SYSTEM_BODY;
 				}
