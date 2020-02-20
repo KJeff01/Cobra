@@ -303,7 +303,7 @@ function buildAttacker(id)
 			var body;
 			if (gameTime < 1000000 && random(100) < 80)
 			{
-				if (getRealPower() < PRODUCTION_POWER + 40 && random(100) < 75)
+				if (!(getRealPower() >= PRODUCTION_POWER + 200) && random(100) < 67)
 				{
 					body = SYSTEM_BODY;
 				}
@@ -314,7 +314,7 @@ function buildAttacker(id)
 			}
 			else
 			{
-				if (getRealPower() < PRODUCTION_POWER + 150 && random(100) < 40)
+				if (!(getRealPower() >= PRODUCTION_POWER + 200) && random(100) < 40)
 				{
 					body = VTOL_BODY;
 				}
