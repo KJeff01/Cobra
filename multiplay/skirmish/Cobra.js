@@ -174,7 +174,7 @@ var subPersonalities =
 		"alloyPriority": 25,
 		"useLasers": true,
 		"cyborgThreatPercentage": 0.40,
-		"retreatScanRange": 10,
+		"retreatScanRange": 5,
 		"resPath": "offensive",
 		"res": [
 			"R-Wpn-Flamer-Damage03",
