@@ -881,7 +881,6 @@ function maintenance(group)
 			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gens},
 			{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
 			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.labs},
-			{"mod": "A0FacMod1", "amount": 1, "structure": VTOL_FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
 		];
