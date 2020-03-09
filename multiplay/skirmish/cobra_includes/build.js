@@ -76,6 +76,7 @@ function conCanHelp(mydroidID, bx, by)
 		return false;
 	}
 	return (mydroid.order !== DORDER_BUILD &&
+		mydroid.order !== DORDER_HELPBUILD &&
 		mydroid.order !== DORDER_LINEBUILD &&
 		mydroid.order !== DORDER_RECYCLE &&
 		!repairDroid(mydroidID) &&
@@ -129,7 +130,7 @@ function protectUnguardedDerricks(droid)
 {
 	var derrs = enumStruct(me, structures.derricks);
 	const LEN = derrs.length;
-	const MAX_BLOCKING = 4;
+	const MAX_BLOCKING = 8;
 
 	if (droid)
 	{
@@ -463,7 +464,7 @@ function buildDefenseNearTruck(truck, type)
 
 	if (isDefined(defense))
 	{
-		const MAX_BLOCKING = 4;
+		const MAX_BLOCKING = 8;
 		var tempTruckPos = randomOffsetLocation({x: truck.x, y: truck.y});
 		var result = pickStructLocation(truck, defense, tempTruckPos.x, tempTruckPos.y, MAX_BLOCKING);
 		if (result)
@@ -485,7 +486,7 @@ function defendRandomDerrick()
 
 	if (derrs.length > 0)
 	{
-		const MAX_BLOCKING = 1;
+		const MAX_BLOCKING = 8;
 
 		if (buildStuff(returnDefense(), undefined, derrs[random(derrs.length)], MAX_BLOCKING, oilGrabberGroup))
 		{
