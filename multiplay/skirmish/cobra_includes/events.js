@@ -155,7 +155,8 @@ function eventAttacked(victim, attacker)
 		else if (victim.order !== DORDER_RTR &&
 			victim.order !== DORDER_RECYCLE &&
 			!repairDroid(victim.id) &&
-			nearbyUnits.length < enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, ENEMIES, false).length)
+			nearbyUnits.length < enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, ENEMIES, false).length &&
+			distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, victim.x, victim.y) >= 20)
 		{
 			orderDroidLoc(victim, DORDER_MOVE, MY_BASE.x, MY_BASE.y); //Move now
 			groupAdd(retreatGroup, victim);

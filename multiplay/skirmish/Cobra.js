@@ -157,7 +157,7 @@ var subPersonalities =
 		"vtolPriority": 20,
 		"alloyPriority": 40,
 		"useLasers": true,
-		"cyborgThreatPercentage": 0.20,
+		"cyborgThreatPercentage": 0.08,
 		"retreatScanRange": 12,
 		"resPath": "generic",
 		"res": [
@@ -233,7 +233,7 @@ var subPersonalities =
 		"useLasers": true,
 		"resPath": "offensive",
 		"retreatScanRange": 12,
-		"cyborgThreatPercentage": 0.30,
+		"cyborgThreatPercentage": 0.15,
 		"res": [
 			"R-Wpn-Mortar02Hvy",
 			"R-Wpn-Mortar-ROF02",

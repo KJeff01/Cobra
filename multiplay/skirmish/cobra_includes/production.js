@@ -301,9 +301,9 @@ function buildAttacker(id)
 			//This helps keep things competitive among a player rushing with small/medium bodies.
 
 			var body;
-			if (gameTime < 840000 && random(100) < 67)
+			if (gameTime < 900000 && random(100) < 75)
 			{
-				if (!(getRealPower() >= PRODUCTION_POWER + 200) && random(100) < 40)
+				if (!(getRealPower() >= PRODUCTION_POWER + 200) && random(100) < 60)
 				{
 					body = SYSTEM_BODY;
 				}
