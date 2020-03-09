@@ -316,9 +316,7 @@ function lookForOil()
 	var droids = enumGroup(oilGrabberGroup);
 	var oils = enumFeature(-1, OIL_RES).sort(distanceToBase);
 
-	var manyOils = highOilMap();
-
-	if (!manyOils && countStruct(structures.derricks) > 4)
+	if (random(100) < 40 && countStruct(structures.derricks) > 4)
 	{
 		protectUnguardedDerricks();
 	}
@@ -347,11 +345,6 @@ function lookForOil()
 			orderDroidBuild(bestDroid, DORDER_BUILD, structures.derricks, oil.x, oil.y);
 			return true;
 		}
-	}
-
-	if (manyOils)
-	{
-		protectUnguardedDerricks();
 	}
 
 	return false;
@@ -925,7 +918,7 @@ function maintenance(group)
 		}
 	}
 
-	if (((getRealPower() > SUPER_LOW_POWER) || (module === "A0PowMod1") || (module === modList[0].mod)) &&
+	if (((getRealPower() > -50) || (module === "A0PowMod1") || (module === modList[0].mod)) &&
 		struct &&
 		buildStuff(struct, module, undefined, 0, group))
 	{

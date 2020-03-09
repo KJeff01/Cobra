@@ -100,7 +100,7 @@ function repairDroid(droidID, force)
 	const SAFE_EXTREME_OIL_IGNORE_NUM = 100;
 	var highOil = highOilMap();
 
-	var forceRepairPercent = highOil ? 50 : 66; //Be more brave on super high oil maps.
+	var forceRepairPercent = highOil ? 45 : 55; //Be more brave on super high oil maps.
 	const EXPERIENCE_DIVISOR = 26;
 	const HEALTH_TO_REPAIR = forceRepairPercent + Math.floor(droid.experience / EXPERIENCE_DIVISOR);
 
