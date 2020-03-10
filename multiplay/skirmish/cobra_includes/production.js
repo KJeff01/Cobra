@@ -537,13 +537,11 @@ function produce()
 
 				if (facType === FACTORY)
 				{
-					var highTechCrazyCase = getMultiTechLevel() > 1 && baseType === CAMP_CLEAN;
-
 					if (buildTrucks &&
 						(attackerCountsGood(false) ||
 						(gameTime < 240000 && highOilMap()) ||
 						!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
-						highTechCrazyCase))
+						getMultiTechLevel() > 1))
 					{
 						buildSys(FC.id, "Spade1Mk1");
 					}
@@ -561,7 +559,7 @@ function produce()
 					}
 					else
 					{
-						if (!countStruct(structures.gens))
+						if (!countStruct(structures.gens) || !countStruct(structures.derricks))
 						{
 							continue;
 						}
@@ -578,11 +576,15 @@ function produce()
 					{
 						if (cyb && (!turnOffCyborgs || !forceHover))
 						{
+							if (!useCybEngineer && !countStruct(structures.derricks))
+							{
+								continue; //no derricks while trying to build attack cyborg
+							}
 							buildCyborg(FC.id, useCybEngineer);
 						}
 						else
 						{
-							if (useVtol && facType === VTOL_FACTORY)
+							if (useVtol && facType === VTOL_FACTORY && countStruct(structures.derricks))
 							{
 								buildVTOL(FC.id);
 							}

@@ -637,6 +637,11 @@ function buildBaseStructures()
 		}
 	}
 
+	if (getMultiTechLevel() > 1 && countStruct(VTOL_FACTORY) > 0 && countAndBuild(structures.vtolPads, 3))
+	{
+		return true;
+	}
+
 	return false;
 }
 
@@ -820,6 +825,7 @@ function buildOrders()
 
 	var isNTW = highOilMap();
 	var skip = false;
+	var allowFastHighTechBuild = ((gameTime > 240000) || (getRealPower() > 600));
 
 	if (findIdleTrucks(constructGroup).length === 0 && (!isNTW || findIdleTrucks(constructGroupNTWExtra).length === 0)) { return; }
 
@@ -833,10 +839,10 @@ function buildOrders()
 	if (isNTW && maintenance(constructGroupNTWExtra)) { skip = true; }
 	if (skip) { return; }
 
-	if (buildSpecialStructures()) { return; }
+	if (allowFastHighTechBuild && buildSpecialStructures()) { return; }
 	if (buildBaseStructures2()) { return; }
-	if (random(100) < 33 && buildAAForPersonality()) { return; }
-	if (buildExtras()) { return; }
+	if (allowFastHighTechBuild && random(100) < 33 && buildAAForPersonality()) { return; }
+	if (allowFastHighTechBuild && buildExtras()) { return; }
 
 	buildDefenses(undefined, false);
 }
@@ -855,6 +861,7 @@ function maintenance(group)
 
 	var isNTW = highOilMap();
 	var goodNTWPower = getRealPower() > 250;
+	var minModulePower = (getMultiTechLevel() === 1) ? -50 : -200;
 
 	var modList;
 	var struct = null;
@@ -919,7 +926,10 @@ function maintenance(group)
 		}
 	}
 
-	if (((getRealPower() > -50) || (module === "A0PowMod1") || (module === modList[0].mod)) &&
+	if (((getRealPower() > minModulePower) ||
+		(getMultiTechLevel() > 1 && gameTime > 300000) ||
+		(module === "A0PowMod1") ||
+		(module === modList[0].mod)) &&
 		struct &&
 		buildStuff(struct, module, undefined, 0, group))
 	{
