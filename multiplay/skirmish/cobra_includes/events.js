@@ -200,13 +200,14 @@ function eventAttacked(victim, attacker)
 			{
 				if ((subPersonalities[personality].resPath === "offensive") || (random(100) < 33))
 				{
-					if (distBetweenTwoPoints(victim.x, victim.y, attacker.x, attacker.y) < (GROUP_SCAN_RADIUS + 4))
+					var unit = units[i];
+					if (victim !== null && attacker !== null && distBetweenTwoPoints(victim.x, victim.y, attacker.x, attacker.y) < (GROUP_SCAN_RADIUS + 4))
 					{
-						orderDroidObj(units[i], DORDER_ATTACK, attacker);
+						orderDroidObj(unit, DORDER_ATTACK, attacker);
 					}
-					else
+					else if (unit !== null && isDefined(attacker.x) && isDefined(attacker.y))
 					{
-						orderDroidLoc(units[i], DORDER_SCOUT, attacker.x, attacker.y);
+						orderDroidLoc(unit, DORDER_SCOUT, attacker.x, attacker.y);
 					}
 				}
 			}
