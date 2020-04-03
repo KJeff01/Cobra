@@ -547,8 +547,11 @@ function retreatTactics()
 	for (var i = 0, len = droids.length; i < len; ++i)
 	{
 		var droid = droids[i];
+		var friends = enumRange(droid.x, droid.y, SCAN_RADIUS, ALLIES, false).filter(function(obj) {
+			return obj.type === DROID;
+		});
 
-		if (enumRange(droid.x, droid.y, SCAN_RADIUS, ENEMIES, true).length !== 0)
+		if (enumRange(droid.x, droid.y, SCAN_RADIUS, ENEMIES, true).length > friends.length)
 		{
 			orderDroidLoc(droid, DORDER_MOVE, MY_BASE.x, MY_BASE.y);
 		}
