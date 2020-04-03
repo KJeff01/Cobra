@@ -664,11 +664,11 @@ function factoryBuildOrder()
 		var facNum = countStruct(fac);
 		var allowedAmount = 0;
 
-		if (derrNum >= 18)
+		if (derrNum >= 20)
 		{
 			allowedAmount = 5;
 		}
-		else if (derrNum >= 14)
+		else if (derrNum >= 16)
 		{
 			allowedAmount = 4;
 		}
@@ -683,11 +683,6 @@ function factoryBuildOrder()
 		else
 		{
 			allowedAmount = MIN_FACTORY_COUNT;
-		}
-
-		if (allowedAmount >= 3 && getRealPower() < MIN_POWER)
-		{
-			allowedAmount = 2;
 		}
 
 		if (facNum < allowedAmount && facNum < MAX_FACTORY_COUNT && countAndBuild(fac, allowedAmount))
