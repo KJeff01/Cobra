@@ -73,7 +73,7 @@ function timeToResearchAdvancedBody()
 	switch (getMultiTechLevel())
 	{
 		case 1:
-			time = 900000;
+			time = 600000;
 			if (baseType === CAMP_BASE)
 			{
 				time = 420000;

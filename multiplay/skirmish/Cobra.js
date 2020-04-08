@@ -38,11 +38,12 @@ const ESSENTIALS = [
 	"R-Wpn-MG-Damage02",
 	"R-Struc-PowerModuleMk1",
 	"R-Struc-Research-Upgrade01",
+	"R-Vehicle-Prop-Halftracks",
 	"R-Vehicle-Metals01",
 	"R-Cyborg-Metals01",
+	"R-Vehicle-Body05",
 ];
 const ESSENTIALS_2 = [
-	"R-Vehicle-Prop-Halftracks",
 	"R-Struc-RprFac-Upgrade01",
 	"R-Vehicle-Body11",
 	"R-Sys-Sensor-Upgrade01",
