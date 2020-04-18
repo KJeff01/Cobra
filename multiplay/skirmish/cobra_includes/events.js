@@ -148,6 +148,8 @@ function eventAttacked(victim, attacker)
 	//Custom SemperFi-JS's localized regrouping code to be used to retreat away from highly outnumbered contests.
 	if (victim.type === DROID && victim.player === me)
 	{
+		var nearbyScavs = 0;
+		var nearbyEnemies = enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, ENEMIES, false);
 		if (isVTOL(victim))
 		{
 			droidReady(victim.id);
@@ -155,11 +157,29 @@ function eventAttacked(victim, attacker)
 		else if (victim.order !== DORDER_RTR &&
 			victim.order !== DORDER_RECYCLE &&
 			!repairDroid(victim.id) &&
-			nearbyUnits.length < enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, ENEMIES, false).length &&
+			nearbyUnits.length < nearbyEnemies.length &&
 			distBetweenTwoPoints(MY_BASE.x, MY_BASE.y, victim.x, victim.y) >= 20)
 		{
-			orderDroidLoc(victim, DORDER_MOVE, MY_BASE.x, MY_BASE.y); //Move now
-			groupAdd(retreatGroup, victim);
+			var run = true;
+
+			//Be more aggressive with scavenger stuff
+			if (isDefined(scavengerPlayer) && (attacker.player === scavengerPlayer))
+			{
+				nearbyEnemies.forEach(function(obj) {
+					nearbyScavs += (obj.player === scavengerPlayer);
+				});
+
+				if (Math.floor(nearbyUnits.length * 1.5) > nearbyScavs)
+				{
+					run = false;
+				}
+			}
+
+			if (run)
+			{
+				orderDroidLoc(victim, DORDER_MOVE, MY_BASE.x, MY_BASE.y); //Move now
+				groupAdd(retreatGroup, victim);
+			}
 		}
 	}
 
