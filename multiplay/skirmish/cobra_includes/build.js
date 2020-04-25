@@ -904,7 +904,7 @@ function maintenance(group)
 				continue;
 			}
 
-			var structList = isNTW ? enumStruct(me, modObj.structure).sort(distanceToBase) : enumStruct(me, modObj.structure).sort(distanceToBase).reverse();
+			var structList = enumStruct(me, modObj.structure).sort(distanceToBase);
 			for (var c = 0, s = structList.length; c < s; ++c)
 			{
 				if (structList[c].modules < modObj.amount)
