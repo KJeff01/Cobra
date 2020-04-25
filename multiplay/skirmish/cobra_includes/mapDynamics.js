@@ -89,7 +89,15 @@ function averageOilPerPlayer()
 {
 	function uncached()
 	{
-		return Math.floor(countAllResources() / maxPlayers);
+		var players = 0;
+		//maxPlayers is useless here in case there are some empty slots.
+		for (var i = 0; i < maxPlayers; ++i)
+		{
+			var data = playerData[i];
+			players += ((data.isHuman || data.isAI) ? 1 : 0);
+		}
+
+		return Math.floor(countAllResources() / players);
 	}
 
 	return cacheThis(uncached, [],  undefined, Infinity);
