@@ -5,6 +5,8 @@ const COBRA_RULESETS = "/multiplay/skirmish/cobra_rulesets/";
 //Rulesets here.
 include(COBRA_RULESETS + "CobraStandard.js");
 
+const LOG_RESEARCH_PATH = false;
+
 const MIN_ATTACK_DROIDS = 4;
 const FACTORY = "A0LightFactory";
 const CYBORG_FACTORY = "A0CyborgFactory";

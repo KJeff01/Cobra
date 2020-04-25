@@ -1,4 +1,12 @@
 
+function eventResearched(research, structure, player)
+{
+	if (LOG_RESEARCH_PATH && allianceExistsBetween(me, player))
+	{
+		dump(research.name);
+	}
+}
+
 //updates a research list with whatever is passed to it.
 function updateResearchList(stat, len)
 {
