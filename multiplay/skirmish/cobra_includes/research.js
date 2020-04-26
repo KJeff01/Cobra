@@ -166,6 +166,8 @@ function research()
 						found = pursueResearch(lab, "R-Cyborg-Metals03");
 					}
 					if (!found)
+						found = pursueResearch(lab, "R-Vehicle-Metals04");
+					if (!found)
 					{
 						found = evalResearch(lab, BODY_RESEARCH_2);
 					}
@@ -174,9 +176,6 @@ function research()
 
 			if (subPersonalities[personality].resPath === "generic")
 			{
-				if (!found && random(100) < 33)
-					found = evalResearch(lab, extraTech);
-
 				if (random(100) < 40 && countEnemyVTOL())
 				{
 					if (!found)
@@ -204,6 +203,8 @@ function research()
 					found = evalResearch(lab, weaponTech);
 				if (!found && useArti && random(100) < 50)
 					found = evalResearch(lab, artilleryTech);
+				if (!found && random(100) < 33)
+					found = evalResearch(lab, extraTech);
 
 				if (!found)
 					found = evalResearch(lab, SYSTEM_UPGRADES);
@@ -301,12 +302,12 @@ function research()
 					forceLaser = true;
 				}
 
-				if (!found)
-					found = evalResearch(lab, extraTech);
 				if (!found && !turnOffCyborgs)
 					found = evalResearch(lab, cyborgWeaps);
 				if (!found)
 					found = evalResearch(lab, weaponTech);
+				if (!found)
+					found = evalResearch(lab, extraTech);
 
 				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
@@ -322,9 +323,6 @@ function research()
 			}
 			else if (subPersonalities[personality].resPath === "offensive")
 			{
-				if (!found)
-					found = evalResearch(lab, extraTech);
-
 				if (!turnOffMG)
 				{
 					if (!found && random(100) < antiCyborgChance)
@@ -344,6 +342,8 @@ function research()
 					found = evalResearch(lab, weaponTech);
 				if (!found && useArti && random(100) < 50)
 					found = evalResearch(lab, artilleryTech);
+				if (!found)
+					found = evalResearch(lab, extraTech);
 
 				if (!found)
 					found = evalResearch(lab, SYSTEM_UPGRADES);
@@ -403,11 +403,6 @@ function research()
 				if (!useVtol)
 					useVtol = true;
 
-				if (!found && random(100) < antiCyborgChance)
-					found = evalResearch(lab, extraTech);
-				if (!found && useArti && random(100) < antiCyborgChance)
-					found = evalResearch(lab, artilleryTech);
-
 				if (random(100) < 40 && countEnemyVTOL())
 				{
 					if (!found)
@@ -424,9 +419,9 @@ function research()
 
 				if (!turnOffMG)
 				{
-					if (!found && random(100) < 50)
+					if (!found && random(100) < antiCyborgChance)
 						found = evalResearch(lab, machinegunWeaponTech);
-					if (!found && useArti && random(100) < 50)
+					if (!found && useArti && random(100) < antiCyborgChance)
 						found = evalResearch(lab, machinegunWeaponExtra);
 				}
 				if (useLasersForCyborgControl() && random(100) < antiCyborgChance)
@@ -439,6 +434,10 @@ function research()
 					found = evalResearch(lab, cyborgWeaps);
 				if (!found)
 					found = evalResearch(lab, weaponTech);
+				if (!found && random(100) < 50)
+					found = evalResearch(lab, extraTech);
+				if (!found && useArti && random(100) < 50)
+					found = evalResearch(lab, artilleryTech);
 
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
