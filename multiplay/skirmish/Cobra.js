@@ -167,6 +167,7 @@ var subPersonalities =
 			"R-Wpn-Cannon-Damage02",
 			"R-Wpn-Cannon-ROF02",
 		],
+		"canPlayBySelf": true,
 	},
 	AR:
 	{
@@ -186,6 +187,7 @@ var subPersonalities =
 			"R-Wpn-Flamer-Damage03",
 			"R-Wpn-Flamer-ROF01",
 		],
+		"canPlayBySelf": false,
 	},
 	AB:
 	{
@@ -204,6 +206,7 @@ var subPersonalities =
 		"res": [
 			"R-Wpn-Rocket02-MRL",
 		],
+		"canPlayBySelf": true,
 	},
 	AM:
 	{
@@ -222,6 +225,7 @@ var subPersonalities =
 		"res": [
 			"R-Wpn-MG2Mk1",
 		],
+		"canPlayBySelf": true,
 	},
 	AA:
 	{
@@ -243,6 +247,7 @@ var subPersonalities =
 			"R-Wpn-Mortar-Acc01",
 			"R-Wpn-Mortar-Damage03",
 		],
+		"canPlayBySelf": false,
 	},
 	AL:
 	{
@@ -262,6 +267,7 @@ var subPersonalities =
 			"R-Wpn-Laser01",
 			"R-Wpn-Mortar-Incenediary",
 		],
+		"canPlayBySelf": false,
 	},
 };
 

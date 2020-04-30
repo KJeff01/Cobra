@@ -109,7 +109,9 @@ function myPersonality()
 function adaptToMap()
 {
 	const HIGH_TECH_LEVEL = getMultiTechLevel() >= 2;
+	const FRIEND_COUNT = playerAlliance(true).length;
 	var personal;
+	var chosen;
 
 	//Map to allow a higher chance for a specific personality to be chosen.
 	if (HIGH_TECH_LEVEL || highOilMap())
@@ -126,7 +128,7 @@ function adaptToMap()
 	else
 	{
 		personal = [
-			"AM", "AM", "AM",
+			"AM", "AM", "AM", "AM",
 			"AR", "AR", "AR", "AR", "AR",
 			"AB", "AB", "AB", "AB", "AB", "AB", "AB",
 			"AC", "AC", "AC", "AC", "AC", "AC", "AC",
@@ -135,5 +137,13 @@ function adaptToMap()
 		];
 	}
 
-	return personal[random(personal.length)];
+	chosen = personal[random(personal.length)];
+
+	//Some personalities should only be chosen if accompanied by a friend
+	while ((subPersonalities[chosen].canPlayBySelf === false) && (FRIEND_COUNT === 0))
+	{
+		chosen = personal[random(personal.length)];
+	}
+
+	return chosen;
 }
