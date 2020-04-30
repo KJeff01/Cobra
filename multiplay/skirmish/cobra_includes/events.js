@@ -51,11 +51,17 @@ function eventStructureBuilt(structure, droid)
 		{
 			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
 		}
-		else if (!highOilMap())
+		else
 		{
-			var numDefenses = enumRange(droid.x, droid.y, 3, me, false).filter(function(obj) {
+			//Probably most oils are close to base anyway on high oil maps
+			if ((getRealPower() < Math.floor(SUPER_LOW_POWER / 2)) || (highOilMap() && (gameTime < 240000)))
+			{
+				return;
+			}
+
+			var numDefenses = enumRange(droid.x, droid.y, 7, me, false).filter(function(obj) {
 				return (allianceExistsBetween(me, obj.player) && (obj.type === STRUCTURE) && (obj.stattype === DEFENSE));
-			});
+			}).length;
 
 			if (numDefenses === 0)
 			{

@@ -188,7 +188,7 @@ function protectUnguardedDerricks(droid)
 //around what is passed to it.
 function buildStructure(droid, stat, defendThis, blocking)
 {
-	if (!isStructureAvailable(stat, me))
+	if (!isDefined(stat) || !isStructureAvailable(stat, me))
 	{
 		return false;
 	}
@@ -230,6 +230,11 @@ function buildStructure(droid, stat, defendThis, blocking)
 //Build some object. Builds modules on structures also.
 function buildStuff(struc, module, defendThis, blocking, group)
 {
+	if (!isDefined(struc))
+	{
+		return false;
+	}
+
 	if (!isDefined(blocking))
 	{
 		blocking = 0;
@@ -408,7 +413,7 @@ function returnDefense(type)
 	var standardDefenses = subPersonalities[personality].primaryWeapon.defenses;
 	var artilleryDefenses = subPersonalities[personality].artillery.defenses;
 	var defenses = (type === 0) ? artilleryDefenses.concat(standardDefenses) : standardDefenses.concat(artilleryDefenses);
-	var bestDefense = "Emplacement-MortarEMP"; //default
+	var bestDefense;
 
 	//Choose a random electronic warfare defense if possible.
 	if (random(100) < ELECTRONIC_CHANCE)
@@ -444,9 +449,14 @@ function returnDefense(type)
 		}
 	}
 
-	if (!isStructureAvailable(bestDefense))
+	if (!isDefined(bestDefense))
 	{
-		return "GuardTower1"; //hmg tower
+		if (isStructureAvailable("GuardTower1"))
+		{
+			return "GuardTower1"; //hmg tower
+		}
+
+		return undefined;
 	}
 
 	return bestDefense;
