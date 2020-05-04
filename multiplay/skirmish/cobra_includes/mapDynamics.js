@@ -110,15 +110,15 @@ function mapOilLevel()
 	{
 		var str;
 		var perPlayer = averageOilPerPlayer();
-		if (perPlayer <= 8)
+		if (perPlayer <= 10)
 		{
 			str = "LOW";
 		}
-		else if ((perPlayer > 8) && (perPlayer < 16))
+		else if ((perPlayer > 10) && (perPlayer < 20))
 		{
 			str = "MEDIUM";
 		}
-		else if ((perPlayer >= 16) && (perPlayer < 30))
+		else if ((perPlayer >= 20) && (perPlayer < 30))
 		{
 			str = "HIGH";
 		}
