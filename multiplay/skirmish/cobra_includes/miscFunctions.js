@@ -346,7 +346,6 @@ function initCobraGroups()
 	addDroidsToGroup(artilleryGroup, enumDroid(me, DROID_WEAPON).filter(function(obj) { return obj.isCB; }));
 
 	var cons = enumDroid(me, DROID_CONSTRUCT);
-	var highOil = highOilMap();
 	for (var i = 0, l = cons.length; i < l; ++i)
 	{
 		var con = cons[i];
