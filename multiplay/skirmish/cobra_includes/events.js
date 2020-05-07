@@ -227,7 +227,7 @@ function eventAttacked(victim, attacker)
 				if ((subPersonalities[personality].resPath === "offensive") || (random(100) < 33))
 				{
 					var unit = units[i];
-					if (unit !== null && attacker !== null && distBetweenTwoPoints(unit.x, unit.y, attacker.x, attacker.y) < (GROUP_SCAN_RADIUS + 4))
+					if (unit !== null && distBetweenTwoPoints(unit.x, unit.y, attacker.x, attacker.y) < (GROUP_SCAN_RADIUS + 4))
 					{
 						orderDroidObj(unit, DORDER_ATTACK, attacker);
 					}
