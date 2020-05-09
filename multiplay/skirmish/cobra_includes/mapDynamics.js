@@ -59,7 +59,7 @@ function checkIfSeaMap()
 		return hoverMap;
 	}
 
-	return cacheThis(uncached, [], undefined, Infinity);
+	return cacheThis(uncached, [], "checkIfSeaMap1", Infinity);
 }
 
 //All derricks and all oil resources to find the map total.
@@ -81,7 +81,7 @@ function countAllResources()
 		return amount;
 	}
 
-	return cacheThis(uncached, [], undefined, Infinity);
+	return cacheThis(uncached, [], "countAllResources1", Infinity);
 }
 
 // The amount of oil each player should hold.
@@ -100,7 +100,7 @@ function averageOilPerPlayer()
 		return Math.floor(countAllResources() / players);
 	}
 
-	return cacheThis(uncached, [],  undefined, Infinity);
+	return cacheThis(uncached, [],  "averageOilPerPlayer1", Infinity);
 }
 
 //Is the map a low/medium/high power level. Returns a string of LOW/MEDIUM/HIGH.
@@ -130,7 +130,7 @@ function mapOilLevel()
 		return str;
 	}
 
-	return cacheThis(uncached, [], undefined, Infinity);
+	return cacheThis(uncached, [], "mapOilLevel1", Infinity);
 }
 
 function highOilMap()
@@ -147,7 +147,7 @@ function highOilMap()
 		return false;
 	}
 
-	return cacheThis(uncached, [], undefined, Infinity);
+	return cacheThis(uncached, [], "highOilMap1", Infinity);
 }
 
 //Determine the base area that Cobra claims.
@@ -225,5 +225,5 @@ function cobraBaseArea()
 		return area;
 	}
 
-	return cacheThis(uncached, [], undefined, 20000);
+	return cacheThis(uncached, [], "cobraBaseArea1", 20000);
 }

@@ -54,7 +54,7 @@ function returnClosestEnemyFactory(enemyNumber)
 		return undefined;
 	}
 
-	return cacheThis(uncached, [enemyNumber]);
+	return cacheThis(uncached, [enemyNumber], "returnClosestEnemyFactory" + enemyNumber, 8000);
 }
 
 //Should the vtol attack when ammo is high enough?
@@ -179,7 +179,7 @@ function findNearestEnemyDroid(enemy)
 		return undefined;
 	}
 
-	return cacheThis(uncached, [enemy], enemy, 5000);
+	return cacheThis(uncached, [enemy], "findNearestEnemyDroid" + enemy, 5000);
 }
 
 //Return information about the closest structure of an enemy. Returns undefined otherwise.
@@ -207,7 +207,7 @@ function findNearestEnemyStructure(enemy)
 		return undefined;
 	}
 
-	return cacheThis(uncached, [enemy], enemy, 5000);
+	return cacheThis(uncached, [enemy], "findNearestEnemyStructure" + enemy, 5000);
 }
 
 //Sensors know all your secrets. They will observe what is closest to Cobra base.

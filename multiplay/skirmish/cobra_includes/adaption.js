@@ -36,7 +36,7 @@ function playerCyborgRatio(player)
 		return enumDroid(player, DROID_CYBORG).length / (enumDroid(player).length + 1);
 	}
 
-	return cacheThis(uncached, [player], undefined, 8000);
+	return cacheThis(uncached, [player], "playerCyborgRatio" + player, 8000);
 }
 
 //Count how many Enemy VTOL units are on the map.
@@ -63,7 +63,7 @@ function countEnemyVTOL(player)
 		return enemyVtolCount;
 	}
 
-	return cacheThis(uncached, [player], undefined, 9000);
+	return cacheThis(uncached, [player], "countEnemyVTOL" + player, 9000);
 }
 
 function playerVtolRatio(player)
@@ -78,7 +78,7 @@ function playerVtolRatio(player)
 		return countEnemyVTOL(player) / (enumDroid(player).length + 1);
 	}
 
-	return cacheThis(uncached, [player], undefined, 6000);
+	return cacheThis(uncached, [player], "playerVtolRatio" + player, 6000);
 }
 
 
