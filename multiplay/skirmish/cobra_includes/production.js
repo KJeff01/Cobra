@@ -21,6 +21,14 @@ function isDesignable(item, body, prop)
 	return (virDroid !== null);
 }
 
+function havePrimaryOrArtilleryWeapon()
+{
+	var primary = componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat);
+	var artillery = componentAvailable(subPersonalities[personality].artillery.weapons[0].stat);
+	
+	return (primary || artillery);
+}
+
 //Pick a random weapon line. May return undefined for machineguns.
 function chooseRandomWeapon()
 {
@@ -176,7 +184,7 @@ function choosePersonalityWeapon(type)
 		}
 
 		if (!skip && ((!turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100))) ||
-			!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat)))
+			!havePrimaryOrArtilleryWeapon()))
 		{
 			weaponList = [];
 			var generalAntiCyborgWeapons = weaponStats.machineguns.weapons;
@@ -387,7 +395,7 @@ function buildCyborg(id, useEngineer)
 
 	//Choose MG instead if enemy has enough cyborgs.
 	if ((!turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100))) ||
-		!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat))
+		!havePrimaryOrArtilleryWeapon())
 	{
 		weaponLine = weaponStats.machineguns;
 	}
@@ -541,7 +549,7 @@ function produce()
 					if (buildTrucks &&
 						(attackerCountsGood(false) ||
 						(gameTime < 240000 && highOilMap()) ||
-						!componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat) ||
+						!havePrimaryOrArtilleryWeapon() ||
 						getMultiTechLevel() > 1))
 					{
 						buildSys(FC.id, "Spade1Mk1");

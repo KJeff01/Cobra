@@ -262,10 +262,9 @@ var subPersonalities =
 		"useLasers": true,
 		"cyborgThreatPercentage": 0.10,
 		"retreatScanRange": 12,
-		"resPath": "air",
+		"resPath": "generic",
 		"res": [
-			"R-Wpn-Laser01",
-			"R-Wpn-Mortar-Incenediary",
+			"R-Wpn-MG3Mk1",
 		],
 		"canPlayBySelf": false,
 	},

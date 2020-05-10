@@ -188,7 +188,7 @@ function research()
 				{
 					if (!found && random(100) < antiCyborgChance)
 						found = evalResearch(lab, machinegunWeaponTech);
-					if (!found && useArti && random(100) < antiCyborgChance)
+					if (!found && random(100) < antiCyborgChance)
 						found = evalResearch(lab, machinegunWeaponExtra);
 				}
 				if (useLasersForCyborgControl() && random(100) < antiCyborgChance)
@@ -205,6 +205,8 @@ function research()
 					found = evalResearch(lab, artilleryTech);
 				if (!found && random(100) < 33)
 					found = evalResearch(lab, extraTech);
+				if (!found && useArti && random(100) < 33)
+					found = evalResearch(lab, artillExtra);
 
 				if (!found)
 					found = evalResearch(lab, SYSTEM_UPGRADES);
@@ -222,8 +224,6 @@ function research()
 
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
-				if (!found && useArti)
-					found = evalResearch(lab, artillExtra);
 
 
 				if (!found && (random(100) < subPersonalities[personality].defensePriority))
@@ -293,7 +293,7 @@ function research()
 				{
 					if (!found && random(100) < antiCyborgChance)
 						found = evalResearch(lab, machinegunWeaponTech);
-					if (!found && useArti && random(100) < antiCyborgChance)
+					if (!found && random(100) < antiCyborgChance)
 						found = evalResearch(lab, machinegunWeaponExtra);
 				}
 				if (useLasersForCyborgControl() && random(100) < antiCyborgChance)
@@ -327,7 +327,7 @@ function research()
 				{
 					if (!found && random(100) < antiCyborgChance)
 						found = evalResearch(lab, machinegunWeaponTech);
-					if (!found && useArti && random(100) < antiCyborgChance)
+					if (!found && random(100) < antiCyborgChance)
 						found = evalResearch(lab, machinegunWeaponExtra);
 				}
 				if (useLasersForCyborgControl() && random(100) < antiCyborgChance)
@@ -421,7 +421,7 @@ function research()
 				{
 					if (!found && random(100) < antiCyborgChance)
 						found = evalResearch(lab, machinegunWeaponTech);
-					if (!found && useArti && random(100) < antiCyborgChance)
+					if (!found && random(100) < antiCyborgChance)
 						found = evalResearch(lab, machinegunWeaponExtra);
 				}
 				if (useLasersForCyborgControl() && random(100) < antiCyborgChance)
