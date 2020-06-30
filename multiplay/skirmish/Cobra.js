@@ -90,17 +90,13 @@ const BODY_RESEARCH_2 = [
 	"R-Vehicle-Engine09",
 	"R-Vehicle-Body14",
 ];
-const VTOL_ESSENTIALS = [
-	"R-Struc-VTOLPad-Upgrade01",
-	"R-Wpn-Bomb01",
-];
 const VTOL_RES = [
-	"R-Struc-VTOLPad-Upgrade03",
 	"R-Wpn-Bomb02",
-	"R-Wpn-Bomb03",
+	"R-Struc-VTOLPad-Upgrade03",
+	"R-Wpn-Bomb-Accuracy01",
 	"R-Wpn-Bomb04",
-	"R-Struc-VTOLPad-Upgrade06",
 	"R-Wpn-Bomb-Accuracy03",
+	"R-Struc-VTOLPad-Upgrade06",
 	"R-Wpn-Bomb05",
 	"R-Wpn-Bomb06",
 ];

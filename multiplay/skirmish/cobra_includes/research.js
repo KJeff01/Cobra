@@ -142,13 +142,14 @@ function research()
 
 		if (!found && componentAvailable("V-Tol"))
 		{
-			found = evalResearch(lab, VTOL_ESSENTIALS);
-
 			// Prepare the most basic AA defense.
-			if (!found && antiAirTech.length > 0)
+			if (antiAirTech.length > 0)
 			{
 				found = pursueResearch(lab, antiAirTech[0]);
 			}
+
+			if (!found)
+				found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
 		}
 
 		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : SUPER_LOW_POWER))
@@ -173,6 +174,9 @@ function research()
 					}
 				}
 			}
+
+			if (!found && getResearch("R-Struc-Research-Upgrade06").done && random(100) < 40)
+				found = evalResearch(lab, empWeapons);
 
 			if (subPersonalities[personality].resPath === "generic")
 			{
