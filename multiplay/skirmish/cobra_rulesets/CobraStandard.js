@@ -1,14 +1,16 @@
 
 const structures = {
-	factories: [ "A0LightFactory", ],
-	templateFactories: [ "A0CyborgFactory", ],
-	vtolFactories: [ "A0VTolFactory1", ],
-	labs: [ "A0ResearchFacility", ],
-	gens: [ "A0PowerGenerator", ],
-	hqs: [ "A0CommandCentre", ],
-	vtolPads: [ "A0VtolPad", ],
-	derricks: [ "A0ResourceExtractor", ],
-	extras: [ "A0RepairCentre3", "A0Sat-linkCentre", "A0LasSatCommand", ],
+	factory: "A0LightFactory",
+	cyborgFactory: "A0CyborgFactory",
+	vtolFactory: "A0VTolFactory1",
+	lab: "A0ResearchFacility",
+	gen: "A0PowerGenerator",
+	hq: "A0CommandCentre",
+	vtolPad: "A0VtolPad",
+	derrick: "A0ResourceExtractor",
+	repair: "A0RepairCentre3",
+	uplink: "A0Sat-linkCentre",
+	lassat: "A0LasSatCommand",
 };
 
 const powerUps = [ "OilDrum", "Crate" ];

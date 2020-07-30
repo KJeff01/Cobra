@@ -49,7 +49,7 @@ function eventStructureBuilt(structure, droid)
 
 		if (nearbyOils.length > 0)
 		{
-			orderDroidBuild(droid, DORDER_BUILD, structures.derricks, nearbyOils[0].x, nearbyOils[0].y);
+			orderDroidBuild(droid, DORDER_BUILD, structures.derrick, nearbyOils[0].x, nearbyOils[0].y);
 		}
 		else
 		{
@@ -200,7 +200,7 @@ function eventAttacked(victim, attacker)
 		grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 5;
 
 		//Check if a droid needs repair.
-		if ((victim.type === DROID) && !isVTOL(victim) && countStruct(structures.extras[0]))
+		if ((victim.type === DROID) && !isVTOL(victim) && countStruct(structures.repair))
 		{
 			repairDroid(victim.id);
 		}
@@ -260,7 +260,7 @@ function eventStructureReady(structure)
 {
 	if (!structure)
 	{
-		const LASER = enumStruct(me, structures.extras[2]);
+		const LASER = enumStruct(me, structures.lassat);
 		if (LASER.length > 0)
 		{
 			structure = LASER[0];

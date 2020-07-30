@@ -116,7 +116,7 @@ function research()
 		return;
 	}
 
-	var labList = enumStruct(me, structures.labs).filter(function(lb) {
+	var labList = enumStruct(me, structures.lab).filter(function(lb) {
 		return (lb.status === BUILT && structureIdle(lb));
 	});
 
@@ -517,7 +517,7 @@ function research()
 			}
 
 			//Very likely going to be done with research by now.
-			if ((getMultiTechLevel() === 4) || (!found && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon") && isStructureAvailable(structures.extras[2])))
+			if ((getMultiTechLevel() === 4) || (!found && componentAvailable("Body14SUP") && componentAvailable("EMP-Cannon") && isStructureAvailable(structures.lassat)))
 			{
 				researchComplete = true;
 			}

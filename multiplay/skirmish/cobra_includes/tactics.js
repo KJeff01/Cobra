@@ -128,7 +128,7 @@ function repairDroid(droidID, force)
 		return true;
 	}
 
-	if (countStruct(structures.extras[0]) && (force || (Math.floor(droid.health) <= HEALTH_TO_REPAIR)))
+	if (countStruct(structures.repair) && (force || (Math.floor(droid.health) <= HEALTH_TO_REPAIR)))
 	{
 		orderDroid(droid, DORDER_RTR);
 		return true;
@@ -140,7 +140,7 @@ function repairDroid(droidID, force)
 //Continuously check a random ground group for repair
 function checkAllForRepair()
 {
-	if (!countStruct(structures.extras[0]))
+	if (!countStruct(structures.repair))
 	{
 		return;
 	}
@@ -462,7 +462,7 @@ function donateSomePower()
 	{
 		return;
 	}
-	if (!countStruct(structures.gens) || !countStruct(structures.derricks))
+	if (!countStruct(structures.gen) || !countStruct(structures.derrick))
 	{
 		return;
 	}
@@ -489,11 +489,11 @@ function confidenceThreshold()
 		return true;
 	}
 
-	const DERR_COUNT = countStruct(structures.derricks);
+	const DERR_COUNT = countStruct(structures.derrick);
 	const DROID_COUNT = countDroid(DROID_ANY);
 	var points = 0;
 
-	points += DERR_COUNT >= Math.floor(countStruct(structures.derricks, getMostHarmfulPlayer()) / 2) ? 2 : -2;
+	points += DERR_COUNT >= Math.floor(countStruct(structures.derrick, getMostHarmfulPlayer()) / 2) ? 2 : -2;
 	points += countDroid(DROID_ANY, getMostHarmfulPlayer()) < DROID_COUNT + 16 ? 2 : -2;
 
 	if ((DROID_COUNT < 20 && (countDroid(DROID_ANY, getMostHarmfulPlayer()) > DROID_COUNT + 5)))

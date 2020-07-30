@@ -70,12 +70,12 @@ function countAllResources()
 		var amount = enumFeature(-1, OIL_RES).length;
 		for (var i = 0; i < maxPlayers; ++i)
 		{
-			amount += enumStruct(i, structures.derricks).length;
+			amount += enumStruct(i, structures.derrick).length;
 		}
 
 		if (isDefined(scavengerPlayer))
 		{
-			amount += enumStruct(scavengerPlayer, structures.derricks).length;
+			amount += enumStruct(scavengerPlayer, structures.derrick).length;
 		}
 
 		return amount;
@@ -158,14 +158,16 @@ function cobraBaseArea()
 		const EXTRA_TILES = 20;
 		var firstRun = true;
 		var area = {"x1": 0, "y1": 0, "x2": 0, "y2": 0,};
-		var baseStructures = structures.factories
-			.concat(structures.templateFactories)
-			.concat(structures.vtolFactories)
-			.concat(structures.labs)
-			.concat(structures.gens)
-			.concat(structures.hqs)
-			.concat(structures.vtolPads)
-			.concat(structures.extras);
+		var baseStructures = structures.factory
+			.concat(structures.cyborgFactory)
+			.concat(structures.vtolFactory)
+			.concat(structures.lab)
+			.concat(structures.gen)
+			.concat(structures.hq)
+			.concat(structures.vtolPad)
+			.concat(structures.repair)
+			.concat(structures.uplink)
+			.concat(structures.lassat);
 
 		for (var i = 0, len = baseStructures.length; i < len; ++i)
 		{

@@ -504,7 +504,7 @@ function produce()
 	}
 	const MIN_SENSORS = 1;
 	const MIN_REPAIRS = 2;
-	var useCybEngineer = !countStruct(structures.factories); //use them if we have no factory
+	var useCybEngineer = !countStruct(structures.factory); //use them if we have no factory
 	var systems = analyzeQueuedSystems();
 
 	var attackers = groupSize(attackGroup);
@@ -568,7 +568,7 @@ function produce()
 					}
 					else
 					{
-						if (!countStruct(structures.gens) || !countStruct(structures.derricks))
+						if (!countStruct(structures.gen) || !countStruct(structures.derrick))
 						{
 							continue;
 						}
@@ -581,11 +581,11 @@ function produce()
 					var cyb = (facType === CYBORG_FACTORY);
 					//In some circumstances the bot could be left with no generators and no factories
 					//but still needs to produce combat engineers to, maybe, continue surviving.
-					if (countStruct(structures.gens) || (cyb && useCybEngineer && (gameTime > 480000)))
+					if (countStruct(structures.gen) || (cyb && useCybEngineer && (gameTime > 480000)))
 					{
 						if (cyb && (!turnOffCyborgs || !forceHover))
 						{
-							if (!useCybEngineer && !countStruct(structures.derricks))
+							if (!useCybEngineer && !countStruct(structures.derrick))
 							{
 								continue; //no derricks while trying to build attack cyborg
 							}
@@ -593,7 +593,7 @@ function produce()
 						}
 						else
 						{
-							if (useVtol && facType === VTOL_FACTORY && countStruct(structures.derricks))
+							if (useVtol && facType === VTOL_FACTORY && countStruct(structures.derrick))
 							{
 								buildVTOL(FC.id);
 							}

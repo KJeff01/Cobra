@@ -21,7 +21,7 @@ function switchOffMG()
 
 function useLasersForCyborgControl()
 {
-	return (componentAvailable("Body12SUP") || isStructureAvailable(structures.vtolPads));
+	return (componentAvailable("Body12SUP") || isStructureAvailable(structures.vtolPad));
 }
 
 function playerCyborgRatio(player)
