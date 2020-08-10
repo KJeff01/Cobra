@@ -11,9 +11,8 @@ There are five personalities so far (all use lasers and plasma cannon when it ca
 4. AM: Machine-guns/Lasers/Howitzer.
 5. AA: Mortars/Gauss/Fire mortars
 
-Do note that AL is exclusive to T3 (with at least bases) and AM is exclusive to T1 (or if starting without a base). This only affects the initial personality and you can change the personality with a chat command later.
 
-Hard/insane difficulty enables Heavy Plasma Launcher for Cobra (very small chance of being built at any given time after it obtains tracked propulsion).
+Hard difficulty enables Heavy Plasma Launcher for Cobra (very small chance of being built at any given time after it obtains tracked propulsion). In addition, Insane difficulty will add the EMP mortar at the same time.
 
 chat commands include:
 1. need power/truck/tank/cyborg/vtol.
