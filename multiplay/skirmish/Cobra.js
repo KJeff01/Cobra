@@ -39,7 +39,6 @@ const ESSENTIALS = [
 	"R-Wpn-MG2Mk1",
 	"R-Wpn-MG-Damage02",
 	"R-Struc-PowerModuleMk1",
-	"R-Struc-Factory-Module",
 	"R-Struc-Research-Upgrade01",
 	"R-Vehicle-Prop-Halftracks",
 	"R-Vehicle-Metals01",
