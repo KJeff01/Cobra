@@ -28,8 +28,7 @@ function eventChat(from, to, message)
 		message === "AR" ||
 		message === "AB" ||
 		message === "AM" ||
-		message === "AA" ||
-		message === "AL")
+		message === "AA")
 	{
 		if (personality !== message)
 		{

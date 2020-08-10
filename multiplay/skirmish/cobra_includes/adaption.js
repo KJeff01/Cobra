@@ -122,7 +122,6 @@ function adaptToMap()
 			"AB", "AB", "AB", "AB", "AB", "AB", "AB", "AB", "AB",
 			"AC", "AC", "AC", "AC", "AC", "AC", "AC", "AC", "AC",
 			"AA", "AA", "AA",
-			"AL", "AL", "AL", "AL", "AL", "AL",
 		];
 	}
 	else
@@ -133,7 +132,6 @@ function adaptToMap()
 			"AB", "AB", "AB", "AB", "AB", "AB", "AB",
 			"AC", "AC", "AC", "AC", "AC", "AC", "AC",
 			"AA", "AA",
-			"AL", "AL", "AL", "AL",
 		];
 	}
 

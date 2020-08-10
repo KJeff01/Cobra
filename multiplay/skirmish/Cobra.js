@@ -207,7 +207,7 @@ var subPersonalities =
 	AM:
 	{
 		"primaryWeapon": weaponStats.machineguns,
-		"secondaryWeapon": weaponStats.machineguns,
+		"secondaryWeapon": weaponStats.lasers,
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
@@ -242,25 +242,6 @@ var subPersonalities =
 			"R-Wpn-Mortar-ROF02",
 			"R-Wpn-Mortar-Acc01",
 			"R-Wpn-Mortar-Damage03",
-		],
-		"canPlayBySelf": false,
-	},
-	AL:
-	{
-		"primaryWeapon": weaponStats.lasers,
-		"secondaryWeapon": weaponStats.gauss,
-		"artillery": weaponStats.fireMortars,
-		"antiAir": weaponStats.AA,
-		"factoryOrder": [VTOL_FACTORY, FACTORY, CYBORG_FACTORY],
-		"defensePriority": 10,
-		"vtolPriority": 100,
-		"alloyPriority": 30,
-		"useLasers": true,
-		"cyborgThreatPercentage": 0.10,
-		"retreatScanRange": 12,
-		"resPath": "generic",
-		"res": [
-			"R-Wpn-MG3Mk1",
 		],
 		"canPlayBySelf": false,
 	},
