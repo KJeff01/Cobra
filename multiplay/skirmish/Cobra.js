@@ -32,6 +32,11 @@ const CYBORG_ARMOR = [
 	"R-Cyborg-Metals09",
 	"R-Cyborg-Armor-Heat09",
 ];
+const MODULE_RESEARCH = [
+	"R-Struc-Factory-Module",
+	"R-Struc-PowerModuleMk1",
+	"R-Struc-Research-Module",
+];
 const ESSENTIALS = [
 	"R-Wpn-MG-Damage01",
 	"R-Sys-Engineering01",

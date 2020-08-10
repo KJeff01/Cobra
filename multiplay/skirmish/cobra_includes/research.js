@@ -130,8 +130,9 @@ function research()
 
 		if (forceHover)
 			found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
+
 		if (highOilMap())
-			found = pursueResearch(lab, "R-Struc-Factory-Module");
+			found = evalResearch(lab, MODULE_RESEARCH);
 
 		if (!found)
 			found = evalResearch(lab, ESSENTIALS);

@@ -617,7 +617,11 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.lab, 2))
+		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.lab, 3))
+		{
+			return true;
+		}
+		if (countAndBuild(structures.gen, 2))
 		{
 			return true;
 		}
@@ -633,7 +637,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (!researchComplete && countAndBuild(structures.lab, 3))
+		if (!researchComplete && countAndBuild(structures.lab, 4))
 		{
 			return true;
 		}
