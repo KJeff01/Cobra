@@ -866,7 +866,7 @@ function maintenance(group)
 	}
 
 	var isNTW = highOilMap();
-	var goodNTWPower = getRealPower() > 250;
+	var goodNTWPower = getRealPower() > 125;
 	var minModulePower = (getMultiTechLevel() === 1) ? -50 : -200;
 
 	var modList;
