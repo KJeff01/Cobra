@@ -175,7 +175,7 @@ function eventAttacked(victim, attacker)
 					nearbyScavs += (obj.player === scavengerPlayer);
 				});
 
-				if (Math.floor(nearbyUnits.length * 1.5) > nearbyScavs)
+				if (Math.floor(nearbyUnits.length * 2.5) > nearbyScavs)
 				{
 					run = false;
 				}
