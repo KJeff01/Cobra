@@ -146,7 +146,9 @@ function eventAttacked(victim, attacker)
 		return;
 	}
 
+	const SCAV_ATTACKER = isDefined(scavengerPlayer) && (attacker.player === scavengerPlayer);
 	const GROUP_SCAN_RADIUS = subPersonalities[personality].retreatScanRange;
+
 	var nearbyUnits = enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, ALLIES, false).filter(function(obj) {
 		return obj.type === DROID;
 	});
@@ -155,7 +157,7 @@ function eventAttacked(victim, attacker)
 	if (victim.type === DROID && victim.player === me)
 	{
 		var nearbyScavs = 0;
-		var nearbyEnemies = enumRange(victim.x, victim.y, GROUP_SCAN_RADIUS, ENEMIES, false);
+		var nearbyEnemies = enumRange(victim.x, victim.y, SCAV_ATTACKER ? (GROUP_SCAN_RADIUS * 0.75) : GROUP_SCAN_RADIUS, ENEMIES, false);
 		if (isVTOL(victim))
 		{
 			droidReady(victim.id);
@@ -169,13 +171,13 @@ function eventAttacked(victim, attacker)
 			var run = true;
 
 			//Be more aggressive with scavenger stuff
-			if (isDefined(scavengerPlayer) && (attacker.player === scavengerPlayer))
+			if (SCAV_ATTACKER)
 			{
 				nearbyEnemies.forEach(function(obj) {
 					nearbyScavs += (obj.player === scavengerPlayer);
 				});
 
-				if (Math.floor(nearbyUnits.length * 2.5) > nearbyScavs)
+				if (Math.floor(nearbyUnits.length * 2) > nearbyScavs)
 				{
 					run = false;
 				}
@@ -189,7 +191,7 @@ function eventAttacked(victim, attacker)
 		}
 	}
 
-	if (isDefined(scavengerPlayer) && (attacker.player === scavengerPlayer))
+	if (SCAV_ATTACKER)
 	{
 		lastAttackedByScavs = gameTime;
 		return;
