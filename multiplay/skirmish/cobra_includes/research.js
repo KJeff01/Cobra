@@ -143,7 +143,7 @@ function research()
 		if (!found && random(100) < 10)
 			found = evalResearch(lab, ESSENTIALS_3);
 
-		if (!found && componentAvailable("V-Tol"))
+		if (!found && componentAvailable("V-Tol") && random(100) < 20)
 		{
 			// Prepare the most basic AA defense.
 			if (antiAirTech.length > 0)
