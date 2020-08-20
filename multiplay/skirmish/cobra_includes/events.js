@@ -292,3 +292,27 @@ function eventStructureReady(structure)
 		queue("eventStructureReady", RETRY_TIME, structure);
 	}
 }
+
+function eventBeacon(x, y, from, to, message)
+{
+	if (!allianceExistsBetween(from, me))
+	{
+		return;
+	}
+
+	beacon.x = x;
+	beacon.y = y;
+	beacon.started = gameTime;
+}
+
+function eventBeaconRemoved(from, to)
+{
+	if (!allianceExistsBetween(from, me))
+	{
+		return;
+	}
+
+	beacon.x = undefined;
+	beacon.y = undefined;
+	beacon.started = undefined;
+}

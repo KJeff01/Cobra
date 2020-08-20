@@ -360,6 +360,7 @@ function initCobraVars()
 	useArti = true;
 	useVtol = true;
 	lastAttackedByScavs = 0;
+	beacon = {x: undefined, y: undefined, started: undefined};
 }
 
 //Attempt to workaround a bug with pickStructLocation() failing to find valid locations
