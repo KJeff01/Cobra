@@ -260,6 +260,8 @@ function eventObjectTransfer(obj, from)
 //Basic Laser Satellite support.
 function eventStructureReady(structure)
 {
+	const RETRY_TIME = 10000;
+
 	if (!structure)
 	{
 		const LASER = enumStruct(me, structures.lassat);
@@ -269,18 +271,24 @@ function eventStructureReady(structure)
 		}
 		else
 		{
-			queue("eventStructureReady", 10000);
+			queue("eventStructureReady", RETRY_TIME);
 			return;
 		}
 	}
 
-	var fac = returnClosestEnemyFactory();
-	if (fac)
+	var obj = returnClosestEnemyFactory();
+	//Find something that exists, if possible.
+	if (!isDefined(obj))
 	{
-		activateStructure(structure, getObject(fac.typeInfo, fac.playerInfo, fac.idInfo));
+		obj = rangeStep();
+	}
+
+	if (obj)
+	{
+		activateStructure(structure, getObject(obj.typeInfo, obj.playerInfo, obj.idInfo));
 	}
 	else
 	{
-		queue("eventStructureReady", 10000, structure);
+		queue("eventStructureReady", RETRY_TIME, structure);
 	}
 }
