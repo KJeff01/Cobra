@@ -279,7 +279,7 @@ function groundTactics()
 			{
 				var id = UNITS[i].id;
 
-				if (beaconAlive && (enemyUnitsLen > 0) && (beacon.started + 40000 > gameTime) && (random(100) < 20))
+				if (beaconAlive && (enemyUnitsLen > 0) && (beacon.started + 60000 > gameTime) && (random(100) < 20))
 				{
 					//Attack something this area for a bit, if possible.
 					orderDroid(UNITS[i], DORDER_HOLD); //switch attacking state if already attacking something else.
@@ -416,11 +416,19 @@ function vtolTactics()
 			{
 				var id = vtols[i].id;
 
-				if (isDefined(beacon.started) && (beacon.started + 60000 > gameTime) && random(100) < 10)
+				if (isDefined(beacon.started) && (beacon.started + 60000 > gameTime))
 				{
 					//Patrol this area for a bit. DORDER_CIRCLE = 40
-					orderDroidLoc(id, 40, beacon.x, beacon.y);
-					continue;
+					if (vtols[i].order === 40)
+					{
+						continue;
+					}
+
+					if ((random(100) < 20) && droidReady(id))
+					{
+						orderDroidLoc(vtols[i], 40, beacon.x, beacon.y);
+						continue;
+					}
 				}
 
 				attackThisObject(id, target);
