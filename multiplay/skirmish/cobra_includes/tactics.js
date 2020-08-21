@@ -247,9 +247,11 @@ function artilleryTactics()
 //Defend or attack.
 function groundTactics()
 {
+	var beaconAlive = isDefined(beacon.started);
+
 	donateSomePower();
 
-	if (!currently_dead && shouldCobraAttack())
+	if (!currently_dead && (shouldCobraAttack() || beaconAlive))
 	{
 		var target = rangeStep();
 		if (isDefined(target))
@@ -262,9 +264,30 @@ function groundTactics()
 			{
 				return;
 			}
+
+			var enemyUnits;
+			var enemyUnitsLen;
+			if (beaconAlive)
+			{
+				enemyUnits = enumRange(beacon.x, beacon.y, 20, ENEMIES, false).filter(function(obj) {
+					return (obj.type === DROID || obj.type === STRUCTURE);
+				});
+				enemyUnitsLen = enemyUnits.length
+			}
+
 			for (var i = 0, l = UNITS.length; i < l; ++i)
 			{
-				attackThisObject(UNITS[i].id, target);
+				var id = UNITS[i].id;
+
+				if (beaconAlive && (enemyUnitsLen > 0) && (beacon.started + 40000 > gameTime) && (random(100) < 20))
+				{
+					//Attack something this area for a bit, if possible.
+					orderDroid(UNITS[i], DORDER_HOLD); //switch attacking state if already attacking something else.
+					attackThisObject(id, objectInformation(enemyUnits[random(enemyUnitsLen)]));
+					continue;
+				}
+
+				attackThisObject(id, target);
 			}
 		}
 	}
@@ -386,11 +409,21 @@ function vtolTactics()
 	if (LEN >= MIN_VTOLS)
 	{
 		var target = rangeStep();
+
 		if (isDefined(target))
 		{
 			for (var i = 0; i < LEN; ++i)
 			{
-				attackThisObject(vtols[i].id, target);
+				var id = vtols[i].id;
+
+				if (isDefined(beacon.started) && (beacon.started + 60000 > gameTime) && random(100) < 10)
+				{
+					//Patrol this area for a bit. DORDER_CIRCLE = 40
+					orderDroidLoc(id, 40, beacon.x, beacon.y);
+					continue;
+				}
+
+				attackThisObject(id, target);
 			}
 		}
 	}
