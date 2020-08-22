@@ -265,25 +265,37 @@ function groundTactics()
 				return;
 			}
 
-			var enemyUnits;
-			var enemyUnitsLen;
-			if (beaconAlive)
-			{
-				enemyUnits = enumRange(beacon.x, beacon.y, 20, ENEMIES, false).filter(function(obj) {
-					return (obj.type === DROID || obj.type === STRUCTURE);
-				});
-				enemyUnitsLen = enemyUnits.length
-			}
-
 			for (var i = 0, l = UNITS.length; i < l; ++i)
 			{
 				var id = UNITS[i].id;
 
-				if (beaconAlive && (enemyUnitsLen > 0) && (beacon.started + 60000 > gameTime) && (random(100) < 20))
+				//Send most of army to beacon explicitly
+				if (beaconAlive && (beacon.started + 60000 > gameTime) && (i < Math.floor(UNITS.length * 0.6)))
 				{
-					//Attack something this area for a bit, if possible.
-					orderDroid(UNITS[i], DORDER_HOLD); //switch attacking state if already attacking something else.
-					attackThisObject(id, objectInformation(enemyUnits[random(enemyUnitsLen)]));
+					//Attack something in this area, if possible.
+					var xRand = (random(100) < 50) ? random(15) : -random(15);
+					var yRand = (random(100) < 50) ? random(15) : -random(15);
+					var xPos = beacon.x + xRand;
+					var yPos = beacon.y + yRand;
+
+					if (xPos < 2)
+					{
+						xPos = 2;
+					}
+					else if (xPos > mapWidth - 2)
+					{
+						xPos = mapWidth - 2;
+					}
+					if (yPos < 2)
+					{
+						yPos = 2;
+					}
+					else if (yPos > mapHeight - 2)
+					{
+						yPos = mapHeight - 2;
+					}
+
+					orderDroidLoc(UNITS[i], DORDER_SCOUT, xPos, yPos);
 					continue;
 				}
 
@@ -405,6 +417,8 @@ function vtolTactics()
 		return droidReady(dr.id);
 	});
 	const LEN = vtols.length;
+	const D_CIRCLE = 40; //DORDER_CIRCLE = 40
+	const SCOUT_TO_CIRCLE_DIST = 2; //when to switch from scout to circle order for beacon
 
 	if (LEN >= MIN_VTOLS)
 	{
@@ -418,15 +432,22 @@ function vtolTactics()
 
 				if (isDefined(beacon.started) && (beacon.started + 60000 > gameTime))
 				{
-					//Patrol this area for a bit. DORDER_CIRCLE = 40
-					if (vtols[i].order === 40)
+					var pos = {x: vtols[i].x, y: vtols[i].y};
+					//Patrol this area for a bit.
+					if (vtols[i].order === D_CIRCLE)
 					{
+						continue;
+					}
+					//NOTE: will pull in other random VTOLs near beacon location if beacon is active
+					if (vtols[i].order === DORDER_SCOUT && droidReady(id) && distBetweenTwoPoints(pos.x, pos.y, beacon.x, beacon.y) <= SCOUT_TO_CIRCLE_DIST)
+					{
+						orderDroidLoc(vtols[i], D_CIRCLE, beacon.x, beacon.y);
 						continue;
 					}
 
 					if ((random(100) < 20) && droidReady(id))
 					{
-						orderDroidLoc(vtols[i], 40, beacon.x, beacon.y);
+						orderDroidLoc(vtols[i], DORDER_SCOUT, beacon.x, beacon.y);
 						continue;
 					}
 				}
