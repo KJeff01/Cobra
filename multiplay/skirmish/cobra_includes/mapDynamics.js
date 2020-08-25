@@ -59,7 +59,7 @@ function checkIfSeaMap()
 		return hoverMap;
 	}
 
-	return cacheThis(uncached, [], "checkIfSeaMap1", Infinity);
+	return cacheThis(uncached, [], "checkIfSeaMap" + me, Infinity);
 }
 
 //All derricks and all oil resources to find the map total.
@@ -81,7 +81,7 @@ function countAllResources()
 		return amount;
 	}
 
-	return cacheThis(uncached, [], "countAllResources1", Infinity);
+	return cacheThis(uncached, [], "countAllResources" + me, Infinity);
 }
 
 // The amount of oil each player should hold.
@@ -100,7 +100,7 @@ function averageOilPerPlayer()
 		return Math.floor(countAllResources() / players);
 	}
 
-	return cacheThis(uncached, [],  "averageOilPerPlayer1", Infinity);
+	return cacheThis(uncached, [],  "averageOilPerPlayer" + me, Infinity);
 }
 
 //Is the map a low/medium/high power level. Returns a string of LOW/MEDIUM/HIGH.
@@ -130,7 +130,7 @@ function mapOilLevel()
 		return str;
 	}
 
-	return cacheThis(uncached, [], "mapOilLevel1", Infinity);
+	return cacheThis(uncached, [], "mapOilLevel" + me, Infinity);
 }
 
 function highOilMap()
@@ -147,7 +147,7 @@ function highOilMap()
 		return false;
 	}
 
-	return cacheThis(uncached, [], "highOilMap1", Infinity);
+	return cacheThis(uncached, [], "highOilMap" + me, Infinity);
 }
 
 //Determine the base area that Cobra claims.
@@ -156,18 +156,18 @@ function cobraBaseArea()
 	function uncached()
 	{
 		const EXTRA_TILES = 20;
-		var firstRun = true;
-		var area = {"x1": 0, "y1": 0, "x2": 0, "y2": 0,};
-		var baseStructures = structures.factory
-			.concat(structures.cyborgFactory)
-			.concat(structures.vtolFactory)
-			.concat(structures.lab)
-			.concat(structures.gen)
-			.concat(structures.hq)
-			.concat(structures.vtolPad)
-			.concat(structures.repair)
-			.concat(structures.uplink)
-			.concat(structures.lassat);
+		var area = {x1: mapWidth, y1: mapHeight, x2: 0, y2: 0};
+		var baseStructures = [
+			structures.factory,
+			structures.cyborgFactory,
+			structures.vtolFactory,
+			structures.lab,
+			structures.gen,
+			structures.hq,
+			structures.repair,
+			structures.uplink,
+			structures.lassat,
+		];
 
 		for (var i = 0, len = baseStructures.length; i < len; ++i)
 		{
@@ -178,26 +178,21 @@ function cobraBaseArea()
 			{
 				var structure = objects[j];
 
-				if (firstRun || (structure.x < area.x1))
+				if (structure.x < area.x1)
 				{
 					area.x1 = structure.x;
 				}
-				if (firstRun || (structure.x > area.x2))
+				if (structure.x > area.x2)
 				{
 					area.x2 = structure.x;
 				}
-				if (firstRun || (structure.y < area.y1))
+				if (structure.y < area.y1)
 				{
 					area.y1 = structure.y;
 				}
-				if (firstRun || (structure.y > area.y2))
+				if (structure.y > area.y2)
 				{
 					area.y2 = structure.y;
-				}
-
-				if (firstRun)
-				{
-					firstRun = false;
 				}
 			}
 		}
@@ -227,5 +222,5 @@ function cobraBaseArea()
 		return area;
 	}
 
-	return cacheThis(uncached, [], "cobraBaseArea1", 20000);
+	return cacheThis(uncached, [], "cobraBaseArea" + me, 70000);
 }

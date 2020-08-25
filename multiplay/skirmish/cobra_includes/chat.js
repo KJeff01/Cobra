@@ -83,6 +83,10 @@ function eventChat(from, to, message)
 		subPersonalities[personality].resPath = pth;
 		sendChatMessage("research path changed to: " + pth, ALLIES);
 	}
+	else if (message === "toggle beacon")
+	{
+		beacon.disabled = !beacon.disabled;
+	}
 
 
 	//Do not execute these statements if from is me or enemy.

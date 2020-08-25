@@ -25,6 +25,7 @@ chat commands include:
 8. toggle arti -- Enable or disable artillery production/research.
 9. toggle vtol -- Enable or disable VTOL production/research.
 10. resG/resO/resD/resA -- Switch research paths to generic, offensive, defensive, and air.
+11. toggle beacon -- Enable or disable Cobra beacon protection functionality.
 
 Press alt + h to drop a beacon and Cobra units will try making their way over to it if possible.
 

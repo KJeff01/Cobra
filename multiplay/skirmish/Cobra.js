@@ -22,6 +22,7 @@ const ELECTRONIC_DEFENSES = [
 	"WallTower-EMP",
 	"Emplacement-MortarEMP",
 ];
+const BEACON_VTOL_ALARM = "vtolSpotted";
 
 //Research constants
 const TANK_ARMOR = [

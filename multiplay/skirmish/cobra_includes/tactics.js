@@ -247,12 +247,10 @@ function artilleryTactics()
 //Defend or attack.
 function groundTactics()
 {
-	var beaconAlive = isDefined(beacon.started);
-
-	donateSomePower();
-
-	if (!currently_dead && (shouldCobraAttack() || beaconAlive))
+	if (!currently_dead && shouldCobraAttack())
 	{
+		donateSomePower();
+
 		var target = rangeStep();
 		if (isDefined(target))
 		{
@@ -270,33 +268,36 @@ function groundTactics()
 				var id = UNITS[i].id;
 
 				//Send most of army to beacon explicitly
-				if (beaconAlive && (beacon.started + 60000 > gameTime) && (i < Math.floor(UNITS.length * 0.6)))
+				if ((beacon.endTime > gameTime) && (i < Math.floor(UNITS.length * 0.6)))
 				{
-					//Attack something in this area, if possible.
-					var xRand = (random(100) < 50) ? random(15) : -random(15);
-					var yRand = (random(100) < 50) ? random(15) : -random(15);
-					var xPos = beacon.x + xRand;
-					var yPos = beacon.y + yRand;
+					if (!beacon.wasVtol || (beacon.wasVtol && UNITS[i].weapons[0].canHitAir))
+					{
+						//Attack something in this area, if possible.
+						var xRand = (random(100) < 50) ? random(15) : -random(15);
+						var yRand = (random(100) < 50) ? random(15) : -random(15);
+						var xPos = beacon.x + xRand;
+						var yPos = beacon.y + yRand;
 
-					if (xPos < 2)
-					{
-						xPos = 2;
-					}
-					else if (xPos > mapWidth - 2)
-					{
-						xPos = mapWidth - 2;
-					}
-					if (yPos < 2)
-					{
-						yPos = 2;
-					}
-					else if (yPos > mapHeight - 2)
-					{
-						yPos = mapHeight - 2;
-					}
+						if (xPos < 2)
+						{
+							xPos = 2;
+						}
+						else if (xPos > mapWidth - 2)
+						{
+							xPos = mapWidth - 2;
+						}
+						if (yPos < 2)
+						{
+							yPos = 2;
+						}
+						else if (yPos > mapHeight - 2)
+						{
+							yPos = mapHeight - 2;
+						}
 
-					orderDroidLoc(UNITS[i], DORDER_SCOUT, xPos, yPos);
-					continue;
+						orderDroidLoc(UNITS[i], DORDER_SCOUT, xPos, yPos);
+						continue;
+					}
 				}
 
 				attackThisObject(id, target);
@@ -430,7 +431,9 @@ function vtolTactics()
 			{
 				var id = vtols[i].id;
 
-				if (isDefined(beacon.started) && (beacon.started + 60000 > gameTime))
+				if ((beacon.endTime > gameTime) &&
+					(i < Math.floor(LEN * 0.6)) &&
+					(!beacon.wasVtol || (beacon.wasVtol && vtols[i].weapons[0].canHitAir)))
 				{
 					var pos = {x: vtols[i].x, y: vtols[i].y};
 					//Patrol this area for a bit.
@@ -438,18 +441,14 @@ function vtolTactics()
 					{
 						continue;
 					}
-					//NOTE: will pull in other random VTOLs near beacon location if beacon is active
-					if (vtols[i].order === DORDER_SCOUT && droidReady(id) && distBetweenTwoPoints(pos.x, pos.y, beacon.x, beacon.y) <= SCOUT_TO_CIRCLE_DIST)
+					if (distBetweenTwoPoints(pos.x, pos.y, beacon.x, beacon.y) <= SCOUT_TO_CIRCLE_DIST)
 					{
 						orderDroidLoc(vtols[i], D_CIRCLE, beacon.x, beacon.y);
 						continue;
 					}
 
-					if ((random(100) < 20) && droidReady(id))
-					{
-						orderDroidLoc(vtols[i], DORDER_SCOUT, beacon.x, beacon.y);
-						continue;
-					}
+					orderDroidLoc(vtols[i], DORDER_SCOUT, beacon.x, beacon.y);
+					continue;
 				}
 
 				attackThisObject(id, target);
@@ -503,18 +502,27 @@ function enemyUnitsInBase()
 	var area = cobraBaseArea();
 	var enemyUnits = enumArea(area.x1, area.y1, area.x2, area.y2, ENEMIES, false).filter(function(obj) {
 		return (obj.type === DROID && (obj.droidType === DROID_WEAPON || obj.droidType === DROID_CYBORG));
-	});
-
-	var enemyNearBase = enemyUnits.sort(distanceToBase);
+	}).sort(distanceToBase);
 
 	//The attack code automatically chooses the closest object of the
 	//most harmful player anyway so this should suffice for defense.
-	if (enemyNearBase.length > 0)
+	if (enemyUnits.length > 0)
 	{
 		targetPlayer(enemyUnits[0].player); //play rough.
+
+		//Send a beacon that enemies are in my base area! Allied Cobra AI can interpret and help friends through this drop.
+		if (beacon.endTime < gameTime)
+		{
+			var mes = isVTOL(enemyUnits[0]) ? BEACON_VTOL_ALARM : undefined;
+			addBeacon(enemyUnits[0].x, enemyUnits[0].y, ALLIES, mes);
+			//Set beacon data for me also since we won't receive our own beacon.
+			eventBeacon(enemyUnits[0].x, enemyUnits[0].y, me, me, mes);
+		}
+
+		return true;
 	}
 
-	return isDefined(enemyNearBase);
+	return false;
 }
 
 //Donate my power to allies if I have too much.
@@ -575,8 +583,7 @@ function confidenceThreshold()
 //If it thinks it is losing it will go to a defensive research path.
 function shouldCobraAttack()
 {
-	var confident = confidenceThreshold();
-	if (confident || enemyUnitsInBase())
+	if (enemyUnitsInBase() || confidenceThreshold())
 	{
 		//Ok, restore the previous research path if necessary
 		if (isDefined(prevResPath))
@@ -594,9 +601,9 @@ function shouldCobraAttack()
 			prevResPath = subPersonalities[personality].resPath;
 			subPersonalities[personality].resPath = "defensive";
 		}
-
-		return false;
 	}
+
+	return false;
 }
 
 //Controls how long localized group retreat happens. See also eventAttacked.

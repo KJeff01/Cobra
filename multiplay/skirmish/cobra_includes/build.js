@@ -7,7 +7,7 @@ function needPowerGenerator()
 		return ((countStruct(structures.derrick) - (countStruct(structures.gen) * 4)) > 0);
 	}
 
-	return cacheThis(uncached, [], "needPowerGenerator1", 8000);
+	return cacheThis(uncached, [], "needPowerGenerator" + me, 8000);
 }
 
 function minTruckCount()
@@ -17,7 +17,7 @@ function minTruckCount()
 		return (highOilMap() ? 3 : 2) * MIN_TRUCKS_PER_GROUP;
 	}
 
-	return cacheThis(uncached, [], "minTruckCount1", Infinity);
+	return cacheThis(uncached, [], "minTruckCount" + me, Infinity);
 }
 
 //Determine if this is a constructor droid. Specify and optional second paramter

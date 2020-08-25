@@ -302,17 +302,7 @@ function eventBeacon(x, y, from, to, message)
 
 	beacon.x = x;
 	beacon.y = y;
-	beacon.started = gameTime;
-}
-
-function eventBeaconRemoved(from, to)
-{
-	if (!allianceExistsBetween(from, me))
-	{
-		return;
-	}
-
-	beacon.x = undefined;
-	beacon.y = undefined;
-	beacon.started = undefined;
+	beacon.startTime = gameTime;
+	beacon.endTime = gameTime + 60000;
+	beacon.wasVtol = isDefined(message) && (message === BEACON_VTOL_ALARM);
 }
