@@ -505,7 +505,6 @@ function research()
 			// Lasers
 			if (forceLaser || (!found && subPersonalities[personality].useLasers))
 			{
-				var aa = returnAntiAirAlias();
 				var foundLaser = false;
 
 				if (!turnOffCyborgs)
@@ -515,7 +514,7 @@ function research()
 				if (!foundLaser)
 					foundLaser = evalResearch(lab, laserExtra);
 				//Rocket/missile AA does not need this. Still uses it if researched.
-				if (!foundLaser && (aa !== "rkta" && aa !== "missa"))
+				if (!foundLaser && (returnAntiAirAlias() !== "rktaa"))
 					pursueResearch(lab, "R-Defense-AA-Laser");
 			}
 

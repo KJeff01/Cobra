@@ -25,7 +25,7 @@ function havePrimaryOrArtilleryWeapon()
 {
 	var primary = componentAvailable(subPersonalities[personality].primaryWeapon.weapons[0].stat);
 	var artillery = componentAvailable(subPersonalities[personality].artillery.weapons[0].stat);
-	
+
 	return (primary || artillery);
 }
 
@@ -92,7 +92,7 @@ function chooseRandomCyborgWeapon()
 		case 0: weaps = subPersonalities[personality].primaryWeapon; break;
 		case 1: if (subPersonalities[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
 		case 2: weaps = subPersonalities[personality].secondaryWeapon; break;
-		case 3: if(!componentAvailable("Mortar3ROTARYMk1") && useArti) { weaps = subPersonalities[personality].artillery; } break;
+		case 3: if (!componentAvailable("Mortar3ROTARYMk1") && useArti) { weaps = subPersonalities[personality].artillery; } break;
 		default: weaps = subPersonalities[personality].primaryWeapon; break;
 	}
 
@@ -107,12 +107,18 @@ function chooseRandomVTOLWeapon()
 
 	switch (random(5))
 	{
-		case 0: if((returnPrimaryAlias() !== "mg") && (returnPrimaryAlias() !== "fl")) { weaps = subPersonalities[personality].primaryWeapon; } break;
+		case 0: if (returnPrimaryAlias() !== "fl") { weaps = subPersonalities[personality].primaryWeapon; } break;
 		case 1: if (subPersonalities[personality].useLasers === true) { weaps = weaponStats.lasers; } break;
 		case 2: weaps = subPersonalities[personality].secondaryWeapon; break;
 		case 3: weaps = weaponStats.bombs; break;
 		case 4: weaps = weaponStats.empBomb; isEMP = true; break;
 		default: weaps = weaponStats.bombs; break;
+	}
+
+	//Rare chance to make a Sunburst VTOL if we use Rocket AA.
+	if ((returnAntiAirAlias() === "rktaa") && (random(100) < 8) && playerVtolRatio(getMostHarmfulPlayer()) >= 0.10)
+	{
+		weaps = weaponStats.rockets_AA;
 	}
 
 	if (!isDefined(weaps) || (!isEMP && (weaps.vtols.length - 1 <= 0)))
