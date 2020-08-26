@@ -81,6 +81,21 @@ function playerVtolRatio(player)
 	return cacheThis(uncached, [player], "playerVtolRatio" + player, 6000);
 }
 
+function playerStructureUnitRatio(player)
+{
+	if (!isDefined(player))
+	{
+		player = getMostHarmfulPlayer();
+	}
+
+	function uncached(player)
+	{
+		return enumStruct(player).length / (enumDroid(player).length + 1);
+	}
+
+	return cacheThis(uncached, [player], "playerStructureUnitRatio" + player, 30000);
+}
+
 
 //Choose the personality as described in the global subPersonalities.
 //When called from chat it will switch to that one directly.

@@ -55,6 +55,11 @@ function returnArtilleryAlias()
 	return subPersonalities[personality].artillery.alias;
 }
 
+function personalityIsRocketMain()
+{
+	return ((returnPrimaryAlias() === "rkt") || (returnSecondaryAlias() === "rkt"));
+}
+
 //Distance between an object and the Cobra base.
 function distanceToBase(obj1, obj2)
 {

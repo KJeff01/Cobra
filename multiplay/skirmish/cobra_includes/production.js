@@ -120,6 +120,11 @@ function chooseRandomVTOLWeapon()
 	{
 		weaps = weaponStats.rockets_AA;
 	}
+	//Rare chance to make a bunker buster VTOL if we are a rocket personality.
+	if ((random(100) < 5) && personalityIsRocketMain() && (playerStructureUnitRatio(getMostHarmfulPlayer()) >= 0.20))
+	{
+		weaps = weaponStats.rockets_AS;
+	}
 
 	if (!isDefined(weaps) || (!isEMP && (weaps.vtols.length - 1 <= 0)))
 	{
@@ -189,10 +194,26 @@ function choosePersonalityWeapon(type)
  			}
 		}
 
+		// Allow small chance for Bunker Busters if main weapons lines are rockets.
+		if (!skip && ((random(100) < 8) && personalityIsRocketMain() && (playerStructureUnitRatio(getMostHarmfulPlayer()) >= 0.15)))
+		{
+			weaponList = [];
+			skip = true;
+			var bunkerBusters = weaponStats.rockets_AS.weapons;
+
+ 			for (var i = bunkerBusters.length - 1; i >= 0; --i)
+			{
+				var weapObj = bunkerBusters[i];
+ 				weaponList.push(weapObj.stat);
+ 			}
+		}
+
+		// Maybe choose a machinegun.
 		if (!skip && ((!turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100))) ||
 			!havePrimaryOrArtilleryWeapon()))
 		{
 			weaponList = [];
+			skip = true;
 			var generalAntiCyborgWeapons = weaponStats.machineguns.weapons;
 
  			for (var i = generalAntiCyborgWeapons.length - 1; i >= 0; --i)
