@@ -121,7 +121,7 @@ function chooseRandomVTOLWeapon()
 		weaps = weaponStats.rockets_AA;
 	}
 	//Rare chance to make a bunker buster VTOL if we are a rocket personality.
-	if ((random(100) < 5) && personalityIsRocketMain() && (playerStructureUnitRatio(getMostHarmfulPlayer()) >= 0.20))
+	if ((random(100) < 5) && personalityIsRocketMain() && (playerStructureUnitRatio(getMostHarmfulPlayer()) >= 0.08))
 	{
 		weaps = weaponStats.rockets_AS;
 	}
@@ -195,7 +195,7 @@ function choosePersonalityWeapon(type)
 		}
 
 		// Allow small chance for Bunker Busters if main weapons lines are rockets.
-		if (!skip && ((random(100) < 8) && personalityIsRocketMain() && (playerStructureUnitRatio(getMostHarmfulPlayer()) >= 0.15)))
+		if (!skip && ((random(100) < 7) && personalityIsRocketMain() && (playerStructureUnitRatio(getMostHarmfulPlayer()) >= 0.10)))
 		{
 			weaponList = [];
 			skip = true;

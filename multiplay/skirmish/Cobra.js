@@ -170,6 +170,9 @@ var subPersonalities =
 			"R-Wpn-Cannon-ROF02",
 		],
 		"canPlayBySelf": true,
+		"beaconArmyPercentage": 60,
+		"beaconArtilleryPercentage": 40,
+		"beaconVtolPercentage": 60,
 	},
 	AR:
 	{
@@ -190,6 +193,9 @@ var subPersonalities =
 			"R-Wpn-Flamer-ROF01",
 		],
 		"canPlayBySelf": false,
+		"beaconArmyPercentage": 60,
+		"beaconArtilleryPercentage": 40,
+		"beaconVtolPercentage": 60,
 	},
 	AB:
 	{
@@ -209,6 +215,9 @@ var subPersonalities =
 			"R-Wpn-Rocket02-MRL",
 		],
 		"canPlayBySelf": true,
+		"beaconArmyPercentage": 50,
+		"beaconArtilleryPercentage": 40,
+		"beaconVtolPercentage": 50,
 	},
 	AM:
 	{
@@ -228,6 +237,9 @@ var subPersonalities =
 			"R-Wpn-MG2Mk1",
 		],
 		"canPlayBySelf": true,
+		"beaconArmyPercentage": 50,
+		"beaconArtilleryPercentage": 50,
+		"beaconVtolPercentage": 40,
 	},
 	AA:
 	{
@@ -250,6 +262,9 @@ var subPersonalities =
 			"R-Wpn-Mortar-Damage03",
 		],
 		"canPlayBySelf": false,
+		"beaconArmyPercentage": 40,
+		"beaconArtilleryPercentage": 40,
+		"beaconVtolPercentage": 70,
 	},
 };
 

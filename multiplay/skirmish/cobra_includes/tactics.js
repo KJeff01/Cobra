@@ -232,12 +232,47 @@ function artilleryTactics()
 		if (isDefined(obj))
 		{
 			var tempObj = getObject(obj.typeInfo, obj.playerInfo, obj.idInfo);
+
 			if (SENS_LEN)
 			{
 				orderDroidObj(sensors[0], DORDER_OBSERVE, tempObj);
 			}
+
 			for (var i = 0; i < ARTI_LEN; ++i)
 			{
+				//Send artillery to help at beacon, if possible
+				if ((beacon.endTime > gameTime) && (i < Math.floor(ARTI_LEN * subPersonalities[personality].beaconArtilleryPercentage)))
+				{
+					if (!beacon.wasVtol || (beacon.wasVtol && ARTILLERY_UNITS[i].weapons[0].canHitAir))
+					{
+						//Attack something in this area, if possible.
+						var xRand = (random(100) < 50) ? random(15) : -random(15);
+						var yRand = (random(100) < 50) ? random(15) : -random(15);
+						var xPos = beacon.x + xRand;
+						var yPos = beacon.y + yRand;
+
+						if (xPos < 2)
+						{
+							xPos = 2;
+						}
+						else if (xPos > mapWidth - 2)
+						{
+							xPos = mapWidth - 2;
+						}
+						if (yPos < 2)
+						{
+							yPos = 2;
+						}
+						else if (yPos > mapHeight - 2)
+						{
+							yPos = mapHeight - 2;
+						}
+
+						orderDroidLoc(ARTILLERY_UNITS[i], DORDER_SCOUT, xPos, yPos);
+						continue;
+					}
+				}
+
 				attackThisObject(ARTILLERY_UNITS[i].id, obj);
 			}
 		}
@@ -268,7 +303,7 @@ function groundTactics()
 				var id = UNITS[i].id;
 
 				//Send most of army to beacon explicitly
-				if ((beacon.endTime > gameTime) && (i < Math.floor(UNITS.length * 0.6)))
+				if ((beacon.endTime > gameTime) && (i < Math.floor(UNITS.length * subPersonalities[personality].beaconArmyPercentage)))
 				{
 					if (!beacon.wasVtol || (beacon.wasVtol && UNITS[i].weapons[0].canHitAir))
 					{
@@ -432,7 +467,7 @@ function vtolTactics()
 				var id = vtols[i].id;
 
 				if ((beacon.endTime > gameTime) &&
-					(i < Math.floor(LEN * 0.6)) &&
+					(i < Math.floor(LEN * subPersonalities[personality].beaconVtolPercentage)) &&
 					(!beacon.wasVtol || (beacon.wasVtol && vtols[i].weapons[0].canHitAir)))
 				{
 					var pos = {x: vtols[i].x, y: vtols[i].y};
