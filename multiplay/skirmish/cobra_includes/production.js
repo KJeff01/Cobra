@@ -116,7 +116,7 @@ function chooseRandomVTOLWeapon()
 	}
 
 	//Rare chance to make a Sunburst VTOL if we use Rocket AA.
-	if ((returnAntiAirAlias() === "rktaa") && (random(100) < 8) && playerVtolRatio(getMostHarmfulPlayer()) >= 0.10)
+	if ((returnAntiAirAlias() === "rktaa") && (random(100) < 8) && playerVtolRatio(getMostHarmfulPlayer()) >= 0.25)
 	{
 		weaps = weaponStats.rockets_AA;
 	}
@@ -195,7 +195,7 @@ function choosePersonalityWeapon(type)
 		}
 
 		// Allow small chance for Bunker Busters if main weapons lines are rockets.
-		if (!skip && ((random(100) < 7) && personalityIsRocketMain() && (playerStructureUnitRatio(getMostHarmfulPlayer()) >= 0.10)))
+		if (!skip && ((random(100) < 7) && personalityIsRocketMain() && (playerStructureUnitRatio(getMostHarmfulPlayer()) >= 0.25)))
 		{
 			weaponList = [];
 			skip = true;
