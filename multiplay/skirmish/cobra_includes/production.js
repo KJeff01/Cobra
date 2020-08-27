@@ -213,7 +213,6 @@ function choosePersonalityWeapon(type)
 			!havePrimaryOrArtilleryWeapon()))
 		{
 			weaponList = [];
-			skip = true;
 			var generalAntiCyborgWeapons = weaponStats.machineguns.weapons;
 
  			for (var i = generalAntiCyborgWeapons.length - 1; i >= 0; --i)
