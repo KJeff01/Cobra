@@ -206,7 +206,7 @@ var subPersonalities =
 		"factoryOrder": [VTOL_FACTORY, FACTORY, CYBORG_FACTORY],
 		"defensePriority": 10,
 		"vtolPriority": 50,
-		"alloyPriority": 30,
+		"alloyPriority": 60,
 		"useLasers": true,
 		"resPath": "offensive",
 		"retreatScanRange": 12,
