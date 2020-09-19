@@ -560,7 +560,7 @@ function enemyUnitsInBase()
 	return false;
 }
 
-//Donate my power to allies if I have too much.
+//Donate my power to allies if I have too much. Only to other AI.
 function donateSomePower()
 {
 	if (currently_dead)
@@ -572,7 +572,7 @@ function donateSomePower()
 		return;
 	}
 
-	const ALLY_PLAYERS = playerAlliance(true);
+	const ALLY_PLAYERS = playerAlliance(true).filter(function(player) { playerData[player].isAI; });
 	const LEN = ALLY_PLAYERS.length;
 	const ALIVE_ENEMIES = findLivingEnemies().length;
 
