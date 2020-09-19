@@ -206,9 +206,9 @@ function research()
 
 				if (!found && random(100) < 50)
 					found = evalResearch(lab, weaponTech);
-				if (!found && random(100) < 50 && personalityIsRocketMain())
+				if (!found && random(100) < 20 && personalityIsRocketMain())
 					found = pursueResearch(lab, "R-Wpn-Rocket03-HvAT");
-				if (!found && useArti && random(100) < 50)
+				if (!found && useArti && random(100) < (personalityIsRocketMain() ? 20 : 30))
 					found = evalResearch(lab, artilleryTech);
 				if (!found && !turnOffCyborgs && random(100) < 50)
 					found = evalResearch(lab, cyborgWeaps);
@@ -276,9 +276,9 @@ function research()
 						found = evalResearch(lab, standardDefenseTech);
 				}
 
-				if (!found && random(100) < 50 && useArti)
+				if (!found && random(100) < (personalityIsRocketMain() ? 20 : 50) && useArti)
 					found = evalResearch(lab, artilleryTech);
-				if (!found && random(100) < 50 && useArti)
+				if (!found && random(100) < (personalityIsRocketMain() ? 20 : 50) && useArti)
 					found = evalResearch(lab, artillExtra);
 
 				if (!found && (random(100) < subPersonalities[personality].alloyPriority))
@@ -359,9 +359,9 @@ function research()
 
 				if (!found && random(100) < 60)
 					found = evalResearch(lab, weaponTech);
-				if (!found && random(100) < 60 && personalityIsRocketMain())
+				if (!found && random(100) < 20 && personalityIsRocketMain())
 					found = pursueResearch(lab, "R-Wpn-Rocket03-HvAT");
-				if (!found && useArti && random(100) < 60)
+				if (!found && useArti && random(100) < (personalityIsRocketMain() ? 15 : 33))
 					found = evalResearch(lab, artilleryTech);
 
 				if (!found)
@@ -471,7 +471,7 @@ function research()
 
 				if (!found && random(100) < 50)
 					found = evalResearch(lab, extraTech);
-				if (!found && useArti && random(100) < 50)
+				if (!found && useArti && random(100) < (personalityIsRocketMain() ? 20 : 50))
 					found = evalResearch(lab, artilleryTech);
 
 				if (!found)
