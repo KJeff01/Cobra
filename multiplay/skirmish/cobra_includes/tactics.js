@@ -23,6 +23,19 @@ function isPlasmaCannon(weaponName)
 	return isDefined(weaponName) && (weaponName.name === "Laser4-PlasmaCannon");
 }
 
+//Check if the area around the active beacon has anything worth investigating.
+function beaconAreaHasEnemies()
+{
+	if (beacon.endTime < gameTime)
+	{
+		return false;
+	}
+
+	const MAX_SCAN_RANGE = 15;
+
+	return enumRange(beacon.x, beacon.y, MAX_SCAN_RANGE, ENEMIES, false).length !== 0;
+}
+
 //Modified from Nullbot.
 //Returns true if the VTOL has ammo. False if empty.
 //NOTE: Expects the .armed property being passed.
@@ -241,7 +254,9 @@ function artilleryTactics()
 			for (var i = 0; i < ARTI_LEN; ++i)
 			{
 				//Send artillery to help at beacon, if possible
-				if ((beacon.endTime > gameTime) && (i < Math.floor(ARTI_LEN * subPersonalities[personality].beaconArtilleryPercentage)))
+				if ((beacon.endTime > gameTime) &&
+					beaconAreaHasEnemies() &&
+					(i < Math.floor(ARTI_LEN * subPersonalities[personality].beaconArtilleryPercentage)))
 				{
 					if (!beacon.wasVtol || (beacon.wasVtol && ARTILLERY_UNITS[i].weapons[0].canHitAir))
 					{
@@ -303,7 +318,9 @@ function groundTactics()
 				var id = UNITS[i].id;
 
 				//Send most of army to beacon explicitly
-				if ((beacon.endTime > gameTime) && (i < Math.floor(UNITS.length * subPersonalities[personality].beaconArmyPercentage)))
+				if ((beacon.endTime > gameTime) &&
+					beaconAreaHasEnemies() &&
+					(i < Math.floor(UNITS.length * subPersonalities[personality].beaconArmyPercentage)))
 				{
 					if (!beacon.wasVtol || (beacon.wasVtol && UNITS[i].weapons[0].canHitAir))
 					{
