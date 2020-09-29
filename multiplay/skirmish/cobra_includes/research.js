@@ -150,9 +150,6 @@ function research()
 			{
 				found = pursueResearch(lab, antiAirTech[0]);
 			}
-			// Basic VTOL pads.
-			if (!found)
-				found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
 		}
 
 		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : SUPER_LOW_POWER))
@@ -182,9 +179,12 @@ function research()
 				found = evalResearch(lab, empWeapons);
 
 			// Increased VTOL research priority but shouldn't be so much it causes problems.
-			if (!found && useVtol && componentAvailable("V-Tol") && random(100) < 50)
+			if (!found && useVtol && random(100) < 50)
 			{
-				if (random(100) < subPersonalities[personality].vtolPriority)
+				// Basic VTOL pads tried after Python.
+				if (!found && componentAvailable("Body11ABT") && random(100) < 60)
+					found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
+				if (!found && componentAvailable("V-Tol") && random(100) < subPersonalities[personality].vtolPriority)
 					found = evalResearch(lab, VTOL_RES);
 			}
 
