@@ -27,7 +27,7 @@ chat commands include:
 10. resG/resO/resD/resA -- Switch research paths to generic, offensive, defensive, and air.
 11. toggle beacon -- Enable or disable Cobra beacon protection functionality.
 
-Press alt + h to drop a beacon and Cobra units will try making their way over to it if possible.
+Press alt + h to drop a beacon and Cobra units will try making their way over to it if possible. Beacon functionality is disabled by default on low/medium oil maps.
 
 Warzone2100 links:
 1. This AI uses a slimmed version of the NullBot3 standard ruleset file for research related information: https://github.com/haoNoQ/nullbot
