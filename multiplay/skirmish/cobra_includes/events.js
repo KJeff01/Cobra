@@ -295,6 +295,10 @@ function eventStructureReady(structure)
 
 function eventBeacon(x, y, from, to, message)
 {
+	if (beacon.disabled)
+	{
+		return;
+	}
 	if (!allianceExistsBetween(from, me))
 	{
 		return;

@@ -26,7 +26,7 @@ function isPlasmaCannon(weaponName)
 //Check if the area around the active beacon has anything worth investigating.
 function beaconAreaHasEnemies()
 {
-	if (beacon.endTime < gameTime)
+	if (beacon.disabled || (beacon.endTime < gameTime))
 	{
 		return false;
 	}
@@ -563,7 +563,7 @@ function enemyUnitsInBase()
 		targetPlayer(enemyUnits[0].player); //play rough.
 
 		//Send a beacon that enemies are in my base area! Allied Cobra AI can interpret and help friends through this drop.
-		if (beacon.endTime < gameTime)
+		if (!beacon.disabled && (beacon.endTime < gameTime))
 		{
 			var mes = isVTOL(enemyUnits[0]) ? BEACON_VTOL_ALARM : undefined;
 			addBeacon(enemyUnits[0].x, enemyUnits[0].y, ALLIES, mes);
