@@ -150,7 +150,7 @@ function research()
 			{
 				found = pursueResearch(lab, antiAirTech[0]);
 			}
-
+			// Basic VTOL pads.
 			if (!found)
 				found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
 		}
@@ -180,6 +180,13 @@ function research()
 
 			if (!found && getResearch("R-Struc-Research-Upgrade06").done && random(100) < 40)
 				found = evalResearch(lab, empWeapons);
+
+			// Increased VTOL research priority but shouldn't be so much it causes problems.
+			if (!found && useVtol && componentAvailable("V-Tol") && random(100) < 50)
+			{
+				if (random(100) < subPersonalities[personality].vtolPriority)
+					found = evalResearch(lab, VTOL_RES);
+			}
 
 			if (subPersonalities[personality].resPath === "generic")
 			{
@@ -228,9 +235,6 @@ function research()
 					if (!found)
 						found = evalResearch(lab, TANK_ARMOR);
 				}
-
-				if (!found && useVtol && (random(100) < subPersonalities[personality].vtolPriority))
-					found = evalResearch(lab, VTOL_RES);
 
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
@@ -304,9 +308,6 @@ function research()
 					if (!found)
 						found = evalResearch(lab, TANK_ARMOR);
 				}
-
-				if (!found && useVtol && (random(100) < subPersonalities[personality].vtolPriority))
-					found = evalResearch(lab, VTOL_RES);
 
 				if (!turnOffMG)
 				{
@@ -392,9 +393,6 @@ function research()
 					found = evalResearch(lab, artillExtra);
 				if (!found && useArti && random(100) < 50)
 					found = evalResearch(lab, artilleryTech);
-
-				if (!found && useVtol && (random(100) < subPersonalities[personality].vtolPriority))
-					found = evalResearch(lab, VTOL_RES);
 
 				if (!found && (random(100) < 70))
 				{
