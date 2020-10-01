@@ -178,16 +178,6 @@ function research()
 			if (!found && getResearch("R-Struc-Research-Upgrade06").done && random(100) < 40)
 				found = evalResearch(lab, empWeapons);
 
-			// Increased VTOL research priority but shouldn't be so much it causes problems.
-			if (!found && useVtol && random(100) < 50)
-			{
-				// Basic VTOL pads tried after Python.
-				if (!found && componentAvailable("Body11ABT") && random(100) < 60)
-					found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
-				if (!found && componentAvailable("V-Tol") && random(100) < subPersonalities[personality].vtolPriority)
-					found = evalResearch(lab, VTOL_RES);
-			}
-
 			if (subPersonalities[personality].resPath === "generic")
 			{
 				if (random(100) < 40 && countEnemyVTOL())
@@ -219,6 +209,15 @@ function research()
 					found = evalResearch(lab, artilleryTech);
 				if (!found && !turnOffCyborgs && random(100) < 50)
 					found = evalResearch(lab, cyborgWeaps);
+
+				if (!found && useVtol && random(100) < 70)
+				{
+					// Basic VTOL pads tried after Python.
+					if (!found && componentAvailable("Body11ABT") && random(100) < 70)
+						found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
+					if (!found && componentAvailable("V-Tol") && random(100) < subPersonalities[personality].vtolPriority)
+						found = evalResearch(lab, VTOL_RES);
+				}
 
 				if (!found && random(100) < 33)
 					found = evalResearch(lab, extraTech);
@@ -322,6 +321,15 @@ function research()
 					forceLaser = true;
 				}
 
+				if (!found && useVtol && random(100) < 60)
+				{
+					// Basic VTOL pads tried after Python.
+					if (!found && componentAvailable("Body11ABT"))
+						found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
+					if (!found && componentAvailable("V-Tol") && random(100) < subPersonalities[personality].vtolPriority)
+						found = evalResearch(lab, VTOL_RES);
+				}
+
 				if (!found)
 					found = evalResearch(lab, weaponTech);
 				if (!found && personalityIsRocketMain())
@@ -369,6 +377,15 @@ function research()
 					found = evalResearch(lab, extraTech);
 				if (!found && !turnOffCyborgs && random(100) < 60)
 					found = evalResearch(lab, cyborgWeaps);
+
+				if (!found && useVtol && random(100) < 80)
+				{
+					// Basic VTOL pads tried after Python.
+					if (!found && componentAvailable("Body11ABT") && random(100) < 80)
+						found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
+					if (!found && componentAvailable("V-Tol") && (random(100) < subPersonalities[personality].vtolPriority + 10))
+						found = evalResearch(lab, VTOL_RES);
+				}
 
 				if (!found && (random(100) < subPersonalities[personality].alloyPriority))
 				{
