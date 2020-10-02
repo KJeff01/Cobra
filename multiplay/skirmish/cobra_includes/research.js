@@ -120,7 +120,13 @@ function research()
 		return (lb.status === BUILT && structureIdle(lb));
 	});
 
-	var antiCyborgChance = Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100);
+	var enemyPlayer = getMostHarmfulPlayer();
+	var antiCyborgChance = Math.floor(playerCyborgRatio(enemyPlayer) * 100);
+
+	if (isDefined(scavengerPlayer) && (enemyPlayer === scavengerPlayer))
+	{
+		antiCyborgChance = 35;
+	}
 
 	for (var i = 0, a = labList.length; i < a; ++i)
 	{
@@ -205,8 +211,6 @@ function research()
 					found = evalResearch(lab, weaponTech);
 				if (!found && random(100) < 20 && personalityIsRocketMain())
 					found = pursueResearch(lab, "R-Wpn-Rocket03-HvAT");
-				if (!found && useArti && random(100) < (personalityIsRocketMain() ? 20 : 30))
-					found = evalResearch(lab, artilleryTech);
 				if (!found && !turnOffCyborgs && random(100) < 50)
 					found = evalResearch(lab, cyborgWeaps);
 
@@ -223,6 +227,8 @@ function research()
 					found = evalResearch(lab, extraTech);
 				if (!found && useArti && random(100) < 33)
 					found = evalResearch(lab, artillExtra);
+				if (!found && useArti && random(100) < (personalityIsRocketMain() ? 20 : 30))
+					found = evalResearch(lab, artilleryTech);
 
 				if (!found)
 					found = evalResearch(lab, SYSTEM_UPGRADES);
@@ -280,9 +286,9 @@ function research()
 				}
 
 				if (!found && random(100) < (personalityIsRocketMain() ? 20 : 50) && useArti)
-					found = evalResearch(lab, artilleryTech);
-				if (!found && random(100) < (personalityIsRocketMain() ? 20 : 50) && useArti)
 					found = evalResearch(lab, artillExtra);
+				if (!found && random(100) < (personalityIsRocketMain() ? 20 : 50) && useArti)
+					found = evalResearch(lab, artilleryTech);
 
 				if (!found && (random(100) < subPersonalities[personality].alloyPriority))
 				{
@@ -486,8 +492,6 @@ function research()
 
 				if (!found && random(100) < 50)
 					found = evalResearch(lab, extraTech);
-				if (!found && useArti && random(100) < (personalityIsRocketMain() ? 20 : 50))
-					found = evalResearch(lab, artilleryTech);
 
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
@@ -504,6 +508,8 @@ function research()
 
 				if (!found && useArti && random(100) < 50)
 					found = evalResearch(lab, artillExtra);
+				if (!found && useArti && random(100) < (personalityIsRocketMain() ? 20 : 50))
+					found = evalResearch(lab, artilleryTech);
 
 				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;

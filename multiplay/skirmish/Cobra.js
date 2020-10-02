@@ -155,7 +155,7 @@ var subPersonalities =
 	{
 		"primaryWeapon": weaponStats.cannons,
 		"secondaryWeapon": weaponStats.gauss,
-		"artillery": weaponStats.howitzers,
+		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 30,

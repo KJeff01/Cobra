@@ -41,7 +41,7 @@ function eventChat(from, to, message)
 	}
 	else if (message === "stats")
 	{
-		sendChatMessage(MostHarmfulPlayer(), to);
+		sendChatMessage(getMostHarmfulPlayer(), to);
 	}
 	else if (message === "toggle hover" && !checkIfSeaMap())
 	{

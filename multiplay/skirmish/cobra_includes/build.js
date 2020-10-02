@@ -776,14 +776,14 @@ function buildSpecialStructures()
 //Build the minimum repairs and any vtol pads.
 function buildExtras()
 {
-	var gens = countStruct(structures.gen);
-	if (getRealPower() > SUPER_LOW_POWER && countStruct(structures.repair) < 5 && countAndBuild(structures.repair, gens + 1))
+	var needVtolPads = Math.floor(1.5 * countStruct(structures.vtolPad)) < enumGroup(vtolGroup).length;
+	if (needVtolPads && buildStuff(structures.vtolPad))
 	{
 		return true;
 	}
 
-	var needVtolPads = Math.floor(1.5 * countStruct(structures.vtolPad)) < enumGroup(vtolGroup).length;
-	if (needVtolPads && buildStuff(structures.vtolPad))
+	var gens = countStruct(structures.gen);
+	if (random(100) < 40 && getRealPower() > SUPER_LOW_POWER && countStruct(structures.repair) < 5 && countAndBuild(structures.repair, gens + 1))
 	{
 		return true;
 	}
@@ -849,10 +849,10 @@ function buildOrders()
 	if (isNTW && maintenance(constructGroupNTWExtra)) { skip = true; }
 	if (skip) { return; }
 
-	if (allowFastHighTechBuild && buildSpecialStructures()) { return; }
-	if (buildBaseStructures2()) { return; }
 	if (allowFastHighTechBuild && random(100) < 33 && buildAAForPersonality()) { return; }
 	if (allowFastHighTechBuild && buildExtras()) { return; }
+	if (allowFastHighTechBuild && random(100) < 33 && buildSpecialStructures()) { return; }
+	if (buildBaseStructures2()) { return; }
 
 	buildDefenses(undefined, false);
 }
