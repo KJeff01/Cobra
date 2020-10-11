@@ -601,35 +601,23 @@ function buildBaseStructures()
 	}
 	else
 	{
-		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 1))
-		{
-			return true;
-		}
-		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.lab, 1))
-		{
-			return true;
-		}
 		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 2))
 		{
 			return true;
 		}
-		if (countAndBuild(structures.gen, 1))
+		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.lab, 4))
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.lab, 3))
+		if (countAndBuild(structures.gen, 5))
 		{
 			return true;
 		}
-		if (countAndBuild(structures.gen, 2))
+		if (!researchComplete && countAndBuild(structures.lab, 5))
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 3))
-		{
-			return true;
-		}
-		if (countAndBuild(structures.gen, 3))
+		if (needPowerGenerator() && countAndBuild(structures.gen, 7))
 		{
 			return true;
 		}
@@ -637,15 +625,11 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (!researchComplete && countAndBuild(structures.lab, 4))
+		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 1))
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 2))
-		{
-			return true;
-		}
-		if (buildNTWPhase2())
+		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 5))
 		{
 			return true;
 		}
@@ -793,27 +777,7 @@ function buildExtras()
 
 function buildNTWPhase2()
 {
-	if (needPowerGenerator() && countAndBuild(structures.gen, 6))
-	{
-		return true;
-	}
-	if (countAndBuild(FACTORY, 4))
-	{
-		return true;
-	}
-	if (!researchComplete && countAndBuild(structures.lab, 5))
-	{
-		return true;
-	}
-	if (countAndBuild(CYBORG_FACTORY, 4))
-	{
-		return true;
-	}
-	if (needPowerGenerator() && countAndBuild(structures.gen, 8))
-	{
-		return true;
-	}
-	if (countAndBuild(structures.repair, 3))
+	if (countAndBuild(CYBORG_FACTORY, 5))
 	{
 		return true;
 	}
@@ -847,7 +811,8 @@ function buildOrders()
 
 	if (maintenance(constructGroup)) { skip = true; }
 	if (isNTW && maintenance(constructGroupNTWExtra)) { skip = true; }
-	if (skip) { return; }
+
+	if (isNTW && buildNTWPhase2()) { return; }
 
 	if (allowFastHighTechBuild && random(100) < 33 && buildAAForPersonality()) { return; }
 	if (allowFastHighTechBuild && buildExtras()) { return; }
@@ -870,7 +835,7 @@ function maintenance(group)
 	}
 
 	var isNTW = highOilMap();
-	var goodNTWPower = getRealPower() > 125;
+	var goodNTWPower = getRealPower() > 200;
 	var minModulePower = (getMultiTechLevel() === 1) ? -50 : -200;
 
 	var modList;
@@ -879,10 +844,9 @@ function maintenance(group)
 	if (isNTW)
 	{
 		modList = [
-			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gen},
 			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.lab},
-			{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
+			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gen},
 			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
 		];
 	}
@@ -897,7 +861,7 @@ function maintenance(group)
 		];
 	}
 
-	if (isNTW && (group === constructGroupNTWExtra) && goodNTWPower)
+	if (isNTW && (group === constructGroup) && goodNTWPower)
 	{
 		modList = modList.reverse();
 	}
@@ -914,7 +878,7 @@ function maintenance(group)
 				//researched yet (from some maps).
 				continue;
 			}
-			if (isNTW && (modObj.structure === structures.gen) && goodNTWPower && (group !== constructGroupNTWExtra))
+			if (isNTW && (modObj.structure === structures.gen) && goodNTWPower && (group === constructGroup))
 			{
 				continue;
 			}

@@ -151,6 +151,7 @@ const weaponStats =
 		extras: [
 			"R-Wpn-Cannon-Damage03",
 			"R-Wpn-Cannon-ROF01",
+			"R-Wpn-Cannon-Damage05",
 			"R-Wpn-Cannon-Accuracy01",
 			"R-Wpn-Cannon-ROF02",
 			"R-Wpn-Cannon-Accuracy02",
@@ -202,6 +203,7 @@ const weaponStats =
 		extras: [
 			"R-Wpn-Cannon-Damage03",
 			"R-Wpn-Cannon-ROF01",
+			"R-Wpn-Cannon-Damage05",
 			"R-Wpn-Cannon-Accuracy01",
 			"R-Wpn-Cannon-ROF02",
 			"R-Wpn-Cannon-Accuracy02",
@@ -553,8 +555,11 @@ const weaponStats =
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-Cannon-ROF02",
 			"R-Wpn-Cannon-Damage03",
+			"R-Wpn-Cannon-ROF01",
+			"R-Wpn-Cannon-Damage05",
+			"R-Wpn-Cannon-Accuracy01",
+			"R-Wpn-Cannon-ROF02",
 			"R-Wpn-Cannon-Accuracy02",
 			"R-Wpn-Cannon-ROF06",
 			"R-Wpn-Cannon-Damage09",
