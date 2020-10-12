@@ -215,6 +215,7 @@ function eventAttacked(victim, attacker)
 		var units = nearbyUnits.filter(function(dr) {
 			return (dr.id !== victim.id &&
 				dr.group !== retreatGroup &&
+				!isConstruct(dr.id, false) &&
 				((isVTOL(dr) && droidReady(dr.id)) ||
 				(!repairDroid(dr.id)) && droidCanReach(dr, attacker.x, attacker.y))
 			);
