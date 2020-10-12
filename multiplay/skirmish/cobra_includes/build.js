@@ -601,6 +601,10 @@ function buildBaseStructures()
 	}
 	else
 	{
+		if (getRealPower() < 500 && countAndBuild(structures.gen, 1))
+		{
+			return true; //a little fail-safe
+		}
 		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 2))
 		{
 			return true;
