@@ -637,6 +637,10 @@ function buildBaseStructures()
 		{
 			return true;
 		}
+		if (GOOD_POWER_LEVEL && countAndBuild(structures.repair, 3))
+		{
+			return true;
+		}
 	}
 
 	if (getMultiTechLevel() > 1 && countStruct(VTOL_FACTORY) > 0 && countAndBuild(structures.vtolPad, 3))
@@ -792,6 +796,11 @@ function buildNTWPhase2()
 		return true;
 	}
 
+	if (countAndBuild(structures.repair, 5))
+	{
+		return true;
+	}
+
 	return false;
 }
 
@@ -849,8 +858,8 @@ function maintenance(group)
 	{
 		modList = [
 			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.lab},
-			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
 			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gen},
+			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
 		];
 	}
@@ -882,7 +891,7 @@ function maintenance(group)
 				//researched yet (from some maps).
 				continue;
 			}
-			if (isNTW && (modObj.structure === structures.gen) && goodNTWPower && (group === constructGroup))
+			if (isNTW && (modObj.structure === structures.gen) && goodNTWPower && (group === constructGroupNTWExtra))
 			{
 				continue;
 			}

@@ -156,7 +156,7 @@ function research()
 				found = pursueResearch(lab, antiAirTech[0]);
 			}
 
-			if (random(100) < 30 && countEnemyVTOL())
+			if ((getRealPower() > SUPER_LOW_POWER) && (random(100) < 30) && countEnemyVTOL())
 			{
 				if (!found)
 					found = evalResearch(lab, antiAirTech);
@@ -176,9 +176,9 @@ function research()
 
 				if (gameTime > timeToResearchAdvancedBody())
 				{
-					if (!found && getResearch("R-Struc-Research-Upgrade03").done && (random(100) < 25))
+					if (!found && getResearch("R-Struc-Research-Upgrade03").done && (random(100) < 40))
 						found = evalResearch(lab, BODY_RESEARCH_1);
-					if (!found && getResearch("R-Struc-Research-Upgrade06").done && (random(100) < 15))
+					if (!found && getResearch("R-Struc-Research-Upgrade05").done && (random(100) < componentAvailable("Body12SUP") ? 30 : 15))
 						found = evalResearch(lab, BODY_RESEARCH_2);
 
 					if (!found && (random(100) < subPersonalities[personality].alloyPriority))

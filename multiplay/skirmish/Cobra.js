@@ -86,6 +86,7 @@ const DEFENSE_UPGRADES = [
 	"R-Defense-WallUpgrade12",
 ];
 const BODY_RESEARCH_1 = [
+	"R-Vehicle-Body08",
 	"R-Vehicle-Body12",
 ];
 const BODY_RESEARCH_2 = [
