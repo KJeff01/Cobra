@@ -601,7 +601,7 @@ function buildBaseStructures()
 	}
 	else
 	{
-		if (getRealPower() < 500 && countAndBuild(structures.gen, 1))
+		if (getRealPower() < 650 && countAndBuild(structures.gen, 2))
 		{
 			return true; //a little fail-safe
 		}
@@ -609,7 +609,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && !researchComplete && countAndBuild(structures.lab, 4))
+		if (!researchComplete && countAndBuild(structures.lab, 4))
 		{
 			return true;
 		}

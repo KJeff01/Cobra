@@ -589,14 +589,14 @@ function donateSomePower()
 		return;
 	}
 
-	const ALLY_PLAYERS = playerAlliance(true).filter(function(player) { playerData[player].isAI; });
+	const ALLY_PLAYERS = playerAlliance(true).filter(function(player) { return playerData[player].isAI; });
 	const LEN = ALLY_PLAYERS.length;
 	const ALIVE_ENEMIES = findLivingEnemies().length;
 
 	if (LEN > 0 && ALIVE_ENEMIES > 0)
 	{
 		var ally = ALLY_PLAYERS[random(LEN)];
-		if (getRealPower() > 100 && (getRealPower() > Math.floor(1.5 * getRealPower(ally))))
+		if (getRealPower() > 500 && (getRealPower() > Math.floor(4 * getRealPower(ally))))
 		{
 			donatePower(playerPower(me) / 2, ally);
 		}
