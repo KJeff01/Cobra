@@ -256,6 +256,10 @@ function eventObjectTransfer(obj, from)
 			}
 		}
 	}
+	else if (!allianceExistsBetween(obj.player, me))
+	{
+		enemyUsedElectronicWarfare = true;
+	}
 }
 
 //Basic Laser Satellite support.

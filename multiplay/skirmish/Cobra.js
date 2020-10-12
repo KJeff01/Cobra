@@ -66,6 +66,7 @@ const SYSTEM_UPGRADES = [
 	"R-Vehicle-Prop-Tracks",
 	"R-Struc-RprFac-Upgrade06",
 	"R-Sys-Sensor-Upgrade03",
+	"R-Sys-Resistance-Circuits",
 ];
 const FLAMER = [
 	"R-Wpn-Flame2",
@@ -80,7 +81,6 @@ const SENSOR_TECH = [
 const DEFENSE_UPGRADES = [
 	"R-Vehicle-Metals05",
 	"R-Cyborg-Metals05",
-	"R-Sys-Resistance-Circuits",
 	"R-Wpn-LasSat",
 	"R-Struc-Materials09",
 	"R-Defense-WallUpgrade12",
@@ -292,6 +292,7 @@ var lastAttackedByScavs;
 var prevResPath; // Previous personality research path. Volatile.
 var currently_dead; // Used to detect if Cobra is, basically, dead. If true, the script is put in a very low perf impact state.
 var beacon; //latest friendly beacon location
+var enemyUsedElectronicWarfare; //Detect if an enemy used a Nexus Link against us... if so, research the resistance upgrades
 
 // -- Weapon research list (initializeResearchLists).
 var techlist;

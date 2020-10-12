@@ -137,6 +137,8 @@ function research()
 
 		if (forceHover)
 			found = pursueResearch(lab, "R-Vehicle-Prop-Hover");
+		if (enemyUsedElectronicWarfare)
+			found = pursueResearch(lab, "R-Sys-Resistance-Circuits");
 
 		if (highOil)
 			found = evalResearch(lab, MODULE_RESEARCH);

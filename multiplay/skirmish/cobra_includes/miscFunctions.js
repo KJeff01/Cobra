@@ -373,6 +373,7 @@ function initCobraVars()
 		wasVtol: false,
 		disabled: !highOilMap(), //disabled by default unless it's a high oil map
 	};
+	enemyUsedElectronicWarfare = false;
 }
 
 //Attempt to workaround a bug with pickStructLocation() failing to find valid locations
