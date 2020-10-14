@@ -601,19 +601,11 @@ function buildBaseStructures()
 	}
 	else
 	{
-		if (getRealPower() < 650 && countAndBuild(structures.gen, 2))
+		if (getRealPower() < 500 && countAndBuild(structures.gen, 5))
 		{
 			return true; //a little fail-safe
 		}
-		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 2))
-		{
-			return true;
-		}
-		if (!researchComplete && countAndBuild(structures.lab, 4))
-		{
-			return true;
-		}
-		if (countAndBuild(structures.gen, 5))
+		if (countAndBuild(FACTORY, 2))
 		{
 			return true;
 		}
@@ -621,7 +613,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (needPowerGenerator() && countAndBuild(structures.gen, 7))
+		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 3))
 		{
 			return true;
 		}
@@ -629,11 +621,23 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 1))
+		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 3))
+		{
+			return true;
+		}
+		if (needPowerGenerator() && countAndBuild(structures.gen, 7))
 		{
 			return true;
 		}
 		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 5))
+		{
+			return true;
+		}
+		if (needPowerGenerator() && countAndBuild(structures.gen, 8))
+		{
+			return true;
+		}
+		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 5))
 		{
 			return true;
 		}
@@ -824,6 +828,7 @@ function buildOrders()
 
 	if (maintenance(constructGroup)) { skip = true; }
 	if (isNTW && maintenance(constructGroupNTWExtra)) { skip = true; }
+	if (skip) { return; }
 
 	if (isNTW && buildNTWPhase2()) { return; }
 
@@ -848,8 +853,8 @@ function maintenance(group)
 	}
 
 	var isNTW = highOilMap();
-	var goodNTWPower = getRealPower() > 200;
-	var minModulePower = (getMultiTechLevel() === 1) ? -50 : -200;
+	var goodNTWPower = getRealPower() > 100;
+	var minModulePower = (getMultiTechLevel() === 1) ? -SUPER_LOW_POWER : -200;
 
 	var modList;
 	var struct = null;

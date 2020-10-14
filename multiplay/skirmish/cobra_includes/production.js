@@ -512,8 +512,8 @@ function attackerCountsGood(recycle)
 		recycle = false;
 	}
 
-	var highOilExtras = highOilMap() ? 10 : 0;
-	var recycleExtras = recycle ? 8 : 0;
+	var highOilExtras = highOilMap() ? 40 : 0;
+	var recycleExtras = recycle ? 20 : 0;
 
 	var amountOfAttackers = groupSize(attackGroup) + groupSize(artilleryGroup) + groupSize(vtolGroup);
 

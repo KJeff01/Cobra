@@ -96,6 +96,10 @@ function eventDroidBuilt(droid, struct)
 		{
 			groupAdd(oilGrabberGroup, droid); //Fix for crazy T2/T3/T4 no-bases config
 		}
+		else if (!isEngineer && (gameTime < 120000) && !highOilMap() && enumGroup(constructGroup).length >= 2 && enumGroup(oilGrabberGroup).length < 2)
+		{
+			groupAdd(oilGrabberGroup, droid); //Get oil faster
+		}
 		else if (enumGroup(constructGroup).length < MIN_TRUCKS_PER_GROUP)
 		{
 			groupAdd(constructGroup, droid);
@@ -312,6 +316,6 @@ function eventBeacon(x, y, from, to, message)
 	beacon.x = x;
 	beacon.y = y;
 	beacon.startTime = gameTime;
-	beacon.endTime = gameTime + 60000;
+	beacon.endTime = gameTime + 50000;
 	beacon.wasVtol = isDefined(message) && (message === BEACON_VTOL_ALARM);
 }

@@ -52,14 +52,16 @@ const ESSENTIALS = [
 	"R-Vehicle-Body05",
 ];
 const ESSENTIALS_2 = [
-	"R-Struc-RprFac-Upgrade01",
 	"R-Vehicle-Body11",
+	"R-Struc-Research-Upgrade09",
+	"R-Sys-Autorepair-General",
+	"R-Struc-Power-Upgrade03a",
+	"R-Struc-Factory-Upgrade09",
+];
+const ESSENTIALS_3 = [
+	"R-Struc-RprFac-Upgrade01",
 	"R-Sys-Sensor-Upgrade01",
 	"R-Vehicle-Prop-Hover",
-	"R-Sys-Autorepair-General",
-	"R-Struc-Factory-Upgrade09",
-	"R-Struc-Power-Upgrade03a",
-	"R-Struc-Research-Upgrade09",
 ];
 const SYSTEM_UPGRADES = [
 	"R-Sys-MobileRepairTurretHvy",

@@ -147,8 +147,10 @@ function research()
 			found = evalResearch(lab, ESSENTIALS);
 		if (!found)
 			found = evalResearch(lab, techlist);
-		if (!found && random(100) < 20)
+		if (!found && random(100) < (highOil ? 35 : 20))
 			found = evalResearch(lab, ESSENTIALS_2);
+		if (!found && ((getRealPower() > SUPER_LOW_POWER) || highOil) && (random(100) < 20))
+			found = evalResearch(lab, ESSENTIALS_3);
 
 		if (!found && (countEnemyVTOL() || componentAvailable("V-Tol")))
 		{
@@ -169,7 +171,7 @@ function research()
 
 		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : SUPER_LOW_POWER))
 		{
-			if (random(100) < (highOil ? 25 : 20))
+			if (random(100) < (highOil ? 25 : 15))
 			{
 				if (!found)
 					found = pursueResearch(lab, "R-Vehicle-Metals03");
@@ -178,7 +180,7 @@ function research()
 
 				if (gameTime > timeToResearchAdvancedBody())
 				{
-					if (!found && getResearch("R-Struc-Research-Upgrade03").done && (random(100) < 40))
+					if (!found && getResearch("R-Struc-Research-Upgrade03").done && (random(100) < 50))
 						found = evalResearch(lab, BODY_RESEARCH_1);
 					if (!found && getResearch("R-Struc-Research-Upgrade05").done && (random(100) < componentAvailable("Body12SUP") ? 30 : 15))
 						found = evalResearch(lab, BODY_RESEARCH_2);
@@ -231,7 +233,7 @@ function research()
 					found = evalResearch(lab, extraTech);
 				if (!found && useArti && random(100) < 33)
 					found = evalResearch(lab, artillExtra);
-				if (!found && useArti && random(100) < (personalityIsRocketMain() ? 20 : 30))
+				if (!found && useArti && random(100) < (personalityIsRocketMain() ? (componentAvailable("Missile-A-T") ? 50 : 20) : 30))
 					found = evalResearch(lab, artilleryTech);
 
 				if (!found)
@@ -275,7 +277,7 @@ function research()
 
 				if (!found && random(100) < (personalityIsRocketMain() ? 20 : 50) && useArti)
 					found = evalResearch(lab, artillExtra);
-				if (!found && random(100) < (personalityIsRocketMain() ? 20 : 50) && useArti)
+				if (!found && random(100) < (personalityIsRocketMain() ? (componentAvailable("Missile-A-T") ? 60 : 20) : 50) && useArti)
 					found = evalResearch(lab, artilleryTech);
 
 				if (!found)
@@ -350,7 +352,7 @@ function research()
 
 				if (!found && random(100) < 10 && personalityIsRocketMain())
 					found = pursueResearch(lab, "R-Wpn-Rocket03-HvAT");
-				if (!found && useArti && random(100) < (personalityIsRocketMain() ? 15 : 33))
+				if (!found && useArti && random(100) < (personalityIsRocketMain() ? (componentAvailable("Missile-A-T") ? 33 : 15) : 33))
 					found = evalResearch(lab, artilleryTech);
 
 				if (!found && useVtol && random(100) < 80)
@@ -433,7 +435,7 @@ function research()
 
 				if (!found && useArti && random(100) < 50)
 					found = evalResearch(lab, artillExtra);
-				if (!found && useArti && random(100) < (personalityIsRocketMain() ? 20 : 50))
+				if (!found && useArti && random(100) < (personalityIsRocketMain() ? (componentAvailable("Missile-A-T") ? 50 : 20) : 50))
 					found = evalResearch(lab, artilleryTech);
 
 				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
