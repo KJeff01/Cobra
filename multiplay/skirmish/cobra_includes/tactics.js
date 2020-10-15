@@ -675,6 +675,34 @@ function baseShuffleDefensePattern()
 	lastShuffleTime = gameTime;
 }
 
+function lowOilDefensePattern()
+{
+	if (gameTime < lastShuffleTime + 40000)
+	{
+		return; //visit a derrick for a bit... maybe
+	}
+
+	var derricks = enumStruct(me, structures.derrick);
+	if (derricks.length === 0)
+	{
+		return;
+	}
+
+	var attackers = enumGroup(attackGroup).concat(enumGroup(artilleryGroup)).concat(enumGroup(vtolGroup));
+	if (attackers.length === 0)
+	{
+		return;
+	}
+
+	for (var i = 0, len = attackers.length; i < len; ++i)
+	{
+		var derr = derricks[random(derricks.length)];
+		orderDroidLoc(attackers[i], DORDER_SCOUT, derr.x, derr.y);
+	}
+
+	lastShuffleTime = gameTime;
+}
+
 //Check if our forces are large enough to take on the most harmful player.
 function shouldCobraAttack()
 {
@@ -684,7 +712,14 @@ function shouldCobraAttack()
 	}
 	else
 	{
-		baseShuffleDefensePattern();
+		if (highOilMap())
+		{
+			baseShuffleDefensePattern();
+		}
+		else
+		{
+			lowOilDefensePattern();
+		}
 	}
 
 	return false;

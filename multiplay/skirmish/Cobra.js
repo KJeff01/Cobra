@@ -159,7 +159,7 @@ var subPersonalities =
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
-		"defensePriority": 30,
+		"defensePriority": 5,
 		"vtolPriority": 40,
 		"alloyPriority": 33,
 		"useLasers": true,
@@ -182,7 +182,7 @@ var subPersonalities =
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
-		"defensePriority": 20,
+		"defensePriority": 5,
 		"vtolPriority": 50,
 		"alloyPriority": 35,
 		"useLasers": true,
@@ -205,7 +205,7 @@ var subPersonalities =
 		"artillery": weaponStats.rockets_Arty,
 		"antiAir": weaponStats.rockets_AA,
 		"factoryOrder": [VTOL_FACTORY, FACTORY, CYBORG_FACTORY],
-		"defensePriority": 10,
+		"defensePriority": 7,
 		"vtolPriority": 50,
 		"alloyPriority": 25,
 		"useLasers": true,
@@ -227,7 +227,7 @@ var subPersonalities =
 		"artillery": weaponStats.mortars,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
-		"defensePriority": 50,
+		"defensePriority": 5,
 		"vtolPriority": 80,
 		"alloyPriority": 35,
 		"useLasers": true,
@@ -249,7 +249,7 @@ var subPersonalities =
 		"artillery": weaponStats.fireMortars,
 		"antiAir": weaponStats.AA,
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
-		"defensePriority": 70,
+		"defensePriority": 15,
 		"vtolPriority": 66,
 		"alloyPriority": 10,
 		"useLasers": true,
@@ -296,6 +296,7 @@ var beacon; //latest friendly beacon location
 var enemyUsedElectronicWarfare; //Detect if an enemy used a Nexus Link against us... if so, research the resistance upgrades
 var startAttacking;
 var lastShuffleTime;
+var forceDerrickBuildDefense;
 
 // -- Weapon research list (initializeResearchLists).
 var techlist;

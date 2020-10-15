@@ -51,10 +51,15 @@ function eventStructureBuilt(structure, droid)
 		{
 			orderDroidBuild(droid, DORDER_BUILD, structures.derrick, nearbyOils[0].x, nearbyOils[0].y);
 		}
-		else
+		else if (getRealPower() > -SUPER_LOW_POWER)
 		{
+			var high = highOilMap();
 			//Probably most oils are close to base anyway on high oil maps
-			if ((getRealPower() < Math.floor(SUPER_LOW_POWER / 2)) || (highOilMap() && (gameTime < 240000)))
+			if (high && (gameTime < 240000))
+			{
+				return;
+			}
+			if (!high && !forceDerrickBuildDefense && countStruct(structures.derrick) < (averageOilPerPlayer() - 4))
 			{
 				return;
 			}

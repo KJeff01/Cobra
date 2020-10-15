@@ -170,7 +170,8 @@ function protectUnguardedDerricks(droid)
 		{
 			//Don't defend it ATM if that derrick is surrounded by enemies.
 			undefended = undefended.filter(function(obj) {
-				return enumRange(obj.x, obj.y, 6, ENEMIES, false).length === 0;
+				return (gameTime < 600000 && distBetweenTwoPoints(obj.x, obj.y, MY_BASE.x, MY_BASE.y) > 9) ||
+					(enumRange(obj.x, obj.y, 6, ENEMIES, false).length === 0);
 			}).sort(distanceToBase);
 
 			if (undefended.length > 0 && buildStuff(returnDefense(), undefined, undefended[0], MAX_BLOCKING, oilGrabberGroup))
@@ -322,7 +323,12 @@ function lookForOil()
 	var droids = enumGroup(oilGrabberGroup);
 	var oils = enumFeature(-1, OIL_RES).sort(distanceToBase);
 
-	if (random(100) < 40 && countStruct(structures.derrick) > 4)
+	if (!forceDerrickBuildDefense && (oils.length < averageOilPerPlayer()))
+	{
+		//Ok, most oils are already owned so go ahead and defend all derricks from now one
+		forceDerrickBuildDefense = true;
+	}
+	if (forceDerrickBuildDefense)
 	{
 		protectUnguardedDerricks();
 	}
@@ -532,7 +538,7 @@ function buildDefenses(truck, urgent)
 			return true;
 		}
 
-		if (pow > MIN_BUILD_POWER)
+		if (pow > urgent ? -SUPER_LOW_POWER : MIN_BUILD_POWER)
 		{
 			defendRandomDerrick();
 		}
@@ -874,13 +880,25 @@ function maintenance(group)
 	}
 	else
 	{
-		modList = [
-			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gen},
-			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.lab},
-			{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
-			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
-			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
-		];
+		if (mapOilLevel() === "LOW")
+		{
+			modList = [
+				{"mod": "A0PowMod1", "amount": 1, "structure": structures.gen},
+				{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
+				{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.lab},
+				{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
+				{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
+			];
+		}
+		else
+		{
+			modList = [
+				{"mod": "A0PowMod1", "amount": 1, "structure": structures.gen},
+				{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.lab},
+				{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
+				{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
+			];
+		}
 	}
 
 	if (isNTW && (group === constructGroup) && goodNTWPower)

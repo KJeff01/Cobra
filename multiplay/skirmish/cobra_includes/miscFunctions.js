@@ -376,6 +376,7 @@ function initCobraVars()
 	enemyUsedElectronicWarfare = false;
 	startAttacking = false;
 	lastShuffleTime = 0;
+	forceDerrickBuildDefense = false;
 }
 
 //Attempt to workaround a bug with pickStructLocation() failing to find valid locations

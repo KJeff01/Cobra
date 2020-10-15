@@ -200,6 +200,17 @@ function research()
 			if (!found && getResearch("R-Struc-Research-Upgrade08").done && random(100) < 40)
 				found = evalResearch(lab, empWeapons);
 
+			if (!found &&
+				((subPersonalities[personality].resPath === "defensive") ||
+				(random(100) < subPersonalities[personality].defensePriority)))
+			{
+				found = evalResearch(lab, standardDefenseTech);
+				if (!found && useArti)
+					found = evalResearch(lab, defenseTech);
+				if (!found)
+					found = evalResearch(lab, DEFENSE_UPGRADES);
+			}
+
 			if (subPersonalities[personality].resPath === "generic")
 			{
 				if (!turnOffMG)
@@ -244,16 +255,6 @@ function research()
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
 
-
-				if (!found && (random(100) < subPersonalities[personality].defensePriority))
-				{
-					found = evalResearch(lab, standardDefenseTech);
-					if (!found && useArti)
-						found = evalResearch(lab, defenseTech);
-					if (!found)
-						found = evalResearch(lab, DEFENSE_UPGRADES);
-				}
-
 				var cyborgSecondary = updateResearchList(subPersonalities[personality].secondaryWeapon.templates);
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
 				if (componentAvailable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
@@ -268,15 +269,6 @@ function research()
 			}
 			else if (subPersonalities[personality].resPath === "defensive")
 			{
-				if (!found)
-				{
-					found = evalResearch(lab, DEFENSE_UPGRADES);
-					if (!found && useArti)
-						found = evalResearch(lab, defenseTech);
-					if (!found)
-						found = evalResearch(lab, standardDefenseTech);
-				}
-
 				if (!found && random(100) < (personalityIsRocketMain() ? 20 : 50) && useArti)
 					found = evalResearch(lab, artillExtra);
 				if (!found && random(100) < (personalityIsRocketMain() ? (componentAvailable("Missile-A-T") ? 60 : 20) : 50) && useArti)
@@ -388,15 +380,6 @@ function research()
 
 				if (!found)
 					found = evalResearch(lab, SENSOR_TECH);
-
-				if (!found && ((random(100) < subPersonalities[personality].defensePriority)))
-				{
-					found = evalResearch(lab, standardDefenseTech);
-					if (!found && useArti)
-						found = evalResearch(lab, defenseTech);
-					if (!found)
-						found = evalResearch(lab, DEFENSE_UPGRADES);
-				}
 			}
 			else if (subPersonalities[personality].resPath === "air")
 			{
@@ -450,16 +433,6 @@ function research()
 						found = evalResearch(lab, secondaryWeaponExtra);
 					if(!found)
 						found = evalResearch(lab, secondaryWeaponTech);
-				}
-
-
-				if (!found && (random(100) < subPersonalities[personality].defensePriority))
-				{
-					found = evalResearch(lab, standardDefenseTech);
-					if (!found && useArti)
-						found = evalResearch(lab, defenseTech);
-					if (!found)
-						found = evalResearch(lab, DEFENSE_UPGRADES);
 				}
 			}
 
