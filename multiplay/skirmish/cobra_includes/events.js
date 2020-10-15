@@ -201,6 +201,12 @@ function eventAttacked(victim, attacker)
 		return;
 	}
 
+	if ((gameTime > 600000) || !highOilMap())
+	{
+		startAttacking = true; //well, they want to play so...
+	}
+
+
 	if (attacker.player !== me && !allianceExistsBetween(attacker.player, victim.player))
 	{
 		grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 5;
@@ -312,6 +318,8 @@ function eventBeacon(x, y, from, to, message)
 	{
 		return;
 	}
+
+	startAttacking = true; // might as well attack now
 
 	beacon.x = x;
 	beacon.y = y;

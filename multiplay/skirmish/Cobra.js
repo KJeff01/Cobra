@@ -47,19 +47,19 @@ const ESSENTIALS = [
 	"R-Struc-PowerModuleMk1",
 	"R-Struc-Research-Upgrade01",
 	"R-Vehicle-Prop-Halftracks",
-	"R-Vehicle-Metals01",
-	"R-Cyborg-Metals01",
 	"R-Vehicle-Body05",
 ];
 const ESSENTIALS_2 = [
+	"R-Struc-RprFac-Upgrade01",
 	"R-Vehicle-Body11",
-	"R-Struc-Research-Upgrade09",
+	"R-Vehicle-Metals02",
+	"R-Cyborg-Metals02",
 	"R-Sys-Autorepair-General",
+	"R-Struc-Research-Upgrade09",
 	"R-Struc-Power-Upgrade03a",
 	"R-Struc-Factory-Upgrade09",
 ];
 const ESSENTIALS_3 = [
-	"R-Struc-RprFac-Upgrade01",
 	"R-Sys-Sensor-Upgrade01",
 	"R-Vehicle-Prop-Hover",
 ];
@@ -161,7 +161,7 @@ var subPersonalities =
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 30,
 		"vtolPriority": 40,
-		"alloyPriority": 40,
+		"alloyPriority": 33,
 		"useLasers": true,
 		"cyborgThreatPercentage": 0.08,
 		"retreatScanRange": 12,
@@ -207,7 +207,7 @@ var subPersonalities =
 		"factoryOrder": [VTOL_FACTORY, FACTORY, CYBORG_FACTORY],
 		"defensePriority": 10,
 		"vtolPriority": 50,
-		"alloyPriority": 60,
+		"alloyPriority": 25,
 		"useLasers": true,
 		"resPath": "offensive",
 		"retreatScanRange": 12,
@@ -251,7 +251,7 @@ var subPersonalities =
 		"factoryOrder": [FACTORY, CYBORG_FACTORY, VTOL_FACTORY],
 		"defensePriority": 70,
 		"vtolPriority": 66,
-		"alloyPriority": 35,
+		"alloyPriority": 10,
 		"useLasers": true,
 		"resPath": "offensive",
 		"retreatScanRange": 12,
@@ -291,10 +291,11 @@ var turnOffMG; //This is only used for when the personalities don't have their w
 var useArti;
 var useVtol;
 var lastAttackedByScavs;
-var prevResPath; // Previous personality research path. Volatile.
 var currently_dead; // Used to detect if Cobra is, basically, dead. If true, the script is put in a very low perf impact state.
 var beacon; //latest friendly beacon location
 var enemyUsedElectronicWarfare; //Detect if an enemy used a Nexus Link against us... if so, research the resistance upgrades
+var startAttacking;
+var lastShuffleTime;
 
 // -- Weapon research list (initializeResearchLists).
 var techlist;

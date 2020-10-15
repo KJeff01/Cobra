@@ -79,7 +79,6 @@ function eventChat(from, to, message)
 			pth = "air";
 		}
 
-		prevResPath = subPersonalities[personality].resPath;
 		subPersonalities[personality].resPath = pth;
 		sendChatMessage("research path changed to: " + pth, ALLIES);
 	}

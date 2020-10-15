@@ -629,7 +629,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 5))
+		if (countAndBuild(FACTORY, 5))
 		{
 			return true;
 		}
@@ -637,7 +637,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 5))
+		if (countAndBuild(CYBORG_FACTORY, 5))
 		{
 			return true;
 		}
@@ -668,6 +668,10 @@ function factoryBuildOrder()
 		if ((fac === VTOL_FACTORY && !useVtol) || (fac === CYBORG_FACTORY && (turnOffCyborgs || forceHover)))
 		{
 			continue;
+		}
+		if (fac === VTOL_FACTORY && !getResearch("R-Struc-VTOLPad-Upgrade01").done)
+		{
+			continue; //wait until the pads are better (at least for high oil)
 		}
 
 		var derrNum = countStruct(structures.derrick);
@@ -872,8 +876,8 @@ function maintenance(group)
 	{
 		modList = [
 			{"mod": "A0PowMod1", "amount": 1, "structure": structures.gen},
-			{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
 			{"mod": "A0ResearchModule1", "amount": 1, "structure": structures.lab},
+			{"mod": "A0FacMod1", "amount": 1, "structure": FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": FACTORY},
 			{"mod": "A0FacMod1", "amount": 2, "structure": VTOL_FACTORY},
 		];
