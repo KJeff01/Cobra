@@ -333,6 +333,11 @@ function lookForOil()
 		protectUnguardedDerricks();
 	}
 
+	if (oils.length === 0 && highOilMap() && maintenance(oilGrabberGroup))
+	{
+		return;
+	}
+
 	for (var i = 0, oilLen = oils.length; i < oilLen; i++)
 	{
 		var bestDroid;
@@ -355,11 +360,9 @@ function lookForOil()
 		if (bestDroid && !stopExecution("oil" + oil.y * mapWidth * oil.x, 50000))
 		{
 			orderDroidBuild(bestDroid, DORDER_BUILD, structures.derrick, oil.x, oil.y);
-			return true;
+			return;
 		}
 	}
-
-	return false;
 }
 
 // Build CB, Wide-Spectrum or radar detector
@@ -924,6 +927,11 @@ function maintenance(group)
 			}
 
 			var structList = enumStruct(me, modObj.structure).sort(distanceToBase);
+			if (group === oilGrabberGroup)
+			{
+				structList = structList.reverse();
+			}
+
 			for (var c = 0, s = structList.length; c < s; ++c)
 			{
 				if (structList[c].modules < modObj.amount)
