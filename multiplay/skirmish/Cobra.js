@@ -50,10 +50,9 @@ const ESSENTIALS = [
 	"R-Vehicle-Body05",
 ];
 const ESSENTIALS_2 = [
-	"R-Struc-RprFac-Upgrade01",
-	"R-Vehicle-Body11",
 	"R-Vehicle-Metals02",
 	"R-Cyborg-Metals02",
+	"R-Struc-RprFac-Upgrade01",
 	"R-Sys-Autorepair-General",
 	"R-Struc-Research-Upgrade09",
 	"R-Struc-Power-Upgrade03a",
@@ -81,8 +80,6 @@ const SENSOR_TECH = [
 	"R-Sys-Sensor-UpLink",
 ];
 const DEFENSE_UPGRADES = [
-	"R-Vehicle-Metals05",
-	"R-Cyborg-Metals05",
 	"R-Wpn-LasSat",
 	"R-Struc-Materials09",
 	"R-Defense-WallUpgrade12",

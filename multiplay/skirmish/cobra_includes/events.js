@@ -324,7 +324,10 @@ function eventBeacon(x, y, from, to, message)
 		return;
 	}
 
-	startAttacking = true; // might as well attack now
+	if (from !== me)
+	{
+		startAttacking = true; // might as well attack now
+	}
 
 	beacon.x = x;
 	beacon.y = y;

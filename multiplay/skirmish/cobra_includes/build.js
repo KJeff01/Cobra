@@ -610,6 +610,8 @@ function buildBaseStructures()
 	}
 	else
 	{
+		var haveAllies = playerAlliance(true).length > 0;
+
 		if (getRealPower() < 500 && countAndBuild(structures.gen, 5))
 		{
 			return true; //a little fail-safe
@@ -618,19 +620,37 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (!researchComplete && countAndBuild(structures.lab, 5))
+		if (haveAllies)
 		{
-			return true;
+			if (!researchComplete && countAndBuild(structures.lab, 3))
+			{
+				return true;
+			}
+			if (countAndBuild(FACTORY, 3))
+			{
+				return true;
+			}
 		}
-		if (GOOD_POWER_LEVEL && countAndBuild(FACTORY, 3))
+		else
 		{
-			return true;
+			if (!researchComplete && countAndBuild(structures.lab, 5))
+			{
+				return true;
+			}
+			if (countAndBuild(FACTORY, 3))
+			{
+				return true;
+			}
 		}
 		if (countAndBuild(structures.hq, 1))
 		{
 			return true;
 		}
 		if (GOOD_POWER_LEVEL && countAndBuild(CYBORG_FACTORY, 3))
+		{
+			return true;
+		}
+		if (!researchComplete && haveAllies && countAndBuild(structures.lab, 5))
 		{
 			return true;
 		}
@@ -866,7 +886,6 @@ function maintenance(group)
 	}
 
 	var isNTW = highOilMap();
-	var goodNTWPower = getRealPower() > 100;
 	var minModulePower = (getMultiTechLevel() === 1) ? -SUPER_LOW_POWER : -200;
 
 	var modList;
@@ -904,7 +923,7 @@ function maintenance(group)
 		}
 	}
 
-	if (isNTW && (group === constructGroup) && goodNTWPower)
+	if (isNTW && (group !== constructGroupNTWExtra))
 	{
 		modList = modList.reverse();
 	}
@@ -919,10 +938,6 @@ function maintenance(group)
 			{
 				//Stop wasting power on upgrading VTOL factories if we don't have them
 				//researched yet (from some maps).
-				continue;
-			}
-			if (isNTW && (modObj.structure === structures.gen) && goodNTWPower && (group === constructGroupNTWExtra))
-			{
 				continue;
 			}
 

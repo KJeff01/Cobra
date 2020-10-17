@@ -112,12 +112,12 @@ function repairDroid(droidID, force)
 
 	var highOil = highOilMap();
 
-	if (droid.health < 15)
+	if (droid.health < 15 || (highOil && gameTime < 600000))
 	{
 		return false;
 	}
 
-	const SAFE_EXTREME_OIL_IGNORE_NUM = 100;
+	const SAFE_EXTREME_OIL_IGNORE_NUM = 70;
 
 	var forceRepairPercent = 50;
 	const EXPERIENCE_DIVISOR = 26;
@@ -371,7 +371,7 @@ function recycleForHover()
 	{
 		return;
 	}
-	if (highOilMap() && gameTime < 900000)
+	if (highOilMap() && (!startAttacking || (gameTime < 900000) || (countDroid(DROID_ANY, me) < 100)))
 	{
 		return; //wait
 	}
@@ -570,8 +570,10 @@ function enemyUnitsInBase()
 	//most harmful player anyway so this should suffice for defense.
 	if (enemyUnits.length > 0)
 	{
+		var high = highOilMap();
+
 		if (!startAttacking &&
-			((gameTime > highOilMap() ? 600000 : 300000) || (enemyUnits.length > 20)) &&
+			((gameTime > high ? 600000 : 300000) || (enemyUnits.length > high ? 20 : 8)) &&
 			enemyUnits[0].droidType !== DROID_CONSTRUCT &&
 			enemyUnits[0].droidType !== DROID_SENSOR)
 		{
@@ -630,7 +632,7 @@ function haveEnoughUnitsForFirstAttack()
 	{
 		var amountOfAttackers = groupSize(attackGroup) + groupSize(artilleryGroup) + groupSize(vtolGroup);
 		// These amounts of units will build up in base if unprovoked
-		startAttacking = amountOfAttackers >= (highOil ? 120 : 8);
+		startAttacking = amountOfAttackers >= (highOil ? 120 : MIN_ATTACK_DROIDS);
 	}
 
 	return startAttacking;
