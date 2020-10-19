@@ -56,14 +56,44 @@ function initializeResearchLists()
 	empWeapons = updateResearchList(weaponStats.nexusTech.weapons);
 }
 
+function isPowerResearch(research)
+{
+	const POWERS = [
+		"R-Struc-Power-Upgrade01",
+		"R-Struc-Power-Upgrade01b",
+		"R-Struc-Power-Upgrade01c",
+		"R-Struc-Power-Upgrade02",
+		"R-Struc-Power-Upgrade03",
+		"R-Struc-Power-Upgrade03a",
+	];
+
+	for (var i = 0, len = POWERS.length; i < len; ++i)
+	{
+		if (research === POWERS[i])
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 //This function aims to more cleanly discover available research topics
 //with the given list provided. pursueResearch falls short in that it fails to
 //acknowledge the availability of an item further into the list if a previous
 //one is not completed... so lets help it a bit.
 function evalResearch(lab, list)
 {
+	var sufficientPower = getRealPower() > 2500;
+
 	for (var i = 0, a = list.length; i < a; ++i)
 	{
+		if (sufficientPower && isPowerResearch(list[i]))
+		{
+			//Don't research power upgrades if we have an absurd amount of power.
+			continue;
+		}
+
 		if (pursueResearch(lab, list[i]))
 		{
 			return true;
@@ -128,9 +158,9 @@ function research()
 	{
 		antiCyborgChance = 35;
 	}
-	if (antiCyborgChance > 0 && antiCyborgChance < 15)
+	if (antiCyborgChance > 0 && antiCyborgChance < 8)
 	{
-		antiCyborgChance = 15; //just in case...
+		antiCyborgChance = 8; //just in case...
 	}
 
 	for (var i = 0, a = labList.length; i < a; ++i)
@@ -155,7 +185,7 @@ function research()
 			found = pursueResearch(lab, "R-Vehicle-Body11");
 		if (!found && random(100) < (highOil ? 30 : 20))
 			found = evalResearch(lab, ESSENTIALS_2);
-		if (!found && ((getRealPower() > SUPER_LOW_POWER) || highOil) && (random(100) < 10))
+		if (!found && ((getRealPower() > SUPER_LOW_POWER) || highOil) && (random(100) < (getResearch("R-Struc-Research-Upgrade04").done ? 20 : 10)))
 			found = evalResearch(lab, ESSENTIALS_3);
 
 		if (!found && (getRealPower() > -SUPER_LOW_POWER) && (countEnemyVTOL() || componentAvailable("V-Tol")))
@@ -344,10 +374,10 @@ function research()
 					}
 				}
 
-				if (!found && !turnOffCyborgs && getResearch("R-Struc-Research-Upgrade04").done && random(100) < 25)
-					found = evalResearch(lab, cyborgWeaps);
-				if (!found && random(100) < 25)
+				if (!found && random(100) < 35)
 					found = evalResearch(lab, weaponTech);
+				if (!found && !turnOffCyborgs && getResearch("R-Struc-Research-Upgrade04").done && random(100) < 15)
+					found = evalResearch(lab, cyborgWeaps);
 				if (!found && random(100) < 60)
 					found = evalResearch(lab, extraTech);
 

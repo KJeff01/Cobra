@@ -78,9 +78,9 @@ const SENSOR_TECH = [
 	"R-Sys-CBSensor-Tower01",
 	"R-Sys-Sensor-WSTower",
 	"R-Sys-Sensor-UpLink",
+	"R-Wpn-LasSat",
 ];
 const DEFENSE_UPGRADES = [
-	"R-Wpn-LasSat",
 	"R-Struc-Materials09",
 	"R-Defense-WallUpgrade12",
 ];

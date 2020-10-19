@@ -117,7 +117,7 @@ function repairDroid(droidID, force)
 		return false;
 	}
 
-	const SAFE_EXTREME_OIL_IGNORE_NUM = 70;
+	const SAFE_EXTREME_OIL_IGNORE_NUM = 80;
 
 	var forceRepairPercent = 50;
 	const EXPERIENCE_DIVISOR = 26;
@@ -632,7 +632,7 @@ function haveEnoughUnitsForFirstAttack()
 	{
 		var amountOfAttackers = groupSize(attackGroup) + groupSize(artilleryGroup) + groupSize(vtolGroup);
 		// These amounts of units will build up in base if unprovoked
-		startAttacking = amountOfAttackers >= (highOil ? 120 : MIN_ATTACK_DROIDS);
+		startAttacking = amountOfAttackers >= (highOil ? 120 : 20);
 	}
 
 	return startAttacking;
@@ -640,7 +640,7 @@ function haveEnoughUnitsForFirstAttack()
 
 function baseShuffleDefensePattern()
 {
-	if (gameTime < lastShuffleTime + 10000)
+	if (gameTime < lastShuffleTime + 20000)
 	{
 		return; //Prevent the dreadful jitter movement defense pattern.
 	}
@@ -671,7 +671,7 @@ function baseShuffleDefensePattern()
 		if (y <= 2) { y = 2; }
 		else if (y >= mapHeight - 2) { y = mapHeight - 2; }
 
-		orderDroidLoc(attackers[i], DORDER_MOVE, x, y);
+		orderDroidLoc(attackers[i], DORDER_SCOUT, x, y);
 	}
 
 	lastShuffleTime = gameTime;

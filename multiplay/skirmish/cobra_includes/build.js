@@ -328,7 +328,7 @@ function lookForOil()
 		//Ok, most oils are already owned so go ahead and defend all derricks from now one
 		forceDerrickBuildDefense = true;
 	}
-	if (forceDerrickBuildDefense)
+	if (!highOilMap() && forceDerrickBuildDefense)
 	{
 		protectUnguardedDerricks();
 	}
@@ -610,7 +610,7 @@ function buildBaseStructures()
 	}
 	else
 	{
-		var haveAllies = playerAlliance(true).length > 0;
+		var haveAllies = (alliancesType === ALLIANCES_TEAMS) && (playerAlliance(true).length > 0);
 
 		if (getRealPower() < 500 && countAndBuild(structures.gen, 5))
 		{
@@ -923,7 +923,7 @@ function maintenance(group)
 		}
 	}
 
-	if (isNTW && (group !== constructGroupNTWExtra))
+	if (isNTW && (group === constructGroup))
 	{
 		modList = modList.reverse();
 	}
