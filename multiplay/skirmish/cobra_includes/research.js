@@ -209,8 +209,8 @@ function research()
 		{
 			if (random(100) < (highOil ? 25 : 15))
 			{
-				if (!found)
-					found = pursueResearch(lab, "R-Vehicle-Metals03");
+				found = pursueResearch(lab, "R-Vehicle-Metals03");
+
 				if (!found && !turnOffCyborgs && countStruct(CYBORG_FACTORY))
 					found = pursueResearch(lab, "R-Cyborg-Metals03");
 
@@ -226,7 +226,7 @@ function research()
 
 					if (!found && getResearch("R-Struc-Research-Upgrade04").done || (random(100) < 20))
 						found = evalResearch(lab, BODY_RESEARCH_1);
-					if (!found && getResearch("R-Struc-Research-Upgrade05").done && (random(100) < componentAvailable("Body12SUP") ? 35 : 15))
+					if (!found && getResearch("R-Struc-Research-Upgrade05").done && (random(100) < (componentAvailable("Body12SUP") ? 35 : 15)))
 						found = evalResearch(lab, BODY_RESEARCH_2);
 				}
 			}
@@ -273,7 +273,7 @@ function research()
 				if (!found && useVtol && random(100) < 70)
 				{
 					// Basic VTOL pads tried after Python.
-					if (!found && componentAvailable("Body11ABT") && random(100) < 70)
+					if (componentAvailable("Body11ABT") && random(100) < 70)
 						found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
 					if (!found && componentAvailable("V-Tol") && random(100) < subPersonalities[personality].vtolPriority)
 						found = evalResearch(lab, VTOL_RES);
@@ -332,7 +332,7 @@ function research()
 				if (!found && useVtol && random(100) < 60)
 				{
 					// Basic VTOL pads tried after Python.
-					if (!found && componentAvailable("Body11ABT"))
+					if (componentAvailable("Body11ABT"))
 						found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
 					if (!found && componentAvailable("V-Tol") && random(100) < subPersonalities[personality].vtolPriority)
 						found = evalResearch(lab, VTOL_RES);
@@ -389,7 +389,7 @@ function research()
 				if (!found && useVtol && random(100) < 80)
 				{
 					// Basic VTOL pads tried after Python.
-					if (!found && componentAvailable("Body11ABT") && random(100) < 80)
+					if (componentAvailable("Body11ABT") && random(100) < 80)
 						found = pursueResearch(lab, "R-Struc-VTOLPad-Upgrade01");
 					if (!found && componentAvailable("V-Tol") && (random(100) < subPersonalities[personality].vtolPriority + 10))
 						found = evalResearch(lab, VTOL_RES);

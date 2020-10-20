@@ -206,7 +206,7 @@ function eventAttacked(victim, attacker)
 		return;
 	}
 
-	if ((gameTime > 900000) || !highOilMap())
+	if ((gameTime > 420000) || !highOilMap())
 	{
 		startAttacking = true; //well, they want to play so...
 	}

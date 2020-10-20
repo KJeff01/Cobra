@@ -573,7 +573,6 @@ function enemyUnitsInBase()
 		var high = highOilMap();
 
 		if (!startAttacking &&
-			((gameTime > high ? 900000 : 300000) && (enemyUnits.length > high ? 20 : 8)) &&
 			enemyUnits[0].droidType !== DROID_CONSTRUCT &&
 			enemyUnits[0].droidType !== DROID_SENSOR)
 		{
@@ -659,6 +658,11 @@ function baseShuffleDefensePattern()
 	var sector = quad[random(quad.length)];
 	var x = sector.x1 + random(sector.x2);
 	var y = sector.y1 + random(sector.y2);
+
+	if (!propulsionCanReach("wheeled01", MY_BASE.x, MY_BASE.y, x, y))
+	{
+		return;
+	}
 
 	if (x <= 2)
 	{
