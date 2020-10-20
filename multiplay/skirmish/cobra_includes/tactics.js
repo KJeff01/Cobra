@@ -570,8 +570,6 @@ function enemyUnitsInBase()
 	//most harmful player anyway so this should suffice for defense.
 	if (enemyUnits.length > 0)
 	{
-		var high = highOilMap();
-
 		if (!startAttacking &&
 			enemyUnits[0].droidType !== DROID_CONSTRUCT &&
 			enemyUnits[0].droidType !== DROID_SENSOR)
