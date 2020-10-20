@@ -158,9 +158,9 @@ function research()
 	{
 		antiCyborgChance = 35;
 	}
-	if (antiCyborgChance > 0 && antiCyborgChance < 8)
+	if (antiCyborgChance > 0 && antiCyborgChance < 10)
 	{
-		antiCyborgChance = 8; //just in case...
+		antiCyborgChance = 10; //just in case...
 	}
 
 	for (var i = 0, a = labList.length; i < a; ++i)
@@ -374,9 +374,9 @@ function research()
 					}
 				}
 
-				if (!found && random(100) < 35)
+				if (!found && random(100) < 33)
 					found = evalResearch(lab, weaponTech);
-				if (!found && !turnOffCyborgs && getResearch("R-Struc-Research-Upgrade04").done && random(100) < 15)
+				if (!found && !turnOffCyborgs && getResearch("R-Struc-Research-Upgrade04").done && random(100) < 20)
 					found = evalResearch(lab, cyborgWeaps);
 				if (!found && random(100) < 60)
 					found = evalResearch(lab, extraTech);

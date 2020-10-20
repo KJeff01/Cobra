@@ -48,26 +48,27 @@ const ESSENTIALS = [
 	"R-Struc-Research-Upgrade01",
 	"R-Vehicle-Prop-Halftracks",
 	"R-Vehicle-Body05",
+	"R-Wpn-MG-Damage03",
 ];
 const ESSENTIALS_2 = [
 	"R-Vehicle-Metals02",
 	"R-Cyborg-Metals02",
 	"R-Struc-RprFac-Upgrade01",
+	"R-Wpn-MG3Mk1",
 	"R-Sys-Autorepair-General",
 	"R-Struc-Research-Upgrade09",
 	"R-Struc-Power-Upgrade03a",
 	"R-Struc-Factory-Upgrade09",
 ];
 const ESSENTIALS_3 = [
-	"R-Sys-Sensor-Upgrade01",
 	"R-Vehicle-Prop-Hover",
+	"R-Sys-Sensor-Upgrade01",
 ];
 const SYSTEM_UPGRADES = [
 	"R-Sys-MobileRepairTurretHvy",
 	"R-Vehicle-Prop-Tracks",
 	"R-Struc-RprFac-Upgrade06",
 	"R-Sys-Sensor-Upgrade03",
-	"R-Sys-Resistance-Circuits",
 ];
 const FLAMER = [
 	"R-Wpn-Flame2",
@@ -79,6 +80,7 @@ const SENSOR_TECH = [
 	"R-Sys-Sensor-WSTower",
 	"R-Sys-Sensor-UpLink",
 	"R-Wpn-LasSat",
+	"R-Sys-Resistance-Circuits",
 ];
 const DEFENSE_UPGRADES = [
 	"R-Struc-Materials09",

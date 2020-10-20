@@ -21,7 +21,7 @@ function switchOffMG()
 
 function useLasersForCyborgControl()
 {
-	return getResearch("R-Struc-Research-Upgrade08").done;
+	return getResearch("R-Struc-Research-Upgrade07").done;
 }
 
 function playerCyborgRatio(player)

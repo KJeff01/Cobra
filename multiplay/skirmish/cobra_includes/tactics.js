@@ -371,7 +371,7 @@ function recycleForHover()
 	{
 		return;
 	}
-	if (highOilMap() && (!startAttacking || (gameTime < 900000) || (countDroid(DROID_ANY, me) < 100)))
+	if (highOilMap() && (!startAttacking || (gameTime < 900000) || (countDroid(DROID_ANY, me) < 75)))
 	{
 		return; //wait
 	}
@@ -573,7 +573,7 @@ function enemyUnitsInBase()
 		var high = highOilMap();
 
 		if (!startAttacking &&
-			((gameTime > high ? 600000 : 300000) || (enemyUnits.length > high ? 20 : 8)) &&
+			((gameTime > high ? 900000 : 300000) && (enemyUnits.length > high ? 20 : 8)) &&
 			enemyUnits[0].droidType !== DROID_CONSTRUCT &&
 			enemyUnits[0].droidType !== DROID_SENSOR)
 		{
@@ -626,13 +626,11 @@ function donateSomePower()
 //Have Cobra sit and wait and build up a small army before starting attack tactics.
 function haveEnoughUnitsForFirstAttack()
 {
-	var highOil = highOilMap();
-
 	if (!startAttacking)
 	{
 		var amountOfAttackers = groupSize(attackGroup) + groupSize(artilleryGroup) + groupSize(vtolGroup);
 		// These amounts of units will build up in base if unprovoked
-		startAttacking = amountOfAttackers >= (highOil ? 120 : 20);
+		startAttacking = amountOfAttackers >= (highOilMap() ? 120 : 20);
 	}
 
 	return startAttacking;
@@ -658,19 +656,30 @@ function baseShuffleDefensePattern()
 		{x1: area.x2 - 20, x2: area.x2, y1: area.y1, y2: area.y2,},
 		{x1: area.x1, x2: area.x2, y1: area.y2 - 20, y2: area.y2,},
 	];
+	var sector = quad[random(quad.length)];
+	var x = sector.x1 + random(sector.x2);
+	var y = sector.y1 + random(sector.y2);
+
+	if (x <= 2)
+	{
+		x = 2;
+	}
+	else if (x >= mapWidth - 2)
+	{
+		x = mapWidth - 2;
+	}
+	if (y <= 2)
+	{
+		y = 2;
+	}
+	else if (y >= mapHeight - 2)
+	{
+		y = mapHeight - 2;
+	}
 	// Given that the base area has an additional 20 tiles of territory around the furthest base structure in a rectangel/square
 	// we can safely tell units to go into this territory zone to keep trucks from being obstructed, maybe.
 	for (var i = 0, len = attackers.length; i < len; ++i)
 	{
-		var sector = quad[random(quad.length)];
-		var x = sector.x1 + random(sector.x2);
-		var y = sector.y1 + random(sector.y2);
-
-		if (x <= 2) { x = 2; }
-		else if (x >= mapWidth - 2) { x = mapWidth - 2; }
-		if (y <= 2) { y = 2; }
-		else if (y >= mapHeight - 2) { y = mapHeight - 2; }
-
 		orderDroidLoc(attackers[i], DORDER_SCOUT, x, y);
 	}
 
@@ -712,7 +721,7 @@ function shouldCobraAttack()
 	{
 		return true;
 	}
-	else
+	else if (!startAttacking)
 	{
 		if (highOilMap())
 		{
