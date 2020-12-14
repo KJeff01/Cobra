@@ -131,6 +131,17 @@ function chooseRandomVTOLWeapon()
 		weaps = weaponStats.bombs;
 	}
 
+	//randomize the big bombs for variety
+	if (weaps.alias === "bomb")
+	{
+		var rdm = [];
+		while (rdm.length !== weaps.vtols.length)
+		{
+			rdm.push(weaps.vtols[random(weaps.vtols.length)]);
+		}
+		return rdm;
+	}
+
 	return weaps.vtols;
 }
 

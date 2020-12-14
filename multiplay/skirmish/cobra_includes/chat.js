@@ -2,15 +2,30 @@
 //A way to control chat messages sent to Cobra AI.
 function sendChatMessage(msg, receiver)
 {
-	if (isDefined(msg))
+	if (!isDefined(msg))
 	{
-		if (!isDefined(receiver))
+		return;
+	}
+	if (!isDefined(receiver))
+	{
+		receiver = ALLIES;
+	}
+
+	if ((lastMsg !== msg) || (gameTime >= lastMsgThrottle + 15000))
+	{
+		lastMsg = msg;
+		lastMsgThrottle = gameTime;
+
+		if (receiver === ALLIES || receiver === ENEMIES)
 		{
-			receiver = ALLIES;
+			var players = playerAlliance(receiver === ALLIES);
+			for (var i = 0, len = players.length; i < len; ++i)
+			{
+				chat(players[i], msg);
+			}
 		}
-		if (lastMsg !== msg)
+		else
 		{
-			lastMsg = msg;
 			chat(receiver, msg);
 		}
 	}

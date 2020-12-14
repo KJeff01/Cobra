@@ -153,6 +153,7 @@ function research()
 	var enemyPlayer = getMostHarmfulPlayer();
 	var antiCyborgChance = Math.floor(playerCyborgRatio(enemyPlayer) * 100);
 	var highOil = highOilMap();
+	var haveAllies = playerAlliance(true).length > 0;
 
 	if (!startAttacking || (isDefined(scavengerPlayer) && (enemyPlayer === scavengerPlayer)))
 	{
@@ -183,10 +184,14 @@ function research()
 			found = evalResearch(lab, techlist);
 		if (!found && getResearch("R-Struc-Research-Upgrade02").done)
 			found = pursueResearch(lab, "R-Vehicle-Body11");
-		if (!found && random(100) < (highOil ? 30 : 20))
-			found = evalResearch(lab, ESSENTIALS_2);
-		if (!found && ((getRealPower() > SUPER_LOW_POWER) || highOil) && (random(100) < (getResearch("R-Struc-Research-Upgrade04").done ? 20 : 10)))
-			found = evalResearch(lab, ESSENTIALS_3);
+		//Careful not to focus too much on these research topics since offensive capability can be harmed
+		if (random(100) < ((haveAllies) ? 40 : 20))
+		{
+			if (!found && random(100) < (highOil ? 30 : 20))
+				found = evalResearch(lab, ESSENTIALS_2);
+			if (!found && ((getRealPower() > SUPER_LOW_POWER) || highOil) && (random(100) < (getResearch("R-Struc-Research-Upgrade04").done ? 20 : 10)))
+				found = evalResearch(lab, ESSENTIALS_3);
+		}
 
 		if (!found && (getRealPower() > -SUPER_LOW_POWER) && (countEnemyVTOL() || componentAvailable("V-Tol")))
 		{
@@ -231,14 +236,14 @@ function research()
 				}
 			}
 
-			if (!found && getResearch("R-Struc-Research-Upgrade08").done && random(100) < 40)
+			if (!found && getResearch("R-Struc-Research-Upgrade08").done && random(100) < 5)
 				found = evalResearch(lab, empWeapons);
 
 			if (!found &&
 				((subPersonalities[personality].resPath === "defensive") ||
 				(random(100) < subPersonalities[personality].defensePriority)))
 			{
-				if (!highOil || (playerAlliance(true).length > 0))
+				if (!highOil || haveAllies)
 				{
 					found = evalResearch(lab, standardDefenseTech);
 					if (!found && useArti)

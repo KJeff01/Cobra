@@ -355,6 +355,7 @@ function initCobraVars()
 	var isHoverMap = checkIfSeaMap();
 
 	lastMsg = "eventStartLevel";
+	lastMsgThrottle = 0;
 	currently_dead = false;
 	researchComplete = false;
 	initializeGrudgeCounter();
