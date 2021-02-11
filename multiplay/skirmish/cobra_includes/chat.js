@@ -21,6 +21,10 @@ function sendChatMessage(msg, receiver)
 			var players = playerAlliance(receiver === ALLIES);
 			for (var i = 0, len = players.length; i < len; ++i)
 			{
+				if (msg === "need power" && !playerData[players[i]].isAI)
+				{
+					continue; //don't spam humans with power requests.
+				}
 				chat(players[i], msg);
 			}
 		}
@@ -120,9 +124,9 @@ function eventChat(from, to, message)
 	}
 	else if (message === "need power")
 	{
-		if (playerPower(me) > 50)
+		if (playerPower(me) > 300)
 		{
-			donatePower(playerPower(me) / 2, from);
+			donatePower(playerPower(me) / 5, from);
 		}
 	}
 	else if (message === "need tank")
