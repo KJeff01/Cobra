@@ -239,7 +239,6 @@ function findNearestEnemyDerrick(enemy)
 			enemy = getMostHarmfulPlayer();
 		}
 
-		var target;
 		var derr = enumStruct(enemy, structures.derricks).sort(distanceToBase);
 
 		if (derr.length > 0)
