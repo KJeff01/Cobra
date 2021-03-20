@@ -12,6 +12,11 @@ function earlyT1MachinegunChance()
 	return ((getMultiTechLevel() === 1) && (gameTime < 900000) && (random(100) < 35));
 }
 
+function superLowOnProductionPower()
+{
+	return (getRealPower() < (PRODUCTION_POWER + 200));
+}
+
 //Pick a random weapon line.
 function chooseRandomWeapon()
 {
@@ -312,7 +317,7 @@ function pickPropulsion(weap)
 		"wheeled01", // wheels
 	];
 
-	if (random(100) < ((!(getRealPower() >= PRODUCTION_POWER + 200)) ? 85 : 66))
+	if (random(100) < ((superLowOnProductionPower()) ? 85 : 66))
 	{
 		tankProp.shift();
 	}
@@ -330,11 +335,11 @@ function pickTankBody()
 
 	if (gameTime < bodySwitchTime && random(100) < 75)
 	{
-		body = (random(100) < ((!(getRealPower() >= PRODUCTION_POWER + 200)) ? 60 : 30)) ? SYSTEM_BODY : VTOL_BODY;
+		body = (random(100) < ((superLowOnProductionPower()) ? 60 : 30)) ? SYSTEM_BODY : VTOL_BODY;
 	}
 	else
 	{
-		body = (random(100) < ((!(getRealPower() >= PRODUCTION_POWER + 200)) ? 57 : 37)) ? VTOL_BODY : TANK_BODY;
+		body = (random(100) < ((superLowOnProductionPower()) ? 55 : 40)) ? VTOL_BODY : TANK_BODY;
 	}
 
 	return body;
