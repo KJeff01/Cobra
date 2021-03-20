@@ -130,7 +130,7 @@ function chooseRandomVTOLWeapon()
 	}
 	if (!componentAvailable(weaps.vtols[0].stat))
 	{
-		weaps = weaponStats.bomb;
+		weaps = weaponStats.bombs;
 	}
 
 	//randomize the big bombs for variety
