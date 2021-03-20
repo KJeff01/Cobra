@@ -231,7 +231,7 @@ function research()
 							found = evalResearch(lab, TANK_ARMOR);
 					}
 
-					if (!found && getResearch("R-Struc-Research-Upgrade03").done && (random(100) < (componentAvailable("Body8MBT") ? 40 : 20)))
+					if (!found && getResearch("R-Struc-Research-Upgrade03").done && (random(100) < (componentAvailable("Body8MBT") ? 45 : 25)))
 						found = evalResearch(lab, BODY_RESEARCH);
 				}
 			}
