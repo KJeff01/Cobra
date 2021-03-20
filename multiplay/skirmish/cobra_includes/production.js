@@ -7,7 +7,12 @@ function havePrimaryOrArtilleryWeapon()
 	return (primary || artillery);
 }
 
-//Pick a random weapon line. May return undefined for machineguns.
+function earlyT1MachinegunChance()
+{
+	return ((getMultiTechLevel() === 1) && (gameTime < 900000) && (random(100) < 35));
+}
+
+//Pick a random weapon line.
 function chooseRandomWeapon()
 {
 	var weaps;
@@ -26,6 +31,11 @@ function chooseRandomWeapon()
 	if (!isDefined(weaps))
 	{
 		weaps = weaponStats.lasers;
+	}
+
+	if (!componentAvailable(weaps.weapons[0].stat))
+	{
+		weaps = subPersonalities[personality].primaryWeapon;
 	}
 
 	return weaps;
@@ -58,12 +68,12 @@ function chooseWeaponType(weaps)
 	return weaponType;
 }
 
-//Choose a random cyborg weapon line. May return undefined.
+//Choose a random cyborg weapon line.
 function chooseRandomCyborgWeapon()
 {
 	var weaps;
 
-	//grenadier cyborgs can only be built as long as Cobra does not Have
+	//grenadier cyborgs can only be built as long as Cobra does not have
 	//access to pepperpot. They are too weak after that.
 	switch (random(4))
 	{
@@ -74,10 +84,15 @@ function chooseRandomCyborgWeapon()
 		default: weaps = subPersonalities[personality].primaryWeapon; break;
 	}
 
+	if (!componentAvailable(weaps.templates[0].weapons))
+	{
+		weaps = subPersonalities[personality].primaryWeapon;
+	}
+
 	return weaps;
 }
 
-//Choose random VTOL weapon line. Defaults to bombs if undefined.
+//Choose random VTOL weapon line.
 function chooseRandomVTOLWeapon()
 {
 	var weaps;
@@ -107,6 +122,10 @@ function chooseRandomVTOLWeapon()
 	if (!isDefined(weaps) || (!isEMP && (weaps.vtols.length - 1 <= 0)))
 	{
 		weaps = weaponStats.bombs;
+	}
+	if (!componentAvailable(weaps.vtols[0].stat))
+	{
+		weaps = weaponStats.bomb;
 	}
 
 	//randomize the big bombs for variety
@@ -201,7 +220,8 @@ function choosePersonalityWeapon(type)
 
 		// Maybe choose a machinegun.
 		if (!skip && ((!turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100))) ||
-			!havePrimaryOrArtilleryWeapon()))
+			!havePrimaryOrArtilleryWeapon() ||
+			earlyT1MachinegunChance()))
 		{
 			weaponList = [];
 			var generalAntiCyborgWeapons = weaponStats.machineguns.weapons;
@@ -409,7 +429,8 @@ function buildCyborg(id, useEngineer)
 
 	//Choose MG instead if enemy has enough cyborgs.
 	if ((!turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100))) ||
-		!havePrimaryOrArtilleryWeapon())
+		!havePrimaryOrArtilleryWeapon() ||
+		earlyT1MachinegunChance())
 	{
 		weaponLine = weaponStats.machineguns;
 	}
