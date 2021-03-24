@@ -76,6 +76,13 @@ function addDroidsToGroup(group, droids)
 	}
 }
 
+function nearbyStructureCount(location)
+{
+	return enumRange(location.x, location.y, 8, ALLIES, false).filter(function(obj) {
+		return obj.type === STRUCTURE;
+	}).length;
+}
+
 //Returns closest enemy object.
 function rangeStep(player)
 {
