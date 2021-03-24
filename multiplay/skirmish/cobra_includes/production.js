@@ -317,7 +317,7 @@ function pickPropulsion(weap)
 		"wheeled01", // wheels
 	];
 
-	if (random(100) < ((superLowOnProductionPower()) ? 85 : 66))
+	if (random(100) < ((superLowOnProductionPower()) ? 85 : 60))
 	{
 		tankProp.shift();
 	}
@@ -333,13 +333,13 @@ function pickTankBody()
 	var body;
 	var bodySwitchTime = 900000;
 
-	if (gameTime < bodySwitchTime && random(100) < 75)
+	if (gameTime < bodySwitchTime && random(100) < 80)
 	{
-		body = (random(100) < ((superLowOnProductionPower()) ? 60 : 30)) ? SYSTEM_BODY : VTOL_BODY;
+		body = (random(100) < ((superLowOnProductionPower()) ? 50 : 20)) ? SYSTEM_BODY : VTOL_BODY;
 	}
 	else
 	{
-		body = (random(100) < ((superLowOnProductionPower()) ? 55 : 40)) ? VTOL_BODY : TANK_BODY;
+		body = (random(100) < ((superLowOnProductionPower()) ? 45 : 30)) ? VTOL_BODY : TANK_BODY;
 	}
 
 	return body;
