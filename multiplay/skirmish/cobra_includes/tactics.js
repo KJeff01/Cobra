@@ -671,10 +671,10 @@ function baseShuffleDefensePattern()
 
 	var area = cobraBaseArea();
 	var quad = [
-		{x1: area.x1, x2: area.x2, y1: area.y1, y2: area.y1 + 20,},
-		{x1: area.x1, x2: area.x2 + 20, y1: area.y1, y2: area.y2,},
-		{x1: area.x2 - 20, x2: area.x2, y1: area.y1, y2: area.y2,},
-		{x1: area.x1, x2: area.x2, y1: area.y2 - 20, y2: area.y2,},
+		{x1: area.x1, x2: area.x2, y1: area.y1, y2: area.y1 + 10,},
+		{x1: area.x1, x2: area.x2 + 10, y1: area.y1, y2: area.y2,},
+		{x1: area.x2 - 10, x2: area.x2, y1: area.y1, y2: area.y2,},
+		{x1: area.x1, x2: area.x2, y1: area.y2 - 10, y2: area.y2,},
 	];
 
 	const MAX_ATTEMPTS = 100;
