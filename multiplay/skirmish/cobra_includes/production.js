@@ -598,7 +598,8 @@ function produce()
 						(attackerCountsGood(false) ||
 						(gameTime < 240000 && highOilMap()) ||
 						!havePrimaryOrArtilleryWeapon() ||
-						getMultiTechLevel() > 1))
+						(getMultiTechLevel() > 1) ||
+						(gameTime > 240000 && random(100) < 25)))
 					{
 						buildSys(FC.id, "Spade1Mk1");
 					}
