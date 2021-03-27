@@ -27,6 +27,7 @@ function sendChatMessage(msg, receiver)
 				}
 				chat(players[i], msg);
 			}
+			chat(me, msg);
 		}
 		else
 		{
