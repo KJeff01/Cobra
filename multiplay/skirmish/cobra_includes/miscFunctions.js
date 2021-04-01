@@ -172,7 +172,7 @@ function getRealPower(player)
 	const POWER = playerPower(player) - queuedPower(player);
 	if (!currently_dead && playerAlliance(true).length > 0 && player === me && POWER < -300)
 	{
-		sendChatMessage("need Power", ALLIES);
+		sendChatMessage("need power", ALLIES);
 	}
 
 	return POWER;
