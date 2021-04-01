@@ -689,7 +689,7 @@ function baseShuffleDefensePattern()
 		sector = quad[random(quad.length)];
 		x = sector.x1 + random(sector.x2);
 		y = sector.y1 + random(sector.y2);
-	} while (!propulsionCanReach("wheeled01", MY_BASE.x, MY_BASE.y, x, y) && attempts < MAX_ATTEMPTS)
+	} while (!propulsionCanReach("wheeled01", MY_BASE.x, MY_BASE.y, x, y) && attempts < MAX_ATTEMPTS);
 
 	if (attempts > MAX_ATTEMPTS)
 	{
