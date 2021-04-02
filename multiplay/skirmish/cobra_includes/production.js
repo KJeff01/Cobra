@@ -128,7 +128,7 @@ function chooseRandomVTOLWeapon()
 		weaps = weaponStats.rockets_AS;
 	}
 
-	if ((weaps.vtols.length <= 0) || !componentAvailable(weaps.vtols[0].stat))
+	if ((weaps.vtols.length === 0) || !componentAvailable(weaps.vtols[0].stat))
 	{
 		weaps = weaponStats.bombs;
 	}
