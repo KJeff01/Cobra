@@ -54,9 +54,9 @@ function returnClosestEnemyFactory(enemyNumber)
 			enemyNumber = getMostHarmfulPlayer();
 		}
 
-		var facs = enumStruct(enemyNumber, FACTORY);
-		facs.concat(enumStruct(enemyNumber, CYBORG_FACTORY));
-		facs.concat(enumStruct(enemyNumber, VTOL_FACTORY));
+		var facs = enumStruct(enemyNumber, FACTORY)
+		.concat(enumStruct(enemyNumber, CYBORG_FACTORY))
+		.concat(enumStruct(enemyNumber, VTOL_FACTORY));
 
 		if (facs.length > 0)
 		{
