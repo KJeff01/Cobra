@@ -20,7 +20,7 @@ function droidReady(droidID)
 //Check if a passed in weapon name is a plasma cannon.
 function isPlasmaCannon(weaponName)
 {
-	return isDefined(weaponName) && (weaponName.name === "Laser4-PlasmaCannon");
+	return isDefined(weaponName) && (weaponName === "Laser4-PlasmaCannon");
 }
 
 //Check if the area around the active beacon has anything worth investigating.
