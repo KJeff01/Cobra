@@ -110,6 +110,11 @@ function repairDroid(droidID, force)
 		return true; //pretend it is busy
 	}
 
+	if (droid.droidType === DROID_WEAPON && isPlasmaCannon(droid.weapons[0].name))
+	{
+		return false; //Plasma Cannon shall never repair
+	}
+
 	var highOil = highOilMap();
 
 	if (droid.health < 15 || (highOil && gameTime < 600000))
@@ -569,7 +574,7 @@ function attackThisObject(droidID, target)
 
 		if (!((t.type === DROID) && isVTOL(t) && (isVTOL(d) && !d.weapons[0].canHitAir)))
 		{
-			if (!isPlasmaCannon(d.weapons[0].name) && (t.type === DROID || (t.type === STRUCTURE && t.stattype !== WALL)))
+			if (t.type === DROID || (t.type === STRUCTURE && t.stattype !== WALL))
 			{
 				orderDroidLoc(d, DORDER_SCOUT, t.x, t.y);
 			}

@@ -153,7 +153,7 @@ var subPersonalities =
 		"primaryWeapon": weaponStats.cannons,
 		"secondaryWeapon": weaponStats.gauss,
 		"artillery": weaponStats.mortars,
-		"antiAir": weaponStats.AA,
+		"antiAir": weaponStats.cannons_AA,
 		"factoryOrder": [structures.factory, structures.cyborgFactory, structures.vtolFactory],
 		"defensePriority": 15,
 		"vtolPriority": 40,
@@ -243,7 +243,7 @@ var subPersonalities =
 		"primaryWeapon": weaponStats.mortars,
 		"secondaryWeapon": weaponStats.AS,
 		"artillery": weaponStats.fireMortars,
-		"antiAir": weaponStats.AA,
+		"antiAir": weaponStats.cannons_AA,
 		"factoryOrder": [structures.factory, structures.cyborgFactory, structures.vtolFactory],
 		"defensePriority": 45,
 		"vtolPriority": 66,
@@ -307,6 +307,7 @@ var cyborgWeaps;
 var antiAirTech;
 var antiAirExtras;
 var extremeLaserTech;
+var extremeLaserExtra;
 var secondaryWeaponTech;
 var secondaryWeaponExtra;
 var defenseTech;

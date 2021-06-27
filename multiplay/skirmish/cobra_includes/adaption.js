@@ -96,6 +96,87 @@ function playerStructureUnitRatio(player)
 	return cacheThis(uncached, [player], "playerStructureUnitRatio" + player, 30000);
 }
 
+function playerBodySizeRatio(player)
+{
+	if (!isDefined(player))
+	{
+		player = getMostHarmfulPlayer();
+	}
+
+	function uncached(player)
+	{
+		var small = 0;
+		var medium = 0;
+		var heavy = 0;
+		var attackers = enumDroid(player, DROID_WEAPON);
+		attackers.forEach(function(obj) {
+			if (obj.body === "Body1REC" || obj.body === "Body2SUP" || obj.body === "Body4ABT" || obj.body === "Body3MBT")
+			{
+				++small;
+			}
+			else if (obj.body === "Body5REC" || obj.body === "Body6SUPP" || obj.body === "Body8MBT" || obj.body === "Body7ABT")
+			{
+				++medium;
+			}
+			else if (obj.body === "Body11ABT" || obj.body === "Body9REC" || obj.body === "Body13SUP" || obj.body === "Body14SUP" || obj.body ==="Body12SUP" || obj.body === "Body10MBT")
+			{
+				++heavy;
+			}
+		});
+
+		return {
+			small: small / (attackers.length + 1),
+			medium: medium / (attackers.length + 1),
+			heavy: heavy / (attackers.length + 1),
+		};
+	}
+
+	return cacheThis(uncached, [player], "playerBodySizeRatio" + player, 40000);
+}
+
+function playerLandPropRatio(player)
+{
+	if (!isDefined(player))
+	{
+		player = getMostHarmfulPlayer();
+	}
+
+	function uncached(player)
+	{
+		var wheel = 0;
+		var halftrack = 0;
+		var track = 0;
+		var hover = 0;
+		var attackers = enumDroid(player, DROID_WEAPON);
+		attackers.forEach(function(obj) {
+			if (obj.prop === "wheeled01")
+			{
+				++wheel;
+			}
+			else if (obj.prop === "HalfTrack")
+			{
+				++halftrack;
+			}
+			else if (obj.prop === "tracked01")
+			{
+				++track;
+			}
+			else if (obj.prop === "hover01")
+			{
+				++hover;
+			}
+		});
+
+		return {
+			wheel: wheel / (attackers.length + 1),
+			halftrack: halftrack / (attackers.length + 1),
+			track: track / (attackers.length + 1),
+			hover: hover / (attackers.length + 1),
+		};
+	}
+
+	return cacheThis(uncached, [player], "playerLandPropRatio" + player, 40000);
+}
 
 //Choose the personality as described in the global subPersonalities.
 //When called from chat it will switch to that one directly.

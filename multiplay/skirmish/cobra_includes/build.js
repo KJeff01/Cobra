@@ -662,9 +662,17 @@ function buildBaseStructures()
 	{
 		var haveAllies = (alliancesType === ALLIANCES_TEAMS) && (playerAlliance(true).length > 0);
 
+		if ((!GOOD_POWER_LEVEL || getMultiTechLevel() > 1) && countAndBuild(structures.gen, 1))
+		{
+			return true;
+		}
 		if (getRealPower() < 550 && countAndBuild(structures.gen, 4))
 		{
 			return true; //a little fail-safe
+		}
+		if (!researchComplete && countAndBuild(structures.lab, 1))
+		{
+			return true;
 		}
 		if (countAndBuild(structures.factory, 2))
 		{
@@ -678,11 +686,11 @@ function buildBaseStructures()
 		{
 			return true; //a little fail-safe
 		}
-		if (countAndBuild(structures.factory, 3))
+		if (countAndBuild(structures.hq, 1))
 		{
 			return true;
 		}
-		if (countAndBuild(structures.hq, 1))
+		if (countAndBuild(structures.factory, 3))
 		{
 			return true;
 		}

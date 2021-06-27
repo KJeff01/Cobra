@@ -124,7 +124,7 @@ function eventChat(from, to, message)
 	}
 	else if (message === "need power")
 	{
-		if (playerPower(me) > 300)
+		if (getRealPower(me) > 100)
 		{
 			donatePower(playerPower(me) / 5, from);
 		}
