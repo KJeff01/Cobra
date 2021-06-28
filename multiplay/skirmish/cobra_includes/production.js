@@ -295,7 +295,7 @@ function useHover(weap)
 	{
 		return true;
 	}
-	if (Math.floor(propulsions.track * 100) >= 50 && random(100) < 50)
+	if (Math.floor(propulsions.track * 100) >= 50 && random(100) < 80)
 	{
 		return false;
 	}
@@ -308,7 +308,7 @@ function useHover(weap)
 
 		if ((NAME === "Flame1Mk1") || (NAME === "Flame2") || (NAME === "PlasmiteFlamer"))
 		{
-			useHover = (random(100) <= 60);
+			useHover = (random(100) <= 40);
 			break;
 		}
 
@@ -351,7 +351,7 @@ function pickPropulsion(weap)
 
 	var propulsions = playerLandPropRatio(getMostHarmfulPlayer());
 
-	if (Math.floor(propulsions.track * 100) <= 60 && random(100) < ((superLowOnProductionPower()) ? 85 : 60))
+	if (Math.floor(propulsions.track * 100) <= 55 && random(100) < ((superLowOnProductionPower()) ? 85 : 60))
 	{
 		tankProp.shift();
 	}
@@ -374,7 +374,7 @@ function pickTankBody()
 	}
 	else
 	{
-		body = (random(100) < ((superLowOnProductionPower()) ? 45 : 30)) ? VTOL_BODY : TANK_BODY;
+		body = (random(100) < 30) ? VTOL_BODY : TANK_BODY;
 	}
 
 	// If they go super big, we go super big
@@ -508,13 +508,7 @@ function buildVTOL(id)
 
 	if (fac !== null && isDefined(weap) && isDefined(weap2))
 	{
-		var sizeRatio = playerBodySizeRatio(getMostHarmfulPlayer());
 		var body = (random(100) < 60) ? VTOL_BODY : TANK_BODY;
-		// Don't waste too much power if they are small body rushing
-		if ((Math.floor(sizeRatio.small * 100) >= 40) && (random(100) < 40))
-		{
-			body = SYSTEM_BODY;
-		}
 
 		return buildDroid(fac, "VTOL unit", body, "V-Tol", "", "", weap, weap2);
 	}

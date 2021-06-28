@@ -237,19 +237,19 @@ function research()
 				}
 			}
 
-			if (!found && getResearch("R-Struc-Research-Upgrade06").done && random(100) < 8)
+			if (!found && getResearch("R-Struc-Research-Upgrade05").done && random(100) < 15)
 			{
-				found = evalResearch(lab, empWeapons);
+				found = pursueResearch(lab, extremeLaserTech);
 
-				if (!found)
-					found = pursueResearch(lab, extremeLaserTech);
+				if (!found && componentAvailable("PlasmaHeavy") && random(100) < 70)
+					found = evalResearch(lab, FLAMER);
 
 				if (componentAvailable("Laser4-PlasmaCannon"))
 				{
 					if (!found)
+						found = evalResearch(lab, empWeapons);
+					if (!found && random(100) < 80)
 						found = evalResearch(lab, extremeLaserExtra);
-					if (!found && componentAvailable("PlasmaHeavy"))
-						found = evalResearch(lab, FLAMER);
 				}
 			}
 
@@ -395,7 +395,7 @@ function research()
 
 				if (!found && random(100) < 40)
 					found = evalResearch(lab, weaponTech);
-				if (!found && !turnOffCyborgs && getResearch("R-Struc-Research-Upgrade04").done && random(100) < 20)
+				if (!found && !turnOffCyborgs && getResearch("R-Struc-Research-Upgrade04").done && random(100) < 30)
 					found = evalResearch(lab, cyborgWeaps);
 				if (!found && random(100) < 60)
 					found = evalResearch(lab, extraTech);

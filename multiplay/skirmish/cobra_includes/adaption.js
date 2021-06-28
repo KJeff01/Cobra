@@ -109,20 +109,23 @@ function playerBodySizeRatio(player)
 		var medium = 0;
 		var heavy = 0;
 		var attackers = enumDroid(player, DROID_WEAPON);
-		attackers.forEach(function(obj) {
-			if (obj.body === "Body1REC" || obj.body === "Body2SUP" || obj.body === "Body4ABT" || obj.body === "Body3MBT")
+		for (var i = 0, len = attackers.length; i < len; ++i)
+		{
+			var body = attackers[i].body;
+
+			if (body === "Body1REC" || body === "Body2SUP" || body === "Body4ABT" || body === "Body3MBT")
 			{
 				++small;
 			}
-			else if (obj.body === "Body5REC" || obj.body === "Body6SUPP" || obj.body === "Body8MBT" || obj.body === "Body7ABT")
+			else if (body === "Body5REC" || body === "Body6SUPP" || body === "Body8MBT" || body === "Body7ABT")
 			{
 				++medium;
 			}
-			else if (obj.body === "Body11ABT" || obj.body === "Body9REC" || obj.body === "Body13SUP" || obj.body === "Body14SUP" || obj.body ==="Body12SUP" || obj.body === "Body10MBT")
+			else if (body === "Body11ABT" || body === "Body9REC" || body === "Body13SUP" || body === "Body14SUP" || body ==="Body12SUP" || body === "Body10MBT")
 			{
 				++heavy;
 			}
-		});
+		}
 
 		return {
 			small: small / (attackers.length + 1),
@@ -148,24 +151,27 @@ function playerLandPropRatio(player)
 		var track = 0;
 		var hover = 0;
 		var attackers = enumDroid(player, DROID_WEAPON);
-		attackers.forEach(function(obj) {
-			if (obj.prop === "wheeled01")
+		for (var i = 0, len = attackers.length; i < len; ++i)
+		{
+			var prop = attackers[i].propulsion;
+
+			if (prop === "wheeled01")
 			{
 				++wheel;
 			}
-			else if (obj.prop === "HalfTrack")
+			else if (prop === "HalfTrack")
 			{
 				++halftrack;
 			}
-			else if (obj.prop === "tracked01")
+			else if (prop === "tracked01")
 			{
 				++track;
 			}
-			else if (obj.prop === "hover01")
+			else if (prop === "hover01")
 			{
 				++hover;
 			}
-		});
+		}
 
 		return {
 			wheel: wheel / (attackers.length + 1),

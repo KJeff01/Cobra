@@ -573,8 +573,8 @@ const weaponStats =
 			"R-Wpn-Cannon-Accuracy02",
 			"R-Wpn-Cannon-ROF06",
 			"R-Wpn-Cannon-Damage09",
-			"R-Wpn-Flamer-Damage09",
 			"R-Wpn-Flamer-ROF03",
+			"R-Wpn-Flamer-Damage09",
 		],
 	},
 	bombs:

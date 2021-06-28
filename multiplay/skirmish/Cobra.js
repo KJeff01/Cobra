@@ -109,12 +109,8 @@ const TANK_BODY = [
 	"Body14SUP", // Dragon
 	"Body13SUP", // Wyvern
 	"Body10MBT", // Vengeance
-	"Body7ABT",  // Retribution
 	"Body9REC",  // Tiger
-	"Body12SUP", // Mantis
-	"Body6SUPP", // Panther
 	"Body11ABT", // Python
-	"Body8MBT",  // Scorpion
 	"Body5REC",  // Cobra
 	"Body1REC",  // Viper
 ];
@@ -131,6 +127,7 @@ const SYSTEM_PROPULSION = [
 const VTOL_BODY = [
 	"Body7ABT",  // Retribution
 	"Body6SUPP", // Panther
+	"Body12SUP", // Mantis
 	"Body8MBT",  // Scorpion
 	"Body5REC",  // Cobra
 	"Body1REC",  // Viper
