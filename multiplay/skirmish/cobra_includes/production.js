@@ -523,7 +523,6 @@ function analyzeQueuedSystems()
 	var fac = enumStruct(me, FACTORY);
 	var trucks = 0;
 	var sens = 0;
-	var reps = 0;
 
 	for (var i = 0, l = fac.length; i < l; ++i)
 	{
@@ -579,7 +578,6 @@ function produce()
 	var systems = analyzeQueuedSystems();
 
 	var attackers = enumGroup(attackGroup).length;
-	var allowSpecialSystems = isDefined(attackers) ? attackers > 10 : false;
 	var buildSensors = ((enumGroup(sensorGroup).length + systems.sensor) < MIN_SENSORS);
 	var buildTrucks = ((enumGroup(constructGroup).length +
 		enumGroup(oilGrabberGroup).length +
