@@ -198,6 +198,12 @@ function choosePersonalityWeapon(type)
 			}
 
 			var aa = subPersonalities[personality].antiAir.weapons;
+			// Default to machinegun AA line if our current line doesn't exist (useful on team battles)
+			if (!componentAvailable(subPersonalities[personality].antiAir.weapons[0].stat))
+			{
+				aa = weaponStats.AA.weapons;
+			}
+
  			for (var i = aa.length - 1; i >= 0; --i)
 			{
 				var weapObj = aa[i];
