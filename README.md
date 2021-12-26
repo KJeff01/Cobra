@@ -1,5 +1,7 @@
 # Cobra-AI
-A Skirmish AI for warzone2100 with a dynamic build and research order for all Technology levels and bases (Supports hover maps like Sk-Manhattan). This AI is meant to be played (and tested the most) on normal difficulty. Hard and insane difficulty are for serious play only (early research bonus and access to hidden weapons). Easy will force Cobra to do everything at a much slower pace. Originally based off of the pre-rewrite SemperFi-js AI that comes with the game (https://github.com/Warzone2100/warzone2100/blob/master/data/mp/multiplay/skirmish/semperfi.js).
+A Skirmish AI for warzone2100 with a dynamic build and research order for all Technology levels and bases (Supports hover maps like Sk-Manhattan). This AI is meant to be played (and tested the most) on normal difficulty. Hard and insane difficulty are for serious play only. Easy will force Cobra to do everything at a much slower pace and capture oil relative to the amount another player has.
+
+Originally based off of the pre-rewrite SemperFi-js AI that comes with the game (https://github.com/Warzone2100/warzone2100/blob/master/data/mp/multiplay/skirmish/semperfi.js).
 
 Cobra uses a "grudge counter" to determine who it attacks. It contains a number for each player that increments with each aggressive act an enemy player makes towards it. The enemy with the highest number assigned to it is the one it attacks. The specific number for each enemy can easily be influenced by allied Cobra AI and, under the right circumstance, allows allied Cobra to take action against a specific player. This feature is very helpful in determining who is the biggest threat on the map and more or less balances the skirmish by keeping pressure on the most aggressive player (that it has encountered) until one of them is defeated.
 
@@ -10,9 +12,6 @@ There are five personalities so far (all use lasers and plasma cannon when it ca
 3. AB: Rockets & missiles/Gauss/rocket & missile artillery.
 4. AM: Machine-guns/Lasers/Howitzer.
 5. AA: Mortars/Gauss/Fire mortars
-
-
-Hard difficulty enables Heavy Plasma Launcher for Cobra (very small chance of being built at any given time after it obtains tracked propulsion). In addition, Insane difficulty will add the EMP mortar at the same time.
 
 chat commands include:
 1. need power/truck/tank/cyborg/vtol.
