@@ -217,7 +217,7 @@ function research()
 
 		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : (highOil ? HIGH_OIL_RES_PRICE : LOW_OIL_RES_PRICE)))
 		{
-			if (random(100) < ((highOil) ? 35 : 20))
+			if ((haveAllies && highOil) || (random(100) < ((highOil) ? 35 : 20)))
 			{
 				found = pursueResearch(lab, "R-Vehicle-Metals03");
 
