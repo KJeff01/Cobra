@@ -155,6 +155,8 @@ function research()
 	var antiCyborgChance = Math.floor(playerCyborgRatio(enemyPlayer) * 100);
 	var highOil = highOilMap();
 	var haveAllies = playerAlliance(true).length > 0;
+	const LOW_OIL_RES_PRICE = -SUPER_LOW_POWER;
+	const HIGH_OIL_RES_PRICE = -400;
 
 	if (!startAttacking || (isDefined(scavengerPlayer) && (enemyPlayer === scavengerPlayer)))
 	{
@@ -196,7 +198,7 @@ function research()
 				found = evalResearch(lab, ESSENTIALS_3);
 		}
 
-		if (!found && (getRealPower() > -SUPER_LOW_POWER) && (countEnemyVTOL() || componentAvailable("V-Tol")))
+		if (!found && (getRealPower() > (highOil ? HIGH_OIL_RES_PRICE : LOW_OIL_RES_PRICE)) && (countEnemyVTOL() || componentAvailable("V-Tol")))
 		{
 			// Prepare the most basic AA defense.
 			if (antiAirTech.length > 0)
@@ -213,7 +215,7 @@ function research()
 			}
 		}
 
-		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : (highOil ? -SUPER_LOW_POWER : SUPER_LOW_POWER)))
+		if (!found && getRealPower() > ((gameTime < 180000) ? MIN_POWER : (highOil ? HIGH_OIL_RES_PRICE : LOW_OIL_RES_PRICE)))
 		{
 			if (random(100) < ((highOil) ? 35 : 20))
 			{
