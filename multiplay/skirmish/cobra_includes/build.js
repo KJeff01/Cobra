@@ -648,11 +648,15 @@ function buildBaseStructures()
 
 	if (!highOilMap())
 	{
+		if (GOOD_POWER_LEVEL && randomResearchLabStart && !researchComplete && countAndBuild(structures.lab, 1))
+		{
+			return true;
+		}
 		if (GOOD_POWER_LEVEL && countAndBuild(structures.factory, 1))
 		{
 			return true;
 		}
-		if ((!GOOD_POWER_LEVEL || getMultiTechLevel() > 1) && countAndBuild(structures.gen, 1))
+		if ((!GOOD_POWER_LEVEL || (getMultiTechLevel() > 1)) && countAndBuild(structures.gen, 1))
 		{
 			return true;
 		}
@@ -702,13 +706,17 @@ function buildBaseStructures()
 	{
 		var haveAllies = (alliancesType === ALLIANCES_TEAMS) && (playerAlliance(true).length > 0);
 
-		if ((!GOOD_POWER_LEVEL || getMultiTechLevel() > 1) && countAndBuild(structures.gen, 1))
+		if ((!GOOD_POWER_LEVEL || (getMultiTechLevel() > 1)) && countAndBuild(structures.gen, 1))
 		{
 			return true;
 		}
 		if (getRealPower() < 550 && countAndBuild(structures.gen, 4))
 		{
 			return true; //a little fail-safe
+		}
+		if (GOOD_POWER_LEVEL && randomResearchLabStart && !researchComplete && countAndBuild(structures.lab, 1))
+		{
+			return true;
 		}
 		if (countAndBuild(structures.factory, 2))
 		{
