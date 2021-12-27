@@ -648,10 +648,6 @@ function buildBaseStructures()
 
 	if (!highOilMap())
 	{
-		if (GOOD_POWER_LEVEL && randomResearchLabStart && !researchComplete && countAndBuild(structures.lab, 1))
-		{
-			return true;
-		}
 		if (GOOD_POWER_LEVEL && countAndBuild(structures.factory, 1))
 		{
 			return true;
