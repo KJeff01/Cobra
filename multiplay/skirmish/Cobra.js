@@ -286,6 +286,7 @@ var startAttacking;
 var lastShuffleTime;
 var forceDerrickBuildDefense;
 var randomResearchLabStart;
+var cyborgOnlyGame;
 
 // -- Weapon research list (initializeResearchLists).
 var techlist;

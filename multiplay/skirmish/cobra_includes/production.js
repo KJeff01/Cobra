@@ -450,7 +450,8 @@ function buildCyborg(id, useEngineer)
 	var weaponLine = choosePersonalityWeapon("CYBORG");
 
 	//Choose MG instead if enemy has enough cyborgs.
-	if ((!turnOffMG && (random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100))) ||
+	if (((!turnOffMG || (cyborgOnlyGame && !useLasersForCyborgControl() && random(100) < 66)) &&
+		(random(100) < Math.floor(playerCyborgRatio(getMostHarmfulPlayer()) * 100))) ||
 		!havePrimaryOrArtilleryWeapon() ||
 		earlyT1MachinegunChance())
 	{
@@ -555,7 +556,6 @@ function produce()
 		return; //Stop spamming about having the droid limit reached.
 	}
 	const MIN_SENSORS = 1;
-	var useCybEngineer = !countStruct(structures.factory); //use them if we have no factory
 	var systems = analyzeQueuedSystems();
 
 	var attackers = enumGroup(attackGroup).length;
@@ -564,6 +564,7 @@ function produce()
 		enumGroup(oilGrabberGroup).length +
 		enumGroup(constructGroupNTWExtra).length +
 		systems.truck) < minTruckCount());
+	var useCybEngineer = !countStruct(structures.factory) && buildTrucks && (countDroid(DROID_CONSTRUCT) < getDroidLimit(me, DROID_CONSTRUCT)); //use them if we have no factory
 
 	//Loop through factories in the order the personality likes.
 	for (var i = 0; i < 3; ++i)
@@ -633,7 +634,7 @@ function produce()
 					var cyb = (facType === structures.cyborgFactory);
 					//In some circumstances the bot could be left with no generators and no factories
 					//but still needs to produce combat engineers to, maybe, continue surviving.
-					if (countStruct(structures.gen) || (cyb && useCybEngineer && (gameTime > 480000)))
+					if (countStruct(structures.gen) || (cyb && useCybEngineer && (cyborgOnlyGame || (gameTime > 480000))))
 					{
 						if (cyb && (!turnOffCyborgs || !forceHover))
 						{
