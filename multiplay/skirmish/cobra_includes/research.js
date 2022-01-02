@@ -155,7 +155,7 @@ function research()
 	var antiCyborgChance = Math.floor(playerCyborgRatio(enemyPlayer) * 100);
 	var highOil = highOilMap();
 	var haveAllies = playerAlliance(true).length > 0;
-	const HIGH_OIL_RES_PRICE = -400;
+	const HIGH_OIL_RES_PRICE = -200;
 
 	if (!startAttacking || (isDefined(scavengerPlayer) && (enemyPlayer === scavengerPlayer)))
 	{
