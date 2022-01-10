@@ -1,6 +1,6 @@
 {
 	"AI": {
-		"js": "cobra.js",
+		"js": "Cobra.js",
 		"name": "Cobra",
 		"tip": "Designed with a focus on research",
 		"easy_tip": "Gets ~ 25% less power from each oil derrick\nBasic decision making is slower",

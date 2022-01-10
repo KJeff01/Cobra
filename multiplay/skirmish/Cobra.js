@@ -3,7 +3,7 @@ const COBRA_INCLUDES = "/multiplay/skirmish/cobra_includes/";
 const COBRA_RULESETS = "/multiplay/skirmish/cobra_rulesets/";
 
 //Rulesets here.
-include(COBRA_RULESETS + "cobraStandard.js");
+include(COBRA_RULESETS + "CobraStandard.js");
 
 const LOG_RESEARCH_PATH = false;
 
