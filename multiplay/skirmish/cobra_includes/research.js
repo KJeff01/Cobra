@@ -16,7 +16,7 @@ function updateResearchList(stat, len)
 	}
 
 	var list = [];
-	for (var x = 0, d = stat.length - len; x < d; ++x)
+	for (let x = 0, d = stat.length - len; x < d; ++x)
 	{
 		var st = stat[x];
 		if (isDefined(st.res))
@@ -68,7 +68,7 @@ function isPowerResearch(research)
 		"R-Struc-Power-Upgrade03a",
 	];
 
-	for (var i = 0, len = POWERS.length; i < len; ++i)
+	for (let i = 0, len = POWERS.length; i < len; ++i)
 	{
 		if (research === POWERS[i])
 		{
@@ -87,7 +87,7 @@ function evalResearch(lab, list)
 {
 	var sufficientPower = getRealPower() > 2500;
 
-	for (var i = 0, a = list.length; i < a; ++i)
+	for (let i = 0, a = list.length; i < a; ++i)
 	{
 		if (sufficientPower && isPowerResearch(list[i]))
 		{
@@ -147,9 +147,9 @@ function research()
 		return;
 	}
 
-	var labList = enumStruct(me, structures.lab).filter(function(lb) {
-		return (lb.status === BUILT && structureIdle(lb));
-	});
+	var labList = enumStruct(me, structures.lab).filter((lb) => (
+		lb.status === BUILT && structureIdle(lb)
+	));
 
 	var enemyPlayer = getMostHarmfulPlayer();
 	var antiCyborgChance = Math.floor(playerCyborgRatio(enemyPlayer) * 100);
@@ -166,7 +166,7 @@ function research()
 		antiCyborgChance = 10; //just in case...
 	}
 
-	for (var i = 0, a = labList.length; i < a; ++i)
+	for (let i = 0, a = labList.length; i < a; ++i)
 	{
 		var lab = labList[i];
 		var forceLaser = false;
@@ -316,11 +316,11 @@ function research()
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
 				if (componentAvailable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
-					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
+					if (!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
-					if(!found)
+					if (!found)
 						found = evalResearch(lab, secondaryWeaponExtra);
-					if(!found)
+					if (!found)
 						found = evalResearch(lab, secondaryWeaponTech);
 				}
 			}
@@ -371,11 +371,11 @@ function research()
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
 				if (componentAvailable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
-					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
+					if (!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
-					if(!found)
+					if (!found)
 						found = evalResearch(lab, secondaryWeaponExtra);
-					if(!found)
+					if (!found)
 						found = evalResearch(lab, secondaryWeaponTech);
 				}
 			}
@@ -427,11 +427,11 @@ function research()
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
 				if (componentAvailable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
-					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
+					if (!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
-					if(!found)
+					if (!found)
 						found = evalResearch(lab, secondaryWeaponExtra);
-					if(!found)
+					if (!found)
 						found = evalResearch(lab, secondaryWeaponTech);
 				}
 
@@ -484,11 +484,11 @@ function research()
 				var len = subPersonalities[personality].primaryWeapon.weapons.length - 1;
 				if (componentAvailable(subPersonalities[personality].primaryWeapon.weapons[len].stat))
 				{
-					if(!found && !turnOffCyborgs && cyborgSecondary.length > 0)
+					if (!found && !turnOffCyborgs && cyborgSecondary.length > 0)
 						found = pursueResearch(lab, cyborgSecondary);
-					if(!found)
+					if (!found)
 						found = evalResearch(lab, secondaryWeaponExtra);
-					if(!found)
+					if (!found)
 						found = evalResearch(lab, secondaryWeaponTech);
 				}
 			}
@@ -500,7 +500,7 @@ function research()
 				found = pursueResearch(lab, extremeLaserTech);
 			if (componentAvailable("Laser4-PlasmaCannon"))
 			{
-				if(!found)
+				if (!found)
 					found = evalResearch(lab, extremeLaserExtra);
 				if (!found && componentAvailable("PlasmaHeavy"))
 					found = evalResearch(lab, FLAMER);
