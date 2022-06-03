@@ -551,7 +551,7 @@ function attackerCountsGood(recycle)
 //Produce a unit when factories allow it.
 function produce()
 {
-	if ((countDroid(DROID_ANY) >= 150) || currently_dead)
+	if ((countDroid(DROID_ANY, me) >= 150) || currently_dead)
 	{
 		return; //Stop spamming about having the droid limit reached.
 	}
@@ -564,7 +564,7 @@ function produce()
 		enumGroup(oilGrabberGroup).length +
 		enumGroup(constructGroupNTWExtra).length +
 		systems.truck) < minTruckCount());
-	var useCybEngineer = !countStruct(structures.factory) && buildTrucks && (countDroid(DROID_CONSTRUCT) < getDroidLimit(me, DROID_CONSTRUCT)); //use them if we have no factory
+	var useCybEngineer = !countStruct(structures.factory, me) && buildTrucks && (countDroid(DROID_CONSTRUCT, me) < getDroidLimit(me, DROID_CONSTRUCT)); //use them if we have no factory
 
 	//Loop through factories in the order the personality likes.
 	for (let i = 0; i < 3; ++i)
@@ -573,7 +573,7 @@ function produce()
 		var fac = enumStruct(me, facType);
 		if (!((facType === structures.cyborgFactory) && !forceHover && turnOffCyborgs))
 		{
-			if (facType === structures.vtolFactory && !countDroid(DROID_CONSTRUCT))
+			if (facType === structures.vtolFactory && !countDroid(DROID_CONSTRUCT, me))
 			{
 				continue;
 			}
@@ -587,7 +587,7 @@ function produce()
 				//Now accounts for overproduction of trucks stalling combat unit production (only seen on higher oil based maps)
 				const VIR_DROID = getDroidProduction(FC);
 				if (!structureIdle(FC) &&
-					!(countDroid(DROID_CONSTRUCT) >= getDroidLimit(me, DROID_CONSTRUCT) &&
+					!(countDroid(DROID_CONSTRUCT, me) >= getDroidLimit(me, DROID_CONSTRUCT) &&
 					VIR_DROID !== null &&
 					VIR_DROID.droidType === DROID_CONSTRUCT))
 				{
@@ -600,7 +600,7 @@ function produce()
 						highOilMap() &&
 						componentAvailable("MG1Mk1") &&
 						attackers < 2 &&
-						(countStruct(structures.gen) && countStruct(structures.derrick)))
+						(countStruct(structures.gen, me) && countStruct(structures.derrick, me)))
 					{
 						buildAttacker(FC.id);
 					}
@@ -621,7 +621,7 @@ function produce()
 					}
 					else
 					{
-						if (!countStruct(structures.gen) || !countStruct(structures.derrick))
+						if (!countStruct(structures.gen, me) || !countStruct(structures.derrick, me))
 						{
 							continue;
 						}
@@ -634,11 +634,11 @@ function produce()
 					var cyb = (facType === structures.cyborgFactory);
 					//In some circumstances the bot could be left with no generators and no factories
 					//but still needs to produce combat engineers to, maybe, continue surviving.
-					if (countStruct(structures.gen) || (cyb && useCybEngineer && (cyborgOnlyGame || (gameTime > 480000))))
+					if (countStruct(structures.gen, me) || (cyb && useCybEngineer && (cyborgOnlyGame || (gameTime > 480000))))
 					{
 						if (cyb && (!turnOffCyborgs || !forceHover))
 						{
-							if (!useCybEngineer && !countStruct(structures.derrick))
+							if (!useCybEngineer && !countStruct(structures.derrick, me))
 							{
 								continue; //no derricks while trying to build attack cyborg
 							}
@@ -646,7 +646,7 @@ function produce()
 						}
 						else
 						{
-							if (useVtol && facType === structures.vtolFactory && countStruct(structures.derrick))
+							if (useVtol && facType === structures.vtolFactory && countStruct(structures.derrick, me))
 							{
 								buildVTOL(FC.id);
 							}

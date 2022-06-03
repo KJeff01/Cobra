@@ -119,7 +119,7 @@ function rangeStep(player)
 
 		if (targets.length > 0)
 		{
-			if (!highOil && derr && ((random(100) < 7) || (countStruct(structures.derrick) <= Math.floor(1.5 * averageOilPerPlayer()))))
+			if (!highOil && derr && ((random(100) < 7) || (countStruct(structures.derrick, me) <= Math.floor(1.5 * averageOilPerPlayer()))))
 			{
 				return objectInformation(derr);
 			}
@@ -322,7 +322,7 @@ function removeThisTimer(timer)
 //Check if Cobra is "alive". If not, the script is put in a very low perf impact state.
 function checkIfDead()
 {
-	if (!(countDroid(DROID_ANY) || countStruct(structures.factory) || countStruct(structures.cyborgFactory)))
+	if (!(countDroid(DROID_ANY, me) || countStruct(structures.factory, me) || countStruct(structures.cyborgFactory, me)))
 	{
 		currently_dead = true;
 

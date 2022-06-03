@@ -4,7 +4,7 @@ function needPowerGenerator()
 {
 	function uncached()
 	{
-		return ((countStruct(structures.derrick) - (countStruct(structures.gen) * 4)) > 0);
+		return ((countStruct(structures.derrick, me) - (countStruct(structures.gen, me) * 4)) > 0);
 	}
 
 	return cacheThis(uncached, [], "needPowerGenerator" + me, 8000);
@@ -114,7 +114,7 @@ function findIdleTrucks(group)
 //Build a certain number of something
 function countAndBuild(stat, count)
 {
-	if (countStruct(stat) < count)
+	if (countStruct(stat, me) < count)
 	{
 		if (isStructureAvailable(stat) && buildStuff(stat))
 		{
@@ -690,7 +690,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (needPowerGenerator() && countAndBuild(structures.gen, countStruct(structures.gen) + 1))
+		if (needPowerGenerator() && countAndBuild(structures.gen, countStruct(structures.gen, me) + 1))
 		{
 			return true;
 		}
@@ -774,7 +774,7 @@ function buildBaseStructures()
 		}
 	}
 
-	if (getMultiTechLevel() > 1 && countStruct(structures.vtolFactory) > 0 && countAndBuild(structures.vtolPad, 3))
+	if (getMultiTechLevel() > 1 && countStruct(structures.vtolFactory, me) > 0 && countAndBuild(structures.vtolPad, 3))
 	{
 		return true;
 	}
@@ -801,8 +801,8 @@ function factoryBuildOrder()
 			continue;
 		}
 
-		var derrNum = countStruct(structures.derrick);
-		var facNum = countStruct(fac);
+		var derrNum = countStruct(structures.derrick, me);
+		var facNum = countStruct(fac, me);
 		var allowedAmount = 0;
 
 		if (derrNum >= 20)
@@ -837,14 +837,14 @@ function factoryBuildOrder()
 
 function researchBuildOrder()
 {
-	var labs = countStruct(structures.lab);
+	var labs = countStruct(structures.lab, me);
 	var seaMap = turnOffCyborgs || forceHover;
 	const MAX_LAB_COUNT = 5;
 
 	if (!researchComplete && labs < MAX_LAB_COUNT)
 	{
 		var amount = 3;
-		var derrCount = countStruct(structures.derrick);
+		var derrCount = countStruct(structures.derrick, me);
 
 		if (derrCount >= 10)
 		{
@@ -867,7 +867,7 @@ function researchBuildOrder()
 //Build minimum requirements of base structures.
 function buildBaseStructures2()
 {
-	if (!countStruct(structures.gen))
+	if (!countStruct(structures.gen, me))
 	{
 		return true;
 	}
@@ -903,14 +903,14 @@ function buildSpecialStructures()
 //Build the minimum repairs and any vtol pads.
 function buildExtras()
 {
-	var needVtolPads = countStruct(structures.vtolPad) < enumGroup(vtolGroup).length;
+	var needVtolPads = countStruct(structures.vtolPad, me) < enumGroup(vtolGroup).length;
 	if (needVtolPads && buildStuff(structures.vtolPad))
 	{
 		return true;
 	}
 
-	var gens = countStruct(structures.gen);
-	if (random(100) < 40 && getRealPower() > SUPER_LOW_POWER && countStruct(structures.repair) < 5 && countAndBuild(structures.repair, gens + 1))
+	var gens = countStruct(structures.gen, me);
+	if (random(100) < 40 && getRealPower() > SUPER_LOW_POWER && countStruct(structures.repair, me) < 5 && countAndBuild(structures.repair, gens + 1))
 	{
 		return true;
 	}
@@ -926,7 +926,7 @@ function buildNTWPhase2()
 	}
 
 	// Ignore spam building gens early game on true 40 oil maps
-	if (needPowerGenerator() && countAndBuild(structures.gen, countStruct(structures.gen) + 1))
+	if (needPowerGenerator() && countAndBuild(structures.gen, countStruct(structures.gen, me) + 1))
 	{
 		return true;
 	}
@@ -973,7 +973,7 @@ function buildOrders()
 //Check if a building has modules to be built
 function maintenance(group)
 {
-	if (!countStruct(structures.gen) || (countStruct(structures.derrick) < 4))
+	if (!countStruct(structures.gen, me) || (countStruct(structures.derrick, me) < 4))
 	{
 		return false;
 	}

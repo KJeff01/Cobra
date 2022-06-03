@@ -213,7 +213,7 @@ function eventAttacked(victim, attacker)
 		grudgeCount[attacker.player] += (victim.type === STRUCTURE) ? 20 : 5;
 
 		//Check if a droid needs repair.
-		if ((victim.type === DROID) && !isVTOL(victim) && countStruct(structures.repair))
+		if ((victim.type === DROID) && !isVTOL(victim) && countStruct(structures.repair, me))
 		{
 			repairDroid(victim.id);
 		}

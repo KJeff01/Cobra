@@ -142,7 +142,7 @@ function timeToResearchAdvancedBody()
 
 function research()
 {
-	if (currently_dead || !countDroid(DROID_CONSTRUCT) || !(isDefined(techlist) && isDefined(turnOffCyborgs)))
+	if (currently_dead || !countDroid(DROID_CONSTRUCT, me) || !(isDefined(techlist) && isDefined(turnOffCyborgs)))
 	{
 		return;
 	}
@@ -220,14 +220,14 @@ function research()
 			{
 				found = (!cyborgOnlyGame && pursueResearch(lab, "R-Vehicle-Metals03"));
 
-				if (!found && !turnOffCyborgs && (countStruct(structures.cyborgFactory) || cyborgOnlyGame))
+				if (!found && !turnOffCyborgs && (countStruct(structures.cyborgFactory, me) || cyborgOnlyGame))
 					found = pursueResearch(lab, "R-Cyborg-Metals03");
 
 				if ((gameTime > timeToResearchAdvancedBody()) || cyborgOnlyGame)
 				{
 					if (random(100) < subPersonalities[personality].alloyPriority)
 					{
-						if (!found && !turnOffCyborgs && countStruct(structures.cyborgFactory) && random(100) < (cyborgOnlyGame ? 75 : 50))
+						if (!found && !turnOffCyborgs && countStruct(structures.cyborgFactory, me) && random(100) < (cyborgOnlyGame ? 75 : 50))
 							found = evalResearch(lab, CYBORG_ARMOR);
 						if (!found && (!cyborgOnlyGame || (cyborgOnlyGame && random(100) < 20)))
 							found = evalResearch(lab, TANK_ARMOR);

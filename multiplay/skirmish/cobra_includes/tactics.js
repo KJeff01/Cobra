@@ -152,7 +152,7 @@ function repairDroid(droidID, force)
 		return true;
 	}
 
-	if (countStruct(structures.repair) && (force || (Math.floor(droid.health) <= HEALTH_TO_REPAIR)))
+	if (countStruct(structures.repair, me) && (force || (Math.floor(droid.health) <= HEALTH_TO_REPAIR)))
 	{
 		orderDroid(droid, DORDER_RTR);
 		return true;
@@ -164,7 +164,7 @@ function repairDroid(droidID, force)
 //Continuously check a random ground group for repair
 function checkAllForRepair()
 {
-	if (!countStruct(structures.repair))
+	if (!countStruct(structures.repair, me))
 	{
 		return;
 	}
@@ -409,7 +409,7 @@ function recycleForHover()
 	var unfinished = unfinishedStructures();
 	const NON_HOVER_SYSTEMS = systems.length;
 
-	if ((countStruct(structures.factory) > MIN_FACTORY) && componentAvailable("hover01"))
+	if ((countStruct(structures.factory, me) > MIN_FACTORY) && componentAvailable("hover01"))
 	{
 		if (!unfinished.length && NON_HOVER_SYSTEMS)
 		{
@@ -589,7 +589,7 @@ function donateSomePower()
 	{
 		return;
 	}
-	if (!countStruct(structures.gen) || !countStruct(structures.derrick))
+	if (!countStruct(structures.gen, me) || !countStruct(structures.derrick, me))
 	{
 		return;
 	}
