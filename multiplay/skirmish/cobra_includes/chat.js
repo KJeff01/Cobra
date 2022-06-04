@@ -57,26 +57,54 @@ function eventChat(from, to, message)
 	else if (message === "toggle cyborg")
 	{
 		turnOffCyborgs = !turnOffCyborgs;
+		if (from !== me)
+		{
+			sendChatMessage("Cyborgs " + (turnOffCyborgs ? "off" : "on"), from);
+		}
+		sendChatMessage("Cyborgs " + (turnOffCyborgs ? "off" : "on"), me);
 	}
 	else if (message === "stats")
 	{
-		sendChatMessage(getMostHarmfulPlayer(), to);
+		if (from !== me)
+		{
+			sendChatMessage("Most harmful player: " + getMostHarmfulPlayer(), from);
+		}
+		sendChatMessage("Most harmful player: " + getMostHarmfulPlayer(), me);
 	}
 	else if (message === "toggle hover" && !checkIfSeaMap())
 	{
 		forceHover = !forceHover;
+		if (from !== me)
+		{
+			sendChatMessage("Forced hover " + (forceHover ? "on" : "off"), from);
+		}
+		sendChatMessage("Forced hover " + (forceHover ? "on" : "off"), me);
 	}
 	else if (message === "oil level")
 	{
-		sendChatMessage("Map oil count is: " + mapOilLevel(), ALLIES);
+		if (from !== me)
+		{
+			sendChatMessage("Map oil count is " + mapOilLevel(), from);
+		}
+		sendChatMessage("Map oil count is " + mapOilLevel(), me);
 	}
 	else if (message === "toggle arti")
 	{
 		useArti = !useArti;
+		if (from !== me)
+		{
+			sendChatMessage("Artillery " + (useArti ? "on" : "off"), from);
+		}
+		sendChatMessage("Artillery " + (useArti ? "on" : "off"), me);
 	}
 	else if (message === "toggle vtol")
 	{
 		useVtol = !useVtol;
+		if (from !== me)
+		{
+			sendChatMessage("VTOLs " + (useVtol ? "on" : "off"), from);
+		}
+		sendChatMessage("VTOLs " + (useVtol ? "on" : "off"), me);
 	}
 	else if (message === "resG" || message === "resO" || message === "resD" || message === "resA")
 	{
@@ -104,6 +132,11 @@ function eventChat(from, to, message)
 	else if (message === "toggle beacon")
 	{
 		beacon.disabled = !beacon.disabled;
+		if (from !== me)
+		{
+			sendChatMessage("Beacon behavior: " + (beacon.disabled ? "off" : "on"), from);
+		}
+		sendChatMessage("Beacon behavior: " + (beacon.disabled ? "off" : "on"), me);
 	}
 
 
@@ -115,11 +148,13 @@ function eventChat(from, to, message)
 
 	if (message === "need truck")
 	{
-		var droids = enumGroup(constructGroup);
-		var cacheDroids = droids.length;
-		if (cacheDroids >= Math.floor(MIN_TRUCKS_PER_GROUP / 2))
+		if (donateFromGroup(from, "TRUCK"))
 		{
-			donateObject(droids[random(cacheDroids)], from);
+			sendChatMessage("I give you some of my construction units", from);
+		}
+		else
+		{
+			sendChatMessage("I have no construction units to give you", from);
 		}
 	}
 	else if (message === "need power")
@@ -127,19 +162,51 @@ function eventChat(from, to, message)
 		if (getRealPower(me) > 100)
 		{
 			donatePower(playerPower(me) / 5, from);
+			if (!playerData[from].isAI)
+			{
+				sendChatMessage("Here is some power", from);
+			}
+		}
+		else
+		{
+			if (!playerData[from].isAI)
+			{
+				sendChatMessage("I do not have enough power to give you any", from);
+			}
 		}
 	}
 	else if (message === "need tank")
 	{
-		donateFromGroup(from, "ATTACK");
+		if (donateFromGroup(from, "ATTACK"))
+		{
+			sendChatMessage("Here are some tanks", from);
+		}
+		else
+		{
+			sendChatMessage("I have no spare tanks", from);
+		}
 	}
 	else if (message === "need cyborg")
 	{
-		donateFromGroup(from, "CYBORG");
+		if (donateFromGroup(from, "CYBORG"))
+		{
+			sendChatMessage("Here are some cyborgs", from);
+		}
+		else
+		{
+			sendChatMessage("I have no spare cyborgs", from);
+		}
 	}
 	else if (message === "need vtol")
 	{
-		donateFromGroup(from, "VTOL");
+		if (donateFromGroup(from, "VTOL"))
+		{
+			sendChatMessage("Here are some VTOLs", from);
+		}
+		else
+		{
+			sendChatMessage("I have no spare VTOLs", from);
+		}
 	}
 
 	//Here be commands that do something to a specific enemy.
@@ -149,7 +216,18 @@ function eventChat(from, to, message)
 		var num = message.slice(-1);
 		if (!allianceExistsBetween(num, me) && (num !== me))
 		{
-			targetPlayer(num);
+			if (targetPlayer(num))
+			{
+				sendChatMessage("Target set to player " + num, from);
+			}
+			else
+			{
+				sendChatMessage("Sorry, target not changed to player " + num + " (they may be my target already)", from);
+			}
+		}
+		else
+		{
+			sendChatMessage("Can not attack myself or an ally which is player " + num, from);
 		}
 	}
 }

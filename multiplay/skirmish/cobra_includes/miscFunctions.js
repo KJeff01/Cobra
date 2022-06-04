@@ -282,7 +282,6 @@ function donateFromGroup(from, group)
 {
 	if (isDefined(group))
 	{
-		const MIN_HEALTH = 80;
 		var chosenGroup;
 
 		switch (group)
@@ -290,17 +289,36 @@ function donateFromGroup(from, group)
 			case "ATTACK": chosenGroup = enumGroup(attackGroup); break;
 			case "CYBORG": chosenGroup = enumGroup(attackGroup).filter((dr) => (dr.droidType === DROID_CYBORG)); break;
 			case "VTOL": chosenGroup = enumGroup(vtolGroup); break;
+			case "TRUCK": chosenGroup = enumGroup(constructGroup).concat(enumGroup(oilGrabberGroup)).concat(enumGroup(constructGroupNTWExtra)); break;
 			default: chosenGroup = enumGroup(attackGroup); break;
 		}
 
-		var droids = chosenGroup.filter((dr) => (dr.health > MIN_HEALTH));
-		const CACHE_DROIDS = droids.length;
+		const CACHE_DROIDS = chosenGroup.length;
 
-		if (CACHE_DROIDS >= MIN_ATTACK_DROIDS)
+		if ((CACHE_DROIDS >= MIN_ATTACK_DROIDS) || (group === "TRUCK" && CACHE_DROIDS >= MIN_TRUCKS_PER_GROUP))
 		{
-			donateObject(droids[random(CACHE_DROIDS)], from);
+			var idx = 0;
+			var amount;
+			if (group !== "TRUCK")
+			{
+				amount = random(CACHE_DROIDS - (MIN_ATTACK_DROIDS - 2)) + 1;
+			}
+			else
+			{
+				amount = random(CACHE_DROIDS - (MIN_TRUCKS_PER_GROUP - 1)) + 1;
+			}
+
+			while (idx < amount)
+			{
+				donateObject(chosenGroup[idx], from);
+				++idx;
+			}
+
+			return true;
 		}
 	}
+
+	return false;
 }
 
 //Remove timers. May pass a string or an array of strings.

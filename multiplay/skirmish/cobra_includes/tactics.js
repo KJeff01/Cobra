@@ -447,14 +447,18 @@ function targetPlayer(playerNumber)
 	const PREVIOUS_TARGET = getMostHarmfulPlayer();
 	if (isDefined(scavengerPlayer) && ((playerNumber === scavengerPlayer) || (PREVIOUS_TARGET === scavengerPlayer)))
 	{
-		return; //No targeting scavs.
+		return false; //No targeting scavs.
 	}
 
-	if (playerNumber !== PREVIOUS_TARGET)
+	if (playerNumber === PREVIOUS_TARGET)
 	{
-		const INC = 400;
-		grudgeCount[playerNumber] = grudgeCount[PREVIOUS_TARGET] + INC;
+		return false;
 	}
+
+	const INC = 400;
+	grudgeCount[playerNumber] = grudgeCount[PREVIOUS_TARGET] + INC;
+
+	return true;
 }
 
 //VTOL units do there own form of tactics.
