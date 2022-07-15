@@ -160,7 +160,6 @@ function fastDefendSpot(structure, droid)
 	if (gameTime > 900000 && random(100) < 67 && structs.length < 5)
 	{
 		var sensor;
-		//const CB_TOWER = "Sys-CB-Tower01";
 		const TOWERS = [ "Sys-SensoTowerWS", "Sys-SensoTower02" ];
 		for (let i = 0, len = TOWERS.length; i < len; ++i)
 		{
@@ -637,9 +636,16 @@ function buildDefenses(truck, urgent)
 			return buildDefenseNearTruck(truck, 0);
 		}
 
-		if (mapOilLevel() !== "NTW" && ((pow > urgent) ? -SUPER_LOW_POWER : MIN_BUILD_POWER))
+		if (highOilMap())
 		{
-			defendRandomDerrick();
+			if (!defendNTWMap())
+			{
+				return defendRandomDerrick();
+			}
+		}
+		else
+		{
+			return defendRandomDerrick();
 		}
 	}
 
@@ -939,6 +945,64 @@ function buildNTWPhase2()
 	return false;
 }
 
+function defendNTWMap()
+{
+	if (random(100) < 5)
+	{
+		if (random(100) < 50)
+		{
+			if (countAndBuild("Sys-SensoTowerWS", Infinity))
+			{
+				return true;
+			}
+			else if (countAndBuild("Sys-SensoTower02", Infinity))
+			{
+				return true;
+			}
+		}
+		if (countAndBuild("Sys-CB-Tower01", Infinity))
+		{
+			return true;
+		}
+	}
+
+	var randomChoice;
+
+	if (random(100) < 80 && isStructureAvailable("Emplacement-HvART-pit") && countAndBuild("Emplacement-HvART-pit", Infinity))
+	{
+		return true;
+	}
+	if (isStructureAvailable("Emplacement-HeavyPlasmaLauncher") && countAndBuild("Emplacement-HeavyPlasmaLauncher", Infinity))
+	{
+		return true;
+	}
+	if (!isStructureAvailable("Emplacement-HvART-pit") && random(100) < 33 && countAndBuild("Emplacement-Rocket06-IDF", Infinity))
+	{
+		return true;
+	}
+
+	switch (random(3))
+	{
+		case 0: randomChoice = weaponStats.howitzers.defenses.reverse(); break;
+		case 1: randomChoice = weaponStats.fireMortars.defenses.reverse(); break;
+		default: randomChoice = weaponStats.howitzers.defenses.reverse(); break;
+	}
+
+	if (random(100) < 20)
+	{
+		randomChoice = [{stat: "Emplacement-RotHow"}];
+	}
+
+	for (var i = 0, len = randomChoice.length; i < len; ++i)
+	{
+		if (countAndBuild(randomChoice[i].stat, Infinity))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
 
 //Cobra's unique build decisions
 function buildOrders()
@@ -962,6 +1026,7 @@ function buildOrders()
 
 	if (isNTW && buildNTWPhase2()) { return; }
 
+	if (isNTW && random(100) < 20 && buildDefenses(undefined, false)) { return; }
 	if (random(100) < 70 && buildAAForPersonality()) { return; }
 	if (buildExtras()) { return; }
 	if (random(100) < 33 && buildSpecialStructures()) { return; }
