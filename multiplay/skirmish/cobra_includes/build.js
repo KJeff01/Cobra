@@ -657,7 +657,7 @@ function buildBaseStructures()
 {
 	const GOOD_POWER_LEVEL = getRealPower() > 250;
 
-	if (forceHover && GOOD_POWER_LEVEL && countAndBuild(structures.lab, 1))
+	if ((getMultiTechLevel() < 4) && forceHover && GOOD_POWER_LEVEL && countAndBuild(structures.lab, 1))
 	{
 		return true;
 	}
@@ -676,7 +676,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (!researchComplete && countAndBuild(structures.lab, 2))
+		if ((getMultiTechLevel() < 4) && !researchComplete && countAndBuild(structures.lab, 2))
 		{
 			return true;
 		}
@@ -692,7 +692,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (!researchComplete && countAndBuild(structures.lab, 3))
+		if ((getMultiTechLevel() < 4) && !researchComplete && countAndBuild(structures.lab, 3))
 		{
 			return true;
 		}
@@ -726,7 +726,7 @@ function buildBaseStructures()
 		{
 			return true; //a little fail-safe
 		}
-		if (GOOD_POWER_LEVEL && randomResearchLabStart && !researchComplete && countAndBuild(structures.lab, 1))
+		if ((getMultiTechLevel() < 4) && GOOD_POWER_LEVEL && randomResearchLabStart && !researchComplete && countAndBuild(structures.lab, 1))
 		{
 			return true;
 		}
@@ -734,7 +734,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (!researchComplete && countAndBuild(structures.lab, (haveAllies) ? 2 : 4))
+		if ((getMultiTechLevel() < 4) && !researchComplete && countAndBuild(structures.lab, (haveAllies) ? 2 : 4))
 		{
 			return true;
 		}
@@ -750,7 +750,7 @@ function buildBaseStructures()
 		{
 			return true;
 		}
-		if (!researchComplete && countAndBuild(structures.lab, 5))
+		if ((getMultiTechLevel() < 4) && !researchComplete && countAndBuild(structures.lab, 5))
 		{
 			return true;
 		}
@@ -843,6 +843,10 @@ function factoryBuildOrder()
 
 function researchBuildOrder()
 {
+	if (getMultiTechLevel() === 4)
+	{
+		return false;
+	}
 	var labs = countStruct(structures.lab, me);
 	var seaMap = turnOffCyborgs || forceHover;
 	const MAX_LAB_COUNT = 5;
