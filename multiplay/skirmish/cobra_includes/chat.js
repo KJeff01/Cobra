@@ -28,6 +28,10 @@ function sendChatMessage(msg, receiver)
 				chat(players[i], msg);
 			}
 		}
+		else if (receiver === ALL_PLAYERS)
+		{
+			chat(ALL_PLAYERS, msg);
+		}
 		else
 		{
 			chat(receiver, msg);
@@ -43,7 +47,15 @@ function eventChat(from, to, message)
 	}
 
 	//Here are all chat messages that can be executed by itself.
-	if (message === "AC" ||
+	if (message === "cobra strategy")
+	{
+		sendChatMessage("I am using \"" + myPersonality() + "\" tactics.", ALLIES);
+	}
+	else if (message === "cobra strat list")
+	{
+		sendChatMessage("My strategies are: AC, AR, AB, AM, AA", ALLIES);
+	}
+	else if (message === "AC" ||
 		message === "AR" ||
 		message === "AB" ||
 		message === "AM" ||
