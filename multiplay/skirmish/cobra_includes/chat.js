@@ -18,7 +18,7 @@ function sendChatMessage(msg, receiver)
 
 		if (receiver === ALLIES || receiver === ENEMIES)
 		{
-			var players = playerAlliance(receiver === ALLIES);
+			let players = playerAlliance(receiver === ALLIES);
 			for (let i = 0, len = players.length; i < len; ++i)
 			{
 				if (msg === "need power" && !playerData[players[i]].isAI)
@@ -120,7 +120,7 @@ function eventChat(from, to, message)
 	}
 	else if (message === "resG" || message === "resO" || message === "resD" || message === "resA")
 	{
-		var pth = "";
+		let pth = "";
 		if (message === "resG")
 		{
 			pth = "generic";
@@ -225,7 +225,7 @@ function eventChat(from, to, message)
 	const REAL_MSG = message.slice(0, -1);
 	if (REAL_MSG === "target")
 	{
-		var num = message.slice(-1);
+		let num = message.slice(-1);
 		if (!allianceExistsBetween(num, me) && (num !== me))
 		{
 			if (targetPlayer(num))
