@@ -951,6 +951,11 @@ function buildNTWPhase2()
 
 function defendNTWMap()
 {
+	if (!getResearch("R-Struc-Research-Upgrade07").done)
+	{
+		return false;
+	}
+
 	if (random(100) < 5)
 	{
 		if (random(100) < 50)
