@@ -1,5 +1,5 @@
 
-const structures = {
+const _STRUCTURES = {
 	factory: "A0LightFactory",
 	cyborgFactory: "A0CyborgFactory",
 	vtolFactory: "A0VTolFactory1",
@@ -14,6 +14,8 @@ const structures = {
 	lassat: "A0LasSatCommand",
 };
 
+// Quick reference for various stats.
+/*
 const powerUps = [ "OilDrum", "Crate" ];
 
 const sensorTurrets = [
@@ -49,8 +51,9 @@ const propulsionStats = [
 	{ res: "R-Vehicle-Prop-Hover", stat: "hover01" },
 	{ res: "R-Vehicle-Prop-VTOL", stat: "V-Tol" },
 ];
+*/
 
-const weaponStats =
+const _WEAPON_STATS =
 {
 	machineguns:
 	{
@@ -82,7 +85,7 @@ const weaponStats =
 		],
 		// Extra things to research on this path, even if they don't lead to any new stuff
 		extras: [
-			"R-Wpn-MG-Damage08",
+			"R-Wpn-MG-Damage10",
 			"R-Wpn-MG-ROF03",
 		],
 	},
@@ -235,7 +238,7 @@ const weaponStats =
 			{ res: "R-Wpn-Bomb02", stat: "Bomb2-VTOL-HvHE" },
 		],
 		defenses: [
-			//{ res: "R-Defense-MortarPit", stat: "Emplacement-MortarPit01" },
+			{ res: "R-Defense-MortarPit", stat: "Emplacement-MortarPit01" },
 			{ res: "R-Defense-HvyMor", stat: "Emplacement-MortarPit02" },
 			{ res: "R-Defense-RotMor", stat: "Emplacement-RotMor" },
 			{ res: "R-Defense-Howitzer", stat: "Emplacement-Howitzer105" },
@@ -318,6 +321,7 @@ const weaponStats =
 			{ res: "R-Wpn-Mortar01Lt", stat: "Mortar1Mk1" },
 			{ res: "R-Wpn-Mortar3", stat: "Mortar3ROTARYMk1" },
 			{ res: "R-Wpn-Mortar02Hvy", stat: "Mortar2Mk1" },
+			{ res: "R-Wpn-HowitzerMk1", stat: "Howitzer105Mk1" },
 			{ res: "R-Wpn-Mortar-Incendiary", stat: "Mortar-Incendiary" },
 			{ res: "R-Wpn-Howitzer-Incendiary", stat: "Howitzer-Incendiary" },
 		],
@@ -332,6 +336,7 @@ const weaponStats =
 		],
 		defenses: [
 			{ res: "R-Defense-MortarPit-Incendiary", stat: "Emplacement-MortarPit-Incendiary" },
+			{ res: "R-Defense-Howitzer", stat: "Emplacement-Howitzer105" },
 			{ res: "R-Defense-Howitzer-Incendiary", stat: "Emplacement-Howitzer-Incendiary" },
 		],
 		templates: [],
@@ -443,11 +448,14 @@ const weaponStats =
 		alias: "rkta",
 		weapons: [
 			{ res: "R-Wpn-Rocket02-MRL", stat: "Rocket-MRL" }, // mra
+			{ res: "R-Wpn-Rocket02-MRLHvy", stat: "Rocket-MRL-Hvy" }, // hra
 			{ res: "R-Wpn-Rocket06-IDF", stat: "Rocket-IDF" }, // ripple
 			{ res: "R-Wpn-MdArtMissile", stat: "Missile-MdArt" }, // seraph
 			{ res: "R-Wpn-HvArtMissile", stat: "Missile-HvyArt" }, // archie
 		],
 		fastFire: [
+			{ res: "R-Wpn-Rocket02-MRL", stat: "Rocket-MRL" }, // mra
+			{ res: "R-Wpn-Rocket02-MRLHvy", stat: "Rocket-MRL-Hvy" },
 			{ res: "R-Wpn-MdArtMissile", stat: "Missile-MdArt" },
 		],
 		vtols: [
@@ -455,6 +463,7 @@ const weaponStats =
 		],
 		defenses: [
 			{ res: "R-Defense-MRL", stat: "Emplacement-MRL-pit" }, // mra
+			{ res: "R-Defense-MRLHvy", stat: "Emplacement-MRLHvy-pit" }, // hra
 			{ res: "R-Defense-IDFRocket", stat: "Emplacement-Rocket06-IDF" }, // ripple
 			{ res: "R-Defense-MdArtMissile", stat: "Emplacement-MdART-pit" }, // seraph
 			{ res: "R-Defense-HvyArtMissile", stat: "Emplacement-HvART-pit" }, // archie
@@ -526,9 +535,9 @@ const weaponStats =
 		defenses: [
 			{ res: "R-Defense-Sunburst", stat: "P0-AASite-Sunburst" }, // sunburst
 			{ res: "R-Defense-SamSite1", stat: "P0-AASite-SAM1" }, // avenger
-			//{ res: "R-Defense-WallTower-SamSite", stat: "WallTower-SamSite" }, // avenger
+			{ res: "R-Defense-WallTower-SamSite", stat: "WallTower-SamSite" }, // avenger
 			{ res: "R-Defense-SamSite2", stat: "P0-AASite-SAM2" }, // vindicator
-			//{ res: "R-Defense-WallTower-SamHvy", stat: "WallTower-SamHvy" }, // vindicator hardpoint
+			{ res: "R-Defense-WallTower-SamHvy", stat: "WallTower-SamHvy" }, // vindicator hardpoint
 		],
 		templates: [],
 		extras: [
@@ -553,17 +562,20 @@ const weaponStats =
 			{ res: "R-Wpn-Laser01", stat: "Laser3BEAMMk1" }, // flash
 			{ res: "R-Wpn-Laser02", stat: "Laser2PULSEMk1" }, // pulse
 			{ res: "R-Wpn-HvyLaser", stat: "HeavyLaser" }, // hvy laser
+			{ res: "R-Wpn-ParticleGun", stat: "ParticleGun" }, // particle laser
 		],
 		vtols: [
 			{ res: "R-Wpn-Laser01", stat: "Laser3BEAM-VTOL" }, // flash
 			{ res: "R-Wpn-Laser02", stat: "Laser2PULSE-VTOL" }, // pulse
 			{ res: "R-Wpn-HvyLaser", stat: "HeavyLaser-VTOL" }, // hvy laser
+			{ res: "R-Wpn-ParticleGun", stat: "ParticleGun-VTOL" }, // particle laser
 		],
 		defenses: [
 			{ res: "R-Defense-PrisLas", stat: "Emplacement-PrisLas" }, // flash empl
 			{ res: "R-Defense-PulseLas", stat: "GuardTower-BeamLas" }, // pulse tower
 			{ res: "R-Defense-WallTower-PulseLas", stat: "WallTower-PulseLas" }, // pulse hard
 			{ res: "R-Defense-HeavyLas", stat: "Emplacement-HeavyLaser" }, // hvy empl
+			{ res: "R-Defense-ParticleGun", stat: "Emplacement-ParticleGun" }, // particle empl
 		],
 		templates: [
 			{ res: "R-Wpn-Laser01", body: "CyborgLightBody", prop: "CyborgLegs", weapons: [ "Cyb-Wpn-Laser", ] }, // flash borg
@@ -622,8 +634,8 @@ const weaponStats =
 		alias: "bomb",
 		weapons: [],
 		vtols: [
-		//	{ res: "R-Wpn-Bomb01", stat: "Bomb1-VTOL-LtHE" }, // cluster bomb
-			//{ res: "R-Wpn-Bomb03", stat: "Bomb3-VTOL-LtINC" }, // Phosphor bomb
+			{ res: "R-Wpn-Bomb01", stat: "Bomb1-VTOL-LtHE" }, // cluster bomb
+			{ res: "R-Wpn-Bomb03", stat: "Bomb3-VTOL-LtINC" }, // Phosphor bomb
 			{ res: "R-Wpn-Bomb02", stat: "Bomb2-VTOL-HvHE" }, // HEAP bomb
 			{ res: "R-Wpn-Bomb04", stat: "Bomb4-VTOL-HvyINC" }, // Thermite bomb
 			{ res: "R-Wpn-Bomb05", stat: "Bomb5-VTOL-Plasmite" }, // Plasmite bomb
@@ -653,17 +665,12 @@ const weaponStats =
 		defenses: [
 			{ res: "R-Defense-AASite-QuadMg1", stat: "AASite-QuadMg1" }, // hurricane
 			{ res: "R-Defense-AASite-QuadRotMg", stat: "AASite-QuadRotMg" }, // whirlwind
-			//{ res: "R-Defense-WallTower-QuadRotAA", stat: "WallTower-QuadRotAAGun" },
+			{ res: "R-Defense-WallTower-QuadRotAA", stat: "WallTower-QuadRotAAGun" },
 		],
 		templates: [],
 		extras: [
-			"R-Wpn-AAGun-ROF01",
-			"R-Wpn-AAGun-Damage03",
-			"R-Wpn-AAGun-Accuracy01",
-			"R-Wpn-AAGun-ROF03",
-			"R-Wpn-AAGun-Accuracy03",
-			"R-Wpn-AAGun-Damage06",
-			"R-Wpn-AAGun-ROF06",
+			"R-Wpn-MG-ROF03",
+			"R-Wpn-MG-Damage10",
 		],
 	},
 	nexusTech:
